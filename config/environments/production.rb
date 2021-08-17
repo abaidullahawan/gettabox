@@ -120,6 +120,4 @@ Rails.application.configure do
   config.assets.digest = true
   config.assets.enabled = true
 
-  server '142.93.32.58', user: 'deploy', roles: %w{app db web}
-
 end
