@@ -1,0 +1,57 @@
+<!-- Login Area -->
+<div class="auth-main-content auth-bg-image">
+  <div class="d-table">
+    <div class="d-tablecell">
+      <div class="auth-box">
+        <div class="row align-items-center">
+          <div class="col-md-6">
+            <div class="form-left-content">
+              <div class="auth-logo">
+                <h2>ChannelDispatch</h2>
+              </div>
+
+              <div class="login-links">
+                <a class="fb" href="#">
+                  <i data-feather="facebook" class="icon"></i>
+                  Sign Up with Facebook
+                </a>
+                <a class="twi" href="#">
+                  <i data-feather="twitter" class="icon"></i>
+                  Sign Up with Twitter
+                </a>
+                <a class="ema" href="#">
+                  <i data-feather="mail" class="icon"></i>
+                  Sign Up with Email
+                </a>
+                <a class="linkd" href="#">
+                  <i data-feather="linkedin" class="icon"></i>
+                  Sign Up with Linkedin
+                </a>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-content">
+              <h1 class="heading">Log In</h1>
+              <%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
+                <div class="form-group">
+                  <%= f.label :email, class: 'form-label' %>
+                  <%= f.email_field :email, autofocus: true, autocomplete: "email" , class: 'form-control' %>
+                </div>
+                <div class="form-group">
+                  <%= f.label :password, class: 'form-label' %>
+                  <%= f.password_field :password, autocomplete: "current-password" , class: 'form-control' %>
+                </div>
+                <div class="text-center">
+                  <%= f.submit "Log in" , class: 'btn btn-primary' %>
+                  <%= link_to "Forgot Password?", new_password_path(resource_name), class: 'fp-link' %>
+                </div>
+                <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- End Login Area -->

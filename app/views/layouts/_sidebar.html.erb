@@ -1,0 +1,422 @@
+<!-- Side Menu -->
+<div class="sidemenu-area sidemenu-toggle default">
+    <nav class="sidemenu navbar navbar-expand navbar-light hide-nav-title">
+        <div class="navbar-collapse collapse">
+            <div class="navbar-nav">
+                <div class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <div class="dropdown-title">
+                            <i data-feather="grid" class="icon"></i>
+                            <span class="title">
+                                Dashboard
+                                <i data-feather="chevron-right" class="icon fr"></i>
+                            </span>
+                        </div>
+                    </a>
+
+                    <div class="dropdown-menu">
+                        <a
+                            class="dropdown-item <%= active_klass(dashboard_sales_path) %>"
+                            href="<%= dashboard_sales_path %>"
+                        >
+                            <i data-feather="chevron-right" class="icon"></i>
+                            Sales
+                        </a>
+                        <a
+                            class="dropdown-item <%= active_klass(dashboard_ecommerce_path) %>"
+                            href="<%= dashboard_ecommerce_path %>"
+                        >
+                            <i data-feather="chevron-right" class="icon"></i>
+                            eCommerce
+                        </a>
+                        <a
+                            class="dropdown-item <%= active_klass(dashboard_analytics_path) %>"
+                            href="<%= dashboard_analytics_path %>"
+                        >
+                            <i data-feather="chevron-right" class="icon"></i>
+                            Analytics
+                        </a>
+                        <a
+                            class="dropdown-item <%= active_klass(dashboard_crm_path) %>"
+                            href="<%= dashboard_crm_path %>"
+                        >
+                            <i data-feather="chevron-right" class="icon"></i>
+                            CRM
+                        </a>
+                        <a
+                            class="dropdown-item <%= active_klass(dashboard_project_path) %>"
+                            href="<%= dashboard_project_path %>"
+                        >
+                            <i data-feather="chevron-right" class="icon"></i>
+                            Project
+                        </a>
+                    </div>
+                </div>
+
+                <a
+                    class="nav-link <%= active_klass(discussions_inbox_path) %>"
+                    href="<%= discussions_inbox_path %>"
+                >
+                    <i data-feather="inbox" class="icon"></i>
+                    <span class="title">Inbox</span>
+                </a>
+
+                <a
+                    class="nav-link <%= active_klass(discussions_chat_path) %>"
+                    href="<%= discussions_chat_path %>"
+                >
+                    <i data-feather="message-square" class="icon"></i>
+                    <span class="title">Chat</span>
+                </a>
+
+                <a
+                    class="nav-link <%= active_klass(todos_lists_path) %>"
+                    href="<%= todos_lists_path %>"
+                >
+                    <i data-feather="check-square" class="icon"></i>
+                    <span class="title">Todo List</span>
+                </a>
+
+                <a
+                    class="nav-link <%= active_klass(todos_notes_path) %>"
+                    href="<%= todos_notes_path %>"
+                >
+                    <i data-feather="file-text" class="icon"></i>
+                    <span class="title">Notes</span>
+                </a>
+
+                <a
+                    class="nav-link <%= active_klass(dashboard_search_path) %>"
+                    href="<%= dashboard_search_path %>"
+                >
+                    <i data-feather="search" class="icon"></i>
+                    <span class="title">Search</span>
+                </a>
+
+                <div class="nav-item dropdown super-color">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <div class="dropdown-title">
+                            <i data-feather="filter" class="icon"></i>
+                            <span class="title">
+                                UI Components 
+                                <i data-feather="chevron-right" class="icon fr"></i>
+                            </span>
+                        </div>
+                    </a>
+
+                    <div class="dropdown-menu">
+                        <a 
+                            class="dropdown-item <%= active_klass(ui_alerts_path) %>" 
+                            href="<%= ui_alerts_path %>"
+                        >
+                            <i data-feather="bell" class="icon"></i>
+                            Alerts
+                        </a>
+
+                        <a 
+                            class="dropdown-item <%= active_klass(ui_badges_path) %>" 
+                            href="<%= ui_badges_path %>"
+                        >
+                            <i data-feather="award" class="icon"></i>
+                            Badges
+                        </a>
+
+                        <a 
+                            class="dropdown-item <%= active_klass(ui_buttons_path) %>" 
+                            href="<%= ui_buttons_path %>"
+                        >
+                            <i data-feather="arrow-right-circle" class="icon"></i>
+                            Buttons
+                        </a>
+
+                        <a 
+                            class="dropdown-item <%= active_klass(ui_cards_path) %>" 
+                            href="<%= ui_cards_path %>"
+                        >
+                            <i data-feather="layers" class="icon"></i>
+                            Cards
+                        </a>
+
+                        <a 
+                            class="dropdown-item <%= active_klass(ui_dropdowns_path) %>" 
+                            href="<%= ui_dropdowns_path %>"
+                        >
+                            <i data-feather="arrow-down-circle" class="icon"></i>
+                            Dropdowns
+                        </a>
+
+                        <a 
+                            class="dropdown-item <%= active_klass(ui_forms_path) %>" 
+                            href="<%= ui_forms_path %>"
+                        >
+                            <i data-feather="file-text" class="icon"></i>
+                            Forms
+                        </a>
+
+                        <a 
+                            class="dropdown-item <%= active_klass(ui_list_groups_path) %>" 
+                            href="<%= ui_list_groups_path %>"
+                        >
+                            <i data-feather="list" class="icon"></i>
+                            List Groups
+                        </a>
+
+                        <a 
+                            class="dropdown-item <%= active_klass(ui_modals_path) %>" 
+                            href="<%= ui_modals_path %>"
+                        >
+                            <i data-feather="airplay" class="icon"></i>
+                            Modals
+                        </a>
+
+                        <a 
+                            class="dropdown-item <%= active_klass(ui_progress_bars_path) %>" 
+                            href="<%= ui_progress_bars_path %>"
+                        >
+                            <i data-feather="trending-up" class="icon"></i>
+                            Progress Bars
+                        </a>
+
+                        <a 
+                            class="dropdown-item <%= active_klass(ui_tables_path) %>" 
+                            href="<%= ui_tables_path %>"
+                        >
+                            <i data-feather="database" class="icon"></i>
+                            Tables
+                        </a>
+                            
+                        <a 
+                            class="dropdown-item <%= active_klass(ui_tabs_path) %>" 
+                            href="<%= ui_tabs_path %>"
+                        >
+                            <i data-feather="triangle" class="icon"></i>
+                            Tabs
+                        </a>
+                    </div>
+                </div>
+
+                <div class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <div class="dropdown-title">
+                            <i data-feather="user" class="icon"></i>
+                            <span class="title">
+                                User
+                                <i data-feather="chevron-right" class="icon fr"></i>
+                            </span>
+                        </div>
+                    </a>
+
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item <%= active_klass(auth_signup_path) %>" target="_blank" href="<%= auth_signup_path %>">
+                            <i data-feather="user-plus" class="icon"></i>
+                            Sign Up
+                        </a>
+
+                        <a class="dropdown-item <%= active_klass(auth_signin_path) %>" target="_blank" href="<%= auth_signin_path %>">
+                            <i data-feather="user-check" class="icon"></i>
+                            Login
+                        </a>
+
+                        <a class="dropdown-item <%= active_klass(auth_forgot_password_path) %>" target="_blank" href="<%= auth_forgot_password_path %>">
+                            <i data-feather="unlock" class="icon"></i>
+                            Forgot Password
+                        </a>
+                    </div>
+                </div>
+
+                <div class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <div class="dropdown-title">
+                            <i data-feather="bar-chart-2" class="icon"></i>
+                            <span class="title">
+                                Charts
+                                <i data-feather="chevron-right" class="icon fr"></i>
+                            </span>
+                        </div>
+                    </a>
+
+                    <div class="dropdown-menu">
+                        <a 
+                            class="dropdown-item <%= active_klass(charts_line_path) %>" 
+                            href="<%= charts_line_path %>"
+                        >
+                            <i data-feather="chevron-right" class="icon"></i>
+                            Line Charts
+                        </a>
+
+                        <a 
+                            class="dropdown-item <%= active_klass(charts_area_path) %>" 
+                            href="<%= charts_area_path %>"
+                        >
+                            <i data-feather="chevron-right" class="icon"></i>
+                            Area Charts
+                        </a>
+
+                        <a 
+                            class="dropdown-item <%= active_klass(charts_column_path) %>" 
+                            href="<%= charts_column_path %>"
+                        >
+                            <i data-feather="chevron-right" class="icon"></i>
+                            Column Charts
+                        </a>
+
+                        <a 
+                            class="dropdown-item <%= active_klass(charts_bar_path) %>" 
+                            href="<%= charts_bar_path %>"
+                        >
+                            <i data-feather="chevron-right" class="icon"></i>
+                            Bar Charts
+                        </a>
+
+                        <a 
+                            class="dropdown-item <%= active_klass(charts_mixed_path) %>" 
+                            href="<%= charts_mixed_path %>"
+                        >
+                            <i data-feather="chevron-right" class="icon"></i>
+                            Mixed Charts
+                        </a>
+
+                        <a 
+                            class="dropdown-item <%= active_klass(charts_pie_path) %>" 
+                            href="<%= charts_pie_path %>"
+                        >
+                            <i data-feather="chevron-right" class="icon"></i>
+                            Pie and Donuts Charts
+                        </a>
+                    </div>
+                </div>
+
+                <div class="dropdown nav-item">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <div class="dropdown-title">
+                            <i data-feather="heart" class="icon"></i>
+                            <span class="title">
+                                Icons
+                                <i data-feather="chevron-right" class="icon fr"></i>
+                            </span>
+                        </div>
+                    </a>
+
+                    <div class="dropdown-menu">
+                        <a 
+                            class="dropdown-item <%= active_klass(feather_icons_path) %>" 
+                            href="<%= feather_icons_path %>"
+                        >
+                            <i data-feather="chevron-right" class="icon"></i>
+                            Feather Icons
+                        </a>
+                        <a 
+                            class="dropdown-item <%= active_klass(line_icons_path) %>" 
+                            href="<%= line_icons_path %>"
+                        >
+                            <i data-feather="chevron-right" class="icon"></i>
+                            Line Icons
+                        </a>
+                        <a 
+                            class="dropdown-item <%= active_klass(icofont_icons_path) %>" 
+                            href="<%= icofont_icons_path %>"
+                        >
+                            <i data-feather="chevron-right" class="icon"></i>
+                            Icofont Icons
+                        </a>
+                    </div>
+                </div>
+
+                <div class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <div class="dropdown-title">
+                            <i data-feather="file-text" class="icon"></i>
+                            <span class="title">
+                                Pages
+                                <i data-feather="chevron-right" class="icon fr"></i>
+                            </span>
+                        </div>
+                    </a>
+
+                    <div class="dropdown-menu">
+                        <a 
+                            class="dropdown-item <%= active_klass(pages_users_card_path) %>" 
+                            href="<%= pages_users_card_path %>"
+                        >
+                            <i data-feather="chevron-right" class="icon"></i>
+                            Users Card
+                        </a>
+
+                        <a 
+                            class="dropdown-item <%= active_klass(pages_notifications_path) %>" 
+                            href="<%= pages_notifications_path %>"
+                        >
+                            <i data-feather="chevron-right" class="icon"></i>
+                            <span class="title">Notifications</span>
+                        </a>
+
+                        <a 
+                            class="dropdown-item <%= active_klass(pages_timeline_path) %>" 
+                            href="<%= pages_timeline_path %>"
+                        >
+                            <i data-feather="chevron-right" class="icon"></i>
+                            Time line
+                        </a>
+
+                        <a 
+                            class="dropdown-item <%= active_klass(pages_invoice_template_path) %>" 
+                            href="<%= pages_invoice_template_path %>"
+                        >
+                            <i data-feather="chevron-right" class="icon"></i>
+                            Invoice Template
+                        </a>
+
+                        <a 
+                            class="dropdown-item <%= active_klass(pages_gallery_path) %>" 
+                            href="<%= pages_gallery_path %>"
+                        >
+                            <i data-feather="chevron-right" class="icon"></i>
+                            Gallery
+                        </a>
+
+                        <a 
+                            class="dropdown-item <%= active_klass(pages_faq_path) %>" 
+                            href="<%= pages_faq_path %>"
+                        >
+                            <i data-feather="chevron-right" class="icon"></i>
+                            Faq
+                        </a>
+
+                        <a 
+                            class="dropdown-item <%= active_klass(pages_pricing_path) %>" 
+                            href="<%= pages_pricing_path %>"
+                        >
+                            <i data-feather="chevron-right" class="icon"></i>
+                            Pricing
+                        </a>
+
+                        <a 
+                            class="dropdown-item <%= active_klass(pages_profile_path) %>" 
+                            href="<%= pages_profile_path %>"
+                        >
+                            <i data-feather="chevron-right" class="icon"></i>
+                            Profile
+                        </a>
+
+                        <a 
+                            class="dropdown-item <%= active_klass(pages_profile_settings_path) %>" 
+                            href="<%= pages_profile_settings_path %>"
+                        >
+                            <i data-feather="chevron-right" class="icon"></i>
+                            Profile Settings
+                        </a>
+
+                        <a 
+                            class="dropdown-item <%= active_klass(pages_error_path) %>" 
+                            href="<%= pages_error_path %>"
+                        >
+                            <i data-feather="chevron-right" class="icon"></i>
+                            Error 404
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+</div>
+<!-- End Side Menu -->

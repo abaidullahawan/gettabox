@@ -1,0 +1,67 @@
+<!-- Signup Area -->
+<div class="auth-main-content">
+    <div class="d-table">
+        <div class="d-tablecell">
+            <div class="auth-box">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <div class="form-left-content">
+                            <div class="auth-logo">
+                                <h2>ChannelDispatch</h2>
+                                <%#= image_tag('large-logo.png', alt: 'Logo') %>
+                            </div>
+
+                            <div class="login-links">
+                                <a class="fb" href="#">
+                                    <i data-feather="facebook" class="icon"></i>
+                                    Sign Up with Facebook
+                                </a>
+                                <a class="twi" href="#">
+                                    <i data-feather="twitter" class="icon"></i>
+                                    Sign Up with Twitter
+                                </a>
+                                <a class="ema" href="#">
+                                    <i data-feather="mail" class="icon"></i>
+                                    Sign Up with Email
+                                </a>
+                                <a class="linkd" href="#">
+                                    <i data-feather="linkedin" class="icon"></i>
+                                    Sign Up with Linkedin
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-content">
+                            <h1 class="heading">Sign Up</h1>
+                            <%= form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
+                                <%= render "devise/shared/error_messages", resource: resource %>
+                                <div class="form-group">
+                                    <%= f.label :email %><br />
+                                    <%= f.email_field :email, autofocus: true, autocomplete: "email", class: 'form-control' %>
+                                </div>
+                                <div class="form-group">
+                                    <%= f.label :password %>
+                                    <% if @minimum_password_length %>
+                                    <em>(<%= @minimum_password_length %> characters minimum)</em>
+                                    <% end %><br />
+                                    <%= f.password_field :password, autocomplete: "new-password", class: 'form-control' %>
+                                </div>
+                                <div class="form-group">
+                                    <%= f.label :password_confirmation %><br />
+                                    <%= f.password_field :password_confirmation, class: 'form-control' %>
+                                </div>
+                                <div class="text-center">
+                                    <%= f.submit "Sign up", class: 'btn btn-primary' %>
+                                </div>
+                            <% end %>
+                            <%#= render "devise/shared/links" %>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End Signup Area -->

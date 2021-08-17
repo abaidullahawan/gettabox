@@ -1,0 +1,42 @@
+<div class="nested-fields">
+  <div class="card-header">
+    <h4 class="card-title text-warning">Work Details</h4>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :company_name %>
+    <%= f.text_field :company_name, autofocus: true, class: 'form-control', placeholder: 'Enter your first name' %>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :position %>
+    <%= f.text_field :position, class: 'form-control', placeholder: 'Enter your last name' %>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :description %>
+    <%= f.text_field :description, class: 'form-control' %>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :city %>
+    <%= f.text_field :city, class: 'form-control' %>
+  </div>
+
+  <div class="form-check">
+    <%= f.check_box :currently_working, class: 'form-check-input' %>
+    <%= f.label :currently_working, class: 'form-check-label' %>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :from %>
+    <%= f.date_field :from, class: 'form-control' %>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :to %>
+    <%= f.date_field :to, class: 'form-control' %>
+  </div>
+
+  <%= link_to_remove_association "remove contact", f, class: 'btn btn-sm btn-danger mb-3' %>
+</div>
