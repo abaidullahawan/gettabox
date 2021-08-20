@@ -1,7 +1,7 @@
 # config valid for current version and patch releases of Capistrano
 lock "~> 3.16.0"
 
-set :application, "myapp"
+set :application, "channeldispatch"
 set :repo_url, "git@github.com:abaidullahawan/gettabox.git"
 
 # Default branch is :master
