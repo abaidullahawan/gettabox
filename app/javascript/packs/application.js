@@ -11,10 +11,10 @@
 require("@rails/ujs").start()
 require("turbolinks").start()
 require("@rails/activestorage").start()
-// require("channels")
-// require("jquery")
-// require("popper.js").default
-// require("bootstrap")
+require("channels")
+require("jquery")
+require("popper.js").default
+require("bootstrap")
 require("feather-icons")
 // require("packs/viewer.min")
 // require("apexcharts")
