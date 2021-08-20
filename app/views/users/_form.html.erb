@@ -6,7 +6,7 @@
 
   <div class="form-group">
     <%= f.label :password %>
-    <%= f.password_field :password, class: 'form-control', id: 'exampleInputPassword1', placeholder: 'Password' %>
+    <%= f.password_field :password, class: 'form-control', id: 'exampleInputPassword', placeholder: 'Password' %>
   </div>
 
   <div class="form-group">
@@ -27,9 +27,7 @@
       <%= pd.fields_for :contact_details do |cd| %>
         <%= render 'contact_detail_fields', f: cd %>
       <div class='links'>
-        <%= link_to_add_association  pd, :contact_details, class: 'btn btn-sm btn-primary mb-3' do%>
-        Add
-        <%end%>
+        <%= link_to_add_association  'Add Contact', pd, :contact_details, class: 'btn btn-sm btn-primary mb-3'%>
       </div>
       <% end %>
     </div>
@@ -39,18 +37,17 @@
       <%= pd.fields_for :work_details do |wd| %>
         <%= render 'work_detail_fields', f: wd %>
       <div class='links'>
-        <%= link_to_add_association pd, :work_details, class: 'btn btn-sm btn-primary mb-3' do%>
-        Add
-        <%end%>
+        <%= link_to_add_association 'Add Work', pd, :work_details, class: 'btn btn-sm btn-primary mb-3'%>
       </div>
       <% end %>
     </div>
 
-    <div id='work_details'>
+    <%# Study Detail Fields %>
+    <div id='study_details'>
       <%= pd.fields_for :study_details do |sd| %>
         <%= render 'study_detail_fields', f: sd %>
       <div class='links'>
-        <%= link_to_add_association 'Add Work', pd, :study_details, class: 'btn btn-sm btn-primary mb-3'%>
+        <%= link_to_add_association 'Add Study', pd, :study_details, class: 'btn btn-sm btn-primary mb-3'%>
       </div>
       <% end %>
     </div>
