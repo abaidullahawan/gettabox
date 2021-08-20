@@ -9,9 +9,9 @@ class User < ApplicationRecord
          :recoverable, :rememberable, :validatable
 
   enum role: {
-    staff: 0,
+    super_admin: 0,
     admin: 1,
-    super_admin: 2
+    staff: 2
   }, _prefix: true
 
 
