@@ -15,7 +15,7 @@ require("@rails/activestorage").start()
 // require("jquery")
 // require("popper.js").default
 // require("bootstrap")
-// require("feather-icons")
+require("feather-icons")
 // require("packs/viewer.min")
 // require("apexcharts")
 // require("packs/apex-charts/month-sales-statistics")
