@@ -6,17 +6,16 @@
     "@rails/actioncable": "^6.0.0",
     "@rails/activestorage": "^6.0.0",
     "@rails/ujs": "^6.0.0",
-    "@rails/webpacker": "^4.2.0",
-    "apexcharts": "^3.10.1",
+    "@rails/webpacker": "^5.4.2",
     "bootstrap": "^4.4.1",
     "feather-icons": "^4.24.1",
     "jquery": "^3.4.1",
     "popper.js": "^1.16.0",
     "turbolinks": "^5.2.0",
-    "webpack": "^4.0.0"
+    "webpack": "^5.51.1"
   },
   "version": "0.1.0",
   "devDependencies": {
-    "webpack-dev-server": "^3.9.0"
+    "webpack-dev-server": "^4.0.0"
   }
 }

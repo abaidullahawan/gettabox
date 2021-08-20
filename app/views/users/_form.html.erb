@@ -23,13 +23,17 @@
     <%= render 'personal_detail_fields', pd: pd %>
 
     <%# Contact Detail Fields %>
+    <% counter = 0%>
     <div id='conatct_details'>
       <%= pd.fields_for :contact_details do |cd| %>
-        <%= render 'contact_detail_fields', f: cd %>
+        <% if counter < 1 %>
+          <%= render 'contact_detail_fields', f: cd %>
+        <% end %>
+        <% counter += 1%>
+      <% end %>
       <div class='links'>
         <%= link_to_add_association  'Add Contact', pd, :contact_details, class: 'btn btn-sm btn-primary mb-3'%>
       </div>
-      <% end %>
     </div>
 
     <%# Work Detail Fields %>
