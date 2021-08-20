@@ -3,10 +3,10 @@
 // a relevant structure within app/javascript and only use these pack files to reference
 // that code so it'll be compiled.
 
-// import '../src/style.scss';
-// import '../src/css/icofont.min.css';
-// import '../src/css/LineIcons.css';
-// import '../src/css/viewer.min.css';
+import '../src/style.scss';
+import '../src/css/icofont.min.css';
+import '../src/css/LineIcons.css';
+import '../src/css/viewer.min.css';
 
 require("@rails/ujs").start()
 require("turbolinks").start()
@@ -17,7 +17,7 @@ require("popper.js").default
 require("bootstrap")
 require("feather-icons")
 require("packs/viewer.min")
-// require("@nathanvda/cocoon")
+require("@nathanvda/cocoon")
 
 
 // Uncomment to copy all static images under ../images to the output folder and reference
