@@ -36,6 +36,8 @@ gem "cocoon"
 gem 'image_processing'
 # gem "aws-sdk-s3", require: false
 gem "mini_magick"
+# gem for super admin
+gem "administrate"
 
 #
 gem 'capistrano', '~> 3.11'

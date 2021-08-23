@@ -18,6 +18,7 @@ require("bootstrap")
 require("feather-icons")
 require("packs/viewer.min")
 require("@nathanvda/cocoon")
+require("packs/custom")
 
 
 // Uncomment to copy all static images under ../images to the output folder and reference
