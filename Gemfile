@@ -31,6 +31,8 @@ gem "font-awesome-rails"
 
 # Use for nested forms
 gem "cocoon"
+gem 'ransack'
+
 
 # Use for amazon s3 bucket
 gem 'image_processing'

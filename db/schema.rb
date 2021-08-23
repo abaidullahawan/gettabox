@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_08_17_091205) do
+ActiveRecord::Schema.define(version: 2021_08_23_120215) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -43,6 +43,32 @@ ActiveRecord::Schema.define(version: 2021_08_17_091205) do
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
+  create_table "attribute_settings", force: :cascade do |t|
+    t.string "model"
+    t.bigint "user_id", null: false
+    t.integer "type"
+    t.json "table_attributes"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["user_id"], name: "index_attribute_settings_on_user_id"
+  end
+
+  create_table "barcodes", force: :cascade do |t|
+    t.string "title"
+    t.bigint "product_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["product_id"], name: "index_barcodes_on_product_id"
+  end
+
+  create_table "categories", force: :cascade do |t|
+    t.string "title"
+    t.bigint "product_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["product_id"], name: "index_categories_on_product_id"
+  end
+
   create_table "contact_details", force: :cascade do |t|
     t.string "phone_number"
     t.string "email"
@@ -70,6 +96,25 @@ ActiveRecord::Schema.define(version: 2021_08_17_091205) do
     t.index ["bio_type", "bio_id"], name: "index_personal_details_on_bio"
   end
 
+  create_table "products", force: :cascade do |t|
+    t.string "title"
+    t.string "sku"
+    t.integer "location"
+    t.string "dimensions"
+    t.string "weight"
+    t.integer "pack_quantity"
+    t.string "cost"
+    t.integer "stock_alert"
+    t.string "sold"
+    t.integer "total"
+    t.integer "fake_stock"
+    t.integer "pending_orders"
+    t.integer "allocated"
+    t.integer "available"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
   create_table "study_details", force: :cascade do |t|
     t.string "school"
     t.string "degree"
@@ -81,6 +126,15 @@ ActiveRecord::Schema.define(version: 2021_08_17_091205) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["personal_detail_id"], name: "index_study_details_on_personal_detail_id"
+  end
+
+  create_table "system_users", force: :cascade do |t|
+    t.string "sku"
+    t.integer "user_type"
+    t.bigint "product_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["product_id"], name: "index_system_users_on_product_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -113,5 +167,9 @@ ActiveRecord::Schema.define(version: 2021_08_17_091205) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "attribute_settings", "users"
+  add_foreign_key "barcodes", "products"
+  add_foreign_key "categories", "products"
+  add_foreign_key "system_users", "products"
   add_foreign_key "users", "users", column: "created_by"
 end

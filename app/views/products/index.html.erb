@@ -1,0 +1,81 @@
+<!-- Main Content Header -->
+<div class="main-content-header">
+    <h1>Products</h1>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a href="<%= dashboard_sales_path %>">Dashboard</a>
+        </li>
+        <li class="breadcrumb-item active">
+            <span class="active">Products</span>
+        </li>
+    </ol>
+</div>
+<!-- End Main Content Header -->
+
+<div class="row">
+    <div class="col-xl-12">
+        <div class="card mb-30">
+            <div class="card-body">
+                <div class="card-header">
+                    <a href="/products/new" class="btn btn-primary float-right">Create</a>
+                    <h5 class="card-title"> Data</h5>
+                </div>
+
+                <%= search_form_for @q, url: products_path, method: :get do |f| %>
+                  <div class="row">
+                    <div class="col-md-4">
+                      <%= f.search_field :title_cont, class:"form-control", placeholder:"Search in title" %>
+                    </div>
+                    <div class="col-md-4">
+                      <%= f.search_field :sku_cont, class:"form-control", placeholder:"Search in SKU" %>
+                    </div>
+                  </div>
+                <% end %>
+
+                <div class="table-responsive">
+                    <table class="table m-0 table-hover">
+                        <thead>
+                            <tr>
+                              <th>#</th>
+                              <th>Title</th>
+                              <th class="text-center">SKU</th>
+                              <th class="text-center">Location</th>
+                              <th class="text-center">Dimensions</th>
+                              <th class="text-center">Weight</th>
+                              <th class="text-center">Pack Quantity</th>
+                              <th class="text-center">Cost</th>
+                              <th class="text-center">Stock Alert</th>
+                              <th class="text-center">Sold</th>
+                              <th>
+                                <%#= select_tag "users[]", options_for_select(@users.collect{|x| [x.name,x.id]}), {:multiple => :multiple, :size => 10} %>
+                              </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                          <% @products&.each&.with_index(1) do |product, index| %>
+                            <tr>
+                              <td><%= index %></td>
+                              <td><%= product.title %></td>
+                              <td class="text-center"><span class="badge badge-info"><%= product.sku %></span></td>
+                              <td><%= product.location %></td>
+                              <td><%= product.dimensions %></td>
+                              <td><%= product.weight %></td>
+                              <td><%= product.pack_quantity %></td>
+                              <td><%= product.cost %></td>
+                              <td><%= product.stock_alert %></td>
+                              <td><%= product.sold %></td>
+                              <td class="text-center">
+                                  <a type="button" class="btn btn-link text-success p-0 mr-2" href="<%= edit_product_path(product)%>">
+                                      <i data-feather="edit-2" class="icon wh-15"></i>
+                                  </a>
+                                  <%= link_to '<i data-feather="x" class="icon wh-15"></i>'.html_safe, product_path(product), method: 'delete', data: {confirm: "Are you sure you want to delete"}, class: "btn btn-link text-danger p-0"%>
+                              </td>
+                            </tr>
+                          <% end %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -5,6 +5,8 @@ Rails.application.routes.draw do
       post 'user_create', to: 'users#create'
     end
   end
+
+  resources :products
     # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
 
     root 'dashboards#sales'

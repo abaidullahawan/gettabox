@@ -1,0 +1,57 @@
+<div class="form-group">
+  <%= f.label :title %>
+  <%= f.text_field :title, autofocus: true, class: 'form-control', placeholder: 'Enter Title' %>
+</div>
+
+<div class="form-group">
+  <%= f.label :sku %>
+  <%= f.text_field :sku, class: 'form-control', placeholder: 'Enter SKU' %>
+</div>
+
+<div class="form-group">
+  <%= f.label :location %>
+  <%= f.number_field :location, class: 'form-control', placeholder: 'Select Location' %>
+</div>
+
+<div class="form-row">
+  <div class="form-group col-md-6">
+    <%= f.label :dimensions %>
+    <%= f.text_field :dimensions, class: 'form-control', placeholder: 'Enter Dimensions' %>
+  </div>
+
+  <div class="form-group col-md-6">
+    <%= f.label :weight %>
+    <%= f.text_field :weight, class: 'form-control', placeholder: 'Enter Weight' %>
+  </div>
+</div>
+
+<div class="form-group">
+  <%= f.label :pack_quantity %>
+  <%= f.number_field :pack_quantity, class: 'form-control', placeholder: 'Select Pack Quantity' %>
+</div>
+
+<div class="form-group">
+  <%= f.label :stock_alert %>
+  <%= f.number_field :stock_alert, class: 'form-control', placeholder: 'Select Stock Alert' %>
+</div>
+
+<div class="form-row">
+  <div class="form-group col-md-6">
+    <%= f.label :cost %>
+    <%= f.text_field :cost, class: 'form-control', placeholder: 'Enter Cost' %>
+  </div>
+
+  <div class="form-group col-md-6">
+    <%= f.label :sold %>
+    <%= f.text_field :sold, class: 'form-control', placeholder: 'Enter Sold' %>
+  </div>
+</div>
+
+<%= render 'quantities_form', f: f %>
+
+<%= f.fields_for :barcodes do |barcode|%>
+  <%= render 'barcode_fields', f: barcode %>
+<% end %>
+<div class='links'>
+  <%= link_to_add_association 'Add barcode', f, :barcodes, class: 'btn btn-sm btn-primary mb-3'%>
+</div>

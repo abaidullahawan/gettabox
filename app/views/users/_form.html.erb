@@ -23,13 +23,9 @@
     <%= render 'personal_detail_fields', pd: pd %>
 
     <%# Contact Detail Fields %>
-    <% counter = 0%>
     <div id='conatct_details'>
       <%= pd.fields_for :contact_details do |cd| %>
-        <% if counter < 1 %>
           <%= render 'contact_detail_fields', f: cd %>
-        <% end %>
-        <% counter += 1%>
       <% end %>
       <div class='links'>
         <%= link_to_add_association  'Add Contact', pd, :contact_details, class: 'btn btn-sm btn-primary mb-3'%>
@@ -40,20 +36,20 @@
     <div id='work_details'>
       <%= pd.fields_for :work_details do |wd| %>
         <%= render 'work_detail_fields', f: wd %>
+      <% end %>
       <div class='links'>
         <%= link_to_add_association 'Add Work', pd, :work_details, class: 'btn btn-sm btn-primary mb-3'%>
       </div>
-      <% end %>
     </div>
 
     <%# Study Detail Fields %>
     <div id='study_details'>
       <%= pd.fields_for :study_details do |sd| %>
         <%= render 'study_detail_fields', f: sd %>
+      <% end %>
       <div class='links'>
         <%= link_to_add_association 'Add Study', pd, :study_details, class: 'btn btn-sm btn-primary mb-3'%>
       </div>
-      <% end %>
     </div>
 
   <% end %>
