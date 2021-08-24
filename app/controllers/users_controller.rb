@@ -5,7 +5,8 @@ class UsersController < ApplicationController
   # before_filter :default_created_by, only: :create
 
   def index
-    @users = User.where(role: @user_sub_role)
+    @q = User.where(role: @user_sub_role).ransack(params[:q])
+    @users = @q.result(distinct: true)
   end
 
   def new
