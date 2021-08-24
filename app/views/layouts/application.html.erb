@@ -30,6 +30,15 @@
             <%= render partial: "layouts/sidebar" %>
             <!-- Main Content Wrapper -->
             <div class="main-content d-flex flex-column hide-sidemenu">
+                <% if alert || notice %>
+                    <div class="alert alert-info alert-dismissible">
+                        <button type="button" class="close">
+                            <span aria-hidden="true">×</span>
+                            <span class="sr-only">Close alert</span>
+                        </button>
+                        <%= alert || notice %>
+                    </div>
+                <% end %>
                 <%= yield %>
                 <%= render partial: "layouts/footer" %>
             </div>
