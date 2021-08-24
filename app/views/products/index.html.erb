@@ -29,6 +29,9 @@
                     <div class="col-md-4">
                       <%= f.search_field :sku_cont, class:"form-control", placeholder:"Search in SKU" %>
                     </div>
+                    <div class="col-md-4">
+                      <%= f.search_field :cost_eq, class:"form-control", placeholder:"Match Cost" %>
+                    </div>
                   </div>
                 <% end %>
 
@@ -48,13 +51,14 @@
                               <th class="text-center">Sold</th>
                               <th>
                                 <%#= select_tag "users[]", options_for_select(@users.collect{|x| [x.name,x.id]}), {:multiple => :multiple, :size => 10} %>
+
                               </th>
                             </tr>
                         </thead>
                         <tbody>
                           <% @products&.each&.with_index(1) do |product, index| %>
                             <tr>
-                              <td><%= index %></td>
+                              <td><%= image_tag(product&.photo&.variant(resize_to_limit: ['70x70', nil]), class: '', alt: 'Product Image') if product.photo.attached? %></td>
                               <td><%= product.title %></td>
                               <td class="text-center"><span class="badge badge-info"><%= product.sku %></span></td>
                               <td><%= product.location %></td>
@@ -65,6 +69,9 @@
                               <td><%= product.stock_alert %></td>
                               <td><%= product.sold %></td>
                               <td class="text-center">
+                                  <a type="button" class="btn btn-link text-info p-0 mr-2" href="<%= product_path(product)%>">
+                                      <i data-feather="eye" class="icon wh-15"></i>
+                                  </a>
                                   <a type="button" class="btn btn-link text-success p-0 mr-2" href="<%= edit_product_path(product)%>">
                                       <i data-feather="edit-2" class="icon wh-15"></i>
                                   </a>

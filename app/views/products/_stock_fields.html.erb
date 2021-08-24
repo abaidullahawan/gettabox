@@ -1,0 +1,14 @@
+<div class="form-row">
+  <div class="form-group col-md-6">
+      <%= f.label :minimum %>
+      <%= f.number_field :minimum, step: :any, class: 'form-control', placeholder: 'Enter Minimum Stock Alert' %>
+  </div>
+  <div class="form-group col-md-6">
+      <%= f.label :maximum %>
+      <%= f.number_field :maximum, step: :any, class: 'form-control', placeholder: 'Enter Maximum Stock Alert' %>
+  </div>
+  <div class="form-group col-md-6">
+      <%= f.label :optimal %>
+      <%= f.number_field :optimal, step: :any, class: 'form-control', placeholder: 'Enter Optimal Stock Alert' %>
+  </div>
+</div>
