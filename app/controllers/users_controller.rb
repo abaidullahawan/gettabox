@@ -85,7 +85,7 @@ class UsersController < ApplicationController
             :password_confirmation,
             :role,
             :created_by,
-            :avatar,
+            :profile_image,
             personal_detail_attributes:
             [ :id,
               :first_name,

@@ -26,6 +26,7 @@
                         <thead>
                             <tr>
                                 <th>#</th>
+                                <th>Profile</th>
                                 <th>Email</th>
                                 <th class="text-center">Role</th>
                                 <th class="text-center">Action</th>
@@ -35,6 +36,11 @@
                           <% @users.each.with_index(1) do |user, index| %>
                             <tr>
                                 <td><%= index %></td>
+                                <td>
+                                    <% if  user.profile_image.attached? %>
+                                        <%= image_tag user.profile_image.service_url, style:'width:30px; height:30px; border-radius:50%;' %>
+                                    <% end %>
+                                </td>
                                 <td><%= user.email %></td>
                                 <td class="text-center"><span class="badge badge-info"><%= user.role %></span></td>
                                 <td class="text-center">
