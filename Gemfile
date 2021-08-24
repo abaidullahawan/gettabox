@@ -36,7 +36,7 @@ gem 'ransack'
 
 # Use for amazon s3 bucket
 gem 'image_processing'
-# gem "aws-sdk-s3", require: false
+gem "aws-sdk-s3", require: false
 gem "mini_magick"
 # gem for super admin
 gem "administrate"

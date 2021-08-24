@@ -46,6 +46,17 @@
               </div>
             </div>
           </div>
+          <div class='row'>
+            <div class='col-lg-6 col-sm-12'>
+              <div class="form-group">
+                <% if  @user.profile_image.attached? %>
+                  <%= image_tag @user.profile_image.service_url, width: 300 %>
+                <% else %>
+                  <%= f.file_field :profile_image, class: 'form-control' %>
+                <% end %>
+              </div>
+            </div>
+          </div>
         </div>
         <!-- Personal -->
         <%= f.fields_for :personal_detail do |pd|%>

@@ -1,6 +1,7 @@
 class User < ApplicationRecord
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
+  has_one_attached :profile_image
   has_one :personal_detail, as: :bio
   has_one_attached :avatar
   accepts_nested_attributes_for :personal_detail
