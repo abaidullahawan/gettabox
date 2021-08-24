@@ -20,23 +20,31 @@ class UsersController < ApplicationController
     @user = User.new(user_params)
     @user.update(created_by: current_user.id)
     if @user.save
+      flash[:notice] = "User cerated successfully."
       redirect_to users_path
     else
+      flash.now[:alert] = "User cannot be create."
       render 'new'
     end
   end
 
   def edit
-    @personal_detail = @user. personal_detail
+    @personal_detail = @user.personal_detail
+    @personal_detail = @user.build_personal_detail if @personal_detail.blank?
     @contact_details = @personal_detail.contact_details
+    @personal_detail.contact_details.build if @contact_details.blank?
     @work_details = @personal_detail.work_details
+    @personal_detail.work_details.build if @work_details.blank?
     @study_details = @personal_detail.study_details
+    @personal_detail.study_details.build if @study_details.blank?
   end
 
   def update
     if @user.update(user_params)
+      flash[:notice] = "User updated successfully."
       redirect_to users_path
     else
+      flash.now[:alert] = "User cannot be update."
       render 'edit'
     end
   end
