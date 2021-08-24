@@ -1,4 +1,6 @@
 class Product < ApplicationRecord
+
+  validates :sku, uniqueness: { case_sensitive: false }
   has_many :barcodes
   has_many :system_users
 

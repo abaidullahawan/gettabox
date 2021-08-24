@@ -1,65 +1,59 @@
-<div class="form-group">
-  <%= f.label :photo %>
-  <%= f.file_field :photo, autofocus: true, class: 'form-control' %>
-</div>
 
-<div class="form-group">
-  <%= f.label :title %>
-  <%= f.text_field :title, autofocus: true, class: 'form-control', placeholder: 'Enter Title' %>
-</div>
+<div class="row vertical-pills-tab">
+  <div class="col-sm-3">
+    <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+      <a class="nav-link active" data-toggle="pill" href="#v-pills-basic">Basicprofile</a>
+      <a class="nav-link" data-toggle="pill" href="#v-pills-quantity">Quantity</a>
+      <a class="nav-link" data-toggle="pill" href="#v-pills-dimensions">Dimensions/Weight</a>
+      <a class="nav-link" data-toggle="pill" href="#v-pills-taxes">Taxes</a>
+      <a class="nav-link" data-toggle="pill" href="#v-pills-stock">Stock Alert</a>
+      <a class="nav-link" data-toggle="pill" href="#v-pills-barcode">Barcodes</a>
 
-<div class="form-group">
-  <%= f.label :sku %>
-  <%= f.text_field :sku, class: 'form-control', placeholder: 'Enter SKU' %>
-</div>
-
-<!--div class="form-group">
-  <%= f.label :location %>
-  <%= f.number_field :location, class: 'form-control', placeholder: 'Select Location' %>
-</div>
-
-<div class="form-row">
-  <div class="form-group col-md-6">
-    <%= f.label :dimensions %>
-    <%= f.text_field :dimensions, class: 'form-control', placeholder: 'Enter Dimensions' %>
+    </div>
   </div>
 
-  <div class="form-group col-md-6">
-    <%= f.label :weight %>
-    <%= f.text_field :weight, class: 'form-control', placeholder: 'Enter Weight' %>
+  <div class="col-sm-9">
+      <div class="tab-content" id="v-pills-tabContent">
+          <div class="tab-pane fade show active" id="v-pills-basic" role="tabpanel">
+            <div class="form-group">
+              <%= f.label :photo %>
+              <%= f.file_field :photo, autofocus: true, class: 'form-control' %>
+            </div>
+
+            <div class="form-group">
+              <%= f.label :title %>
+              <%= f.text_field :title, autofocus: true, class: 'form-control', placeholder: 'Enter Title' %>
+            </div>
+
+            <div class="form-group">
+              <%= f.label :sku %>
+              <%= f.text_field :sku, class: 'form-control', placeholder: 'Enter SKU' %>
+            </div>
+
+          </div>
+          <div class="tab-pane fade" id="v-pills-quantity" role="tabpanel">
+            <%= render 'quantities_fields', f: f %>
+          </div>
+          <div class="tab-pane fade" id="v-pills-dimensions" role="tabpanel">
+            <%= render 'dimensions_fields', f: f %>
+          </div>
+          <div class="tab-pane fade" id="v-pills-taxes" role="tabpanel">
+            <%= render 'taxes_fields', f: f %>
+          </div>
+          <div class="tab-pane fade" id="v-pills-stock" role="tabpanel">
+            <%= render 'stock_fields', f: f %>
+          </div>
+          <div class="tab-pane fade" id="v-pills-barcode" role="tabpanel">
+            <div class='links'>
+              <%= link_to_add_association 'Add barcode', f, :barcodes, class: 'btn btn-outline-primary rounded float-right'%>
+            </div>
+            <%= f.fields_for :barcodes do |barcode|%>
+              <%= render 'barcode_fields', f: barcode %>
+            <% end %>
+          </div>
+      </div>
   </div>
 </div>
-
-<div class="form-group">
-  <%= f.label :pack_quantity %>
-  <%= f.number_field :pack_quantity, class: 'form-control', placeholder: 'Select Pack Quantity' %>
-</div>
-
-<div class="form-group">
-  <%= f.label :stock_alert %>
-  <%= f.number_field :stock_alert, class: 'form-control', placeholder: 'Select Stock Alert' %>
-</div>
-
-<div class="form-row">
-  <div class="form-group col-md-6">
-    <%= f.label :cost %>
-    <%= f.text_field :cost, class: 'form-control', placeholder: 'Enter Cost' %>
-  </div>
-
-  <div class="form-group col-md-6">
-    <%= f.label :sold %>
-    <%= f.text_field :sold, class: 'form-control', placeholder: 'Enter Sold' %>
-  </div>
-</div>
-
-<%= render 'quantities_form', f: f %>
-
-<%= f.fields_for :barcodes do |barcode|%>
-  <%= render 'barcode_fields', f: barcode %>
-<% end %>
-<div class='links'>
-  <%= link_to_add_association 'Add barcode', f, :barcodes, class: 'btn btn-sm btn-primary mb-3'%>
-</div-->
 
 <div class="form-group">
   <%= f.submit(@product.new_record? ? "Create" : "Update", class: 'btn btn-primary') %>
