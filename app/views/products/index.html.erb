@@ -51,7 +51,11 @@
                             </tr>
                           <% @products&.each&.with_index(1) do |product, index| %>
                             <tr>
-                              <td><%= image_tag(product&.photo&.variant(resize_to_limit: ['70x70', nil]), class: '', alt: 'Product Image') if product.photo.attached? %></td>
+                              <td>
+                                <% if  product.photo.attached? %>
+                                  <%= image_tag product.photo&.service_url, style:'width:50px; height:50px;' %>
+                                <% end %>
+                              </td>
                               <td><%= product.title %></td>
                               <td class="text-center"><span class="badge badge-info"><%= product.sku %></span></td>
                               <td><%= product.total_stock%></td>
