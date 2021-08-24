@@ -54,7 +54,7 @@ class ProductsController < ApplicationController
     require(:product).
     permit( :title,
             :sku,
-            :image,
+            :photo,
             :location,
             :dimensions,
             :weight,
