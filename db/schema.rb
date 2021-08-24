@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_08_23_120215) do
+ActiveRecord::Schema.define(version: 2021_08_24_104614) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -63,10 +63,8 @@ ActiveRecord::Schema.define(version: 2021_08_23_120215) do
 
   create_table "categories", force: :cascade do |t|
     t.string "title"
-    t.bigint "product_id", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["product_id"], name: "index_categories_on_product_id"
   end
 
   create_table "contact_details", force: :cascade do |t|
@@ -97,22 +95,31 @@ ActiveRecord::Schema.define(version: 2021_08_23_120215) do
   end
 
   create_table "products", force: :cascade do |t|
-    t.string "title"
     t.string "sku"
-    t.integer "location"
-    t.string "dimensions"
-    t.string "weight"
-    t.integer "pack_quantity"
-    t.string "cost"
-    t.integer "stock_alert"
-    t.string "sold"
-    t.integer "total"
-    t.integer "fake_stock"
-    t.integer "pending_orders"
-    t.integer "allocated"
-    t.integer "available"
+    t.string "title"
+    t.decimal "total_stock"
+    t.decimal "fake_stock"
+    t.decimal "pending_orders"
+    t.decimal "allocated_orders"
+    t.decimal "available_stock"
+    t.bigint "category_id"
+    t.decimal "length"
+    t.decimal "width"
+    t.decimal "height"
+    t.decimal "weight"
+    t.string "pack_quantity"
+    t.decimal "cost_price"
+    t.decimal "gst"
+    t.decimal "vat"
+    t.decimal "hst"
+    t.decimal "pst"
+    t.decimal "qst"
+    t.decimal "minimum"
+    t.decimal "maximum"
+    t.decimal "optimal"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["category_id"], name: "index_products_on_category_id"
   end
 
   create_table "study_details", force: :cascade do |t|
@@ -131,10 +138,8 @@ ActiveRecord::Schema.define(version: 2021_08_23_120215) do
   create_table "system_users", force: :cascade do |t|
     t.string "sku"
     t.integer "user_type"
-    t.bigint "product_id", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["product_id"], name: "index_system_users_on_product_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -168,8 +173,6 @@ ActiveRecord::Schema.define(version: 2021_08_23_120215) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "attribute_settings", "users"
-  add_foreign_key "barcodes", "products"
-  add_foreign_key "categories", "products"
-  add_foreign_key "system_users", "products"
+  add_foreign_key "products", "categories"
   add_foreign_key "users", "users", column: "created_by"
 end
