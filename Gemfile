@@ -31,11 +31,15 @@ gem "font-awesome-rails"
 
 # Use for nested forms
 gem "cocoon"
+gem 'ransack'
+
 
 # Use for amazon s3 bucket
 gem 'image_processing'
 gem "aws-sdk-s3", require: false
 gem "mini_magick"
+# gem for super admin
+gem "administrate"
 
 #
 gem 'capistrano', '~> 3.11'

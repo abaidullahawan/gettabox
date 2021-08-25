@@ -1,58 +1,105 @@
-  <div class="form-group">
-    <%= f.label :email %>
-    <%= f.email_field :email, autofocus: true, class: 'form-control', id: 'exampleInputEmail1', placeholder: 'Enter Email' %>
-    <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
-  </div>
-
-  <div class="form-group">
-    <%= f.label :password %>
-    <%= f.password_field :password, class: 'form-control', id: 'exampleInputPassword', placeholder: 'Password' %>
-  </div>
-
-  <div class="form-group">
-    <%= f.label :password_confirmation %>
-    <%= f.password_field :password_confirmation, class: 'form-control', id: 'exampleInputPassword1', placeholder: 'Confirm Password' %>
-  </div>
-
-  <div class="form-group">
-    <%= f.label :role %>
-    <%= f.select(:role, User.filter_role(current_user), {}, class: 'form-control', id: "exampleFormControlSelect1")%>
-  </div>
-
-  <%= f.fields_for :personal_detail do |pd|%>
-    <%= render 'personal_detail_fields', pd: pd %>
-
-    <%# Contact Detail Fields %>
-    <div id='conatct_details'>
-      <%= pd.fields_for :contact_details do |cd| %>
-        <%= render 'contact_detail_fields', f: cd %>
-      <div class='links'>
-        <%= link_to_add_association  'Add Contact', pd, :contact_details, class: 'btn btn-sm btn-primary mb-3'%>
+  <div class="row vertical-pills-tab">
+    <div class="col-sm-3">
+      <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+        <a class="nav-link active" data-toggle="pill" href="#v-pills-basic">Basic</a>
+        <a class="nav-link" data-toggle="pill" href="#v-pills-personal">Personal Details</a>
+        <a class="nav-link" data-toggle="pill" href="#v-pills-contact">Contact Detail</a>
+        <a class="nav-link" data-toggle="pill" href="#v-pills-work">Work Detail</a>
+        <a class="nav-link" data-toggle="pill" href="#v-pills-study">Study Detail</a>
       </div>
-      <% end %>
     </div>
-
-    <%# Work Detail Fields %>
-    <div id='work_details'>
-      <%= pd.fields_for :work_details do |wd| %>
-        <%= render 'work_detail_fields', f: wd %>
-      <div class='links'>
-        <%= link_to_add_association 'Add Work', pd, :work_details, class: 'btn btn-sm btn-primary mb-3'%>
+    <div class="col-sm-9">
+      <div class="tab-content" id="v-pills-tabContent">
+        <!-- Basic -->
+        <div class="tab-pane fade show active" id="v-pills-basic" role="tabpanel">
+          <div class='row'>
+            <div class='col-lg-6 col-sm-12'>
+              <div class="form-group">
+                <%= f.label :email %>
+                <%= f.email_field :email, autofocus: true, class: 'form-control', id: 'exampleInputEmail1', placeholder: 'Enter Email' %>
+                <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+              </div>
+            </div>
+            <div class='col-lg-6 col-sm-12'>
+              <div class="form-group">
+                <% if @user == current_user %>
+                  <%= f.label :role %>
+                  <%= f.text_field :role, class: 'form-control', readonly: true %>
+                <% else %>
+                  <%= f.label :role %>
+                  <%= f.select(:role, User.filter_role(current_user), {}, class: 'form-control', id: "exampleFormControlSelect1")%>
+                <% end %>
+              </div>
+            </div>
+          </div>
+          <div class='row'>
+            <div class='col-lg-6 col-sm-12'>
+              <div class="form-group">
+                <%= f.label :password %>
+                <%= f.password_field :password, class: 'form-control', id: 'exampleInputPassword', placeholder: 'Password' %>
+              </div>
+            </div>
+            <div class='col-lg-6 col-sm-12'>
+              <div class="form-group">
+                <%= f.label :password_confirmation %>
+                <%= f.password_field :password_confirmation, class: 'form-control', id: 'exampleInputPassword1', placeholder: 'Confirm Password' %>
+              </div>
+            </div>
+          </div>
+          <div class='row'>
+            <div class='col-lg-6 col-sm-12'>
+              <div class="form-group">
+                <% if  @user.profile_image.attached? %>
+                  <%= image_tag @user.profile_image.service_url, width: 300 %>
+                <% else %>
+                  <%= f.file_field :profile_image, class: 'form-control' %>
+                <% end %>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Personal -->
+        <%= f.fields_for :personal_detail do |pd|%>
+          <div class="tab-pane fade" id="v-pills-personal" role="tabpanel">
+            <%= render 'personal_detail_fields', pd: pd %>
+          </div>
+          <!-- Contact -->
+          <div class="tab-pane fade" id="v-pills-contact" role="tabpanel">
+            <%# Contact Detail Fields %>
+            <div id='conatct_details'>
+              <%= link_to_add_association  'Add Contact', pd, :contact_details, class: 'btn btn-outline-primary rounded float-right'%>
+              <br>
+              <%= pd.fields_for :contact_details do |cd| %>
+                <%= render 'contact_detail_fields', f: cd %>
+              <% end %>
+            </div>
+          </div>
+          <!-- Work -->
+          <div class="tab-pane fade" id="v-pills-work" role="tabpanel">
+            <%# Work Detail Fields %>
+            <div id='work_details'>
+              <%= link_to_add_association 'Add Work', pd, :work_details, class: 'btn btn-outline-primary rounded float-right'%>
+              <br>
+              <%= pd.fields_for :work_details do |wd| %>
+                <%= render 'work_detail_fields', f: wd %>
+              <% end %>
+            </div>
+          </div>
+          <!-- Study -->
+          <div class="tab-pane fade" id="v-pills-study" role="tabpanel">
+            <%# Study Detail Fields %>
+            <div id='study_details'>
+              <%= link_to_add_association 'Add Study', pd, :study_details, class: 'btn btn-outline-primary rounded float-right'%>
+              <br>
+              <%= pd.fields_for :study_details do |sd| %>
+                <%= render 'study_detail_fields', f: sd %>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
       </div>
-      <% end %>
     </div>
-
-    <%# Study Detail Fields %>
-    <div id='study_details'>
-      <%= pd.fields_for :study_details do |sd| %>
-        <%= render 'study_detail_fields', f: sd %>
-      <div class='links'>
-        <%= link_to_add_association 'Add Study', pd, :study_details, class: 'btn btn-sm btn-primary mb-3'%>
-      </div>
-      <% end %>
-    </div>
-
-  <% end %>
-  <div class="form-group">
-    <%= f.submit(@user.new_record? ? "Create" : "Update", class: 'btn btn-primary') %>
+  </div>
+  <div class="form-group col-12">
+    <%= f.submit(@user.new_record? ? "Create" : "Update", class: 'btn btn-outline-success rounded float-right mt-2') %>
   </div>

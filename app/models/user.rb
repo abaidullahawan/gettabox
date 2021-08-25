@@ -1,6 +1,7 @@
 class User < ApplicationRecord
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
+  has_one_attached :profile_image
   has_one :personal_detail, as: :bio
   has_one_attached :avatar
   accepts_nested_attributes_for :personal_detail
@@ -9,9 +10,9 @@ class User < ApplicationRecord
          :recoverable, :rememberable, :validatable
 
   enum role: {
-    staff: 0,
+    super_admin: 0,
     admin: 1,
-    super_admin: 2
+    staff: 2
   }, _prefix: true
 
 

@@ -6,13 +6,23 @@ local:
   service: Disk
   root: <%= Rails.root.join("storage") %>
 
-#Use rails credentials:edit to set the AWS secrets (as aws:access_key_id|secret_access_key)
 amazon:
   service: S3
-  access_key_id: AKIATAT5SRHUYPJSL265
-  secret_access_key: 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
+  access_key_id: "AKIATAT5SRHUSR6W2AIP"
+  secret_access_key: "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"
   region: us-west-1
-  bucket: channel-dispatch-development
+  bucket: channel-dispatch-dev
+  http_open_timeout: 300
+  http_read_timeout: 300
+  retry_limit: 10
+
+#Use rails credentials:edit to set the AWS secrets (as aws:access_key_id|secret_access_key)
+# amazon:
+#   service: S3
+#   access_key_id: AKIATAT5SRHUYPJSL265
+#   secret_access_key: yEuS2ng2NKfIFWP6Q8qmK4BCLVttUUE+yAw3aKDW
+#   region: us-west-1
+#   bucket: channel-dispatch-development
 
 # Remember not to checkin your GCS keyfile to a repository
 # google:

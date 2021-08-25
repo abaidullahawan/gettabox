@@ -1,0 +1,9 @@
+<div class="nested-fields">
+  <br/>
+  <div class="form-group">
+    <%= f.label :title %>
+    <%= f.text_field :title, autofocus: true, class: 'form-control', placeholder: 'Enter Title' %>
+  </div>
+
+  <%= link_to_remove_association "remove barcode", f, class: 'btn btn-outline-secondary rounded mb-3' %>
+</div>

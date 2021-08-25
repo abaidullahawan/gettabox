@@ -8,12 +8,11 @@
 
         <%= stylesheet_pack_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
 
-        <%= javascript_pack_tag 'application', 'data-turbolinks-track': 'reload' %>
     </head>
 
     <body>
         <!-- Preloader -->
-        <div class="preloader">
+        <div class="">
             <div class="d-table">
                 <div class="d-tablecell">
                     <span class="loader">
@@ -31,9 +30,19 @@
             <%= render partial: "layouts/sidebar" %>
             <!-- Main Content Wrapper -->
             <div class="main-content d-flex flex-column hide-sidemenu">
+                <% if alert || notice %>
+                    <div class="alert alert-info alert-dismissible">
+                        <button type="button" class="close">
+                            <span aria-hidden="true">×</span>
+                            <span class="sr-only">Close alert</span>
+                        </button>
+                        <%= alert || notice %>
+                    </div>
+                <% end %>
                 <%= yield %>
                 <%= render partial: "layouts/footer" %>
             </div>
         <% end %>
+      <%= javascript_pack_tag 'application', 'data-turbolinks-track': 'reload' %>
     </body>
 </html>

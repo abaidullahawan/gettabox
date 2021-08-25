@@ -1,0 +1,32 @@
+<!-- Main Content Header -->
+<div class="main-content-header">
+  <h1>Products</h1>
+  <ol class="breadcrumb">
+      <li class="breadcrumb-item">
+          <a href="<%= dashboard_sales_path %>">Dashboard</a>
+      </li>
+      <li class="breadcrumb-item">
+          <a href="<%= products_path %>">Products</a>
+      </li>
+      <li class="breadcrumb-item active">
+          <span class="active">Show</span>
+      </li>
+  </ol>
+</div>
+<!-- End Main Content Header -->
+<div class="row">
+  <div class="col-xl-12">
+      <div class="card mb-30">
+          <div class="card-body">
+              <div class="card-header">
+                  <h5 class="card-title">Edit</h5>
+              </div>
+              <fieldset disabled>
+              <%= form_for(@product, url: product_path) do |f| %>
+                  <%= render 'form', f: f %>
+              <% end %>
+              </fieldset>
+          </div>
+      </div>
+  </div>
+</div>
