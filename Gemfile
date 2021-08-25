@@ -41,6 +41,9 @@ gem "mini_magick"
 # gem for super admin
 gem "administrate"
 
+# Use for dropdown searching
+gem "select2-rails"
+
 #
 gem 'capistrano', '~> 3.11'
 gem 'capistrano-rails', '~> 1.4'

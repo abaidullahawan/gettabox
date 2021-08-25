@@ -26,8 +26,11 @@
                     <div class="col-md-4">
                       <%= f.search_field :title_cont, class:"form-control", placeholder:"Search in title" %>
                     </div>
-                    <div class="col-md-4">
-                      <%= f.search_field :sku_cont, class:"form-control", placeholder:"Search in SKU" %>
+                    <div class="col-md-2">
+                      <%= f.select :sku_cont, {}, {}, class: 'form-control js-data-example-ajax' %>
+                    </div>
+                    <div class="col-md-2">
+                      <%= f.submit 'Search', class: 'btn btn-sm btn-info d-inline '%>
                     </div>
                   </div>
                 <div class="table-responsive">
