@@ -9,6 +9,7 @@ Rails.application.routes.draw do
   resources :products do
     collection do
       get 'select2_search', to: 'products#select2_search'
+      get 'select2_system_users', to: 'products#select2_system_users'
     end
   end
 

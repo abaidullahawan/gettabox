@@ -131,48 +131,75 @@ $(document).on('turbolinks:load', function () {
     $('#change_per_page').on('change', function () {
         $('#per_page_submit').trigger('click')
     })
+
+    $('.js-data-example-ajax').select2({
+      ajax: {
+        url: 'products/select2_search',
+        dataType: 'json',
+        // Additional AJAX parameters go here; see the end of this chapter for the full code of this example
+        delay: 250,
+        data: function (params) {
+          return {
+            q: params.term, // search term
+            page: params.page
+          };
+        },
+        processResults: function (data, params) {
+          // parse the results into the format expected by Select2
+          // since we are using custom formatting functions we do not need to
+          // alter the remote JSON data, except to indicate that infinite
+          // scrolling can be used
+          params.page = params.page || 1;
+
+          return {
+            results: $.map(data, function(value, index){
+              return {id: value.sku, text: value.sku};
+            })
+          };
+        },
+        cache: true
+      },
+      allowClear: true,
+      placeholder: 'Search for a sku',
+      minimumInputLength: 1,
+      theme: 'classic'
+    });
+
+    $('.js-data-ajax-system-users').select2({
+      ajax: {
+        url: '/products/select2_system_users',
+        dataType: 'json',
+        data: function (params) {
+          return {
+            q: params.term, // search term
+            page: params.page
+          };
+        },
+        processResults: function (data, params) {
+          // parse the results into the format expected by Select2
+          // since we are using custom formatting functions we do not need to
+          // alter the remote JSON data, except to indicate that infinite
+          // scrolling can be used
+
+          return {
+            results: $.map(data, function(value, index){
+              return {id: value.id, text: value.sku};
+            })
+          };
+        },
+        cache: true
+      },
+      allowClear: true,
+      placeholder: 'Search for a sku',
+      minimumInputLength: 1,
+      theme: 'classic'
+    });
+    $('.dasic-validations').on('click', function () {
+      debugger;
+    })
 });
+
 // Preloader JS
 $(window).on('turbolinks:load', function () {
     $('.preloader').fadeOut();
-});
-
-window.addEventListener('DOMContentLoaded', () => {
-  $('.js-source-programs').select2({
-    allowClear: true,
-    placeholder: "Type SKU to match"
-  })
-})
-
-$('.js-data-example-ajax').select2({
-  ajax: {
-    url: 'products/select2_search',
-    dataType: 'json',
-    // Additional AJAX parameters go here; see the end of this chapter for the full code of this example
-    delay: 250,
-    data: function (params) {
-      return {
-        q: params.term, // search term
-        page: params.page
-      };
-    },
-    processResults: function (data, params) {
-      // parse the results into the format expected by Select2
-      // since we are using custom formatting functions we do not need to
-      // alter the remote JSON data, except to indicate that infinite
-      // scrolling can be used
-      params.page = params.page || 1;
-
-      return {
-        results: $.map(data, function(value, index){
-          return {id: value.sku, text: value.sku};
-        })
-      };
-    },
-    cache: true
-  },
-  allowClear: true,
-  placeholder: 'Search for a sku',
-  minimumInputLength: 1,
-  theme: 'classic'
 });

@@ -2,6 +2,7 @@ class ProductsController < ApplicationController
 
   before_action :authenticate_user!
   before_action :find_product, only: [:edit, :update, :show, :destroy]
+  before_action :load_resources, only: [:new, :edit]
   # before_action :attributes_for_filter, only: [:index]
 
   def index
@@ -52,10 +53,23 @@ class ProductsController < ApplicationController
     end
   end
 
+  def select2_system_users
+    system_users = SystemUser.where("sku like ?", "%#{params[:q]}%")
+
+    respond_to do |format|
+      format.json { render json: system_users.map{|v| v.serializable_hash(only: [:id, :sku]) } }
+    end
+  end
+
   private
 
   def find_product
     @product = Product.find(params[:id])
+  end
+
+  def load_resources
+    @system_users = SystemUser.all.map{|v| v.serializable_hash(only: [:id, :sku]) }
+    @categories = Category.all.map{|v| v.serializable_hash(only: [:id, :title]) }
   end
 
   def product_params
@@ -83,6 +97,7 @@ class ProductsController < ApplicationController
             :minimum,
             :maximum,
             :optimal,
+            :category_id,
             barcodes_attributes:
             [ :id,
               :title,
