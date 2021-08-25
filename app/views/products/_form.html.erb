@@ -8,6 +8,7 @@
       <a class="nav-link" data-toggle="pill" href="#v-pills-taxes">Taxes</a>
       <a class="nav-link" data-toggle="pill" href="#v-pills-stock">Stock Alert</a>
       <a class="nav-link" data-toggle="pill" href="#v-pills-barcode">Barcodes</a>
+      <a class="nav-link" data-toggle="pill" href="#v-pills-supplier">Suppliers</a>
       <a class="nav-link" data-toggle="pill" href="#v-pills-extra">Extra</a>
     </div>
   </div>
@@ -52,6 +53,14 @@
             </div>
             <%= f.fields_for :barcodes do |barcode|%>
               <%= render 'barcode_fields', f: barcode %>
+            <% end %>
+          </div>
+          <div class="tab-pane fade" id="v-pills-supplier" role="tabpanel">
+            <div class='links'>
+              <%= link_to_add_association 'Add Product Supplier', f, :system_users, class: 'btn btn-outline-primary rounded float-right'%>
+            </div>
+            <%= f.fields_for :system_users do |supplier|%>
+              <%= render 'system_user_fields', f: supplier %>
             <% end %>
           </div>
           <div class="tab-pane fade" id="v-pills-extra" role="tabpanel">

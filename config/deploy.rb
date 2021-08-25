@@ -9,7 +9,7 @@ set :repo_url, "git@github.com:abaidullahawan/gettabox.git"
 
 # Default deploy_to directory is /var/www/my_app_name
 set :deploy_to, "/home/deploy/#{fetch :application}"
-set :branch, 'dev'
+set :branch, 'main'
 # Default value for :format is :airbrussh.
 # set :format, :airbrussh
 

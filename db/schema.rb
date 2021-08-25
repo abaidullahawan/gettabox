@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_08_24_145603) do
+ActiveRecord::Schema.define(version: 2021_08_25_055434) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -94,6 +94,15 @@ ActiveRecord::Schema.define(version: 2021_08_24_145603) do
     t.index ["bio_type", "bio_id"], name: "index_personal_details_on_bio"
   end
 
+  create_table "product_suppliers", force: :cascade do |t|
+    t.bigint "product_id", null: false
+    t.bigint "system_user_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["product_id"], name: "index_product_suppliers_on_product_id"
+    t.index ["system_user_id"], name: "index_product_suppliers_on_system_user_id"
+  end
+
   create_table "products", force: :cascade do |t|
     t.string "sku"
     t.string "title"
@@ -173,6 +182,8 @@ ActiveRecord::Schema.define(version: 2021_08_24_145603) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "attribute_settings", "users"
+  add_foreign_key "product_suppliers", "products"
+  add_foreign_key "product_suppliers", "system_users"
   add_foreign_key "products", "categories"
   add_foreign_key "users", "users", column: "created_by"
 end
