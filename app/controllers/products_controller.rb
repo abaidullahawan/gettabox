@@ -12,6 +12,7 @@ class ProductsController < ApplicationController
   def new
     @product = Product.new
     @product.barcodes.build
+    @product.system_users.build
   end
 
   def create
@@ -77,6 +78,11 @@ class ProductsController < ApplicationController
             barcodes_attributes:
             [ :id,
               :title,
+              :_destroy
+            ],
+            system_users_attributes:
+            [ :id,
+              :sku,
               :_destroy
             ]
     )

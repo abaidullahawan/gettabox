@@ -1,0 +1,9 @@
+<div class="nested-fields">
+  <br/>
+  <div class="form-group">
+    <%= f.label :sku %>
+    <%= f.text_field :sku, autofocus: true, class: 'form-control', placeholder: 'Enter SKU' %>
+  </div>
+
+  <%= link_to_remove_association "remove product supplier", f, class: 'btn btn-outline-secondary rounded mb-3' %>
+</div>
