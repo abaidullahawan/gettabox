@@ -124,6 +124,10 @@ $(document).on('turbolinks:load', function () {
         // Removes Active Class From Other Titles
         $('.accordion-title').not($(this)).removeClass('active');
     });
+    // Page Per User
+    $('#change_per_page').on('change', function () {
+        $('#per_page_submit').trigger('click')
+    })
 });
 // Preloader JS
 $(window).on('turbolinks:load', function () {

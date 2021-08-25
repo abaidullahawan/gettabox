@@ -15,12 +15,22 @@ class User < ApplicationRecord
     staff: 2
   }, _prefix: true
 
-
+  attr_accessor :limit
   def self.filter_role(current_user)
     if current_user.role_super_admin?
       return ['admin', 'staff']
     else
       return ['staff']
+    end
+  end
+
+  def self.to_csv
+    attributes = all.column_names
+    CSV.generate(headers: true) do |csv|
+      csv << attributes
+      all.each do |user|
+        csv << attributes.map{ |attr| user.send(attr) }
+      end
     end
   end
 end

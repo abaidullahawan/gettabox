@@ -32,6 +32,7 @@ gem "font-awesome-rails"
 # Use for nested forms
 gem "cocoon"
 gem 'ransack'
+gem 'bootstrap4-kaminari-views'
 
 
 # Use for amazon s3 bucket
