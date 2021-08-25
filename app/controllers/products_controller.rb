@@ -44,6 +44,14 @@ class ProductsController < ApplicationController
     redirect_to products_path
   end
 
+  def select2_search
+    @products = Product.where("sku like ?", "%#{params[:q]}%")
+
+    respond_to do |format|
+      format.json { render json: @products.map{|v| v.serializable_hash(only: [:id, :sku]) } }
+    end
+  end
+
   private
 
   def find_product

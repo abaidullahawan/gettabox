@@ -1,3 +1,6 @@
+import $ from 'jquery'
+import 'select2'
+import 'select2/dist/css/select2.css'
 $(document).on('turbolinks:load', function () {
     // Side Menu Hide Show JS
     $(".burger-menu").on('click', function () {
@@ -132,4 +135,44 @@ $(document).on('turbolinks:load', function () {
 // Preloader JS
 $(window).on('turbolinks:load', function () {
     $('.preloader').fadeOut();
+});
+
+window.addEventListener('DOMContentLoaded', () => {
+  $('.js-source-programs').select2({
+    allowClear: true,
+    placeholder: "Type SKU to match"
+  })
+})
+
+$('.js-data-example-ajax').select2({
+  ajax: {
+    url: 'products/select2_search',
+    dataType: 'json',
+    // Additional AJAX parameters go here; see the end of this chapter for the full code of this example
+    delay: 250,
+    data: function (params) {
+      return {
+        q: params.term, // search term
+        page: params.page
+      };
+    },
+    processResults: function (data, params) {
+      // parse the results into the format expected by Select2
+      // since we are using custom formatting functions we do not need to
+      // alter the remote JSON data, except to indicate that infinite
+      // scrolling can be used
+      params.page = params.page || 1;
+
+      return {
+        results: $.map(data, function(value, index){
+          return {id: value.sku, text: value.sku};
+        })
+      };
+    },
+    cache: true
+  },
+  allowClear: true,
+  placeholder: 'Search for a sku',
+  minimumInputLength: 1,
+  theme: 'classic'
 });
