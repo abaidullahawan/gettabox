@@ -6,7 +6,8 @@ class UsersController < ApplicationController
 
   def index
     @q = User.where(role: @user_sub_role).ransack(params[:q])
-    @users = @q.result(distinct: true)
+    @users = @q.result(distinct: true).page(params[:page]).per(params[:limit])
+    export_csv(@users) if params[:export_csv].present?
   end
 
   def new
@@ -62,6 +63,14 @@ class UsersController < ApplicationController
   def profile
 
   end
+
+  def export_csv(users)
+    request.format = 'csv'
+    respond_to do |format|
+      format.csv { send_data users.to_csv, filename: "users-#{Date.today}.csv" }
+    end
+  end
+
   private
 
   def user_sub_role
