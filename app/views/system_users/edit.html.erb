@@ -1,0 +1,24 @@
+<!-- Main Content Header -->
+<div class="main-content-header">
+  <h1><%= link_to 'System Users', system_users_path, style:'color: #212529;' %></h1>
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item active">
+      <span class="active">/ Edit</span>
+    </li>
+  </ol>
+</div>
+<!-- End Main Content Header -->
+<div class="row">
+  <div class="col-xl-12">
+    <div class="card mb-30">
+      <div class="card-body">
+        <div class="card-header">
+          <h5 class="card-title">Edit</h5>
+        </div>
+        <%= form_for @system_user, url: system_users_path, method: :post do |f| %>
+          <%= render 'form', f: f %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
