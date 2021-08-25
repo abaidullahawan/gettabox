@@ -22,6 +22,14 @@
                 </div>
 
                 <%= search_form_for @q, url: products_path, method: :get do |f| %>
+                  <div class='row'>
+                    <div class='col-sm-1 offset-11'>
+                      <label for="inputState">Per Page</label>
+                      <%= select_tag :limit, options_for_select([5, 10, 15, 20], selected: params[:limit] || 10), id: 'change_per_page', class: 'form-control' %>
+                      <button type="submit" id="per_page_submit" hidden="hidden"></button>
+                    </div>
+                  </div>
+                  <br>
                   <div class="row">
                     <div class="col-md-4">
                       <%= f.search_field :title_cont, class:"form-control", placeholder:"Search in title" %>
@@ -82,7 +90,14 @@
                           <% end %>
                     </table>
                 </div>
-                <% end %>
+              <% end %>
+
+                <div class='float-right'>
+                  <%= page_entries_info @products %>
+                </div><br>
+                <div class="pagination justify-content-center mt-3">
+                  <%= paginate @products,theme: "twitter-bootstrap-4",pagination_class: "pagination-sm",nav_class: "d-inline-b" %>
+                </div>
             </div>
         </div>
     </div>

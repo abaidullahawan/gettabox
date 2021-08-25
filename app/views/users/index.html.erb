@@ -21,6 +21,23 @@
                     <h5 class="card-title"><%= @user_sub_role.capitalize %> Data</h5>
                 </div>
                 <%= search_form_for @q, url: users_path, method: :get do |f| %>
+                  <div class='row'>
+                    <div class='col-2'>
+
+                      <button type="submit" name="export_csv" value="ture" class='btn btn-outline-primary'><a href="<%= users_path %>"></a>Export</button>
+                    </div>
+                    <div class='col-1 offset-9'>
+                      <label for="inputState">Per Page</label>
+                      <%= select_tag :limit, options_for_select([5, 10, 15, 20], selected: params[:limit] || 10), id: 'change_per_page', class: 'form-control' %>
+                      <button type="submit" id="per_page_submit" hidden="hidden"></button>
+                    </div>
+                  </div>
+                  <br>
+                  <div class="row">
+                    <div class="col-md-4">
+                      <%= f.search_field :email_cont, class:"form-control", placeholder:"Search in email" %>
+                    </div>
+                  </div>
                   <div class="table-responsive">
                       <table class="table m-0 table-hover">
                           <thead>
@@ -55,6 +72,12 @@
                       </table>
                   </div>
                 <% end %>
+                <div class='float-right'>
+                  <%= page_entries_info @users %>
+                </div><br>
+                <div class="pagination justify-content-center mt-3">
+                  <%= paginate @users,theme: "twitter-bootstrap-4",pagination_class: "pagination-sm",nav_class: "d-inline-b" %>
+                </div>
             </div>
         </div>
     </div>
