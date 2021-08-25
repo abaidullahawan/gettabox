@@ -2,7 +2,8 @@
   <br/>
   <div class="form-group">
     <%= f.label :sku %>
-    <%= f.text_field :sku, autofocus: true, class: 'form-control', placeholder: 'Enter SKU' %>
+    <%= f.select :sku, @system_users&.map{|u| [u['sku'], u['id']]}, {include_blank: 'Enter Select System User'}, autofocus: true, class: 'form-control', placeholder: 'Enter SKU' %>
+    <%#= f.select :sku, {}, {}, class: 'form-control js-data-ajax-system-users'%>
   </div>
 
   <%= link_to_remove_association "remove product supplier", f, class: 'btn btn-outline-secondary rounded mb-3' %>

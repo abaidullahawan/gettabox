@@ -165,6 +165,35 @@ $(document).on('turbolinks:load', function () {
       theme: 'classic'
     });
 
+    $('.js-data-ajax-system-users').select2({
+      ajax: {
+        url: '/products/select2_system_users',
+        dataType: 'json',
+        data: function (params) {
+          return {
+            q: params.term, // search term
+            page: params.page
+          };
+        },
+        processResults: function (data, params) {
+          // parse the results into the format expected by Select2
+          // since we are using custom formatting functions we do not need to
+          // alter the remote JSON data, except to indicate that infinite
+          // scrolling can be used
+
+          return {
+            results: $.map(data, function(value, index){
+              return {id: value.id, text: value.sku};
+            })
+          };
+        },
+        cache: true
+      },
+      allowClear: true,
+      placeholder: 'Search for a sku',
+      minimumInputLength: 1,
+      theme: 'classic'
+    });
     $('.dasic-validations').on('click', function () {
       debugger;
     })
