@@ -15,13 +15,20 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :categories
+  resources :categories do
+    collection do
+      post 'import', to: 'categories#import'
+    end
+  end
 
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
-  resources :system_users
+  resources :system_users do
+    collection do
+      post 'import', to: 'categories#import'
+    end
+  end
 
-  resources :products
-    # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
+  # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
 
   root 'dashboards#sales'
 
