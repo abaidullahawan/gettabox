@@ -6,7 +6,7 @@ class Product < ApplicationRecord
   has_many :product_suppliers
   has_many :system_users, through: :product_suppliers
 
-  has_one :category
+  belongs_to :category
   has_one_attached :photo do |attachable|
     attachable.variant :thumb, resize: "100x100"
   end

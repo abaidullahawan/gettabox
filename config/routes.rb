@@ -3,6 +3,7 @@ Rails.application.routes.draw do
   resources :users , except: [:create] do
     collection do
       post 'user_create', to: 'users#create'
+      post 'import', to: 'users#import'
     end
   end
 
