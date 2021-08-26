@@ -6,6 +6,7 @@ class CategoriesController < ApplicationController
   def index
     @q = Category.ransack(params[:q])
     @categories = @q.result(distinct: true).page(params[:page]).per(params[:limit])
+    export_csv(@categories) if params[:export_csv].present?
   end
 
   def new
@@ -46,6 +47,13 @@ class CategoriesController < ApplicationController
     else
       flash.now[:notice] = "Category not destroyed."
       render categories_path
+    end
+  end
+
+  def export_csv(categories)
+    request.format = 'csv'
+    respond_to do |format|
+      format.csv { send_data categories.to_csv, filename: "categories-#{Date.today}.csv" }
     end
   end
 

@@ -6,12 +6,22 @@ class Product < ApplicationRecord
   has_many :product_suppliers
   has_many :system_users, through: :product_suppliers
 
-  has_one :category
+  belongs_to :category
   has_one_attached :photo do |attachable|
     attachable.variant :thumb, resize: "100x100"
   end
 
   accepts_nested_attributes_for :barcodes, allow_destroy: true
   accepts_nested_attributes_for :system_users, allow_destroy: true
+
+  def self.to_csv
+    attributes = all.column_names
+    CSV.generate(headers: true) do |csv|
+      csv << attributes
+      all.each do |product|
+        csv << attributes.map{ |attr| product.send(attr) }
+      end
+    end
+  end
 
 end

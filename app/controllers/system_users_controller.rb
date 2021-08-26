@@ -6,6 +6,7 @@ class SystemUsersController < ApplicationController
   def index
     @q = SystemUser.ransack(params[:q])
     @system_users = @q.result(distinct: true).page(params[:page]).per(params[:limit])
+    export_csv(@system_users) if params[:export_csv].present?
   end
 
   def new
@@ -46,6 +47,13 @@ class SystemUsersController < ApplicationController
     else
       flash.now[:notice] = "System User not destroyed."
       render system_users_path
+    end
+  end
+
+  def export_csv(system_users)
+    request.format = 'csv'
+    respond_to do |format|
+      format.csv { send_data system_users.to_csv, filename: "system_users-#{Date.today}.csv" }
     end
   end
 
