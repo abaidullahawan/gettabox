@@ -75,12 +75,10 @@ class ProductsController < ApplicationController
       csv = CSV.parse(csv_text, :headers => true)
       if csv.headers == Product.column_names
         csv.delete('id')
-        # csv.delete('encrypted_password')
         csv.each do |row|
           byebug
           product = Product.find_or_initialize_by(sku: row['sku'])
           product.update(row.to_hash)
-          # product.new_record? ? product.update!(password: 'Sample', password_confirmation:'Sample') : product.update(row.to_hash)
         end
         flash[:alert] = 'File Upload Successful!'
         redirect_to products_path

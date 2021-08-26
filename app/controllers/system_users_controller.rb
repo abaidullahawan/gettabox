@@ -57,6 +57,28 @@ class SystemUsersController < ApplicationController
     end
   end
 
+  def import
+    if params[:file].present? && params[:file].path.split(".").last.to_s.downcase == 'csv'
+      csv_text = File.read(params[:file])
+      csv = CSV.parse(csv_text, :headers => true)
+      if csv.headers == SystemUser.column_names
+        csv.delete('id')
+        csv.each do |row|
+          data = Product.find_or_initialize_by(sku: row['sku'])
+          data.update(row.to_hash)
+        end
+        flash[:alert] = 'File Upload Successful!'
+        redirect_to system_users_path
+      else
+        flash[:alert] = 'File not matched! Please change file'
+        redirect_to system_users_path
+      end
+    else
+      flash[:alert] = 'File format no matched! Please change file'
+      redirect_to system_users_path
+    end
+  end
+
   private
     def find_system_user
       @system_user = SystemUser.find(params[:id])
