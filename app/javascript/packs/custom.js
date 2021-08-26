@@ -132,6 +132,13 @@ $(document).on('turbolinks:load', function () {
         $('#per_page_submit').trigger('click')
     })
 
+    $('.import-users-btn').on('click', function () {
+      $('.import-users').trigger('click')
+      $('.import-users').on('change', function () {
+        $('.import-users-submit').trigger('click')
+      })
+    })
+
     $('.js-data-example-ajax').select2({
       ajax: {
         url: 'products/select2_search',
@@ -194,7 +201,7 @@ $(document).on('turbolinks:load', function () {
       minimumInputLength: 1,
       theme: 'classic'
     });
-    $('.dasic-validations').on('click', function () {
+    $('.basic-validations').on('click', function () {
       debugger;
     })
 });
