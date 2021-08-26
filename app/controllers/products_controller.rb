@@ -76,7 +76,6 @@ class ProductsController < ApplicationController
       if csv.headers == Product.column_names
         csv.delete('id')
         csv.each do |row|
-          byebug
           product = Product.find_or_initialize_by(sku: row['sku'])
           product.update(row.to_hash)
         end
