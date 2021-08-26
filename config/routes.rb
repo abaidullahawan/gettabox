@@ -11,6 +11,7 @@ Rails.application.routes.draw do
     collection do
       get 'select2_search', to: 'products#select2_search'
       get 'select2_system_users', to: 'products#select2_system_users'
+      post 'import', to: 'products#import'
     end
   end
 
