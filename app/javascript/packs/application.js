@@ -8,8 +8,8 @@ import '../src/css/icofont.min.css';
 import '../src/css/LineIcons.css';
 import '../src/css/viewer.min.css';
 
-require("@rails/ujs").start()
 require("turbolinks").start()
+require("@rails/ujs").start()
 require("@rails/activestorage").start()
 require("channels")
 require("jquery")

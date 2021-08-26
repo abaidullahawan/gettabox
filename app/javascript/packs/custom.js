@@ -132,6 +132,25 @@ $(document).on('turbolinks:load', function () {
         $('#per_page_submit').trigger('click')
     })
 
+    //Product Page Validations
+    $('.select_product_type').on('change', function () {
+        var product_type = this.value
+        if (this.value == "multiple")
+        {
+            debugger
+            $('.v-pills-quantity').remove()
+            $(".v-pills-dimensions").remove()
+            $(".v-pills-extra").remove()
+        }
+    })
+
+    // $('.next-tab-button').on('click', function () {
+    //     var i = 1;
+    //     var product_type = this.parentElement.parentElement.children[3].children[1].value
+        
+    //     debugger;
+    // })
+
     $('.js-data-example-ajax').select2({
       ajax: {
         url: 'products/select2_search',
@@ -194,9 +213,6 @@ $(document).on('turbolinks:load', function () {
       minimumInputLength: 1,
       theme: 'classic'
     });
-    $('.dasic-validations').on('click', function () {
-      debugger;
-    })
 });
 
 // Preloader JS

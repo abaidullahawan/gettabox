@@ -2,7 +2,7 @@ class ProductsController < ApplicationController
 
   before_action :authenticate_user!
   before_action :find_product, only: [:edit, :update, :show, :destroy]
-  before_action :load_resources, only: [:new, :edit]
+  before_action :load_resources, only: [:new, :edit, :show]
   # before_action :attributes_for_filter, only: [:index]
 
   def index
@@ -78,6 +78,7 @@ class ProductsController < ApplicationController
     permit( :sku,
             :title,
             :photo,
+            :product_type,
             :total_stock,
             :fake_stock,
             :pending_orders,

@@ -14,4 +14,9 @@ class Product < ApplicationRecord
   accepts_nested_attributes_for :barcodes, allow_destroy: true
   accepts_nested_attributes_for :system_users, allow_destroy: true
 
+  enum product_type: {
+    single: 0,
+    multiple: 1
+  }, _prefix: true
+
 end

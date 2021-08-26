@@ -2,14 +2,14 @@
 <div class="row vertical-pills-tab">
   <div class="col-sm-3">
     <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
-      <a class="nav-link active" data-toggle="pill" href="#v-pills-basic">Basicprofile</a>
-      <a class="nav-link" data-toggle="pill" href="#v-pills-quantity">Quantity</a>
-      <a class="nav-link" data-toggle="pill" href="#v-pills-dimensions">Dimensions/Weight</a>
-      <a class="nav-link" data-toggle="pill" href="#v-pills-taxes">Taxes</a>
-      <a class="nav-link" data-toggle="pill" href="#v-pills-stock">Stock Alert</a>
-      <a class="nav-link" data-toggle="pill" href="#v-pills-barcode">Barcodes</a>
-      <a class="nav-link" data-toggle="pill" href="#v-pills-supplier">Suppliers</a>
-      <a class="nav-link" data-toggle="pill" href="#v-pills-extra">Extra</a>
+      <a class="nav-link active v-pills-basic nav-tab-1-s nav-tab-1-m" data-toggle="pill" href="#v-pills-basic">Basicprofile</a>
+      <a class="nav-link v-pills-quantity nav-tab-2-s" data-toggle="pill" href="#v-pills-quantity">Quantity</a>
+      <a class="nav-link v-pills-dimensions nav-tab-3-s" data-toggle="pill" href="#v-pills-dimensions">Dimensions/Weight</a>
+      <a class="nav-link v-pills-taxes nav-tab-4-s nav-tab-2-m" data-toggle="pill" href="#v-pills-taxes">Taxes</a>
+      <a class="nav-link v-pills-stock nav-tab-5-s nav-tab-3-m" data-toggle="pill" href="#v-pills-stock">Stock Alert</a>
+      <a class="nav-link v-pills-barcode nav-tab-6-s nav-tab-4-m" data-toggle="pill" href="#v-pills-barcode">Barcodes</a>
+      <a class="nav-link v-pills-supplier nav-tab-7-s nav-tab-5-m" data-toggle="pill" href="#v-pills-supplier">Suppliers</a>
+      <a class="nav-link v-pills-extra nav-tab-8-s nav-tab-6-m" data-toggle="pill" href="#v-pills-extra">Extra</a>
     </div>
   </div>
 
@@ -34,8 +34,13 @@
               <%= f.text_field :sku, class: 'form-control', placeholder: 'Enter SKU' %>
             </div>
 
+            <div class="form-group">
+              <%= f.label :product_type %>
+              <%= f.select(:product_type, Product.product_types.map { |key, value| [key.humanize, key] }, {prompt: 'Please select user'}, class: 'form-control select_product_type', id: "exampleFormControlSelect1")%>
+            </div>
+
             <div class='text-right clearfix'>
-              <button class='btn btn-sm btn-info ml-auto dasic-validations'>Next</button>
+              <button type='button' class='btn btn-sm btn-info ml-auto next-tab-button'>Next</button>
             </div>
 
           </div>
