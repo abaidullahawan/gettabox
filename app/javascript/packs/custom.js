@@ -132,10 +132,10 @@ $(document).on('turbolinks:load', function () {
         $('#per_page_submit').trigger('click')
     })
 
-    $('.import-users-btn').on('click', function () {
-      $('.import-users').trigger('click')
-      $('.import-users').on('change', function () {
-        $('.import-users-submit').trigger('click')
+    $('.import-btn').on('click', function () {
+      $('.import-file').trigger('click')
+      $('.import-file').on('change', function () {
+        $('.import-submit').trigger('click')
       })
     })
 
