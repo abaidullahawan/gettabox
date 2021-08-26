@@ -14,4 +14,14 @@ class Product < ApplicationRecord
   accepts_nested_attributes_for :barcodes, allow_destroy: true
   accepts_nested_attributes_for :system_users, allow_destroy: true
 
+  def self.to_csv
+    attributes = all.column_names
+    CSV.generate(headers: true) do |csv|
+      csv << attributes
+      all.each do |product|
+        csv << attributes.map{ |attr| product.send(attr) }
+      end
+    end
+  end
+
 end

@@ -8,6 +8,7 @@ class ProductsController < ApplicationController
   def index
     @q = Product.ransack(params[:q])
     @products = @q.result(distinct: true).page(params[:page]).per(params[:limit])
+    export_csv(@products) if params[:export_csv].present?
   end
 
   def new
@@ -53,11 +54,18 @@ class ProductsController < ApplicationController
     end
   end
 
+<<<<<<< Updated upstream
   def select2_system_users
     system_users = SystemUser.where("sku like ?", "%#{params[:q]}%")
 
     respond_to do |format|
       format.json { render json: system_users.map{|v| v.serializable_hash(only: [:id, :sku]) } }
+=======
+  def export_csv(products)
+    request.format = 'csv'
+    respond_to do |format|
+      format.csv { send_data products.to_csv, filename: "products-#{Date.today}.csv" }
+>>>>>>> Stashed changes
     end
   end
 

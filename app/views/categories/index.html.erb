@@ -19,7 +19,10 @@
         </div>
         <%= search_form_for @q, url: categories_path, method: :get do |f| %>
           <div class='row'>
-            <div class='col-sm-1 offset-11'>
+            <div class='col-2'>
+              <button type="submit" name="export_csv" value="ture" class='btn btn-outline-primary'><a href="<%= categories_path %>"></a>Export</button>
+            </div>
+            <div class='col-1 offset-9'>
               <label for="inputState">Per Page</label>
               <%= select_tag :limit, options_for_select([5, 10, 15, 20], selected: params[:limit] || 10), id: 'change_per_page', class: 'form-control' %>
               <button type="submit" id="per_page_submit" hidden="hidden"></button>
