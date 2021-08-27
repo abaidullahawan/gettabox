@@ -1,9 +1,13 @@
 <div class="nested-fields">
-  <br/>
-  <div class="form-group">
-    <%= f.label :title %>
-    <%= f.text_field :title, autofocus: true, class: 'form-control', placeholder: 'Enter Title' %>
+  <br>
+  <div class="form-group row">
+    <div class="col-11">
+      <%= f.label :title %>
+      <%= f.text_field :title, autofocus: true, class: 'form-control', placeholder: 'Enter Title' %>
+    </div>
+    <div class='col-1 pt-3'>
+      <br>
+      <%= link_to_remove_association 'X', f, class: 'text-danger' %>
+    </div>
   </div>
-
-  <%= link_to_remove_association "remove barcode", f, class: 'btn btn-outline-secondary rounded mb-3' %>
 </div>
