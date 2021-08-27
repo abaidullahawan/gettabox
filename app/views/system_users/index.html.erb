@@ -25,7 +25,7 @@
             <% end %>
           </span>
             <div class='mr-1 float-right'>
-              <%= link_to 'Export', system_users_path(export_csv: true), class: 'btn btn-outline-primary' %>
+              <%= link_to 'Export', system_users_path(format: :csv, export_csv: true), class: 'btn btn-outline-primary' %>
             </div>
           <h5 class="card-title"> Data</h5>
         </div>
