@@ -2,7 +2,7 @@ class ProductsController < ApplicationController
 
   before_action :authenticate_user!
   before_action :find_product, only: [:edit, :update, :show, :destroy]
-  before_action :load_resources, only: [:new, :edit]
+  before_action :load_resources, only: [:new, :edit, :show, :create, :update]
   # before_action :attributes_for_filter, only: [:index]
 
   def index
@@ -20,7 +20,7 @@ class ProductsController < ApplicationController
   def create
     @product = Product.new(product_params)
     if @product.save
-      redirect_to products_path
+      redirect_to product_path(@product)
     else
       render 'new'
     end
@@ -31,7 +31,7 @@ class ProductsController < ApplicationController
 
   def update
     if @product.update(product_params)
-      redirect_to products_path
+      redirect_to product_path(@product)
     else
       render 'edit'
     end

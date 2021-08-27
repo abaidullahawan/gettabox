@@ -1,0 +1,49 @@
+<div class="notifications-card mb-30">
+  <h5 class="noti-card-title">
+    Quantity
+    <button type='button' data-toggle="modal" data-target='#quantity-modal' class='btn btn-outline-success btn-sm float-right' style='margin:-10px;'>Edit</button>
+  </h5>
+  <div class="list-group">
+    <div class="list-group-item">
+      <div class='row'>
+        <h5 class="fs-14 mb-1 col-4">Total Stock</h5>
+        <p class="m-0 col-8"><%= @product.total_stock %></p>
+      </div><br>
+      <div class='row'>
+        <h5 class="fs-14 mb-1 col-4">Fake Stock</h5>
+        <p class="m-0 col-8"><%= @product.fake_stock %></p>
+      </div><br>
+      <div class='row'>
+        <h5 class="fs-14 mb-1 col-4">Pending Orders</h5>
+        <p class="m-0 col-8"><%= @product.pending_orders %></p>
+      </div><br>
+      <div class='row'>
+        <h5 class="fs-14 mb-1 col-4">Allocated Orders</h5>
+        <p class="m-0 col-8"><%= @product.allocated_orders %></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%= form_for(@product, url: product_path) do |f| %>
+  <!-- Quantity Modal -->
+  <div class="modal fade" id="quantity-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Quantity</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+              <%= render 'quantities_fields', f: f %>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <%= f.submit(@product.new_record? ? "Create" : "Save changes", class: 'btn btn-outline-primary') %>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>

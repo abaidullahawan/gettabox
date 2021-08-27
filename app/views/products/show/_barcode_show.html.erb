@@ -1,0 +1,45 @@
+<% if @product.barcodes.present? %>
+  <div class="notifications-card mb-30">
+    <h5 class="noti-card-title">
+      Barcodes
+      <button type='button' data-toggle="modal" data-target='#barcode-modal' class='btn btn-outline-success btn-sm float-right' style='margin:-10px;'>Edit</button>
+    </h5>
+    <div class="list-group">
+      <div class="list-group-item">
+        <% @product.barcodes.each.with_index do |barcode, index| %>
+          <div class='row'>
+            <h5 class="fs-14 mb-1 col-4">Barcode <%= index %></h5>
+            <p class="m-0 col-8"><%= barcode.title %></p>
+          </div><br>
+        <% end %>
+      </div>
+    </div>
+  </div>
+<% end %>
+<%= form_for(@product, url: product_path) do |f| %>
+  <!-- Barcode Modal -->
+  <div class="modal fade" id="barcode-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Barcode</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class='links text-right'>
+            <%= link_to_add_association '<i data-feather="plus" class="icon wh-15"></i>'.html_safe , f, :barcodes %>
+          </div>
+          <%= f.fields_for :barcodes do |barcode|%>
+            <%= render 'barcode_fields', f: barcode %>
+          <% end %>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <%= f.submit(@product.new_record? ? "Create" : "Save changes", class: 'btn btn-outline-primary') %>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>
