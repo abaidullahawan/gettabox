@@ -4,9 +4,11 @@ class SystemUsersController < ApplicationController
   before_action :find_system_user, only: [:show, :edit, :update, :destroy]
 
   def index
-    @q = SystemUser.ransack(params[:q])
+    @q = SystemUser.where(user_type: 'supplier').ransack(params[:q])
     @system_users = @q.result(distinct: true).page(params[:page]).per(params[:limit])
     export_csv(@system_users) if params[:export_csv].present?
+
+    @system_user = SystemUser.new
   end
 
   def new
@@ -16,10 +18,11 @@ class SystemUsersController < ApplicationController
   def create
     @system_user = SystemUser.new(system_user_params)
     if @system_user.save
-      flash[:notice] = "System User created successfully."
+      @system_user.update(user_type: 'supplier')
+      flash[:notice] = "Supplier created successfully."
       redirect_to system_users_path
     else
-      flash.now[:notice] = "System User not created."
+      flash.now[:notice] = "Supplier not created."
       render 'new'
     end
   end
@@ -32,20 +35,21 @@ class SystemUsersController < ApplicationController
 
   def update
     if @system_user.update(system_user_params)
-      flash[:notice] = "System User updated successfully."
+      @system_user.update(user_type: 'supplier')
+      flash[:notice] = "Supplier updated successfully."
       redirect_to system_users_path
     else
-      flash.now[:notice] = "System User not updated."
+      flash.now[:notice] = "Supplier not updated."
       render 'edit'
     end
   end
 
   def destroy
     if @system_user.destroy
-      flash[:notice] = "System User destroyed successfully."
+      flash[:notice] = "Supplier destroyed successfully."
       redirect_to system_users_path
     else
-      flash.now[:notice] = "System User not destroyed."
+      flash.now[:notice] = "Supplier not destroyed."
       render system_users_path
     end
   end
@@ -53,7 +57,7 @@ class SystemUsersController < ApplicationController
   def export_csv(system_users)
     request.format = 'csv'
     respond_to do |format|
-      format.csv { send_data system_users.to_csv, filename: "system_users-#{Date.today}.csv" }
+      format.csv { send_data system_users.to_csv, filename: "suppliers-#{Date.today}.csv" }
     end
   end
 
@@ -61,11 +65,12 @@ class SystemUsersController < ApplicationController
     if params[:file].present? && params[:file].path.split(".").last.to_s.downcase == 'csv'
       csv_text = File.read(params[:file])
       csv = CSV.parse(csv_text, :headers => true)
-      if csv.headers == SystemUser.column_names
+      if csv.headers == SystemUser.column_names.excluding('id','user_type')
         csv.delete('id')
         csv.each do |row|
-          data = Product.find_or_initialize_by(sku: row['sku'])
+          data = SystemUser.find_or_initialize_by(sku: row['sku'])
           data.update(row.to_hash)
+          data.update(user_type: 'supplier')
         end
         flash[:alert] = 'File Upload Successful!'
         redirect_to system_users_path
@@ -85,7 +90,7 @@ class SystemUsersController < ApplicationController
     end
 
     def system_user_params
-      params.require(:system_user).permit(:sku, :user_type)
+      params.require(:system_user).permit(:sku, :user_type, :name, :payment_method, :days_for_payment, :days_for_order_to_completion, :days_for_completion_to_delivery, :currency_symbol, :exchange_rate)
     end
 
 end

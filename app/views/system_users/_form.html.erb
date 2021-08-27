@@ -1,25 +1,37 @@
-<div class="row vertical-pills-tab">
-  <div class="col-sm-3">
-    <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
-      <a class="nav-link active" data-toggle="pill" href="#v-pills-system-user">System Users</a>
-    </div>
-  </div>
-  <div class="col-sm-9">
-    <div class="tab-content" id="v-pills-tabContent">
-      <div class="tab-pane fade show active" id="v-pills-system-user" role="tabpanel">
-        <div class="form-group">
-          <%= f.label :sku %>
-          <%= f.text_field :sku, autofocus: true, class: 'form-control', placeholder: 'Enter SKU' %>
-        </div>
-        <div class="form-group">
-          <%= f.label :user_type %>
-          <%= f.select(:user_type, SystemUser.user_types.map { |key, value| [key.humanize, key] }, {}, class: 'form-control', id: "exampleFormControlSelect1")%>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
 
 <div class="form-group">
-  <%= f.submit(@system_user.new_record? ? "Create" : "Update", class: 'btn btn-primary mt-5') %>
+  <%= f.label :name %>
+  <%= f.text_field :name, autofocus: true, class: 'form-control', placeholder: 'Enter Name' %>
+</div>
+<div class="form-group">
+  <%= f.label :sku %>
+  <%= f.text_field :sku, class: 'form-control', placeholder: 'Enter SKU' %>
+</div>
+<div class="form-group">
+  <%= f.label :payment_method %>
+  <%= f.select(:payment_method, SystemUser.payment_methods.map { |key, value| [key.humanize, key] }, {include_blank: 'Please select a payment method'}, class: 'form-control')%>
+</div>
+<div class="form-group d-none payment_method_field">
+  <%= f.label :days_for_payment %>
+  <%= f.number_field :days_for_payment, class: 'form-control', placeholder: 'Enter Days for Payment' %>
+</div>
+<div class="form-group">
+  <%= f.label :days_for_order_to_completion %>
+  <%= f.number_field :days_for_order_to_completion, class: 'form-control', placeholder: 'Enter Days from Order to Completion' %>
+</div>
+<div class="form-group">
+  <%= f.label :days_for_completion_to_delivery %>
+  <%= f.number_field :days_for_completion_to_delivery, class: 'form-control', placeholder: 'Enter Days from Completion to Delivery' %>
+</div>
+<div class="form-group">
+  <%= f.label :currency_symbol %>
+  <%= f.text_field :currency_symbol, class: 'form-control', placeholder: 'Enter Curreny Symbol' %>
+</div>
+<div class="form-group">
+  <%= f.label :exchange_rate %>
+  <%= f.number_field :exchange_rate, step: 0.01, class: 'form-control', placeholder: 'Enter Exchange Rate' %>
+</div>
+
+<div class="form-group d-none">
+  <%= f.submit(@system_user.new_record? ? "Create" : "Update", class: 'btn btn-primary mt-5 supplier-submit') %>
 </div>

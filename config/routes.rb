@@ -24,7 +24,7 @@ Rails.application.routes.draw do
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
   resources :system_users do
     collection do
-      post 'import', to: 'categories#import'
+      post 'import', to: 'system_users#import'
     end
   end
 
