@@ -1,5 +1,6 @@
 import $ from 'jquery'
 
+$(document).on('turbolinks:load', function () {
 $('#system_user_payment_method').on('change', function () {
   var value = this.value
   if (value == 'credit'){
@@ -12,4 +13,5 @@ $('#system_user_payment_method').on('change', function () {
 
 $('.supplier-create').on('click', function () {
   $('.supplier-submit').trigger('click')
+})
 })
