@@ -7,8 +7,3 @@
   <%= f.label :cost_price %>
   <%= f.text_field :cost_price, class: 'form-control', placeholder: 'Enter Cost Price' %>
 </div>
-
-<div class="form-group">
-  <%= f.label :category_id %>
-  <%= f.select :category_id, @categories&.map{|u| [u['title'], u['id']]}, {include_blank: 'Enter Select Category'}, class: 'form-control' %>
-</div>

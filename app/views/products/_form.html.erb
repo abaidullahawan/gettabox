@@ -11,81 +11,41 @@
     </button>
   </div>
 <% end %>
-<div class="row vertical-pills-tab">
-  <div class="col-sm-3">
-    <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
-      <a class="nav-link active" data-toggle="pill" href="#v-pills-basic">Basicprofile</a>
-      <a class="nav-link" data-toggle="pill" href="#v-pills-quantity">Quantity</a>
-      <a class="nav-link" data-toggle="pill" href="#v-pills-dimensions">Dimensions/Weight</a>
-      <a class="nav-link" data-toggle="pill" href="#v-pills-taxes">Taxes</a>
-      <a class="nav-link" data-toggle="pill" href="#v-pills-stock">Stock Alert</a>
-      <a class="nav-link" data-toggle="pill" href="#v-pills-barcode">Barcodes</a>
-      <a class="nav-link" data-toggle="pill" href="#v-pills-supplier">Suppliers</a>
-      <a class="nav-link" data-toggle="pill" href="#v-pills-extra">Extra</a>
-    </div>
-  </div>
 
-  <div class="col-sm-9">
-      <div class="tab-content" id="v-pills-tabContent">
-          <div class="tab-pane fade show active" id="v-pills-basic" role="tabpanel">
-            <div class="form-group">
-              <%= f.label :photo %>
-              <%= f.file_field :photo, autofocus: true, class: 'form-control' %>
-              <% if  f.object.photo.attached? %>
-                <%= image_tag f.object.photo&.service_url, style:'width:50px; height:50px;' %>
-              <% end %>
-            </div>
-
-            <div class="form-group">
-              <%= f.label :title %>
-              <%= f.text_field :title, autofocus: true, class: 'form-control', placeholder: 'Enter Title' %>
-            </div>
-
-            <div class="form-group">
-              <%= f.label :sku %>
-              <%= f.text_field :sku, class: 'form-control', placeholder: 'Enter SKU' %>
-            </div>
-
-            <div class='text-right clearfix'>
-              <button class='btn btn-sm btn-info ml-auto dasic-validations'>Next</button>
-            </div>
-
-          </div>
-          <div class="tab-pane fade" id="v-pills-quantity" role="tabpanel">
-            <%= render 'quantities_fields', f: f %>
-          </div>
-          <div class="tab-pane fade" id="v-pills-dimensions" role="tabpanel">
-            <%= render 'dimensions_fields', f: f %>
-          </div>
-          <div class="tab-pane fade" id="v-pills-taxes" role="tabpanel">
-            <%= render 'taxes_fields', f: f %>
-          </div>
-          <div class="tab-pane fade" id="v-pills-stock" role="tabpanel">
-            <%= render 'stock_fields', f: f %>
-          </div>
-          <div class="tab-pane fade" id="v-pills-barcode" role="tabpanel">
-            <div class='links text-right'>
-              <%= link_to_add_association 'Add barcode', f, :barcodes, class: 'btn btn-outline-primary rounded'%>
-            </div>
-            <%= f.fields_for :barcodes do |barcode|%>
-              <%= render 'barcode_fields', f: barcode %>
-            <% end %>
-          </div>
-          <div class="tab-pane fade" id="v-pills-supplier" role="tabpanel">
-            <div class='links text-right'>
-              <%= link_to_add_association 'Add Product Supplier', f, :system_users, class: 'btn btn-outline-primary rounded'%>
-            </div>
-            <%= f.fields_for :system_users do |supplier|%>
-              <%= render 'system_user_fields', f: supplier %>
-            <% end %>
-          </div>
-          <div class="tab-pane fade" id="v-pills-extra" role="tabpanel">
-            <%= render 'extra_fields', f: f %>
-          </div>
-      </div>
-  </div>
+<div class='basic-info-form'>
+  <%= render 'basic_info_fields', f: f %>
+  <button type='button' class='basic_info_button btn btn-sm btn-outline-info float-right'>Next</button><br>
 </div>
-
-<div class="form-group">
-  <%= f.submit(@product.new_record? ? "Create" : "Update", class: 'btn btn-primary mt-5') %>
+<div class='quantity-form d-none'>
+  <%= render 'quantities_fields', f: f %>
+  <button type='button' class='quantity_button btn btn-sm btn-outline-info float-right'>Next</button><br>
+</div>
+<div class='dimensions-form d-none'>
+  <%= render 'dimensions_fields', f: f %>
+  <button type='button' class='dimensions_button btn btn-sm btn-outline-info float-right'>Next</button><br>
+</div>
+<div class='stock-form d-none'>
+  <%= render 'stock_fields', f: f %>
+  <button type='button' class='stock_button btn btn-sm btn-outline-info float-right'>Next</button><br>
+</div>
+<div class='taxes-form d-none'>
+  <%= render 'taxes_fields', f: f %>
+  <button type='button' class='taxes_button btn btn-sm btn-outline-info float-right'>Next</button><br>
+</div>
+<div class='system-user-form d-none'>
+  <div class='links text-right'>
+    <%= link_to_add_association 'Add Product Supplier', f, :system_users, class: 'btn btn-outline-primary rounded'%>
+  </div>
+  <%= f.fields_for :system_users do |supplier|%>
+    <%= render 'system_user_fields', f: supplier %>
+  <% end %>
+  <button type='button' class='system_user_button btn btn-sm btn-outline-info float-right'>Next</button><br>
+</div>
+<div class='barcode-form d-none'>
+  <%= render 'barcode_fields', f: f %>
+  <button type='button' class='barcode_button btn btn-sm btn-outline-info float-right'>Next</button><br>
+</div>
+<div class='extra-form d-none'>
+  <%= render 'extra_fields', f: f %>
+  <button type='button' class='extra_button btn btn-sm btn-outline-info float-right'>Next</button><br>
 </div>

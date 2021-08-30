@@ -12,6 +12,11 @@ class Product < ApplicationRecord
     attachable.variant :thumb, resize: "100x100"
   end
 
+  enum product_type: {
+    Single: 0,
+    Multiple: 1
+  }, _prefix: true
+
   accepts_nested_attributes_for :barcodes, allow_destroy: true
   accepts_nested_attributes_for :system_users, allow_destroy: true
 
