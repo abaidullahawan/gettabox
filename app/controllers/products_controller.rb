@@ -20,6 +20,7 @@ class ProductsController < ApplicationController
   def create
     @product = Product.new(product_params)
     if @product.save
+      flash[:notice] = "Craeted successfully."
       redirect_to product_path(@product)
     else
       render 'new'
@@ -31,6 +32,7 @@ class ProductsController < ApplicationController
 
   def update
     if @product.update(product_params)
+      flash[:notice] = "Updated successfully."
       redirect_to product_path(@product)
     else
       render 'edit'
@@ -77,7 +79,10 @@ class ProductsController < ApplicationController
         csv.delete('id')
         csv.each do |row|
           product = Product.find_or_initialize_by(sku: row['sku'])
-          product.update(row.to_hash)
+          if !(product.update(row.to_hash))
+            flash[:alert] = "#{product.errors.full_messages} at ID: #{product.id} , Try again."
+            redirect_to products_path and return
+          end
         end
         flash[:alert] = 'File Upload Successful!'
         redirect_to products_path
@@ -104,7 +109,7 @@ class ProductsController < ApplicationController
 
   def product_params
     params.
-    require(:product).
+    require(:products).
     permit( :sku,
             :title,
             :photo,

@@ -1,4 +1,16 @@
-
+<% if @product.errors.any? %>
+  <div class="alert alert-danger alert-dismissible fade show" role="alert" id="error_explanation">
+    <h5><%= pluralize(@product.errors.count, "error") %> prohibited this product from being saved:</h5>
+    <ul class='error-list'>
+      <% @product.errors.each do |error| %>
+        <li><%= error.full_message %></li>
+      <% end %>
+    </ul>
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+<% end %>
 <div class="row vertical-pills-tab">
   <div class="col-sm-3">
     <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">

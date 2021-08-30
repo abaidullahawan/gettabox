@@ -15,6 +15,9 @@ class User < ApplicationRecord
     staff: 2
   }, _prefix: true
 
+  validates :role, presence: true
+  validates :email, format: { with: Devise.email_regexp }
+
   attr_accessor :limit
   def self.filter_role(current_user)
     if current_user.role_super_admin?

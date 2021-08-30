@@ -42,12 +42,6 @@
             <table class="table m-0 table-hover">
               <tr>
                 <th>
-                  <%= f.search_field :id_eq, class:"form-control", placeholder:"Search in Id", title: 'Search in ID' %>
-                </th>
-                <th>
-                  <%= f.search_field :sku_cont, class:"form-control", placeholder:"Search in SKU", title: 'Search in SKU' %>
-                </th>
-                <th>
                   <%= f.search_field :name_cont, class:"form-control", placeholder:"Search in Name", title: 'Search in Name' %>
                 </th>
                 <th>
@@ -72,8 +66,6 @@
                 </th>
               </tr>
               <tr>
-                <th><%= sort_link(@q, :id, 'ID') %></th>
-                <th class="text-center"><%= sort_link(@q, :sku, 'SKU') %></th>
                 <th class="text-center"><%= sort_link(@q, :name) %></th>
                 <th class="text-center"><%= sort_link(@q, :payment_method) %></th>
                 <th class="text-center"><%= sort_link(@q, :days_for_order_to_completion) %></th>
@@ -85,8 +77,6 @@
               </tr>
               <% @system_users&.each&.with_index(1) do |system_user, index| %>
                 <tr class=''>
-                  <td><%= system_user.id %></td>
-                  <td class="text-center"><%= system_user.sku %></td>
                   <td class="text-center"><%= system_user.name %></td>
                   <td class="text-center"><%= system_user.payment_method %></td>
                   <td class="text-center"><%= system_user.days_for_order_to_completion %></td>

@@ -1,6 +1,7 @@
 class SystemUser < ApplicationRecord
   has_many :product_suppliers
   has_many :products, through: :product_suppliers
+  validates :name, presence: true
 
   enum user_type: {
     customer: 0,
@@ -20,7 +21,7 @@ class SystemUser < ApplicationRecord
   }, _prefix: true
 
   def self.to_csv
-    attributes = all.column_names.excluding('id','user_type')
+    attributes = all.column_names.excluding('user_type')
     CSV.generate(headers: true) do |csv|
       csv << attributes
       all.each do |system_user|

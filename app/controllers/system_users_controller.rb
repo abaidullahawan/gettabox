@@ -65,12 +65,15 @@ class SystemUsersController < ApplicationController
     if params[:file].present? && params[:file].path.split(".").last.to_s.downcase == 'csv'
       csv_text = File.read(params[:file])
       csv = CSV.parse(csv_text, :headers => true)
-      if csv.headers == SystemUser.column_names.excluding('id','user_type')
-        csv.delete('id')
+      if csv.headers == SystemUser.column_names.excluding('user_type')
         csv.each do |row|
-          data = SystemUser.find_or_initialize_by(sku: row['sku'])
-          data.update(row.to_hash)
-          data.update(user_type: 'supplier')
+          data = SystemUser.find_or_initialize_by(id: row['id'])
+          if !(data.update(row.to_hash))
+            flash[:alert] = "#{data.errors.first.full_message} at ID: #{data.id} , Try again"
+            redirect_to system_users_path and return
+          else
+            data.update(user_type: 'supplier')
+          end
         end
         flash[:alert] = 'File Upload Successful!'
         redirect_to system_users_path
@@ -90,7 +93,7 @@ class SystemUsersController < ApplicationController
     end
 
     def system_user_params
-      params.require(:system_user).permit(:sku, :user_type, :name, :payment_method, :days_for_payment, :days_for_order_to_completion, :days_for_completion_to_delivery, :currency_symbol, :exchange_rate)
+      params.require(:system_user).permit(:user_type, :name, :payment_method, :days_for_payment, :days_for_order_to_completion, :days_for_completion_to_delivery, :currency_symbol, :exchange_rate)
     end
 
 end
