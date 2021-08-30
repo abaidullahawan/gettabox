@@ -80,17 +80,14 @@
                                 <% end %>
                               </td>
                               <td><%= product.title %></td>
-                              <td class="text-center"><span class="badge badge-info"><%= product.sku %></span></td>
+                              <td class="text-center font-weight-bold"><%= product.sku %></td>
                               <td><%= product.total_stock%></td>
                               <td><%= product.minimum %></td>
                               <td><%= product.maximum %></td>
                               <td><%= product.optimal %></td>
 
                               <td class="text-center">
-                                  <a type="button" class="btn btn-link text-info p-0 mr-2" href="<%= product_path(product)%>">
-                                      <i data-feather="eye" class="icon wh-15"></i>
-                                  </a>
-                                  <%= link_to '<i data-feather="x" class="icon wh-15"></i>'.html_safe, product_path(product), method: 'delete', data: {confirm: "Are you sure you want to delete"}, class: "btn btn-link text-danger p-0"%>
+                                <button type='button' class='btn btn-small btn-primary'><i data-feather='bell' class='icon wh-15 mt-minus-3'></i>Actions</button>
                               </td>
                             </tr>
                           <% end %>
