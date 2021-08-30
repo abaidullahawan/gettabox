@@ -1,4 +1,3 @@
-  
     <div class="form-group">
       <%= f.label :photo %>
       <% if  f.object.photo.attached? %>
@@ -14,5 +13,13 @@
       <%= f.label :sku %>
       <%= f.text_field :sku, class: 'form-control', placeholder: 'Enter SKU', required: true %>
     </div>
-  
-  
+
+    <div class="form-group">
+      <%= f.label :category_id %>
+      <%= f.select :category_id, @categories&.map{|u| [u['title'], u['id']]}, {include_blank: 'Enter Select Category'}, class: 'form-control', required: true %>
+    </div>
+
+    <div class="form-group">
+      <%= f.label :product_type %>
+      <%= f.select :product_type, Product.product_types.map { |key, value| [key.humanize, key] }, {include_blank: 'Please select a Product Type'}, class: 'form-control' %>
+    </div>

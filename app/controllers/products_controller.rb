@@ -2,13 +2,14 @@ class ProductsController < ApplicationController
 
   before_action :authenticate_user!
   before_action :find_product, only: [:edit, :update, :show, :destroy]
-  before_action :load_resources, only: [:new, :edit, :show, :create, :update]
+  before_action :load_resources, only: [:index, :new, :edit, :show, :create, :update]
   # before_action :attributes_for_filter, only: [:index]
 
   def index
     @q = Product.ransack(params[:q])
     @products = @q.result(distinct: true).page(params[:page]).per(params[:limit])
     export_csv(@products) if params[:export_csv].present?
+    new
   end
 
   def new
@@ -169,6 +170,7 @@ class ProductsController < ApplicationController
             :maximum,
             :optimal,
             :category_id,
+            :product_type,
             barcodes_attributes:
             [ :id,
               :title,

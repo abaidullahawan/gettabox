@@ -17,7 +17,7 @@
     <div class="card mb-30">
       <div class="card-body">
         <div class="card-header">
-          <a href="/products/new" class="btn btn-primary float-right">Create</a>
+          <button type='button' data-toggle="modal" data-target='#product-create-modal' class='btn btn-primary float-right'>Create</button>
           <span class='mr-1 float-right'>
             <%= form_tag import_products_path, multipart: true, method: :post do %>
               <%= file_field_tag :file, class: 'd-none import-file' %>
@@ -125,3 +125,26 @@
     </div>
   </div>
 </div>
+
+<%= form_for(@product, url: products_path) do |f| %>
+  <!-- Basic Info Modal -->
+  <div class="modal fade" id="product-create-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Basic Info</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <%= render 'form', f: f %>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <%= f.submit(@product.new_record? ? "Create" : "Save changes", class: 'btn btn-outline-primary') %>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>
