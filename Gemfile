@@ -41,7 +41,8 @@ gem "aws-sdk-s3", require: false
 gem "mini_magick"
 # gem for super admin
 gem "administrate"
-
+# soft delete handling
+gem "paranoia", "~> 2.2"
 # Use for dropdown searching
 gem "select2-rails"
 

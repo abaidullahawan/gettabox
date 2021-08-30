@@ -1,4 +1,5 @@
 class Product < ApplicationRecord
+  acts_as_paranoid
 
   validates :sku, presence:true, uniqueness: { case_sensitive: false }
   validates :title, presence: true
