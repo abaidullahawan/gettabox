@@ -96,6 +96,20 @@ class ProductsController < ApplicationController
     end
   end
 
+  def bulk_method
+    if params[:product_ids].present?
+      params[:product_ids].delete('0') if params[:product_ids].include?('0')
+      params[:product_ids].each do |p|
+        product = Product.find(p.to_i)
+        product.delete
+      end
+      flash[:notice] = 'Products deleted successfully'
+      redirect_to products_path
+    else
+      flash[:alert] = 'Please select something to perform action.'
+    end
+  end
+
   private
 
   def find_product
