@@ -148,7 +148,6 @@ ActiveRecord::Schema.define(version: 2021_08_30_075322) do
   end
 
   create_table "system_users", force: :cascade do |t|
-    t.string "sku"
     t.integer "user_type"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false

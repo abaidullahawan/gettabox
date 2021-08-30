@@ -67,9 +67,15 @@ class UsersController < ApplicationController
       if csv.headers == User.column_names
         csv.delete('id')
         csv.delete('encrypted_password')
+        csv.delete('created_at')
+        csv.delete('updated_at')
+
         csv.each do |row|
           user = User.find_or_initialize_by(email: row['email'])
-          user.new_record? ? user.update!(password: 'Sample', password_confirmation:'Sample') : user.update(row.to_hash)
+          if !(user.new_record? ? user.update(password: 'Sample', password_confirmation:'Sample') : user.update(row.to_hash))
+            flash[:alert] = "#{user.errors.full_messages} , Please try again . . . "
+            redirect_to users_path and return
+          end
         end
         flash[:alert] = 'File Upload Successful!'
         redirect_to users_path
