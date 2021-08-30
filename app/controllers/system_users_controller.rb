@@ -93,7 +93,7 @@ class SystemUsersController < ApplicationController
     end
 
     def system_user_params
-      params.require(:system_user).permit(:user_type, :name, :payment_method, :days_for_payment, :days_for_order_to_completion, :days_for_completion_to_delivery, :currency_symbol, :exchange_rate)
+      params.require(:system_user).permit(:user_type, :name, :photo, :payment_method, :days_for_payment, :days_for_order_to_completion, :days_for_completion_to_delivery, :currency_symbol, :exchange_rate)
     end
 
 end

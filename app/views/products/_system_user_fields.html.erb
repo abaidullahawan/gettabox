@@ -1,8 +1,8 @@
 <div class="nested-fields">
   <br/>
   <div class="form-group">
-    <%= f.label :sku %>
-    <%= f.select :sku, @system_users&.map{|u| [u['sku'], u['id']]}, {include_blank: 'Enter Select System User'}, autofocus: true, class: 'form-control', placeholder: 'Enter SKU' %>
+    <%= f.label :name %>
+    <%= f.select :name, @system_users&.map{|u| [u['name'], u['id']]}, {include_blank: 'Enter Select System User'}, autofocus: true, class: 'form-control', placeholder: 'Enter SKU' %>
     <%#= f.select :sku, {}, {}, class: 'form-control js-data-ajax-system-users'%>
   </div>
 

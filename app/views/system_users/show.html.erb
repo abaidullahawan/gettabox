@@ -9,17 +9,70 @@
 </div>
 <!-- End Main Content Header -->
 <div class="row">
-  <div class="col-xl-12">
-    <div class="card mb-30">
-      <div class="card-body">
-        <div class="card-header">
-          <h5 class="card-title">Data</h5>
+  <div class="col-lg-12">
+    <div class="profile-header mb-30">
+      <% if @system_user.photo.attached? %>
+        <%= image_tag @system_user.photo&.service_url, class: 'rounded-circle', alt: 'User Image', style: 'height:80px; width:80px;' %>
+      <% else %>
+        <%= image_tag('user/1.jpg', class: 'rounded-circle', alt: 'User Image') %>
+      <% end %>
+      <h3 class="name mt-3">Supplier Name : <%= @system_user.name %></h3>
+      <div class="col-lg-4 col-sm-4 offset-4">
+        <div class="profile-left-content">
+          <div class="card mb-30">
+            <div class="card-body">
+              <div class="card-header">
+                  <h5 class="card-title">Supplier Info
+
+                    <a type="button" class="btn btn-link text-secondary p-0 ml-3" data-toggle="modal" data-target="#ModalScrollable">
+                      <i data-feather="edit-2" class="icon wh-15"></i>
+                    </a>
+                  </h5>
+              </div>
+              <ul class="info">
+                <li>
+                  Payment Method: <%= @system_user.payment_method %>
+                </li>
+                <li>
+                  Days For Order To Completion: <%= @system_user.days_for_order_to_completion %>
+                </li>
+                <li>
+                  Days For Completion To Delivery: <%= @system_user.days_for_completion_to_delivery %>
+                </li>
+                <li>
+                  Currency Symbol: <%= @system_user.currency_symbol %>
+                </li>
+                <li>
+                  Exchange Rate: <%= @system_user.exchange_rate %>
+                </li>
+              </ul>
+            </div>
+          </div>
         </div>
-        <fieldset disabled>
-        <%= form_for @system_user, url: system_users_path, method: :post do |f| %>
-          <%= render 'form', f: f %>
-        <% end %>
       </div>
     </div>
+  </div>
+</div>
+
+<div class="modal fade" id="ModalScrollable" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable" role="document">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h5 class="modal-title">Create Supplier</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+              </button>
+          </div>
+
+          <div class="modal-body">
+            <%= form_for @system_user, url: system_users_path(@system_user), method: :post do |f| %>
+              <%= render 'form', f: f %>
+            <% end %>
+          </div>
+          <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-primary supplier-create">Save changes</button>
+          </div>
+      </div>
   </div>
 </div>
