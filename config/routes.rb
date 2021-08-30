@@ -13,6 +13,8 @@ Rails.application.routes.draw do
       get 'select2_system_users', to: 'products#select2_system_users'
       post 'import', to: 'products#import'
       post 'bulk_method', to: 'products#bulk_method'
+      get 'archive', to: 'products#archive'
+      post 'restore', to: 'products#restore'
     end
   end
 
