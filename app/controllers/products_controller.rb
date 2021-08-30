@@ -103,13 +103,13 @@ class ProductsController < ApplicationController
   end
 
   def load_resources
-    @system_users = SystemUser.all.map{|v| v.serializable_hash(only: [:id, :sku]) }
+    @system_users = SystemUser.all.map{|v| v.serializable_hash(only: [:id, :name]) }
     @categories = Category.all.map{|v| v.serializable_hash(only: [:id, :title]) }
   end
 
   def product_params
     params.
-    require(:products).
+    require(:product).
     permit( :sku,
             :title,
             :photo,
@@ -140,7 +140,7 @@ class ProductsController < ApplicationController
             ],
             system_users_attributes:
             [ :id,
-              :sku,
+              :name,
               :_destroy
             ]
     )

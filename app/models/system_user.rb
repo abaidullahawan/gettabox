@@ -2,6 +2,7 @@ class SystemUser < ApplicationRecord
   has_many :product_suppliers
   has_many :products, through: :product_suppliers
   validates :name, presence: true
+  has_one_attached :photo
 
   enum user_type: {
     customer: 0,
