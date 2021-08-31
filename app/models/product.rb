@@ -18,7 +18,7 @@ class Product < ApplicationRecord
   }, _prefix: true
 
   accepts_nested_attributes_for :barcodes, allow_destroy: true
-  accepts_nested_attributes_for :system_users, allow_destroy: true
+  accepts_nested_attributes_for :product_suppliers, allow_destroy: true
 
   def self.to_csv
     attributes = all.column_names
