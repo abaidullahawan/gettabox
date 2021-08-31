@@ -101,6 +101,28 @@ class SystemUsersController < ApplicationController
     end
   end
 
+  def archive
+    @q = SystemUser.only_deleted.ransack(params[:q])
+    @system_users = @q.result(distinct: true).page(params[:page]).per(params[:limit])
+  end
+
+  def restore
+    if params[:object_id].present? && SystemUser.restore(params[:object_id])
+      flash[:notice] = 'Supplier restore successful'
+      redirect_to archive_system_users_path
+    elsif params[:object_ids].present?
+      params[:object_ids].delete('0')
+      params[:object_ids].each do |p|
+        SystemUser.restore(p.to_i)
+      end
+      flash[:notice] = 'Suppliers restore successful'
+      redirect_to archive_system_users_path
+    else
+      flash[:notice] = 'Supplier cannot be restore'
+      redirect_to archive_system_users_path
+    end
+  end
+
   private
     def find_system_user
       @system_user = SystemUser.find(params[:id])
