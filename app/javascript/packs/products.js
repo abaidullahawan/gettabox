@@ -1,14 +1,6 @@
 import $ from 'jquery'
 
 $(document).on('turbolinks:load', function () {
-  $('.bulk-delete-products').on('click', function () {
-    $('.bulk-method-products').trigger('click')
-  })
-
-  $('.select-all-products').on("click", function(){
-    var cbxs = $('input[name="product_ids[]"]');
-    cbxs.prop("checked", !cbxs.prop("checked"));
-  });
 
   $('.product_type_field').on('change', function () {
     if ((this.value == "Single") || (this.value == "Multiple")) {
@@ -148,5 +140,4 @@ $(document).on('turbolinks:load', function () {
     $('.create_product_button').addClass('d-none')
   })
   // Product Create Form JQuery end
-
 })

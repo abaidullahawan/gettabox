@@ -201,6 +201,16 @@ $(document).on('turbolinks:load', function () {
       minimumInputLength: 1,
       theme: 'classic'
     });
+
+    $('.select-all-checkbox').on("click", function(){
+      var cbxs = $('input[name="object_ids[]"]');
+      cbxs.prop("checked", !cbxs.prop("checked"));
+    });
+
+    $('.bulk-delete-objects').on('click', function () {
+      $('.bulk-method-objects').trigger('click')
+    })
+
     $('.basic-validations').on('click', function () {
       debugger;
     })

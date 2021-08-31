@@ -1,4 +1,6 @@
 class SystemUser < ApplicationRecord
+  acts_as_paranoid
+
   has_many :product_suppliers
   has_many :products, through: :product_suppliers
   validates :name, presence: true

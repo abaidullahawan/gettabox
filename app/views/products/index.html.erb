@@ -54,7 +54,7 @@
                 Bulk
               </button>
               <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                <%= link_to 'Archive', '#', data: {confirm: "Are you sure you want to archive"}, class:  'dropdown-item bulk-delete-products' %>
+                <%= link_to 'Archive', '#', data: {confirm: "Are you sure you want to archive"}, class:  'dropdown-item bulk-delete-objects' %>
               </div>
             </div>
           </div>
@@ -64,7 +64,7 @@
             <div class="table-responsive">
               <table class="table m-0 table-hover">
                 <tr>
-                  <th><input type="checkbox" id="" name="" value="" class='select-all-products'></th>
+                  <th><input type="checkbox" id="" name="" value="" class='select-all-checkbox'></th>
                   <th>Image</th>
                   <th>Title</th>
                   <th class="text-center">SKU</th>
@@ -83,7 +83,7 @@
                 </tr>
                 <% @products&.each&.with_index(1) do |product, index| %>
                   <tr class='<%= (product.minimum.to_i > product.total_stock.to_i ) ? 'table-danger' : '' %>'>
-                    <td><%= f.check_box 'product_ids[]', {}, product.id %></td>
+                    <td><%= f.check_box 'object_ids[]', {}, product.id %></td>
                     <td>
                       <% if  product.photo.attached? %>
                         <%= image_tag product.photo&.service_url, style:'width:50px; height:50px;' %>
@@ -109,7 +109,7 @@
                       </div>
                     </td>
                   </tr>
-                  <%= f.submit '', class: 'bulk-method-products d-none'%>
+                  <%= f.submit '', class: 'bulk-method-objects d-none'%>
                 <% end %>
               </table>
             </div>

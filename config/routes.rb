@@ -28,6 +28,9 @@ Rails.application.routes.draw do
   resources :system_users do
     collection do
       post 'import', to: 'system_users#import'
+      post 'bulk_method', to: 'system_users#bulk_method'
+      get 'archive', to: 'system_users#archive'
+      post 'restore', to: 'system_users#restore'
     end
   end
 
