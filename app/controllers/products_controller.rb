@@ -15,10 +15,11 @@ class ProductsController < ApplicationController
   def new
     @product = Product.new
     @product.barcodes.build
-    @product.system_users.build
+    @product.product_suppliers.build
   end
 
   def create
+    byebug
     @product = Product.new(product_params)
     if @product.save
       flash[:notice] = "Craeted successfully."
@@ -176,9 +177,11 @@ class ProductsController < ApplicationController
               :title,
               :_destroy
             ],
-            system_users_attributes:
+            product_suppliers_attributes:
             [ :id,
-              :name,
+              :system_user_id,
+              :product_cost,
+              :product_sku,
               :_destroy
             ]
     )

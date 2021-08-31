@@ -90,10 +90,10 @@
     </div>
   </div><hr>
   <div class='links text-right'>
-    <%= link_to_add_association '+', f, :system_users, class: 'btn btn-outline-primary rounded'%>
+    <%= link_to_add_association '+', f, :product_suppliers, class: 'btn btn-outline-primary rounded'%>
   </div>
-  <%= f.fields_for :system_users do |supplier|%>
-    <%= render 'system_user_fields', f: supplier %>
+  <%= f.fields_for :product_suppliers do |supplier|%>
+    <%= render 'product_supplier_fields', f: supplier %>
   <% end %>
 </div>
 <div class='barcode-form d-none'>
