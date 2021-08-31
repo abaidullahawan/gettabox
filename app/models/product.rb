@@ -6,6 +6,8 @@ class Product < ApplicationRecord
   has_many :barcodes
   has_many :product_suppliers
   has_many :system_users, through: :product_suppliers
+  has_many :multipack_products
+  has_many :products, through: :multipack_products
 
   belongs_to :category
   has_one_attached :photo do |attachable|
