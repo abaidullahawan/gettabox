@@ -98,9 +98,9 @@ class ProductsController < ApplicationController
   end
 
   def bulk_method
-    params[:product_ids].delete('0')
-    if params[:product_ids].present?
-      params[:product_ids].each do |p|
+    params[:object_ids].delete('0')
+    if params[:object_ids].present?
+      params[:object_ids].each do |p|
         product = Product.find(p.to_i)
         product.delete
       end
@@ -117,12 +117,12 @@ class ProductsController < ApplicationController
   end
 
   def restore
-    if params[:product_id].present? && Product.restore(params[:product_id])
+    if params[:object_id].present? && Product.restore(params[:object_id])
       flash[:notice] = 'Product restore successful'
       redirect_to archive_products_path
-    elsif params[:product_ids].present?
-      params[:product_ids].delete('0')
-      params[:product_ids].each do |p|
+    elsif params[:object_ids].present?
+      params[:object_ids].delete('0')
+      params[:object_ids].each do |p|
         Product.restore(p.to_i)
       end
       flash[:notice] = 'Products restore successful'

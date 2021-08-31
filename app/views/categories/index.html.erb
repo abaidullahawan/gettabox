@@ -15,15 +15,13 @@
       <div class="card-body">
         <div class="card-header">
           <a href="/categories/new" class="btn btn-primary float-right">Create</a>
+          <div class='mr-1 float-right'>
+            <%= link_to 'Export', categories_path(format: :csv, export_csv: true), class: 'btn btn-outline-primary' %>
+          </div>
           <h5 class="card-title"> Data</h5>
         </div>
         <%= search_form_for @q, url: categories_path, method: :get do |f| %>
           <div class='row'>
-          <!--
-            <div class='col-2'>
-              <button type="submit" name="export_csv" value="ture" class='btn btn-outline-primary'><a href="<%= categories_path %>"></a>Export</button>
-            </div>
-          -->
             <div class='col-1 offset-11'>
               <label for="inputState">Per Page</label>
               <%= select_tag :limit, options_for_select([5, 10, 15, 20], selected: params[:limit] || 10), id: 'change_per_page', class: 'form-control' %>
@@ -43,13 +41,16 @@
                   <td><%= category.id %></td>
                   <td class="text-center"><%= category.title %></td>
                   <td class="text-center">
-                    <a type="button" class="btn btn-link text-info p-0 mr-2" href="<%= category_path(category)%>">
-                      <i data-feather="eye" class="icon wh-15"></i>
-                    </a>
-                    <a type="button" class="btn btn-link text-success p-0 mr-2" href="<%= edit_category_path(category)%>">
-                      <i data-feather="edit-2" class="icon wh-15"></i>
-                    </a>
-                    <%= link_to '<i data-feather="x" class="icon wh-15"></i>'.html_safe, category_path(category), method: 'delete', data: {confirm: "Are you sure you want to delete"}, class: "btn btn-link text-danger p-0"%>
+                    <div class="dropdown dropleft">
+                        <button class="btn btn-primary" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                          <i data-feather='bell' class='icon wh-15 mt-minus-3'></i>
+                          Actions
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                          <a class="dropdown-item" href="<%= category_path(category)%>">Show</a>
+                          <%#= link_to 'Archive', category_path(category), method: 'delete', data: {confirm: "Are you sure you want to archive"}, class: "dropdown-item"%>
+                        </div>
+                      </div>
                   </td>
                 </tr>
               <% end %>

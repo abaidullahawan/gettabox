@@ -46,10 +46,10 @@ class SystemUsersController < ApplicationController
 
   def destroy
     if @system_user.destroy
-      flash[:notice] = "Supplier destroyed successfully."
+      flash[:notice] = "Supplier archive successfully."
       redirect_to system_users_path
     else
-      flash.now[:notice] = "Supplier not destroyed."
+      flash.now[:notice] = "Supplier not archived."
       render system_users_path
     end
   end
@@ -84,6 +84,20 @@ class SystemUsersController < ApplicationController
     else
       flash[:alert] = 'File format no matched! Please change file'
       redirect_to system_users_path
+    end
+  end
+
+  def bulk_method
+    params[:object_ids].delete('0')
+    if params[:object_ids].present?
+      params[:object_ids].each do |p|
+        product = SystemUser.find(p.to_i)
+        product.delete
+      end
+      flash[:notice] = 'Suppliers archive successfully'
+      redirect_to system_users_path
+    else
+      flash[:alert] = 'Please select something to perform action.'
     end
   end
 
