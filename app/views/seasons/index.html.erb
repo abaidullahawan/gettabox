@@ -1,0 +1,108 @@
+<!-- Main Content Header -->
+<div class="main-content-header">
+  <h1><%= link_to 'Seasons', seasons_path, style:'color: #212529;' %></h1>
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item active">
+      <span class="active">Index</span>
+    </li>
+  </ol>
+</div>
+<!-- End Main Content Header -->
+
+<div class="row">
+  <div class="col-xl-12">
+    <div class="card mb-30">
+      <div class="card-body">
+        <div class="card-header">
+          <button type="button" class="btn btn-primary float-right" data-toggle="modal" data-target="#season-create-modal">
+              Create
+          </button>
+          <span class='mr-1 float-right'>
+            <%= form_tag import_seasons_path, multipart: true, method: :post do %>
+              <%= file_field_tag :file, class: 'd-none import-file' %>
+              <button type='button' class='btn btn-outline-success import-btn'>Import</button>
+              <%= submit_tag "Import", class: 'd-none import-submit' %>
+            <% end %>
+          </span>
+            <div class='mr-1 float-right'>
+              <%= link_to 'Export', seasons_path(format: :csv, export_csv: true), class: 'btn btn-outline-primary' %>
+            </div>
+          <h5 class="card-title"> Data</h5>
+        </div>
+        <%= search_form_for @q, url: seasons_path, method: :get do |f| %>
+          <div class='row'>
+            <div class='col-1 offset-11'>
+              <label for="inputState">Per Page</label>
+              <%= select_tag :limit, options_for_select([10, 50, 100, 500, 1000], selected: params[:limit] || 10), id: 'change_per_page', class: 'form-control' %>
+              <button type="submit" id="per_page_submit" hidden="hidden"></button>
+            </div>
+          </div>
+        <% end %>
+        <br>
+        <%= form_with url: bulk_method_seasons_path , method: :post do |f| %>
+          <div class="table-responsive">
+            <table class="table m-0 table-hover">
+              <tr>
+                <th><input type="checkbox" id="" name="" value="" class='select-all-checkbox'></th>
+                <th class="text-center">Name</th>
+                <th class="text-center">Descriptions</th>
+                <th colspan="3" class="text-center">Actions</th>
+              </tr>
+              <% @seasons&.each&.with_index(1) do |season, index| %>
+                <tr class=''>
+                  <td><%= f.check_box 'object_ids[]', {}, season.id %></td>
+                  <td class="text-center"><%= season.name %></td>
+                  <td class="text-center"><%= season.description %></td>
+
+                  <td class="text-center">
+                    <div class="dropdown dropleft">
+                      <button class="btn btn-primary" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i data-feather='bell' class='icon wh-15 mt-minus-3'></i>
+                        Actions
+                      </button>
+                      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <a class="dropdown-item" href="<%= season_path(season)%>">Show</a>
+                        <a class="dropdown-item" href="<%= edit_season_path(season)%>">Edit</a>
+                        <%= link_to 'Archive', season_path(season), method: 'delete', data: {confirm: "Are you sure you want to archive"}, class: "dropdown-item"%>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+                <%= f.submit '', class: 'bulk-method-objects d-none'%>
+              <% end %>
+            </table>
+          </div>
+        <% end %>
+        <br>
+        <div class='float-right'>
+          <%= page_entries_info @seasons %>
+        </div><br>
+        <div class="pagination justify-content-center mt-3">
+          <%= paginate @seasons,theme: "twitter-bootstrap-4",pagination_class: "pagination-sm",nav_class: "d-inline-b" %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<%= form_for @season, url: seasons_path, method: :post do |f| %>
+  <div class="modal fade" id="season-create-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Create season</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <%= render 'form', f: f %>
+        </div>
+        <div class="modal-footer">
+          <div class="form-group">
+            <%= f.submit(@season.new_record? ? "Create" : "Update", class: 'btn btn-primary float-right') %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>

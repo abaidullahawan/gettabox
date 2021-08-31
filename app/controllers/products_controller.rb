@@ -142,6 +142,7 @@ class ProductsController < ApplicationController
   def load_resources
     @system_users = SystemUser.all.map{|v| v.serializable_hash(only: [:id, :name]) }
     @categories = Category.all.map{|v| v.serializable_hash(only: [:id, :title]) }
+    @seasons = Season.all.map{|v| v.serializable_hash(only: [:id, :name]) }
   end
 
   def product_params
@@ -171,6 +172,8 @@ class ProductsController < ApplicationController
             :optimal,
             :category_id,
             :product_type,
+            :season_id,
+            :description,
             barcodes_attributes:
             [ :id,
               :title,

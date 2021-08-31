@@ -1,4 +1,10 @@
 Rails.application.routes.draw do
+  resources :seasons do
+    collection do
+      post 'import', to: 'seasons#import'
+      post 'bulk_method', to: 'seasons#bulk_method'
+    end
+  end
   devise_for :users
   resources :users , except: [:create] do
     collection do

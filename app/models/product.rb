@@ -8,6 +8,7 @@ class Product < ApplicationRecord
   has_many :system_users, through: :product_suppliers
 
   belongs_to :category
+  belongs_to :season
   has_one_attached :photo do |attachable|
     attachable.variant :thumb, resize: "100x100"
   end

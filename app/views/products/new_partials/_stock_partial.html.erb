@@ -1,0 +1,39 @@
+<div class="form-group">
+  <%= f.label :total_stock %>
+  <%= f.number_field :total_stock, step: :any, class: 'form-control', placeholder: 'Enter Total Quantity', required: true %>
+</div>
+<div class="form-row">
+  <div class='form-group col-md-12' style='border-bottom: 1px solid;'>
+    <h5 class='fs-14'>Tax Field*</h5>
+  </div>
+  <div class="form-group col-md-12">
+    <%= f.label :vat %>
+    <%= f.number_field :vat, step: 0.01, class: 'form-control', placeholder: 'Enter VAT' %>
+  </div>
+</div>
+<div class="form-row">
+  <div class='form-group col-md-12' style='border-bottom: 1px solid;'>
+    <h5 class='fs-14'>Barcode*</h5>
+  </div>
+  <div class="form-group col-md-12">
+    <div class='links text-right'>
+      <%= link_to_add_association '+', f, :barcodes, class: 'btn btn-outline-primary rounded'%>
+    </div>
+    <%= f.fields_for :barcodes do |barcode|%>
+      <%= render 'barcode_fields', f: barcode %>
+    <% end %>
+  </div>
+</div>
+<div class="form-row">
+  <div class='form-group col-md-12' style='border-bottom: 1px solid;'>
+    <h5 class='fs-14'>Supplier*</h5>
+  </div>
+  <div class="form-group col-md-12">
+    <div class='links text-right'>
+      <%= link_to_add_association '+', f, :system_users, class: 'btn btn-outline-primary rounded'%>
+    </div>
+    <%= f.fields_for :system_users do |supplier|%>
+      <%= render 'system_user_fields', f: supplier %>
+    <% end %>
+  </div>
+</div>
