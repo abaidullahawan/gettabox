@@ -1,0 +1,30 @@
+<% if @product.errors.any? %>
+  <div class="alert alert-danger alert-dismissible fade show" role="alert" id="error_explanation">
+    <h5><%= pluralize(@product.errors.count, "error") %> prohibited this product from being saved:</h5>
+    <ul class='error-list'>
+      <% @product.errors.each do |error| %>
+        <li><%= error.full_message %></li>
+      <% end %>
+    </ul>
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+<% end %>
+
+<div class='basic-info-form'>
+  <div class='row'>
+    <div class='col-sm-12'>
+      <h5 class='text-center'>Basic</h5>
+    </div>
+  </div><hr>
+  <div class="form-group required d-none">
+    <%= f.label :product_type %>
+    <%= f.select :product_type, ['Multiple'], {}, class: 'form-control product_type_field', readonly: true %>
+  </div>
+  <%= render 'basic_info_fields', f: f %>
+  <button type='button' class='basic_info_button btn btn-sm btn-outline-info float-right'>Next</button><br>
+</div>
+<div class='detail-form d-none'>
+  <%= render '/products/new_partials/multi_product_details', f: f %>
+</div>

@@ -16,6 +16,7 @@ class ProductsController < ApplicationController
     @product = Product.new
     @product.barcodes.build
     @product.product_suppliers.build
+    @product.multipack_products.build
   end
 
   def create
@@ -24,7 +25,8 @@ class ProductsController < ApplicationController
       flash[:notice] = "Craeted successfully."
       redirect_to product_path(@product)
     else
-      render 'new'
+      flash[:alert] = "Product cannot be created!"
+      redirect_to products_path
     end
   end
 
@@ -140,6 +142,7 @@ class ProductsController < ApplicationController
   end
 
   def load_resources
+    @single_products = Product.where(product_type: 'Single').map{|v| v.serializable_hash(only: [:id, :title]) }
     @system_users = SystemUser.all.map{|v| v.serializable_hash(only: [:id, :name]) }
     @categories = Category.all.map{|v| v.serializable_hash(only: [:id, :title]) }
     @seasons = Season.all.map{|v| v.serializable_hash(only: [:id, :name]) }
@@ -184,6 +187,12 @@ class ProductsController < ApplicationController
               :system_user_id,
               :product_cost,
               :product_sku,
+              :_destroy
+            ],
+            multipack_products_attributes:
+            [ :id,
+              :product_id,
+              :child_id,
               :_destroy
             ]
     )

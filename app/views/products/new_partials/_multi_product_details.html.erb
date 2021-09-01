@@ -1,0 +1,57 @@
+
+<div class="form-group form-row">
+  <%= f.label :description %>
+  <%= f.text_area :description, class: 'form-control', placeholder: 'Add Product Description' %>
+</div>
+<div class="form-row">
+  <div class='form-group col-md-12' style='border-bottom: 1px solid;'>
+    <h5 class='fs-14'>Dimensions</h5>
+  </div>
+  <div class="form-group col-md-6 required">
+      <%= f.label :length %>
+      <%= f.number_field :length, step: 0.01, class: 'form-control', placeholder: 'Enter Length in (mm)', required: true %>
+  </div>
+  <div class="form-group col-md-6 required">
+      <%= f.label :width %>
+      <%= f.number_field :width, step: 0.01, class: 'form-control', placeholder: 'Enter Width in (mm)', required: true %>
+  </div>
+  <div class="form-group col-md-6 required">
+      <%= f.label :height %>
+      <%= f.number_field :height, step: 0.01, class: 'form-control', placeholder: 'Enter Height in (mm)', required: true %>
+  </div>
+  <div class="form-group col-md-6 required">
+      <%= f.label :weight %>
+      <%= f.number_field :weight, step: 0.01, class: 'form-control', placeholder: 'Enter Weight in (g)', required: true %>
+  </div>
+</div>
+<div class="form-row detail-tax-field">
+  <div class='form-group col-md-12' style='border-bottom: 1px solid;'>
+    <h5 class='fs-14'>Tax Field</h5>
+  </div>
+  <div class="form-group col-md-12 required">
+    <%= f.label :vat %>
+    <%= f.number_field :vat, step: 0.01, class: 'form-control', placeholder: 'Enter VAT' %>
+  </div>
+</div>
+<div class="form-row">
+  <div class='form-group col-md-12' style='border-bottom: 1px solid;'>
+    <h5 class='fs-14'>Season</h5>
+  </div>
+  <div class="form-group col-md-12 required">
+    <%= f.label :season_id %>
+    <%= f.select :season_id, @seasons&.map{|u| [u['name'], u['id']]}, {include_blank: 'Enter Select Category'}, class: 'form-control' %>
+  </div>
+</div>
+<div class="form-row">
+  <div class='form-group col-md-12' style='border-bottom: 1px solid;'>
+    <h5 class='fs-14'>Products</h5>
+  </div>
+  <div class="form-group col-md-12">
+    <div class='links text-right'>
+      <%= link_to_add_association '+', f, :multipack_products, class: 'btn btn-outline-primary rounded'%>
+    </div>
+    <%= f.fields_for :multipack_products do |product|%>
+      <%= render 'multipack_product_fields', f: product %>
+    <% end %>
+  </div>
+</div>

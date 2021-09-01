@@ -18,8 +18,12 @@
       <h5 class='text-center'>Basic</h5>
     </div>
   </div><hr>
+  <div class="form-group required d-none">
+    <%= f.label :product_type %>
+    <%= f.select :product_type, ['Single'], {}, class: 'form-control product_type_field', readonly: true %>
+  </div>
   <%= render 'basic_info_fields', f: f %>
-  <button type='button' class='basic_info_button btn btn-sm btn-outline-info float-right d-none'>Next</button><br>
+  <button type='button' class='basic_info_button btn btn-sm btn-outline-info float-right'>Next</button><br>
 </div>
 <div class='detail-form d-none'>
   <div class='row'>
