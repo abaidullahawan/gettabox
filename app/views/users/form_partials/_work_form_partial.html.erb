@@ -1,0 +1,26 @@
+
+<div class='row'>
+  <div class='col-lg-6 col-sm-12'>
+    <div class="form-group">
+      <%= f.label :password %>
+      <%= f.password_field :password, class: 'form-control', id: 'exampleInputPassword', placeholder: 'Password' %>
+    </div>
+  </div>
+  <div class='col-lg-6 col-sm-12'>
+    <div class="form-group">
+      <%= f.label :password_confirmation %>
+      <%= f.password_field :password_confirmation, class: 'form-control', id: 'exampleInputPassword1', placeholder: 'Confirm Password' %>
+    </div>
+  </div>
+</div>
+<%= f.fields_for :personal_detail do |pd|%>
+  <!-- Work -->
+  <%# Work Detail Fields %>
+  <div id='work_details'>
+    <%= link_to_add_association 'Add Work', pd, :work_details, class: 'btn btn-outline-primary rounded float-right'%>
+    <br>
+    <%= pd.fields_for :work_details do |wd| %>
+      <%= render 'work_detail_fields', f: wd %>
+    <% end %>
+  </div>
+<% end %>

@@ -44,39 +44,46 @@
                       <%= f.search_field :email_cont, class:"form-control", placeholder:"Search in email" %>
                     </div>
                   </div>
-                  <div class="table-responsive">
-                      <table class="table m-0 table-hover">
-                          <thead>
-                              <tr>
-                                  <th>#</th>
-                                  <th>Profile</th>
-                                  <th><%= sort_link @q, :email, default: 'asc' %></th>
-                                  <th class="text-center">Role</th>
-                                  <th class="text-center">Action</th>
-                              </tr>
-                          </thead>
-                          <tbody>
-                            <% @users.each.with_index(1) do |user, index| %>
-                              <tr>
-                                  <td><%= index %></td>
-                                  <td>
-                                      <% if  user.profile_image.attached? %>
-                                          <%= image_tag user.profile_image.service_url, style:'width:30px; height:30px; border-radius:50%;' %>
-                                      <% end %>
-                                  </td>
-                                  <td><%= user.email %></td>
-                                  <td class="text-center"><span class="badge badge-info"><%= user.role %></span></td>
-                                  <td class="text-center">
-                                      <a type="button" class="btn btn-link text-success p-0 mr-2" href="<%= edit_user_path(user)%>">
-                                          <i data-feather="edit-2" class="icon wh-15"></i>
-                                      </a>
-                                      <%= link_to '<i data-feather="x" class="icon wh-15"></i>'.html_safe, user_path(user), method: 'delete', data: {confirm: "Are you sure you want to delete"}, class: "btn btn-link text-danger p-0"%>
-                                  </td>
-                              </tr>
-                            <% end %>
-                          </tbody>
-                      </table>
-                  </div>
+                  <%= form_with url: bulk_method_users_path, method: :post do |f| %>
+                    <div class="table-responsive">
+                        <table class="table m-0 table-hover">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Profile</th>
+                                    <th><%= sort_link @q, :email, default: 'asc' %></th>
+                                    <th class="text-center">Role</th>
+                                    <th class="text-center">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                              <% @users.each.with_index(1) do |user, index| %>
+                                <tr>
+                                    <td><%= index %></td>
+                                    <td>
+                                        <% if  user.profile_image.attached? %>
+                                            <%= image_tag user.profile_image.service_url, style:'width:30px; height:30px; border-radius:50%;' %>
+                                        <% end %>
+                                    </td>
+                                    <td><%= user.email %></td>
+                                    <td class="text-center"><span class="badge badge-info"><%= user.role %></span></td>
+                                    <td class="text-center">
+                                      <div class="dropdown dropleft">
+                                        <button class="btn btn-primary" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                          <i data-feather='bell' class='icon wh-15 mt-minus-3'></i>
+                                          Actions
+                                        </button>
+                                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                          <a class="dropdown-item" href="<%= user_path(user)%>">Show</a>
+                                        </div>
+                                      </div>
+                                    </td>
+                                </tr>
+                              <% end %>
+                            </tbody>
+                        </table>
+                    </div>
+                  <% end %>
                 <% end %>
                 <div class='float-right'>
                   <%= page_entries_info @users %>

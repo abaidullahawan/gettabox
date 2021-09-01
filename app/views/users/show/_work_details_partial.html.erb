@@ -1,0 +1,70 @@
+<div class="profile-left-content">
+  <div class="card mb-30">
+    <div class="card-body">
+      <div class="card-header">
+        <h5 class="card-title">
+          Work Detail
+          <a type="button" class="btn btn-link text-secondary p-0 ml-3 float-right" data-toggle="modal" data-target="#workModalScrollable">
+            <i data-feather="edit-2" class="icon wh-15"></i>
+          </a>
+        </h5>
+      </div>
+      <ul class="info">
+        <li>
+          <i data-feather="map-pin" class="icon"></i>
+          Company Name: <%= @user.personal_detail.work_details.last.company_name %>
+        </li>
+        <li>
+          <i data-feather="edit" class="icon"></i>
+          Position: <%= @user.personal_detail.work_details.last.position %>
+        </li>
+        <li>
+          <i data-feather="calendar" class="icon"></i>
+          City: <%= @user.personal_detail.work_details.last.city %>
+        </li>
+        <li>
+          <i data-feather="align-justify" class="icon"></i>
+          Description: <%= @user.personal_detail.work_details.last.description %>
+        </li>
+        <li>
+          <i data-feather="calendar" class="icon"></i>
+          Joining Date: <%= @user.personal_detail.work_details.last.from %>
+        </li>
+        <% if @user.personal_detail.work_details.last.currently_working == true %>
+          <li>
+            <i data-feather="calendar" class="icon"></i>
+            Currently Working
+          </li>
+        <% else %>
+          <li>
+            <i data-feather="calendar" class="icon"></i>
+            Leaved on: <%= @user.personal_detail.work_details.last.to %>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!--Modal-->
+<div class="modal fade" id="workModalScrollable" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Create Supplier</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <%= form_for(@user, url: user_path) do |f| %>
+          <%= render '/users/form_partials/work_form_partial', f: f %>
+          <div class="form-group col-12">
+            <%= f.submit(@user.new_record? ? "Create" : "Update", class: 'btn btn-outline-success rounded float-right mt-2') %>
+            <button type="button" class="btn btn-secondary rounded float-right mt-2 mx-2" data-dismiss="modal">Close</button>
+          </div><br>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

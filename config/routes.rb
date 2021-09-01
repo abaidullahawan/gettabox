@@ -10,6 +10,9 @@ Rails.application.routes.draw do
     collection do
       post 'user_create', to: 'users#create'
       post 'import', to: 'users#import'
+      post 'bulk_method', to: 'users#bulk_method'
+      get 'archive', to: 'users#archive'
+      post 'restore', to: 'users#restore'
     end
   end
 
