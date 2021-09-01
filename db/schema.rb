@@ -140,9 +140,19 @@ ActiveRecord::Schema.define(version: 2021_08_31_143914) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.datetime "deleted_at"
+    t.bigint "season_id"
+    t.text "description"
     t.integer "product_type"
     t.index ["category_id"], name: "index_products_on_category_id"
     t.index ["deleted_at"], name: "index_products_on_deleted_at"
+    t.index ["season_id"], name: "index_products_on_season_id"
+  end
+
+  create_table "seasons", force: :cascade do |t|
+    t.string "name"
+    t.text "description"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
   end
 
   create_table "study_details", force: :cascade do |t|
@@ -208,5 +218,6 @@ ActiveRecord::Schema.define(version: 2021_08_31_143914) do
   add_foreign_key "product_suppliers", "products"
   add_foreign_key "product_suppliers", "system_users"
   add_foreign_key "products", "categories"
+  add_foreign_key "products", "seasons"
   add_foreign_key "users", "users", column: "created_by"
 end

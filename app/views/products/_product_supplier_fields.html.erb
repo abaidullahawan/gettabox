@@ -3,15 +3,15 @@
   <div class="form-group row">
     <div class="col-5">
       <%= f.label  'Supplier Name' %>
-      <%= f.select :system_user_id, @system_users&.map{|u| [u['name'], u['id']]}, {include_blank: 'Select a Product Supplier'}, autofocus: true, class: 'form-control', required: true %>
+      <%= f.select :system_user_id, @system_users&.map{|u| [u['name'], u['id']]}, {include_blank: 'Select a Product Supplier'}, class: 'form-control' %>
     </div>
     <div class="col-3">
       <%= f.label  'Product Cost' %>
-      <%= f.number_field :product_cost, placeholde: 'Please enter product cost', class: 'form-control', required: true %>
+      <%= f.number_field :product_cost, placeholde: 'Please enter product cost', class: 'form-control' %>
     </div>
     <div class="col-3">
       <%= f.label  'Product SKU' %>
-      <%= f.text_field :product_sku, placeholde: 'Please enter product sku', class: 'form-control', required: true %>
+      <%= f.text_field :product_sku, placeholde: 'Please enter product sku', class: 'form-control' %>
     </div>
     <div class='col-1 pt-3'>
       <br>
