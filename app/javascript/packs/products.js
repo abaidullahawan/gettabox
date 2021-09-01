@@ -18,14 +18,13 @@ $(document).on('turbolinks:load', function () {
     var category = this.parentElement.children[5].children[1].value
     var product_type = this.parentElement.children[6].children[1].value
     if ((photo != "") && (title != "") && (sku != "") && (category != "") && (product_type != "")) {
-      if (product_type == "Single") {
-
-        $('.basic-info-form').addClass('d-none')
-        $('.quantity-form').removeClass('d-none')
+      $('.basic-info-form').addClass('d-none')
+      $('.detail-form').removeClass('d-none')
+      if (product_type == "Multiple") {
+        $('.detail-tax-field').removeClass('d-none')
       }
-      else if (product_type == "Multiple") {
-        $('.basic-info-form').addClass('d-none')
-        $('.stock-form').removeClass('d-none')
+      else {
+        $('.detail-tax-field').addClass('d-none')
       }
     }
     else {
@@ -47,97 +46,56 @@ $(document).on('turbolinks:load', function () {
     }
   })
 
-  $('.quantity_button_previous').on('click', function () {
-    $('.quantity-form').addClass('d-none')
+  $('.detail_button_previous').on('click', function () {
+    $('.detail-form').addClass('d-none')
     $('.basic-info-form').removeClass('d-none')
   })
 
-  $('.quantity_button').on('click', function () {
-    if ((this.parentElement.parentElement.parentElement.children[2].children[0].children[1].value) == "") {
-      alert("Please Enter Total Stock...")
+  $('.detail_button').on('click', function () {
+    if ((this.parentElement.parentElement.parentElement.parentElement.children[0].children[6].children[1].value) == "Multiple") {
+      $('.detail-form').addClass('d-none')
+      $('.extra-form').removeClass('d-none')
+      $('.extra-stock-field').addClass('d-none')
+      $('.extra-pack-field').addClass('d-none')
+      $('.create_product_button').removeClass('d-none')
     }
     else {
-      $('.quantity-form').addClass('d-none')
-      $('.dimensions-form').removeClass('d-none')
-    }
-  })
-
-  $('.dimensions_button_previous').on('click', function () {
-    $('.dimensions-form').addClass('d-none')
-    $('.quantity-form').removeClass('d-none')
-  })
-
-  $('.dimensions_button').on('click', function () {
-    if ((this.parentElement.parentElement.parentElement.children[2].children[3].children[1].value) == "") {
-      alert("Please Enter the Weight of item ...")
-    }
-    else {
-      $('.dimensions-form').addClass('d-none')
+      $('.detail-form').addClass('d-none')
       $('.stock-form').removeClass('d-none')
     }
   })
 
   $('.stock_button_previous').on('click', function () {
-    if (this.parentElement.parentElement.parentElement.parentElement.children[0].children[6].children[1].value == "Single") {
-      $('.stock-form').addClass('d-none')
-      $('.dimensions-form').removeClass('d-none')
-    }
-    else if (this.parentElement.parentElement.parentElement.parentElement.children[0].children[6].children[1].value == "Multiple") {
-      $('.stock-form').addClass('d-none')
-      $('.basic-info-form').removeClass('d-none')
-    }
+    $('.stock-form').addClass('d-none')
+    $('.detail-form').removeClass('d-none')
+    $('.detail-tax-field').addClass('d-none')
   })
 
   $('.stock_button').on('click', function () {
-    if ((this.parentElement.parentElement.parentElement.children[2].children[0].children[1].value) == "") {
-      alert("Please Enter Minimum Stock...")
-    }
-    else {
-      $('.stock-form').addClass('d-none')
-      $('.taxes-form').removeClass('d-none')
-    }
-  })
-
-  $('.taxes_button_previous').on('click', function () {
-    $('.taxes-form').addClass('d-none')
-    $('.stock-form').removeClass('d-none')
-  })
-
-  $('.taxes_button').on('click', function () {
-    $('.taxes-form').addClass('d-none')
-    $('.system-user-form').removeClass('d-none')
-  })
-
-  $('.system_user_button_previous').on('click', function () {
-    $('.system-user-form').addClass('d-none')
-    $('.taxes-form').removeClass('d-none')
-  })
-
-  $('.system_user_button').on('click', function () {
-    if ((this.parentElement.parentElement.parentElement.children[3].children[1].children[0].children[1].value) == "") {
-      alert("Please select the Product Supplier ...")
-    }
-    else {
-      $('.system-user-form').addClass('d-none')
-      $('.barcode-form').removeClass('d-none')
-    }
-  })
-
-  $('.barcode_button_previous').on('click', function () {
-    $('.barcode-form').addClass('d-none')
-    $('.system-user-form').removeClass('d-none')
-  })
-
-  $('.barcode_button').on('click', function () {
-    $('.barcode-form').addClass('d-none')
+    $('.stock-form').addClass('d-none')
     $('.extra-form').removeClass('d-none')
+    $('.extra-stock-field').removeClass('d-none')
+    $('.extra-pack-field').removeClass('d-none')
     $('.create_product_button').removeClass('d-none')
   })
 
+  $('.stock_button_previous').on('click', function () {
+    $('.stock-form').addClass('d-none')
+    $('.detail-form').removeClass('d-none')
+  })
+
   $('.extra_button_previous').on('click', function () {
-    $('.extra-form').addClass('d-none')
-    $('.barcode-form').removeClass('d-none')
-    $('.create_product_button').addClass('d-none')
+    if ((this.parentElement.parentElement.parentElement.parentElement.children[0].children[6].children[1].value) == "Multiple") {
+      $('.extra-form').addClass('d-none')
+      $('.detail-form').removeClass('d-none')
+      $('.detail-tax-field').removeClass('d-none')
+      $('.create_product_button').addClass('d-none')
+    }
+    else {
+      $('.extra-form').addClass('d-none')
+      $('.detail-form').removeClass('d-none')
+      $('.create_product_button').addClass('d-none')
+    }
   })
   // Product Create Form JQuery end
 })

@@ -1,4 +1,9 @@
 <div class="form-group">
+  <%= f.label :season_id %>
+  <%= f.select :season_id, @seasons&.map{|u| [u['name'], u['id']]}, {include_blank: 'Enter Select Category'}, class: 'form-control', required: true %>
+</div>
+
+<div class="form-group">
   <%= f.label :pack_quantity %>
   <%= f.text_field :pack_quantity, autofocus: true, class: 'form-control', placeholder: 'Enter Pack Quantity' %>
 </div>

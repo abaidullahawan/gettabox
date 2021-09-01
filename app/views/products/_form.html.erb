@@ -15,39 +15,25 @@
 <div class='basic-info-form'>
   <div class='row'>
     <div class='col-sm-12'>
-      <h5 class='text-center'>Basic Info Fields</h5>
+      <h5 class='text-center'>Basic</h5>
     </div>
   </div><hr>
   <%= render 'basic_info_fields', f: f %>
   <button type='button' class='basic_info_button btn btn-sm btn-outline-info float-right d-none'>Next</button><br>
 </div>
-<div class='quantity-form d-none'>
+<div class='detail-form d-none'>
   <div class='row'>
     <div class='col-sm-3'>
-      <button type='button' class='quantity_button_previous btn btn-sm btn-outline-secondary'>Previous</button>
+      <button type='button' class='detail_button_previous btn btn-sm btn-outline-secondary'>Previous</button>
     </div>
     <div class='col-sm-6'>
-      <h5 class='text-center'>Quantity Fields</h5>
+      <h5 class='text-center'>Details</h5>
     </div>
     <div class='col-sm-3'>
-      <button type='button' class='quantity_button btn btn-sm btn-outline-info float-right'>Next</button>
+      <button type='button' class='detail_button btn btn-sm btn-outline-info float-right'>Next</button>
     </div>
   </div><hr>
-  <%= render 'quantities_fields', f: f %>
-</div>
-<div class='dimensions-form d-none'>
-  <div class='row'>
-    <div class='col-sm-3'>
-      <button type='button' class='dimensions_button_previous btn btn-sm btn-outline-secondary'>Previous</button>
-    </div>
-    <div class='col-sm-6'>
-      <h5 class='text-center'>Dimensions Fields</h5>
-    </div>
-    <div class='col-sm-3'>
-      <button type='button' class='dimensions_button btn btn-sm btn-outline-info float-right'>Next</button>
-    </div>
-  </div><hr>
-  <%= render 'dimensions_fields', f: f %>
+  <%= render '/products/new_partials/details_partial', f: f %>
 </div>
 <div class='stock-form d-none'>
   <div class='row'>
@@ -55,65 +41,13 @@
       <button type='button' class='stock_button_previous btn btn-sm btn-outline-secondary'>Previous</button>
     </div>
     <div class='col-sm-6'>
-      <h5 class='text-center'>Stock Fields</h5>
+      <h5 class='text-center'>Stock</h5>
     </div>
     <div class='col-sm-3'>
       <button type='button' class='stock_button btn btn-sm btn-outline-info float-right'>Next</button>
     </div>
   </div><hr>
-  <%= render 'stock_fields', f: f %>
-</div>
-<div class='taxes-form d-none'>
-  <div class='row'>
-    <div class='col-sm-3'>
-      <button type='button' class='taxes_button_previous btn btn-sm btn-outline-secondary'>Previous</button>
-    </div>
-    <div class='col-sm-6'>
-      <h5 class='text-center'>Taxes Fields</h5>
-    </div>
-    <div class='col-sm-3'>
-      <button type='button' class='taxes_button btn btn-sm btn-outline-info float-right'>Next</button>
-    </div>
-  </div><hr>
-  <%= render 'taxes_fields', f: f %>
-</div>
-<div class='system-user-form d-none'>
-  <div class='row'>
-    <div class='col-sm-3'>
-      <button type='button' class='system_user_button_previous btn btn-sm btn-outline-secondary'>Previous</button>
-    </div>
-    <div class='col-sm-6'>
-      <h5 class='text-center'>Supplier Fields</h5>
-    </div>
-    <div class='col-sm-3'>
-      <button type='button' class='system_user_button btn btn-sm btn-outline-info float-right'>Next</button>
-    </div>
-  </div><hr>
-  <div class='links text-right'>
-    <%= link_to_add_association '+', f, :product_suppliers, class: 'btn btn-outline-primary rounded'%>
-  </div>
-  <%= f.fields_for :product_suppliers do |supplier|%>
-    <%= render 'product_supplier_fields', f: supplier %>
-  <% end %>
-</div>
-<div class='barcode-form d-none'>
-  <div class='row'>
-    <div class='col-sm-3'>
-      <button type='button' class='barcode_button_previous btn btn-sm btn-outline-secondary'>Previous</button>
-    </div>
-    <div class='col-sm-6'>
-      <h5 class='text-center'>Barcode Fields</h5>
-    </div>
-    <div class='col-sm-3'>
-      <button type='button' class='barcode_button btn btn-sm btn-outline-info float-right'>Next</button>
-    </div>
-  </div><hr>
-  <div class='links text-right'>
-    <%= link_to_add_association '+', f, :barcodes, class: 'btn btn-outline-primary rounded'%>
-  </div>
-  <%= f.fields_for :barcodes do |barcode|%>
-    <%= render 'barcode_fields', f: barcode %>
-  <% end %>
+  <%= render '/products/new_partials/stock_partial', f: f %>
 </div>
 <div class='extra-form d-none'>
   <div class='row'>
@@ -121,10 +55,10 @@
       <button type='button' class='extra_button_previous btn btn-sm btn-outline-secondary'>Previous</button>
     </div>
     <div class='col-sm-6'>
-      <h5 class='text-center'>Extra Fields</h5>
+      <h5 class='text-center'>Extra</h5>
     </div>
     <div class='col-sm-3'>
     </div>
   </div><hr>
-  <%= render 'extra_fields', f: f %>
+  <%= render '/products/new_partials/extra_partial', f: f %>
 </div>
