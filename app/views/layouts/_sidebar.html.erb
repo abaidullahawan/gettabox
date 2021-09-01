@@ -78,6 +78,14 @@
                 </a>
 
                 <a
+                    class="nav-link <%= active_klass(categories_path) %>"
+                    href="<%= seasons_path %>"
+                >
+                    <i data-feather="calendar" class="icon"></i>
+                    <span class="title">Seasons</span>
+                </a>
+
+                <a
                     class="nav-link <%= active_klass(discussions_chat_path) %>"
                     href="<%= discussions_chat_path %>"
                 >

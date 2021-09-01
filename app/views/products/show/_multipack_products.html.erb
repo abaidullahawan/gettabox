@@ -1,0 +1,18 @@
+<% if @product.product_type_Multiple? && @product.multipack_products.present? %>
+  <div class="notifications-card mb-30">
+    <h5 class="noti-card-title">
+      Products
+      <button type='button' data-toggle="modal" data-target='#barcode-modal' class='btn btn-outline-success btn-sm float-right' style='margin:-10px;'>Edit</button>
+    </h5>
+    <div class="list-group">
+      <div class="list-group-item">
+        <% @product.multipack_products.each.with_index do |product, index| %>
+          <div class='row'>
+            <h5 class="fs-14 mb-1 col-4">Product <%= index %></h5>
+            <p class="m-0 col-8"><%= product.child.title %></p>
+          </div><br>
+        <% end %>
+      </div>
+    </div>
+  </div>
+<% end %>

@@ -1,25 +1,20 @@
-    <div class="form-group">
+    <div class="form-group required">
       <%= f.label :photo %>
       <% if  f.object.photo.attached? %>
         <%= image_tag f.object.photo&.service_url, style:'width:50px; height:50px;' %>
       <% end %>
-      <%= f.file_field :photo, autofocus: true, class: 'form-control' %>
+      <%= f.file_field :photo, class: 'form-control', required: true %>
     </div>
-    <div class="form-group">
+    <div class="form-group required">
       <%= f.label :title %>
-      <%= f.text_field :title, autofocus: true, class: 'form-control', placeholder: 'Enter Title', required: true %>
+      <%= f.text_field :title, class: 'form-control', placeholder: 'Enter Title', required: true %>
     </div>
-    <div class="form-group">
+    <div class="form-group required">
       <%= f.label :sku %>
       <%= f.text_field :sku, class: 'form-control', placeholder: 'Enter SKU', required: true %>
     </div>
 
-    <div class="form-group">
+    <div class="form-group required">
       <%= f.label :category_id %>
       <%= f.select :category_id, @categories&.map{|u| [u['title'], u['id']]}, {include_blank: 'Enter Select Category'}, class: 'form-control', required: true %>
-    </div>
-
-    <div class="form-group">
-      <%= f.label :product_type %>
-      <%= f.select :product_type, Product.product_types.map { |key, value| [key.humanize, key] }, {include_blank: 'Please select a Product Type'}, class: 'form-control product_type_field', required: true %>
     </div>
