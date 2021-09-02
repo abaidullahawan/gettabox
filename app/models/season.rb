@@ -1,4 +1,5 @@
 class Season < ApplicationRecord
+  acts_as_paranoid
   has_many :products
   def self.to_csv
     attributes = all.column_names

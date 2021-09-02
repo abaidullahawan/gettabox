@@ -3,6 +3,8 @@ Rails.application.routes.draw do
     collection do
       post 'import', to: 'seasons#import'
       post 'bulk_method', to: 'seasons#bulk_method'
+      get 'archive', to: 'seasons#archive'
+      post 'restore', to: 'seasons#restore'
     end
   end
   devise_for :users
@@ -30,6 +32,9 @@ Rails.application.routes.draw do
   resources :categories do
     collection do
       post 'import', to: 'categories#import'
+      post 'bulk_method', to: 'categories#bulk_method'
+      get 'archive', to: 'categories#archive'
+      post 'restore', to: 'categories#restore'
     end
   end
 

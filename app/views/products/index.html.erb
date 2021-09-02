@@ -43,29 +43,26 @@
         </div>
         <%= search_form_for @q, url: products_path, method: :get do |f| %>
           <div class='row'>
-            <div class='col-1 offset-11'>
-              <label for="inputState">Per Page</label>
-              <%= select_tag :limit, options_for_select([5, 10, 15, 20], selected: params[:limit] || 10), id: 'change_per_page', class: 'form-control' %>
-              <button type="submit" id="per_page_submit" hidden="hidden"></button>
-            </div>
-          </div>
-          <br>
-          <div class="row my-1">
-            <div class="col-md-2">
-              <%= f.search_field :title_cont, class:"form-control", placeholder:"Search in title" %>
-            </div>
-            <div class="col-md-2">
-              <%= f.search_field :sku_cont, class:"form-control", placeholder:"Search in Sku" %>
-            </div>
-            <div class="col-md-1">
-              <button class="btn btn-info h-100 w-100" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <div class="col-md-1"><br>
+              <button class="btn btn-outline-info w-100" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="height:42px;">
                 Bulk
               </button>
               <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                 <%= link_to 'Archive', '#', data: {confirm: "Are you sure you want to archive"}, class:  'dropdown-item bulk-delete-objects' %>
               </div>
             </div>
-          </div>
+            <div class="col-md-2"><br>
+              <%= f.search_field :title_cont, class:"form-control", placeholder:"Search in title" %>
+            </div>
+            <div class="col-md-2"><br>
+              <%= f.search_field :sku_cont, class:"form-control", placeholder:"Search in Sku" %>
+            </div>
+            <div class='col-1 offset-6'>
+              <label for="inputState">Per Page</label>
+              <%= select_tag :limit, options_for_select([5, 10, 15, 20], selected: params[:limit] || 10), id: 'change_per_page', class: 'form-control' %>
+              <button type="submit" id="per_page_submit" hidden="hidden"></button>
+            </div>
+          </div><br>
         <% end %>
 
           <%= form_with url: bulk_method_products_path, method: :post do |f| %>
