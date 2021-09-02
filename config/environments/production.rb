@@ -120,4 +120,19 @@ Rails.application.configure do
   config.assets.digest = true
   config.assets.enabled = true
 
+  config.action_mailer.perform_deliveries = true
+  config.action_mailer.raise_delivery_errors = true
+  config.action_mailer.delivery_method = :smtp
+  config.action_mailer.smtp_settings = {
+    address: "smtp.gmail.com",
+    port: 587,
+    authentication: "plain",
+    enable_starttls_auto: true,
+    user_name: "email.from.devbox@gmail.com",
+    password: "$devbox123$",
+    domain: "smtp.gmail.com"
+  }
+
+  config.action_mailer.default_url_options = { :host => "http://http://142.93.32.58"}
+
 end
