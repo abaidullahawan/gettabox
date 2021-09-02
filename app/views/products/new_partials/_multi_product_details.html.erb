@@ -51,7 +51,7 @@
       <%= link_to_add_association '+', f, :multipack_products, class: 'nested_fields_btn btn btn-outline-primary rounded'%>
     </div>
     <%= f.fields_for :multipack_products do |product|%>
-      <%= render 'multipack_product_fields', f: product %>
+      <%= render 'multipack_product_fields_new', f: product %>
     <% end %>
   </div>
 </div>
