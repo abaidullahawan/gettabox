@@ -2,30 +2,36 @@ import $ from 'jquery'
 
 $(document).on('turbolinks:load', function () {
 
+  $('input, select').on('click', function () {
+    var name = this.name
+    if (name.includes('product')) {
+      $(this).removeClass('border-danger');
+    }
+  })
+
   // Product Create Form JQuery start
   $('.basic_info_button').on('click', function () {
-    debugger;
     var photo = $('input[name="product[photo]"]').val() || $('#multi-product-create-modal input[name="product[photo]"]').val()
     var title = $('input[name="product[title]"]').val() || $('#multi-product-create-modal input[name="product[title]"]').val()
     var sku = $('input[name="product[sku]"]').val() || $('#multi-product-create-modal input[name="product[sku]"]').val()
     var category = $('select[name="product[category_id]"]').val() || $('#multi-product-create-modal select[name="product[category_id]"]').val()
-    var product_type = $('select[name="product[product_type]"]').val() || $('#multi-product-create-modal select[name="product[product_type]"').val()
+    // var product_type = $('select[name="product[product_type]"]').val() || $('#multi-product-create-modal select[name="product[product_type]"').val()
     if ((photo != "") && (title != "") && (sku != "") && (category != "")) {
       $('.basic-info-form').addClass('d-none')
       $('.detail-form').removeClass('d-none')
     }
     else {
       if (photo == "") {
-        alert("Please select a photo")
+        $('input[name="product[photo]"]').addClass('border border-danger');
       }
-      else if (title == "") {
-        alert("Please Enter a Title")
+      if (title == "") {
+        $('input[name="product[title]"]').addClass('border border-danger');
       }
-      else if (sku == "") {
-        alert("Please Enter a SKU")
+      if (sku == "") {
+        $('input[name="product[sku]"]').addClass('border border-danger');
       }
-      else if (category == "") {
-        alert("Please select a category")
+      if (category == "") {
+        $('select[name="product[category_id]"]').addClass('border border-danger');
       }
     }
   })
@@ -36,17 +42,27 @@ $(document).on('turbolinks:load', function () {
   })
 
   $('.detail_button').on('click', function () {
-    debugger;
-    if ((this.parentElement.parentElement.parentElement.parentElement.children[0].children[6].children[1].value) == "Multiple") {
-      $('.detail-form').addClass('d-none')
-      $('.extra-form').removeClass('d-none')
-      $('.extra-stock-field').addClass('d-none')
-      $('.extra-pack-field').addClass('d-none')
-      $('.create_product_button').removeClass('d-none')
-    }
-    else {
+    var length = $('input[name="product[length]"]').val()
+    var width = $('input[name="product[width]"]').val()
+    var height = $('input[name="product[height]"]').val()
+    var weight = $('input[name="product[weight]"]').val()
+    if ((length != "") && (width != "") && (height != "") && (weight != "")) {
       $('.detail-form').addClass('d-none')
       $('.stock-form').removeClass('d-none')
+    }
+    else {
+      if (length == "") {
+        $('input[name="product[length]"]').addClass('border border-danger');
+      }
+      if (width == "") {
+        $('input[name="product[width]"]').addClass('border border-danger');
+      }
+      if (height == "") {
+        $('input[name="product[height]"]').addClass('border border-danger');
+      }
+      if (weight == "") {
+        $('input[name="product[weight]"]').addClass('border border-danger');
+      }
     }
   })
 
@@ -57,11 +73,27 @@ $(document).on('turbolinks:load', function () {
   })
 
   $('.stock_button').on('click', function () {
-    $('.stock-form').addClass('d-none')
-    $('.extra-form').removeClass('d-none')
-    $('.extra-stock-field').removeClass('d-none')
-    $('.extra-pack-field').removeClass('d-none')
-    $('.create_product_button').removeClass('d-none')
+    var total_stock = $('input[name="product[total_stock]"]').val()
+    var vat = $('input[name="product[vat]"]').val()
+    var supplier = $('select[name="product[product_suppliers_attributes][0][system_user_id]"]').val()
+    if ((total_stock != "") && (vat != "") && (supplier != "")) {
+      $('.stock-form').addClass('d-none')
+      $('.extra-form').removeClass('d-none')
+      $('.extra-stock-field').removeClass('d-none')
+      $('.extra-pack-field').removeClass('d-none')
+      $('.create_product_button').removeClass('d-none')
+    }
+    else {
+      if (total_stock == "") {
+        $('input[name="product[total_stock]"]').addClass('border border-danger');
+      }
+      if (vat == "") {
+        $('input[name="product[vat]"]').addClass('border border-danger');
+      }
+      if (supplier == "") {
+        $('select[name="product[product_suppliers_attributes][0][system_user_id]"]').addClass('border border-danger');
+      }
+    }
   })
 
   $('.stock_button_previous').on('click', function () {
@@ -70,16 +102,20 @@ $(document).on('turbolinks:load', function () {
   })
 
   $('.extra_button_previous').on('click', function () {
-    if ((this.parentElement.parentElement.parentElement.parentElement.children[0].children[6].children[1].value) == "Multiple") {
       $('.extra-form').addClass('d-none')
-      $('.detail-form').removeClass('d-none')
-      $('.detail-tax-field').removeClass('d-none')
+      $('.stock-form').removeClass('d-none')
       $('.create_product_button').addClass('d-none')
+  })
+
+  $('#single-product-create-modal input[type="submit"]').on('click', function () {
+    var season = $('select[name="product[season_id]"]').val()
+    if ((season != "")) {
+      $('.create-single-product').trigger('click')
     }
     else {
-      $('.extra-form').addClass('d-none')
-      $('.detail-form').removeClass('d-none')
-      $('.create_product_button').addClass('d-none')
+      if (season == "") {
+        $('select[name="product[season_id]"]').addClass('border border-danger');
+      }
     }
   })
   // Product Create Form JQuery end
