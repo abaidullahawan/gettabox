@@ -1,34 +1,11 @@
-<% if @season.errors.any? %>
-  <div class="alert alert-danger alert-dismissible fade show" role="alert" id="error_explanation">
-    <h5><%= pluralize(@season.errors.count, "error") %> prohibited this product from being saved:</h5>
-    <ul class='error-list'>
-      <% @season.errors.each do |error| %>
-        <li><%= error.full_message %></li>
-      <% end %>
-    </ul>
-    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-      <span aria-hidden="true">&times;</span>
-    </button>
-  </div>
-<% end %>
-<div class="row vertical-pills-tab">
-  <div class="col-sm-3">
-    <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
-      <a class="nav-link active" data-toggle="pill" href="#v-pills-season">Seasons</a>
-    </div>
-  </div>
-  <div class="col-sm-9">
-    <div class="tab-content" id="v-pills-tabContent">
-      <div class="tab-pane fade show active" id="v-pills-season" role="tabpanel">
-        <div class="form-group">
-          <%= f.label :name %>
-          <%= f.text_field :name, autofocus: true, required: true, class: 'form-control', placeholder: 'Enter Name' %>
-        </div>
-        <div class="form-group">
-          <%= f.label :description %>
-          <%= f.text_field :description, required: true, class: 'form-control', placeholder: 'Enter Name' %>
-        </div>
-      </div>
-    </div>
-  </div>
+<div class="form-group">
+  <%= f.label :name %>
+  <%= f.text_field :name, autofocus: true, required: true, class: 'form-control', placeholder: 'Enter Name' %>
+</div>
+<div class="form-group">
+  <%= f.label :description %>
+  <%= f.text_area :description, required: true, class: 'form-control', placeholder: 'Enter Name' %>
+</div>
+<div class="form-group">
+  <%= f.submit(@season.new_record? ? "Create" : "Update", class: 'btn btn-outline-primary rounded float-right') %>
 </div>

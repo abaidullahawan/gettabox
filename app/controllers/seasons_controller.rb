@@ -1,19 +1,19 @@
 class SeasonsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_season, only: %i[ show edit update destroy ]
+  before_action :set_season, only: %i[ show update destroy ]
   before_action :new, only: %i[ index ]
 
   def index
     @q = Season.ransack(params[:q])
     @seasons = @q.result(distinct: true).page(params[:page]).per(params[:limit])
     export_csv(@seasons) if params[:export_csv].present?
+    @season = Season.new
   end
 
   def show
   end
 
   def new
-    @season = Season.new
   end
 
   def edit
@@ -23,20 +23,21 @@ class SeasonsController < ApplicationController
     @season = Season.new(season_params)
     if @season.save
       flash[:notice] = "Season created successfully."
-      redirect_to seasons_path
+      redirect_to season_path(@season)
     else
       flash.now[:notice] = "Season not created."
-      render 'new'
+      render 'index'
     end
   end
 
   def update
+    byebug
     if @season.update(season_params)
       flash[:notice] = "Season updated successfully."
-      redirect_to seasons_path
+      redirect_to season_path(@season)
     else
       flash.now[:notice] = "Season not created."
-      render 'edit'
+      render 'show'
     end
   end
 
