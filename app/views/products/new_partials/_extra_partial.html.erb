@@ -4,7 +4,7 @@
   </div>
   <div class="form-group col-md-4">
       <%= f.label :minimum %>
-      <%= f.number_field :minimum, step: :any, class: 'form-control', placeholder: 'Enter Minimum Stock Alert' %>
+      <%= f.number_field :minimum, step: :any, autofocus: true, class: 'form-control', placeholder: 'Enter Minimum Stock Alert' %>
   </div>
   <div class="form-group col-md-4">
     <%= f.label :optimal %>
@@ -17,7 +17,7 @@
 </div>
 <div class="form-group extra-pack-field">
   <%= f.label :pack_quantity %>
-  <%= f.text_field :pack_quantity, autofocus: true, class: 'form-control', placeholder: 'Enter Pack Quantity' %>
+  <%= f.text_field :pack_quantity, class: 'form-control', placeholder: 'Enter Pack Quantity' %>
 </div>
 <div class="form-row">
   <div class='form-group col-md-12' style='border-bottom: 1px solid;'>
@@ -25,6 +25,6 @@
   </div>
   <div class="form-group col-md-12">
     <%= f.label :season_id %>
-    <%= f.select :season_id, @seasons&.map{|u| [u['name'], u['id']]}, {include_blank: 'Enter Select Category'}, class: 'form-control' %>
+    <%= f.select :season_id, @seasons&.map{|u| [u['name'], u['id']]}, {include_blank: 'Enter Select Category'}, class: 'form-control', required: true %>
   </div>
 </div>
