@@ -1,0 +1,63 @@
+<div class="profile-left-content">
+  <div class="card mb-30">
+    <div class="card-body">
+      <div class="card-header">
+        <h5 class="card-title">
+          Study Details
+          <a type="button" class="btn btn-link text-secondary p-0 ml-3 float-right" data-toggle="modal" data-target="#studyModalScrollable">
+            <i data-feather="edit-2" class="icon wh-15"></i>
+          </a>
+        </h5>
+      </div>
+      <ul class="info">
+        <li>
+          <i data-feather="map-pin" class="icon"></i>
+          Institue: <%= @user.personal_detail.study_details.last.school %>
+        </li>
+        <li>
+          <i data-feather="edit" class="icon"></i>
+          Degree: <%= @user.personal_detail.study_details.last.degree %>
+        </li>
+        <li>
+          <i data-feather="align-justify" class="icon"></i>
+          Format: <%= @user.personal_detail.study_details.last.format %>
+        </li>
+        <li>
+          <i data-feather="calendar" class="icon"></i>
+          From: <%= @user.personal_detail.study_details.last.from %>
+        </li>
+        <li>
+          <i data-feather="phone" class="icon"></i>
+          To: <%= @user.personal_detail.study_details.last.to %>
+        </li>
+        <li>
+          <i data-feather="align-justify" class="icon"></i>
+          Description: <%= @user.personal_detail.study_details.last.description %>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!--Modal-->
+<div class="modal fade" id="studyModalScrollable" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Create Supplier</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <%= form_for(@user, url: user_path) do |f| %>
+          <%= render '/users/form_partials/study_form_partial', f: f %>
+          <div class="form-group col-12">
+            <%= f.submit(@user.new_record? ? "Create" : "Update", class: 'btn btn-outline-success rounded float-right mt-2') %>
+            <button type="button" class="btn btn-secondary rounded float-right mt-2 mx-2" data-dismiss="modal">Close</button>
+          </div><br>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

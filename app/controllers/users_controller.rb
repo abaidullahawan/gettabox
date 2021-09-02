@@ -2,6 +2,7 @@ class UsersController < ApplicationController
   before_action :authenticate_user!
   before_action :user_sub_role
   before_action :find_user, only: [:edit, :update, :show, :destroy]
+  before_action :load_resources, only: [ :show, :edit ]
   # before_filter :default_created_by, only: :create
 
   def index
@@ -23,7 +24,7 @@ class UsersController < ApplicationController
     @user.update(created_by: current_user.id)
     if @user.save
       flash[:notice] = "User cerated successfully."
-      redirect_to users_path
+      redirect_to user_path(@user)
     else
       flash.now[:alert] = "User cannot be create."
       render 'new'
@@ -31,6 +32,9 @@ class UsersController < ApplicationController
   end
 
   def edit
+  end
+
+  def load_resources
     @personal_detail = @user.personal_detail
     @personal_detail = @user.build_personal_detail if @personal_detail.blank?
     @contact_details = @personal_detail.contact_details
@@ -44,10 +48,9 @@ class UsersController < ApplicationController
   def update
     if @user.update(user_params)
       flash[:notice] = "User updated successfully."
-      redirect_to users_path
+      redirect_to user_path(@user)
     else
-      flash.now[:alert] = "User cannot be update."
-      render 'edit'
+      render 'show'
     end
   end
 
@@ -86,6 +89,42 @@ class UsersController < ApplicationController
     else
       flash[:alert] = 'File format no matched! Please change file'
       redirect_to users_path
+    end
+  end
+
+  def bulk_method
+    params[:object_ids].delete('0')
+    if params[:object_ids].present?
+      params[:object_ids].each do |p|
+        user = User.find(p.to_i)
+        user.delete
+      end
+      flash[:notice] = 'Users archive successfully'
+      redirect_to users_path
+    else
+      flash[:alert] = 'Please select something to perform action.'
+    end
+  end
+
+  def archive
+    @q = User.only_deleted.ransack(params[:q])
+    @users = @q.result(distinct: true).page(params[:page]).per(params[:limit])
+  end
+
+  def restore
+    if params[:object_id].present? && User.restore(params[:object_id])
+      flash[:notice] = 'User restore successful'
+      redirect_to archive_users_path
+    elsif params[:object_ids].present?
+      params[:object_ids].delete('0')
+      params[:object_ids].each do |p|
+        User.restore(p.to_i)
+      end
+      flash[:notice] = 'Users restore successful'
+      redirect_to archive_users_path
+    else
+      flash[:notice] = 'User cannot be restore'
+      redirect_to archive_users_path
     end
   end
 
