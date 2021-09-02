@@ -17,7 +17,7 @@
   <!-- Contact -->
     <%# Contact Detail Fields %>
   <div id='conatct_details'>
-    <%= link_to_add_association  'Add Contact', pd, :contact_details, class: 'btn btn-outline-primary rounded float-right'%>
+    <%= link_to_add_association  'Add Contact', pd, :contact_details, class: 'nested_fields_btn btn btn-outline-primary rounded float-right'%>
     <br>
     <%= pd.fields_for :contact_details do |cd| %>
       <%= render 'contact_detail_fields', f: cd %>

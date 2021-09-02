@@ -140,9 +140,9 @@ ActiveRecord::Schema.define(version: 2021_09_02_074226) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.datetime "deleted_at"
+    t.integer "product_type"
     t.bigint "season_id"
     t.text "description"
-    t.integer "product_type"
     t.index ["category_id"], name: "index_products_on_category_id"
     t.index ["deleted_at"], name: "index_products_on_deleted_at"
     t.index ["season_id"], name: "index_products_on_season_id"
