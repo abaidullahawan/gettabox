@@ -32,20 +32,18 @@ Rails.application.configure do
   config.active_storage.service = :amazon
 
   # Don't care if the mailer can't send.
-  config.action_mailer.raise_delivery_errors = false
-  config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }
-  config.action_mailer.delivery_method = :smtp
-  config.action_mailer.default_url_options = { host: 'localhost:3000' }
   config.action_mailer.perform_deliveries = true
   config.action_mailer.raise_delivery_errors = true
+  config.action_mailer.default_url_options = { host: 'localhost' }
+  config.action_mailer.delivery_method = :smtp
   config.action_mailer.smtp_settings = {
-    address: 'smtp.zoho.com',
-    domain: 'devbox.co',
+    address: "smtp.gmail.com",
     port: 587,
-    user_name: 'ameer.hamza@devbox.co',
-    password: '24421591Hamza+',
-    authentication: 'plain',
-    enable_starttls_auto: true
+    authentication: "plain",
+    enable_starttls_auto: true,
+    user_name: "email.from.devbox@gmail.com",
+    password: "$devbox123$",
+    domain: "smtp.gmail.com"
   }
 
   config.action_mailer.perform_caching = false
