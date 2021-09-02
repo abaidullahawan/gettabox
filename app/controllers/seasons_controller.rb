@@ -82,13 +82,35 @@ class SeasonsController < ApplicationController
     params[:object_ids].delete('0')
     if params[:object_ids].present?
       params[:object_ids].each do |p|
-        product = Season.find(p.to_i)
-        product.delete
+        season = Season.find(p.to_i)
+        season.delete
       end
       flash[:notice] = 'Seasons archive successfully'
       redirect_to seasons_path
     else
       flash[:alert] = 'Please select something to perform action.'
+    end
+  end
+
+  def archive
+    @q = Season.only_deleted.ransack(params[:q])
+    @seasons = @q.result(distinct: true).page(params[:page]).per(params[:limit])
+  end
+
+  def restore
+    if params[:object_id].present? && Season.restore(params[:object_id])
+      flash[:notice] = 'Season restore successful'
+      redirect_to archive_seasons_path
+    elsif params[:object_ids].present?
+      params[:object_ids].delete('0')
+      params[:object_ids].each do |p|
+        Season.restore(p.to_i)
+      end
+      flash[:notice] = 'Seasons restore successful'
+      redirect_to archive_seasons_path
+    else
+      flash[:notice] = 'Season cannot be restore'
+      redirect_to archive_seasons_path
     end
   end
 
