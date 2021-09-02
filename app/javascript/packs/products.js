@@ -10,12 +10,43 @@ $(document).on('turbolinks:load', function () {
   })
 
   // Product Create Form JQuery start
+  $('.multi_basic_info_button').on('click', function () {
+    var photo = $('#multi-product-create-modal input[name="product[photo]"]').val()
+    var title = $('#multi-product-create-modal input[name="product[title]"]').val()
+    var sku = $('#multi-product-create-modal input[name="product[sku]"]').val()
+    var category = $('#multi-product-create-modal select[name="product[category_id]"]').val()
+    // var product_type = $('#multi-product-create-modal select[name="product[product_type]"').val()
+    if ((photo != "") && (title != "") && (sku != "") && (category != "")) {
+      $('.multi-basic-info-form').addClass('d-none')
+      $('.multi-detail-form').removeClass('d-none')
+    }
+    else {
+      if (photo == "") {
+        $('#multi-product-create-modal input[name="product[photo]"]').addClass('border border-danger');
+      }
+      if (title == "") {
+        $('#multi-product-create-modal input[name="product[title]"]').addClass('border border-danger');
+      }
+      if (sku == "") {
+        $('#multi-product-create-modal input[name="product[sku]"]').addClass('border border-danger');
+      }
+      if (category == "") {
+        $('#multi-product-create-modal select[name="product[category_id]"]').addClass('border border-danger');
+      }
+    }
+  })
+
+  $('.multi_detail_info_button').on('click', function () {
+    $('.multi-detail-form').addClass('d-none')
+    $('.multi-basic-info-form').removeClass('d-none')
+  })
+
   $('.basic_info_button').on('click', function () {
-    var photo = $('input[name="product[photo]"]').val() || $('#multi-product-create-modal input[name="product[photo]"]').val()
-    var title = $('input[name="product[title]"]').val() || $('#multi-product-create-modal input[name="product[title]"]').val()
-    var sku = $('input[name="product[sku]"]').val() || $('#multi-product-create-modal input[name="product[sku]"]').val()
-    var category = $('select[name="product[category_id]"]').val() || $('#multi-product-create-modal select[name="product[category_id]"]').val()
-    // var product_type = $('select[name="product[product_type]"]').val() || $('#multi-product-create-modal select[name="product[product_type]"').val()
+    var photo = $('input[name="product[photo]"]').val()
+    var title = $('input[name="product[title]"]').val()
+    var sku = $('input[name="product[sku]"]').val()
+    var category = $('select[name="product[category_id]"]').val()
+    // var product_type = $('select[name="product[product_type]"]').val()
     if ((photo != "") && (title != "") && (sku != "") && (category != "")) {
       $('.basic-info-form').addClass('d-none')
       $('.detail-form').removeClass('d-none')
@@ -102,9 +133,9 @@ $(document).on('turbolinks:load', function () {
   })
 
   $('.extra_button_previous').on('click', function () {
-      $('.extra-form').addClass('d-none')
-      $('.stock-form').removeClass('d-none')
-      $('.create_product_button').addClass('d-none')
+    $('.extra-form').addClass('d-none')
+    $('.stock-form').removeClass('d-none')
+    $('.create_product_button').addClass('d-none')
   })
 
   $('#single-product-create-modal input[type="submit"]').on('click', function () {
@@ -119,4 +150,8 @@ $(document).on('turbolinks:load', function () {
     }
   })
   // Product Create Form JQuery end
+
+  $(".nested_fields_btn").
+    data("association-insertion-method", 'after')
+
 })

@@ -23,46 +23,56 @@
     <%= f.select :product_type, ['Single'], {}, class: 'form-control product_type_field', readonly: true %>
   </div>
   <%= render 'basic_info_fields', f: f %>
+  <hr>
   <button type='button' class='basic_info_button btn btn-sm btn-outline-info float-right'>Next</button><br>
 </div>
 <div class='detail-form d-none'>
   <div class='row'>
+    <div class='col-sm-12'>
+      <h5 class='text-center'>Details</h5>
+    </div>
+  </div><hr>
+  <%= render '/products/new_partials/details_partial', f: f %>
+  <hr>
+  <div class='row justify-content-between'>
     <div class='col-sm-3'>
       <button type='button' class='detail_button_previous btn btn-sm btn-outline-secondary'>Previous</button>
-    </div>
-    <div class='col-sm-6'>
-      <h5 class='text-center'>Details</h5>
     </div>
     <div class='col-sm-3'>
       <button type='button' class='detail_button btn btn-sm btn-outline-info float-right'>Next</button>
     </div>
-  </div><hr>
-  <%= render '/products/new_partials/details_partial', f: f %>
+  </div>
 </div>
 <div class='stock-form d-none'>
   <div class='row'>
+    <div class='col-sm-12'>
+      <h5 class='text-center'>Stock</h5>
+    </div>
+  </div><hr>
+  <%= render '/products/new_partials/stock_partial', f: f %>
+  <hr>
+  <div class='row justify-content-between'>
     <div class='col-sm-3'>
       <button type='button' class='stock_button_previous btn btn-sm btn-outline-secondary'>Previous</button>
-    </div>
-    <div class='col-sm-6'>
-      <h5 class='text-center'>Stock</h5>
     </div>
     <div class='col-sm-3'>
       <button type='button' class='stock_button btn btn-sm btn-outline-info float-right'>Next</button>
     </div>
-  </div><hr>
-  <%= render '/products/new_partials/stock_partial', f: f %>
+  </div>
 </div>
 <div class='extra-form d-none'>
   <div class='row'>
-    <div class='col-sm-3'>
-      <button type='button' class='extra_button_previous btn btn-sm btn-outline-secondary'>Previous</button>
-    </div>
-    <div class='col-sm-6'>
+    <div class='col-sm-12'>
       <h5 class='text-center'>Extra</h5>
     </div>
     <div class='col-sm-3'>
     </div>
   </div><hr>
   <%= render '/products/new_partials/extra_partial', f: f %>
+  <hr>
+  <div class='row justify-content-between'>
+    <div class='col-sm-3'>
+      <button type='button' class='extra_button_previous btn btn-sm btn-outline-secondary'>Previous</button>
+    </div>
+  </div>
 </div>

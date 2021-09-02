@@ -22,7 +22,7 @@ class ProductsController < ApplicationController
   def create
     @product = Product.new(product_params)
     if @product.save
-      flash[:notice] = "Craeted successfully."
+      flash[:notice] = "Created successfully."
       redirect_to product_path(@product)
     else
       flash[:alert] = "Product cannot be created!"

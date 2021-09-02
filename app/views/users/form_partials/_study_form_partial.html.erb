@@ -16,7 +16,7 @@
 <%= f.fields_for :personal_detail do |pd|%>
   <%# Study Detail Fields %>
   <div id='study_details'>
-    <%= link_to_add_association 'Add Study', pd, :study_details, class: 'btn btn-outline-primary rounded float-right'%>
+    <%= link_to_add_association 'Add Study', pd, :study_details, class: 'nested_fields_btn btn btn-outline-primary rounded float-right'%>
     <br>
     <%= pd.fields_for :study_details do |sd| %>
       <%= render 'study_detail_fields', f: sd %>

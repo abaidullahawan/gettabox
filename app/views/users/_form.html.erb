@@ -67,7 +67,7 @@
           <div class="tab-pane fade" id="v-pills-contact" role="tabpanel">
             <%# Contact Detail Fields %>
             <div id='conatct_details'>
-              <%= link_to_add_association  'Add Contact', pd, :contact_details, class: 'btn btn-outline-primary rounded float-right'%>
+              <%= link_to_add_association  'Add Contact', pd, :contact_details, class: 'nested_fields_btn btn btn-outline-primary rounded float-right'%>
               <br>
               <%= pd.fields_for :contact_details do |cd| %>
                 <%= render 'contact_detail_fields', f: cd %>
@@ -78,7 +78,7 @@
           <div class="tab-pane fade" id="v-pills-work" role="tabpanel">
             <%# Work Detail Fields %>
             <div id='work_details'>
-              <%= link_to_add_association 'Add Work', pd, :work_details, class: 'btn btn-outline-primary rounded float-right'%>
+              <%= link_to_add_association 'Add Work', pd, :work_details, class: 'nested_fields_btn btn btn-outline-primary rounded float-right'%>
               <br>
               <%= pd.fields_for :work_details do |wd| %>
                 <%= render 'work_detail_fields', f: wd %>
@@ -89,7 +89,7 @@
           <div class="tab-pane fade" id="v-pills-study" role="tabpanel">
             <%# Study Detail Fields %>
             <div id='study_details'>
-              <%= link_to_add_association 'Add Study', pd, :study_details, class: 'btn btn-outline-primary rounded float-right'%>
+              <%= link_to_add_association 'Add Study', pd, :study_details, class: 'nested_fields_btn btn btn-outline-primary rounded float-right'%>
               <br>
               <%= pd.fields_for :study_details do |sd| %>
                 <%= render 'study_detail_fields', f: sd %>
