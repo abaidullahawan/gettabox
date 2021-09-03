@@ -24,7 +24,7 @@
 </div>
 <div class="form-group">
   <%= f.label :payment_method %>
-  <%= f.select(:payment_method, SystemUser.payment_methods.map { |key, value| [key.humanize, key] }, {include_blank: 'Please select a payment method'}, class: 'form-control')%>
+  <%= f.select(:payment_method, SystemUser.payment_methods.map { |key, value| [key.humanize, key] }, {include_blank: 'Please select a payment method'}, class: 'form-control chosen-select')%>
 </div>
 <div class="form-group d-none payment_method_field">
   <%= f.label :days_for_payment %>

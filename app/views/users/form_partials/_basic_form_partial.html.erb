@@ -13,7 +13,7 @@
         <%= f.text_field :role, class: 'form-control', readonly: true %>
       <% else %>
         <%= f.label :role %>
-        <%= f.select(:role, User.filter_role(current_user), {}, class: 'form-control', id: "exampleFormControlSelect1")%>
+        <%= f.select(:role, User.filter_role(current_user), {}, class: 'form-control chosen-select', id: "exampleFormControlSelect1")%>
       <% end %>
     </div>
   </div>

@@ -44,7 +44,8 @@ gem "administrate"
 # soft delete handling
 gem "paranoia", "~> 2.2"
 # Use for dropdown searching
-gem "select2-rails"
+gem 'jquery-rails'
+gem 'chosen-rails'
 
 #
 gem 'capistrano', '~> 3.11'

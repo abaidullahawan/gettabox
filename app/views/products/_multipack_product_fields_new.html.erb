@@ -3,7 +3,7 @@
   <div class="form-group row">
     <div class="col-12">
       <%= f.label 'Add Product' %>
-      <%= f.select :child_id, @single_products&.map{|u| [u['title'], u['id']]}, {include_blank: 'Select a Product'}, class: 'form-control', required: true %>
+      <%= f.select :child_id, @single_products&.map{|u| [u['title'], u['id']]}, {include_blank: 'Select a Product'}, class: 'form-control chosen-select', required: true %>
     </div>
   </div>
 </div>
