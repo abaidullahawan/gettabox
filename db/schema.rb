@@ -65,6 +65,9 @@ ActiveRecord::Schema.define(version: 2021_09_03_061759) do
     t.string "title"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.text "description"
+    t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_categories_on_deleted_at"
   end
 
   create_table "contact_details", force: :cascade do |t|
@@ -140,9 +143,9 @@ ActiveRecord::Schema.define(version: 2021_09_03_061759) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.datetime "deleted_at"
-    t.integer "product_type"
     t.bigint "season_id"
     t.text "description"
+    t.integer "product_type"
     t.index ["category_id"], name: "index_products_on_category_id"
     t.index ["deleted_at"], name: "index_products_on_deleted_at"
     t.index ["season_id"], name: "index_products_on_season_id"

@@ -96,7 +96,7 @@
                         <a class="dropdown-item" href="<%= system_user_path(system_user)%>">Show</a>
                         <%= link_to 'Archive', system_user_path(system_user), method: 'delete', data: {confirm: "Are you sure you want to archive"}, class: "dropdown-item"%>
                       </div>
-                      <a href="<%= new_purchase_order_path %>" class="btn btn-info text-white" role="button">
+                      <a href="<%= new_purchase_order_path(supplier: system_user) %>" class="btn btn-info text-white" role="button">
                         <i data-feather='shopping-cart' class='icon wh-15 mt-minus-3'></i>
                         Shop
                       </a>

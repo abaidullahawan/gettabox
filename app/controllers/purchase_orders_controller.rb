@@ -14,9 +14,13 @@ class PurchaseOrdersController < ApplicationController
   def new
     @purchase_order = PurchaseOrder.new
     @purchase_order.purchase_order_details.build
-
-    @categories = Product.joins(:product_suppliers,:category).where('product_suppliers.system_user_id': 33).pluck('categories.id','categories.title').uniq
-    
+    @supplier = params[:supplier]
+    @categories = Product.joins(:product_suppliers,:category).where('product_suppliers.system_user_id': @supplier).pluck('categories.id','categories.title').uniq
+    @products = Hash.new
+    @categories.each do |category|
+      product = Product.joins(:product_suppliers,:category).where('product_suppliers.system_user_id': @supplier, 'category.id': category)
+      @products[category.first] = product
+    end
   end
 
   def create
