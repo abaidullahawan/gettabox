@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_09_02_074226) do
+ActiveRecord::Schema.define(version: 2021_09_03_061759) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -146,6 +146,25 @@ ActiveRecord::Schema.define(version: 2021_09_02_074226) do
     t.index ["category_id"], name: "index_products_on_category_id"
     t.index ["deleted_at"], name: "index_products_on_deleted_at"
     t.index ["season_id"], name: "index_products_on_season_id"
+  end
+
+  create_table "purchase_order_details", force: :cascade do |t|
+    t.bigint "purchase_order_id"
+    t.bigint "product_id"
+    t.decimal "cost_price"
+    t.integer "quantity"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["product_id"], name: "index_purchase_order_details_on_product_id"
+    t.index ["purchase_order_id"], name: "index_purchase_order_details_on_purchase_order_id"
+  end
+
+  create_table "purchase_orders", force: :cascade do |t|
+    t.bigint "supplier_id"
+    t.decimal "total_bill"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["supplier_id"], name: "index_purchase_orders_on_supplier_id"
   end
 
   create_table "seasons", force: :cascade do |t|

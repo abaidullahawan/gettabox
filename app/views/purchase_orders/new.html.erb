@@ -1,0 +1,52 @@
+<!-- Main Content Header -->
+<div class="main-content-header">
+    <h1>Purchase Order</h1>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a href="<%= dashboard_sales_path %>">Dashboard</a>
+        </li>
+        <li class="breadcrumb-item">
+            <a href="<%= system_users_path %>">Suppliers</a>
+        </li>
+        <li class="breadcrumb-item active">
+            <span class="active">Create</span>
+        </li>
+    </ol>
+</div>
+<!-- End Main Content Header -->
+<div class="row">
+    <div class="col-xl-12">
+        <div class="card mb-30">
+            <div class="card-body">
+                <div class="card-header">
+                    <h5 class="card-title">Create</h5>
+                </div>
+
+                <%= form_for @purchase_order, url: purchase_orders_path, method: :post do |f| %>
+                    <%#= render 'form', f: f %>
+                    <div class="row">
+                      <div class="col-lg-6">
+                          <!-- Faq accordion -->
+                          <div class="faq-accordion mb-30">
+                            <% @categories.each do |id, name| %>
+                              <ul class="accordion">
+                                <li class="accordion-item">
+                                  <a class="accordion-title" href="javascript:void(0)">
+                                    <i class="lni-plus"></i>
+                                    <%= name %>
+                                  </a>
+                                  <p class="accordion-content">
+                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                                  </p>
+                                </li>
+                              </ul>
+                            <% end %>
+                          </div>
+                          <!-- End Faq accordion -->
+                      </div>
+                    </div>
+                <% end %>
+            </div>
+        </div>
+    </div>
+</div>
