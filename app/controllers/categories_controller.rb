@@ -57,13 +57,49 @@ class CategoriesController < ApplicationController
     end
   end
 
+  def bulk_method
+    params[:object_ids].delete('0')
+    if params[:object_ids].present?
+      params[:object_ids].each do |p|
+        category = Category.find(p.to_i)
+        category.delete
+      end
+      flash[:notice] = 'Categories archive successfully'
+      redirect_to categories_path
+    else
+      flash[:alert] = 'Please select something to perform action.'
+    end
+  end
+
+  def archive
+    @q = Category.only_deleted.ransack(params[:q])
+    @categories = @q.result(distinct: true).page(params[:page]).per(params[:limit])
+  end
+
+  def restore
+    if params[:object_id].present? && Category.restore(params[:object_id])
+      flash[:notice] = 'Category restore successful'
+      redirect_to archive_categories_path
+    elsif params[:object_ids].present?
+      params[:object_ids].delete('0')
+      params[:object_ids].each do |p|
+        category.restore(p.to_i)
+      end
+      flash[:notice] = 'Categories restore successful'
+      redirect_to archive_categories_path
+    else
+      flash[:notice] = 'Category cannot be restore'
+      redirect_to archive_categories_path
+    end
+  end
+
   private
     def find_category
       @category = Category.find(params[:id])
     end
 
     def category_params
-      params.require(:category).permit(:title)
+      params.require(:category).permit(:title, :description)
     end
 
 end

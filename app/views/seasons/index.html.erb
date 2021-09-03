@@ -79,7 +79,6 @@
                       </button>
                       <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                         <a class="dropdown-item" href="<%= season_path(season)%>">Show</a>
-                        <a class="dropdown-item" href="<%= edit_season_path(season)%>">Edit</a>
                         <%= link_to 'Archive', season_path(season), method: 'delete', data: {confirm: "Are you sure you want to archive"}, class: "dropdown-item"%>
                       </div>
                     </div>
@@ -113,11 +112,6 @@
         </div>
         <div class="modal-body">
           <%= render 'form', f: f %>
-        </div>
-        <div class="modal-footer">
-          <div class="form-group">
-            <%= f.submit(@season.new_record? ? "Create" : "Update", class: 'btn btn-primary float-right') %>
-          </div>
         </div>
       </div>
     </div>

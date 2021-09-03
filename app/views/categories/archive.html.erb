@@ -2,8 +2,14 @@
 <div class="main-content-header">
   <h1><%= link_to 'Categories', categories_path, style:'color: #212529;' %></h1>
   <ol class="breadcrumb">
+    <li class="breadcrumb-item">
+      <a href="<%= dashboard_sales_path %>">Dashboard</a>
+    </li>
     <li class="breadcrumb-item active">
-      <span class="active">Index</span>
+      <span class="active"><%= link_to 'Categories', categories_path, style:'color: #212529;' %></span>
+    </li>
+    <li class="breadcrumb-item active">
+      <span class="active">Archive</span>
     </li>
   </ol>
 </div>
@@ -14,13 +20,6 @@
     <div class="card mb-30">
       <div class="card-body">
         <div class="card-header">
-          <a href="/categories/new" class="btn btn-primary float-right">Create</a>
-          <div class='mr-1 float-right'>
-            <%= link_to 'Export', categories_path(format: :csv, export_csv: true), class: 'btn btn-outline-primary' %>
-          </div>
-          <div class='mr-1 float-right'>
-            <%= link_to 'Archives', archive_categories_path, class: 'btn btn-outline-info' %>
-          </div>
           <h5 class="card-title"> Data</h5>
         </div>
         <%= search_form_for @q, url: categories_path, method: :get do |f| %>
@@ -30,7 +29,7 @@
                 Bulk
               </button>
               <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                <%= link_to 'Archive', '#', data: {confirm: "Are you sure you want to archive"}, class:  'dropdown-item bulk-delete-objects' %>
+                <%= link_to 'Restore', '#', data: {confirm: "Are you sure you want to restore"}, class:  'dropdown-item bulk-delete-objects' %>
               </div>
             </div>
             <div class="col-md-2"><br>
@@ -44,7 +43,7 @@
           </div>
         <% end %>
         <br>
-        <%= form_with url: bulk_method_categories_path , method: :post do |f| %>
+        <%= form_with url: restore_categories_path , method: :post do |f| %>
           <div class="table-responsive">
             <table class="table m-0 table-hover">
               <tr>
@@ -65,14 +64,13 @@
                           Actions
                         </button>
                         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                          <a class="dropdown-item" href="<%= category_path(category)%>">Show</a>
-                          <%= link_to 'Archive', category_path(category), method: 'delete', data: {confirm: "Are you sure you want to archive"}, class: "dropdown-item"%>
+                          <%= link_to 'Restore', restore_categories_path(object_id: category), method: :post, data: {confirm: "Are you sure you want to restore"}, class: "dropdown-item"%>
                         </div>
                       </div>
                   </td>
                 </tr>
+                <%= f.submit '', class: 'bulk-method-objects d-none'%>
               <% end %>
-              <%= f.submit '', class: 'bulk-method-objects d-none'%>
             </table>
           </div>
         <% end %>

@@ -13,13 +13,55 @@
     <div class="card mb-30">
       <div class="card-body">
         <div class="card-header">
-          <h5 class="card-title">Show</h5>
+          <h5 class="card-title">
+            Show
+            <a type="button" class="btn btn-link text-primary p-0 ml-3 float-right" data-toggle="modal" data-target="#season-update-modal">
+              <i data-feather="edit-2" class="icon wh-15"></i>
+            </a>
+          </h5>
         </div>
         <fieldset disabled>
         <%= form_for @season, url: seasons_path, method: :post do |f| %>
-          <%= render 'form', f: f %>
+          <div class="row vertical-pills-tab">
+            <div class="col-sm-3">
+              <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                <a class="nav-link active" data-toggle="pill" href="#v-pills-season">Seasons</a>
+              </div>
+            </div>
+            <div class="col-sm-9">
+              <div class="tab-content" id="v-pills-tabContent">
+                <div class="tab-pane fade show active" id="v-pills-season" role="tabpanel">
+                  <div class="form-group">
+                    <%= f.label :name %>
+                    <%= f.text_field :name, autofocus: true, required: true, class: 'form-control', placeholder: 'Enter Name' %>
+                  </div>
+                  <div class="form-group">
+                    <%= f.label :description %>
+                    <%= f.text_area :description, required: true, class: 'form-control', placeholder: 'Enter Name' %>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         <% end %>
       </div>
     </div>
   </div>
 </div>
+<%= form_for @season, url: season_path(@season) do |f| %>
+  <div class="modal fade" id="season-update-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Update season</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <%= render 'form', f: f %>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>
