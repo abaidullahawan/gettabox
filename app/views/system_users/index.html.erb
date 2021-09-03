@@ -35,7 +35,7 @@
         <%= search_form_for @q, url: system_users_path, method: :get do |f| %>
           <div class='row'>
             <div class="col-md-1"><br>
-              <button class="btn btn-info w-100" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"  style="height:42px;">
+              <button class="btn btn-outline-info w-100" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"  style="height:42px;">
                 Bulk
               </button>
               <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
@@ -46,7 +46,7 @@
               <%= f.search_field :name_cont, class:"form-control", placeholder:"Search in Name", title: 'Search in Name' %>
             </div>
             <div class="col-md-2"><br>
-              <%= f.select :payment_method_eq, SystemUser.payment_methods.map { |key, value| [key.humanize, value] }, {include_blank: 'Select Type'}, class:"form-control payment-method-field", title: 'Select Payment Type' %>
+              <%= f.select :payment_method_eq, SystemUser.payment_methods.map { |key, value| [key.humanize, value] }, {include_blank: 'Select an option'}, class:"form-control payment-method-field chosen-select", title: 'Select Payment Type' %>
             </div>
             <div class="col-md-2"><br>
               <%= f.search_field :days_for_order_to_completion_eq, class:"form-control", placeholder:"Search in Order to Completion", title: 'Search in Order to Completion' %>

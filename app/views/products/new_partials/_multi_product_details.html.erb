@@ -39,7 +39,7 @@
   </div>
   <div class="form-group col-md-12 required">
     <%= f.label :season_id %>
-    <%= f.select :season_id, @seasons&.map{|u| [u['name'], u['id']]}, {include_blank: 'Enter Select Category'}, class: 'form-control', required: true %>
+    <%= f.select :season_id, @seasons&.map{|u| [u['name'], u['id']]}, {include_blank: 'Enter Select Category'}, class: 'form-control chosen-select', required: true %>
   </div>
 </div>
 <div class="form-row">

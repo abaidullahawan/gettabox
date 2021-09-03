@@ -16,5 +16,5 @@
 
     <div class="form-group required">
       <%= f.label :category_id %>
-      <%= f.select :category_id, @categories&.map{|u| [u['title'], u['id']]}, {include_blank: 'Enter Select Category'}, class: 'form-control', required: true %>
+      <%= f.select :category_id, @categories&.map{|u| [u['title'], u['id']]}, {include_blank: 'Enter Select Category'}, class: 'form-control chosen-select', required: true %>
     </div>

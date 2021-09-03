@@ -3,7 +3,7 @@
   <div class="form-group row">
     <div class="col-5">
       <%= f.label  'Supplier Name' %>
-      <%= f.select :system_user_id, @system_users&.map{|u| [u['name'], u['id']]}, {include_blank: 'Select a Product Supplier'}, class: 'form-control' %>
+      <%= f.select :system_user_id, @system_users&.map{|u| [u['name'], u['id']]}, {include_blank: 'Select a Product Supplier'}, class: 'form-control chosen-select' %>
     </div>
     <div class="col-3">
       <%= f.label  'Product Cost' %>
