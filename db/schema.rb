@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_09_03_061759) do
+ActiveRecord::Schema.define(version: 2021_09_06_070643) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -89,6 +89,7 @@ ActiveRecord::Schema.define(version: 2021_09_03_061759) do
     t.bigint "child_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.decimal "quantity"
     t.index ["child_id"], name: "index_multipack_products_on_child_id"
     t.index ["product_id"], name: "index_multipack_products_on_product_id"
   end
@@ -143,9 +144,9 @@ ActiveRecord::Schema.define(version: 2021_09_03_061759) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.datetime "deleted_at"
+    t.integer "product_type"
     t.bigint "season_id"
     t.text "description"
-    t.integer "product_type"
     t.index ["category_id"], name: "index_products_on_category_id"
     t.index ["deleted_at"], name: "index_products_on_deleted_at"
     t.index ["season_id"], name: "index_products_on_season_id"
