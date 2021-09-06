@@ -154,4 +154,8 @@ $(document).on('turbolinks:load', function () {
   $(".nested_fields_btn").
     data("association-insertion-method", 'after')
 
+  $('.product-type-field').on('change', function () {
+    $('.product_type_submit').trigger('click')
+  })
+
 })

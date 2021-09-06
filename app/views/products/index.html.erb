@@ -57,7 +57,14 @@
             <div class="col-md-2"><br>
               <%= f.search_field :sku_cont, class:"form-control", placeholder:"Search in Sku" %>
             </div>
-            <div class='col-1 offset-6'>
+            <div class="col-md-2"><br>
+              <%= f.search_field :product_type_cont, class:"form-control", placeholder:"Search in Pro" %>
+            </div>
+            <div class="col-md-2"><br>
+              <%= f.select :product_type_eq, Product.product_types.map { |key, value| [key.humanize, value] }, {include_blank: 'Select an option'}, class:"form-control product-type-field chosen-select", title: 'Select Product Type' %>
+            </div>
+            <button type='submit' class='d-none product_type_submit'>
+            <div class='col-md-1 offset-2'>
               <label for="inputState">Per Page</label>
               <%= select_tag :limit, options_for_select([5, 10, 15, 20], selected: params[:limit] || 10), id: 'change_per_page', class: 'form-control' %>
               <button type="submit" id="per_page_submit" hidden="hidden"></button>
@@ -74,17 +81,10 @@
                   <th>Title</th>
                   <th class="text-center">SKU</th>
                   <th class="text-center">Quantity (Total)</th>
-                  <th colspan="3" class="text-center">Stock Alert</th>
+                  <th class="text-center">Product type</th>
                   <th>
                     <%#= select_tag "users[]", options_for_select(@users.collect{|x| [x.name,x.id]}), {:multiple => :multiple, :size => 10} %>
                   </th>
-                </tr>
-                <tr>
-                  <th colspan='5'></th>
-                  <th>Min</td>
-                  <th>Opt</td>
-                  <th>Max</td>
-                  <th></th>
                 </tr>
                 <% @products&.each&.with_index(1) do |product, index| %>
                   <tr class='<%= (product.minimum.to_i > product.total_stock.to_i ) ? 'table-danger' : '' %>'>
@@ -97,9 +97,7 @@
                     <td><%= product.title %></td>
                     <td class="text-center font-weight-bold"><%= product.sku %></td>
                     <td><%= product.total_stock%></td>
-                    <td><%= product.minimum %></td>
-                    <td><%= product.maximum %></td>
-                    <td><%= product.optimal %></td>
+                    <td><%= product.product_type %></td>
 
                     <td class="text-center">
                       <div class="dropdown dropleft">
