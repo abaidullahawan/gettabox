@@ -193,6 +193,7 @@ class ProductsController < ApplicationController
             [ :id,
               :product_id,
               :child_id,
+              :quantity,
               :_destroy
             ]
     )

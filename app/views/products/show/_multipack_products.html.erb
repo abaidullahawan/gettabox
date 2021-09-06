@@ -2,16 +2,57 @@
   <div class="notifications-card mb-30">
     <h5 class="noti-card-title">
       Products
-      <button type='button' data-toggle="modal" data-target='#barcode-modal' class='btn btn-outline-success btn-sm float-right' style='margin:-10px;'>Edit</button>
+      <button type='button' data-toggle="modal" data-target='#multipack-modal' class='btn btn-outline-success btn-sm float-right' style='margin:-10px;'>Edit</button>
     </h5>
     <div class="list-group">
       <div class="list-group-item">
-        <% @product.multipack_products.each.with_index do |product, index| %>
+        <% @product.multipack_products.each.with_index(1) do |product, index| %>
           <div class='row'>
-            <h5 class="fs-14 mb-1 col-4">Product <%= index %></h5>
-            <p class="m-0 col-8"><%= product.child.title %></p>
-          </div><br>
+            <div class='col-12'>
+              <div class='row mt-3'>
+                <h5 class="mb-1 col-12">Product <%= index %></h5>
+              </div><hr>
+              <div class='row'>
+                <h5 class="fs-14 mb-1 col-8">Title</h5>
+                <h5 class="fs-14 mb-1 col-4">Quantity</h5>
+              </div>
+              <div class='row'>
+                <p class="mb-1 fs-14 col-8"><%= product.child.title %></p>
+                <p class="mb-1 fs-14 col-4"><%= product.quantity %></p>
+              </div><hr>
+            </div>
+          </div>
         <% end %>
+      </div>
+    </div>
+  </div>
+<% end %>
+
+<%= form_for(@product, url: product_path) do |f| %>
+  <!-- Supplier Modal -->
+  <div class="modal fade" id="multipack-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Multipack Products</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group col-md-12">
+            <div class='links text-right'>
+              <%= link_to_add_association '+', f, :multipack_products, class: 'nested_fields_btn btn btn-outline-primary rounded'%>
+            </div>
+            <%= f.fields_for :multipack_products do |product|%>
+              <%= render 'multipack_product_fields_new', f: product %>
+            <% end %>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <%= f.submit(@product.new_record? ? "Create" : "Save changes", class: 'btn btn-outline-primary') %>
+        </div>
       </div>
     </div>
   </div>
