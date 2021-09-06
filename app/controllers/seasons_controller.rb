@@ -31,7 +31,6 @@ class SeasonsController < ApplicationController
   end
 
   def update
-    byebug
     if @season.update(season_params)
       flash[:notice] = "Season updated successfully."
       redirect_to season_path(@season)

@@ -1,4 +1,17 @@
 <!-- Main Content Header -->
+<% if @product.errors.any? %>
+  <div class="alert alert-danger alert-dismissible fade show" role="alert" id="error_explanation">
+    <h5><%= pluralize(@product.errors.count, "error") %> prohibited this product from being saved:</h5>
+    <ul class='error-list'>
+      <% @product.errors.each do |error| %>
+        <li><%= error.full_message %></li>
+      <% end %>
+    </ul>
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+<% end %>
 <div class="main-content-header">
   <h1>Products</h1>
   <ol class="breadcrumb">
@@ -14,10 +27,13 @@
   </ol>
 </div>
 <!-- End Main Content Header -->
-
+<div class="row">
+  <div class="col-md-12">
+    <%= render '/products/show/basic_info_show' %>
+  </div>
+</div>
 <div class="row">
   <div class="col-lg-6">
-    <%= render '/products/show/basic_info_show' %>
     <%= render '/products/show/quantity_show' %>
     <%= render '/products/show/suppliers_show' %>
     <%= render '/products/show/taxes_show' %>

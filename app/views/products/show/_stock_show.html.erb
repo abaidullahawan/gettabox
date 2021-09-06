@@ -6,16 +6,18 @@
   <div class="list-group">
     <div class="list-group-item">
       <div class='row'>
-        <h5 class="fs-14 mb-1 col-4">Minimum</h5>
-        <p class="m-0 col-8"><%= @product.minimum %></p>
-      </div><br>
-      <div class='row'>
-        <h5 class="fs-14 mb-1 col-4">Optimal</h5>
-        <p class="m-0 col-8"><%= @product.optimal %></p>
-      </div><br>
-      <div class='row'>
-        <h5 class="fs-14 mb-1 col-4">Maximum</h5>
-        <p class="m-0 col-8"><%= @product.maximum %></p>
+        <div class='col-4'>
+          <h5 class="fs-14 mb-1">Minimum</h5>
+          <p class="m-0"><%= @product.minimum %></p>
+        </div>
+        <div class='col-4'>
+          <h5 class="fs-14 mb-1">Optimal</h5>
+          <p class="m-0"><%= @product.optimal %></p>
+        </div>
+        <div class='col-4'>
+          <h5 class="fs-14 mb-1">Maximum</h5>
+          <p class="m-0"><%= @product.maximum %></p>
+        </div>
       </div>
     </div>
   </div>

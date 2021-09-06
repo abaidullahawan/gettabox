@@ -1,21 +1,22 @@
-<% if @product.barcodes.present? %>
-  <div class="notifications-card mb-30">
-    <h5 class="noti-card-title">
-      Barcodes
-      <button type='button' data-toggle="modal" data-target='#barcode-modal' class='btn btn-outline-success btn-sm float-right' style='margin:-10px;'>Edit</button>
-    </h5>
-    <div class="list-group">
-      <div class="list-group-item">
+<div class="notifications-card mb-30">
+  <h5 class="noti-card-title">
+    Barcodes
+    <button type='button' data-toggle="modal" data-target='#barcode-modal' class='btn btn-outline-success btn-sm float-right' style='margin:-10px;'>Edit</button>
+  </h5>
+  <div class="list-group">
+    <div class="list-group-item">
+      <% if @product.barcodes.present? %>
         <% @product.barcodes.each.with_index do |barcode, index| %>
           <div class='row'>
             <h5 class="fs-14 mb-1 col-4">Barcode <%= index %></h5>
             <p class="m-0 col-8"><%= barcode.title %></p>
           </div><br>
         <% end %>
-      </div>
+      <% end %>
     </div>
   </div>
-<% end %>
+</div>
+
 <%= form_for(@product, url: product_path) do |f| %>
   <!-- Barcode Modal -->
   <div class="modal fade" id="barcode-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
