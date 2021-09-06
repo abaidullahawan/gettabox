@@ -1,15 +1,12 @@
 <!-- Main Content Header -->
 <div class="main-content-header">
-  <h1>Purchase Order</h1>
+  <h1><%= link_to 'Purchase Orders', purchase_orders_path, style:'color: #212529;' %></h1>
   <ol class="breadcrumb">
     <li class="breadcrumb-item">
       <a href="<%= dashboard_sales_path %>">Dashboard</a>
     </li>
-    <li class="breadcrumb-item">
-      <a href="<%= system_users_path %>">Suppliers</a>
-    </li>
     <li class="breadcrumb-item active">
-      <span class="active">Create</span>
+      <span class="active">/ Show</span>
     </li>
   </ol>
 </div>
@@ -19,11 +16,10 @@
     <div class="card mb-30">
       <div class="card-body">
         <div class="card-header">
-          <h5 class="card-title">Create</h5>
+          <h5 class="card-title">Show</h5>
         </div>
         <%= form_for @purchase_order, url: purchase_orders_path, method: :post do |pd| %>
-          <%= render 'form', pd: pd %>
-          <%= pd.submit(@purchase_order.new_record? ? "Create" : "Save changes", class: 'btn btn-outline-primary create_product_button') %>
+          <%= render 'form_show', pd: pd %>
         <% end %>
       </div>
     </div>

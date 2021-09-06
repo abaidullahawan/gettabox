@@ -22,6 +22,7 @@ require("@nathanvda/cocoon")
 require("packs/custom")
 require("packs/system_users")
 require("packs/products")
+require("packs/purchase_order")
 require("packs/chosen-jquery")
 require("packs/chosen")
 
