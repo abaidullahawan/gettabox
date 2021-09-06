@@ -1,11 +1,11 @@
-<% if @product.product_suppliers.present? %>
-  <div class="notifications-card mb-30">
-    <h5 class="noti-card-title">
-      Suppliers
-      <button type='button' data-toggle="modal" data-target='#product-supplier-modal' class='btn btn-outline-success btn-sm float-right' style='margin:-10px;'>Edit</button>
-    </h5>
-    <div class="list-group">
-      <div class="list-group-item">
+<div class="notifications-card mb-30">
+  <h5 class="noti-card-title">
+    Suppliers
+    <button type='button' data-toggle="modal" data-target='#product-supplier-modal' class='btn btn-outline-success btn-sm float-right' style='margin:-10px;'>Edit</button>
+  </h5>
+  <div class="list-group">
+    <div class="list-group-item">
+      <% if @product.product_suppliers.present? %>
         <% @product.product_suppliers.each.with_index(1) do |supplier, index| %>
           <div class='row'>
             <div class='col-12'>
@@ -25,10 +25,10 @@
             </div>
           </div>
         <% end %>
-      </div>
+      <% end %>
     </div>
   </div>
-<% end %>
+</div>
 <%= form_for(@product, url: product_path) do |f| %>
   <!-- Supplier Modal -->
   <div class="modal fade" id="product-supplier-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
