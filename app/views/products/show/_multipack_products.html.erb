@@ -1,4 +1,4 @@
-<% if @product.product_type_Multiple? && @product.multipack_products.present? %>
+<% if @product.product_type_Multiple? %>
   <div class="notifications-card mb-30">
     <h5 class="noti-card-title">
       Products
@@ -6,20 +6,22 @@
     </h5>
     <div class="list-group">
       <div class="list-group-item">
-        <% @product.multipack_products.each.with_index(1) do |product, index| %>
+        <% if @product.multipack_products.present? %>
           <div class='row'>
             <div class='col-12'>
-              <div class='row mt-3'>
-                <h5 class="mb-1 col-12">Product <%= index %></h5>
-              </div><hr>
               <div class='row'>
-                <h5 class="fs-14 mb-1 col-8">Title</h5>
-                <h5 class="fs-14 mb-1 col-4">Quantity</h5>
-              </div>
-              <div class='row'>
-                <p class="mb-1 fs-14 col-8"><%= product.child.title %></p>
-                <p class="mb-1 fs-14 col-4"><%= product.quantity %></p>
+                <h5 class="fs-14 mb-1 col-8 offset-1">Title</h5>
+                <h5 class="fs-14 mb-1 col-3">Quantity</h5>
               </div><hr>
+              <% @product.multipack_products.each.with_index(1) do |product, index| %>
+                <a href="<%= product_path(product.child) %>" class='link_tag' style="text-decoration: none;">
+                  <div class='row'>
+                    <p class="mb-1 fs-14 col-1"><strong><%= index %></strong></p>
+                    <p class="mb-1 fs-14 col-8"><%= product.child.title %></p>
+                    <p class="mb-1 fs-14 col-3"><%= product.quantity %></p>
+                  </div><hr>
+                </a>
+              <% end %>
             </div>
           </div>
         <% end %>
