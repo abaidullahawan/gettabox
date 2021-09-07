@@ -89,8 +89,16 @@
                     class="nav-link <%= active_klass(purchase_orders_path) %>"
                     href="<%= purchase_orders_path %>"
                 >
-                    <i data-feather="calendar" class="icon"></i>
+                    <i data-feather="upload" class="icon"></i>
                     <span class="title">Purchase Order</span>
+                </a>
+
+                <a
+                    class="nav-link <%= active_klass(purchase_deliveries_path) %>"
+                    href="<%= purchase_deliveries_path %>"
+                >
+                    <i data-feather="download" class="icon"></i>
+                    <span class="title">Purchase Delivery</span>
                 </a>
 
                 <a

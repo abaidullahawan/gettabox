@@ -1,0 +1,94 @@
+<!-- Main Content Header -->
+<div class="main-content-header">
+  <h1><%= link_to 'Purchase Deliveries', purchase_deliveries_path, style:'color: #212529;' %></h1>
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item">
+      <a href="<%= dashboard_sales_path %>">Dashboard</a>
+    </li>
+    <li class="breadcrumb-item active">
+      <span class="active">Purchase Deliveries</span>
+    </li>
+    <li class="breadcrumb-item active">
+      <span class="active">Create</span>
+    </li>
+  </ol>
+</div>
+<!-- End Main Content Header -->
+<div class="row">
+  <div class="col-xl-12">
+    <div class="card mb-30">
+      <div class="card-body">
+        <div class="card-header">
+          <h5 class="card-title">Create</h5>
+        </div>
+        <%= form_for @purchase_delivery do |pd| %>
+          <div class='row'>
+            <div class='col-3 offset-6'>
+              <h5 class='float-right pt-2'>Total Price</h5>
+            </div>
+            <div class='col-3'>
+              <%= pd.number_field :total_bill, class: 'form-control order_total', placeholder: 'Total', value: @purchase_order.total_bill %>
+              <%= pd.number_field :purchase_order_id, value: @purchase_order.id, class: 'form-control d-none' %>
+            </div>
+          </div><br>
+          <div class="row">
+            <div class="col-lg-12">
+              <!-- Faq accordion -->
+              <div class="faq-accordion mb-30">
+                <div class="table-responsive accordion-content">
+                  <table class="table table-hover text-vertical-middle mb-0">
+                    <thead class="bort-none borpt-0">
+                      <tr>
+                        <th scope="col"><strong>Image</strong></th>
+                        <th scope="col" colspan='3'><strong>Title</strong></th>
+                        <th scope="col"><strong>Deliverd/Ordered</strong></th>
+                        <th scope="col"><strong>Stock</strong></th>
+                        <th scope="col"><strong>Cost Price</strong></th>
+                        <th scope="col"><strong>Quantity</strong></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <% @purchase_order_details.each do |p_order| %>
+                        <%= pd.fields_for :purchase_delivery_details do |f| %>
+                          <tr>
+                            <td>
+                              <% if p_order.product.photo.attached? %>
+                                <%= image_tag(p_order.product.photo&.service_url, width: "100", height: "100", class: 'mr-3 img-thumbnail', alt: 'User Image') %>
+                              <% else %>
+                                <%= image_tag('product/product6.jpg', width: "100", height: "100", class: 'mr-3 img-thumbnail', alt: 'User Image') %>
+                              <% end %>
+                            </td>
+                            <td colspan='3'>
+                              <h5><%= p_order.product.title %></h5><br>
+                              <strong>Description: </strong><%= p_order.product.description %><br>
+                              <strong>Product SKU: </strong><%= p_order.product.sku %><br>
+                              <strong>Supplier SKU: </strong><%= p_order.product.product_suppliers.find_by(system_user_id: @purchase_order.supplier_id).product_sku %>
+                            </td>
+                            <td>0/0</td>
+                            <td><%= p_order.product.total_stock %></td>
+                            <td>
+                              <%= f.number_field :cost_price, class: 'form-control order_item_price', placeholder: 'Price', value: p_order.cost_price %>
+                            </td>
+                            <td>
+                              <%= f.number_field :quantity, class: 'form-control order_item_quantity', placeholder: 'Quantity', value: p_order.quantity %>
+                              <%= f.number_field :product_id, value: p_order.product.id, class: 'form-control d-none' %>
+                            </td>
+                            <td>
+                              <input class="form-control order_item_total" type="text" placeholder="Total" style="width: 70px;">
+                            </td>
+                          </tr>
+                        <% end %>
+                      <% end %>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <!-- End Faq accordion -->
+            </div>
+          </div>
+          <%= pd.submit(@purchase_order.new_record? ? "Create" : "Save changes", class: 'btn btn-outline-primary create_p_order.product_button') %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
