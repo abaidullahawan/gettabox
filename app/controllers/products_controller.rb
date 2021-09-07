@@ -120,7 +120,6 @@ class ProductsController < ApplicationController
   end
 
   def restore
-    byebug
     if params[:object_id].present? && Product.restore(params[:object_id])
       flash[:notice] = 'Product restore successful'
       redirect_to archive_products_path
