@@ -65,7 +65,7 @@
           </div>
 
           <div class="modal-body">
-            <%= form_for @system_user, url: system_users_path(@system_user), method: :post do |f| %>
+            <%= form_for @system_user do |f| %>
               <%= render 'form', f: f %>
             <% end %>
           </div>
