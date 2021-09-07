@@ -47,6 +47,15 @@ Rails.application.routes.draw do
     end
   end
 
+  resources :purchase_deliveries do
+    collection do
+      post 'import', to: 'purchase_orders#import'
+      post 'bulk_method', to: 'purchase_orders#bulk_method'
+      get 'archive', to: 'purchase_orders#archive'
+      post 'restore', to: 'purchase_orders#restore'
+    end
+  end
+
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
   resources :system_users do
     collection do

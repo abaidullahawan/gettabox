@@ -1,12 +1,12 @@
 <!-- Main Content Header -->
 <div class="main-content-header">
-  <h1><%= link_to 'Purchase Orders', purchase_orders_path, style:'color: #212529;' %></h1>
+  <h1><%= link_to 'Purchase Deliveries', purchase_deliveries_path, style:'color: #212529;' %></h1>
   <ol class="breadcrumb">
     <li class="breadcrumb-item">
       <a href="<%= dashboard_sales_path %>">Dashboard</a>
     </li>
     <li class="breadcrumb-item active">
-      <span class="active">Purchase Orders</span>
+      <span class="active">Purchase Deliveries</span>
     </li>
   </ol>
 </div>
@@ -18,23 +18,23 @@
       <div class="card-body">
         <div class="card-header">
           <span class='mr-1 float-right'>
-            <%= form_tag import_purchase_orders_path, multipart: true, method: :post do %>
+            <%= form_tag import_purchase_deliveries_path, multipart: true, method: :post do %>
               <%= file_field_tag :file, class: 'd-none import-file' %>
               <button type='button' class='btn btn-outline-success import-btn'>Import</button>
               <%= submit_tag "Import", class: 'd-none import-submit' %>
             <% end %>
           </span>
           <div class='mr-1 float-right'>
-            <%= link_to 'Export', purchase_orders_path(format: :csv, export_csv: true), class: 'btn btn-outline-primary' %>
+            <%= link_to 'Export', purchase_deliveries_path(format: :csv, export_csv: true), class: 'btn btn-outline-primary' %>
           </div>
           <!--
           <div class='mr-1 float-right'>
-            <%= link_to 'Archives', archive_purchase_orders_path, class: 'btn btn-outline-info' %>
+            <%= link_to 'Archives', archive_purchase_deliveries_path, class: 'btn btn-outline-info' %>
           </div>
           -->
           <h5 class="card-title"> Data</h5>
         </div>
-        <%= search_form_for @q, url: purchase_orders_path, method: :get do |f| %>
+        <%= search_form_for @q, url: purchase_deliveries_path, method: :get do |f| %>
           <div class='row'>
             <div class="col-md-1"><br>
               <!--
@@ -54,24 +54,24 @@
           </div>
         <% end %>
         <br>
-        <%= form_with url: bulk_method_purchase_orders_path , method: :post do |f| %>
+        <%= form_with url: bulk_method_purchase_deliveries_path , method: :post do |f| %>
           <div class="table-responsive">
             <table class="table m-0 table-hover">
               <tr>
                 <th><input type="checkbox" id="" name="" value="" class='select-all-checkbox'></th>
                 <th class="text-center">ID</th>
-                <th class="text-center">Supplier Name</th>
+                <th class="text-center">Purchase Order</th>
                 <th class="text-center">Total Bill</th>
                 <th class="text-center">Created at</th>
                 <th colspan="3" class="text-center">Actions</th>
               </tr>
-              <% @purchase_orders&.each&.with_index(1) do |purchase_order, index| %>
+              <% @purchase_deliveries&.each&.with_index(1) do |purchase_delivery, index| %>
                 <tr class=''>
-                  <td><%= f.check_box 'object_ids[]', {}, purchase_order.id %></td>
-                  <td class="text-center"><%= purchase_order.id %></td>
-                  <td class="text-center"><%= purchase_order.system_user.name %></td>
-                  <td class="text-center"><%= purchase_order.total_bill %></td>
-                  <td class="text-center"><%= purchase_order.created_at %></td>
+                  <td><%= f.check_box 'object_ids[]', {}, purchase_delivery.id %></td>
+                  <td class="text-center"><%= purchase_delivery.id %></td>
+                  <td class="text-center"><%= purchase_delivery.purchase_order_id %></td>
+                  <td class="text-center"><%= purchase_delivery.total_bill %></td>
+                  <td class="text-center"><%= purchase_delivery.created_at %></td>
 
                   <td class="text-center">
                     <div class="dropdown dropleft">
@@ -80,13 +80,9 @@
                         Actions
                       </button>
                       <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                        <a class="dropdown-item" href="<%= purchase_order_path(purchase_order)%>">Show</a>
-                        <%= link_to 'Archive', purchase_order_path(purchase_order), method: 'delete', data: {confirm: "Are you sure you want to archive"}, class: "dropdown-item"%>
+                        <a class="dropdown-item" href="<%= purchase_delivery_path(purchase_delivery)%>">Show</a>
+                        <%= link_to 'Archive', purchase_delivery_path(purchase_delivery), method: 'delete', data: {confirm: "Are you sure you want to archive"}, class: "dropdown-item"%>
                       </div>
-                      <a href="<%= new_purchase_delivery_path(purchase_order_id: purchase_order) %>" class="btn btn-info text-white" role="button">
-                        <i data-feather='shopping-cart' class='icon wh-15 mt-minus-3'></i>
-                        Shop
-                      </a>
                     </div>
                   </td>
                 </tr>
@@ -97,10 +93,10 @@
         <% end %>
         <br>
         <div class='float-right'>
-          <%= page_entries_info @purchase_orders %>
+          <%= page_entries_info @purchase_deliveries %>
         </div><br>
         <div class="pagination justify-content-center mt-3">
-          <%= paginate @purchase_orders,theme: "twitter-bootstrap-4",pagination_class: "pagination-sm",nav_class: "d-inline-b" %>
+          <%= paginate @purchase_deliveries,theme: "twitter-bootstrap-4",pagination_class: "pagination-sm",nav_class: "d-inline-b" %>
         </div>
       </div>
     </div>
