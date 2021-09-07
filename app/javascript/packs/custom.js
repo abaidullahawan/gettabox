@@ -145,10 +145,6 @@ $(document).on('turbolinks:load', function () {
     $('.bulk-delete-objects').on('click', function () {
       $('.bulk-method-objects').trigger('click')
     })
-
-    $('.basic-validations').on('click', function () {
-      debugger;
-    })
 });
 
 // Preloader JS

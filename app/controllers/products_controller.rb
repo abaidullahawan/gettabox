@@ -110,6 +110,7 @@ class ProductsController < ApplicationController
       redirect_to products_path
     else
       flash[:alert] = 'Please select something to perform action.'
+      redirect_to products_path
     end
   end
 
@@ -119,18 +120,18 @@ class ProductsController < ApplicationController
   end
 
   def restore
+    byebug
     if params[:object_id].present? && Product.restore(params[:object_id])
       flash[:notice] = 'Product restore successful'
       redirect_to archive_products_path
-    elsif params[:object_ids].present?
-      params[:object_ids].delete('0')
+    elsif params[:object_ids].delete('0') && params[:object_ids].present?
       params[:object_ids].each do |p|
         Product.restore(p.to_i)
       end
       flash[:notice] = 'Products restore successful'
       redirect_to archive_products_path
     else
-      flash[:notice] = 'Product cannot be restore'
+      flash[:notice] = 'Product cannot be restore/Please select something to restore'
       redirect_to archive_products_path
     end
   end
