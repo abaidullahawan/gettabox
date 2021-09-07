@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_09_06_070643) do
+ActiveRecord::Schema.define(version: 2021_09_07_105112) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -144,12 +144,31 @@ ActiveRecord::Schema.define(version: 2021_09_06_070643) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.datetime "deleted_at"
+    t.integer "product_type"
     t.bigint "season_id"
     t.text "description"
-    t.integer "product_type"
     t.index ["category_id"], name: "index_products_on_category_id"
     t.index ["deleted_at"], name: "index_products_on_deleted_at"
     t.index ["season_id"], name: "index_products_on_season_id"
+  end
+
+  create_table "purchase_deliveries", force: :cascade do |t|
+    t.bigint "purchase_order_id", null: false
+    t.decimal "total_bill"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["purchase_order_id"], name: "index_purchase_deliveries_on_purchase_order_id"
+  end
+
+  create_table "purchase_delivery_details", force: :cascade do |t|
+    t.bigint "purchase_delivery_id", null: false
+    t.bigint "product_id", null: false
+    t.integer "quantity"
+    t.decimal "cost_price"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["product_id"], name: "index_purchase_delivery_details_on_product_id"
+    t.index ["purchase_delivery_id"], name: "index_purchase_delivery_details_on_purchase_delivery_id"
   end
 
   create_table "purchase_order_details", force: :cascade do |t|
@@ -246,5 +265,8 @@ ActiveRecord::Schema.define(version: 2021_09_06_070643) do
   add_foreign_key "product_suppliers", "system_users"
   add_foreign_key "products", "categories"
   add_foreign_key "products", "seasons"
+  add_foreign_key "purchase_deliveries", "purchase_orders"
+  add_foreign_key "purchase_delivery_details", "products"
+  add_foreign_key "purchase_delivery_details", "purchase_deliveries"
   add_foreign_key "users", "users", column: "created_by"
 end
