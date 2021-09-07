@@ -68,6 +68,7 @@ class CategoriesController < ApplicationController
       redirect_to categories_path
     else
       flash[:alert] = 'Please select something to perform action.'
+      redirect_to categories_path
     end
   end
 
@@ -83,7 +84,7 @@ class CategoriesController < ApplicationController
     elsif params[:object_ids].present?
       params[:object_ids].delete('0')
       params[:object_ids].each do |p|
-        category.restore(p.to_i)
+        Category.restore(p.to_i)
       end
       flash[:notice] = 'Categories restore successful'
       redirect_to archive_categories_path

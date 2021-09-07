@@ -106,9 +106,10 @@ class PurchaseOrdersController < ApplicationController
         product.delete
       end
       flash[:notice] = 'Purchase Orders archive successfully'
-      redirect_to purchase_orderss_path
+      redirect_to purchase_orders_path
     else
       flash[:alert] = 'Please select something to perform action.'
+      redirect_to purchase_orders_path
     end
   end
 

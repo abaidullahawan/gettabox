@@ -98,6 +98,7 @@ class SystemUsersController < ApplicationController
       redirect_to system_users_path
     else
       flash[:alert] = 'Please select something to perform action.'
+      redirect_to system_users_path
     end
   end
 
