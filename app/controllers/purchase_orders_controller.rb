@@ -25,7 +25,7 @@ class PurchaseOrdersController < ApplicationController
     @purchase_order = PurchaseOrder.new(purchase_order_params)
     if @purchase_order.save
       flash[:notice] = "Purchase Order created successfully."
-      redirect_to purchase_orders_path
+      redirect_to purchase_order_path(@purchase_order)
     else
       flash.now[:notice] = "Purchase Order not created."
       render 'new'
@@ -34,7 +34,6 @@ class PurchaseOrdersController < ApplicationController
 
   def show
     @supplier = @purchase_order.supplier_id
-    @purchase_order_details = @purchase_order.purchase_order_details
   end
 
   def edit
@@ -43,10 +42,10 @@ class PurchaseOrdersController < ApplicationController
   def update
     if @purchase_order.update(purchase_order_params)
       flash[:notice] = "Purchase Order updated successfully."
-      redirect_to purchase_orderss_path
+      redirect_to purchase_order_path(@purchase_order)
     else
       flash.now[:notice] = "Purchase Order not updated."
-      render 'edit'
+      render 'show'
     end
   end
 
@@ -140,6 +139,7 @@ class PurchaseOrdersController < ApplicationController
         :supplier_id,
         :total_bill,
         purchase_order_details_attributes:[
+          :id,
           :purchase_order_id,
           :product_id,
           :cost_price,
