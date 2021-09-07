@@ -48,7 +48,7 @@
                 Bulk
               </button>
               <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                <a class="dropdown-item" data-toggle="modal" data-target='#archive-modal'>Archive</a>
+                <a class="dropdown-item" href='#' data-toggle="modal" data-target='#archive-modal'>Archive</a>
               </div>
             </div>
             <div class="col-md-2"><br>
@@ -112,8 +112,8 @@
                       </div>
                     </td>
                   </tr>
-                  <%= f.submit '', class: 'bulk-method-objects d-none'%>
                 <% end %>
+                <%= f.submit '', class: 'bulk-method-objects d-none'%>
               </table>
             </div>
           <% end %>

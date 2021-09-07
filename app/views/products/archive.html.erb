@@ -29,7 +29,7 @@
                 Bulk
               </button>
               <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                <a class="dropdown-item" data-toggle="modal" data-target='#restore-modal'>Restore</a>
+                <a class="dropdown-item" href="#" data-toggle="modal" data-target='#archive-modal'>Restore</a>
                 <%#= link_to 'Restore', '#', data: {confirm: "Are you sure you want to restore"}, class:  'dropdown-item bulk-delete-objects' %>
               </div>
             </div>
@@ -95,8 +95,8 @@
                       </div>
                     </td>
                   </tr>
-                  <%= f.submit '', class: 'bulk-method-objects d-none'%>
                 <% end %>
+                <%= f.submit '', class: 'bulk-method-objects d-none'%>
               </table>
             </div>
           <% end %>
@@ -112,7 +112,7 @@
   </div>
 </div>
 
-<div class="modal" id="restore-modal" tabindex="-1" role="dialog">
+<div class="modal" id="archive-modal" tabindex="-1" role="dialog">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
