@@ -37,10 +37,10 @@ class SystemUsersController < ApplicationController
     if @system_user.update(system_user_params)
       @system_user.update(user_type: 'supplier')
       flash[:notice] = "Supplier updated successfully."
-      redirect_to system_users_path
+      redirect_to system_user_path(@system_user)
     else
       flash.now[:notice] = "Supplier not updated."
-      render 'edit'
+      render 'show'
     end
   end
 
