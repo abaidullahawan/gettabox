@@ -73,12 +73,14 @@
                                   </td>
                                   <td>0/0</td>
                                   <td><%= product.total_stock %></td>
+                                  <td class='d-none'>
+                                    <%= f.number_field :product_id, value: product.id, class: 'form-control d-none' %>
+                                  </td>
                                   <td>
                                     <%= f.number_field :cost_price, class: 'form-control order_item_price', placeholder: 'Price' %>
                                   </td>
                                   <td>
                                     <%= f.number_field :quantity, class: 'form-control order_item_quantity', placeholder: 'Quantity' %>
-                                    <%= f.number_field :product_id, value: product.id, class: 'form-control d-none' %>
                                   </td>
                                   <td>
                                     <input class="form-control order_item_total" type="text" placeholder="Total" style="width: 70px;">
