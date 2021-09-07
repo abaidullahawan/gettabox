@@ -48,7 +48,8 @@
                 Bulk
               </button>
               <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                <%= link_to 'Archive', '#', data: {confirm: "Are you sure you want to archive"}, class:  'dropdown-item bulk-delete-objects' %>
+                <%#= link_to 'Archive', '#', class:  'dropdown-item bulk-delete-objects' %>
+                <a class="dropdown-item" data-toggle="modal" data-target='#archive-modal'>Archive</a>
               </div>
             </div>
             <div class="col-md-2"><br>

@@ -40,7 +40,7 @@
                 Bulk
               </button>
               <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                <%= link_to 'Archive', '#', data: {confirm: "Are you sure you want to archive"}, class:  'dropdown-item bulk-delete-objects' %>
+                <a class="dropdown-item" data-toggle="modal" data-target='#archive-modal'>Archive</a>
               </div>
             </div>
             <div class="col-md-2"><br>
@@ -101,6 +101,26 @@
         <div class="pagination justify-content-center mt-3">
           <%= paginate @users,theme: "twitter-bootstrap-4",pagination_class: "pagination-sm",nav_class: "d-inline-b" %>
         </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="archive-modal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Are you sure?</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want archive selected users?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-danger bulk-delete-objects">Confirm</button>
       </div>
     </div>
   </div>

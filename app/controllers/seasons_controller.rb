@@ -89,6 +89,7 @@ class SeasonsController < ApplicationController
       redirect_to seasons_path
     else
       flash[:alert] = 'Please select something to perform action.'
+      redirect_to seasons_path
     end
   end
 
