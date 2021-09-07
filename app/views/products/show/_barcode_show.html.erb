@@ -6,9 +6,9 @@
   <div class="list-group">
     <div class="list-group-item">
       <% if @product.barcodes.present? %>
-        <% @product.barcodes.each.with_index do |barcode, index| %>
+        <% @product.barcodes.each.with_index(1) do |barcode, index| %>
           <div class='row'>
-            <h5 class="fs-14 mb-1 col-4">Barcode <%= index %></h5>
+            <p class="mb-1 fs-14 col-4"><strong><%= index %></strong></p>
             <p class="m-0 col-8"><%= barcode.title %></p>
           </div><br>
         <% end %>

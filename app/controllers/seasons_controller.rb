@@ -42,7 +42,7 @@ class SeasonsController < ApplicationController
 
   def destroy
     if @season.destroy
-      flash[:notice] = "Season destroyed successfully."
+      flash[:notice] = "Season archived successfully."
       redirect_to seasons_path
     end
   end
