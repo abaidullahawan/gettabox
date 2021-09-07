@@ -86,6 +86,14 @@
                 </a>
 
                 <a
+                    class="nav-link <%= active_klass(purchase_orders_path) %>"
+                    href="<%= purchase_orders_path %>"
+                >
+                    <i data-feather="calendar" class="icon"></i>
+                    <span class="title">Purchase Order</span>
+                </a>
+
+                <a
                     class="nav-link <%= active_klass(discussions_chat_path) %>"
                     href="<%= discussions_chat_path %>"
                 >

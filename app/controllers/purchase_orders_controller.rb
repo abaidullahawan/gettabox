@@ -7,8 +7,6 @@ class PurchaseOrdersController < ApplicationController
     @q = PurchaseOrder.ransack(params[:q])
     @purchase_orders = @q.result(distinct: true).page(params[:page]).per(params[:limit])
     export_csv(@purchase_orders) if params[:export_csv].present?
-
-    @purchase_order = PurchaseOrder.new
   end
 
   def new
@@ -27,7 +25,7 @@ class PurchaseOrdersController < ApplicationController
     @purchase_order = PurchaseOrder.new(purchase_order_params)
     if @purchase_order.save
       flash[:notice] = "Purchase Order created successfully."
-      redirect_to purchase_orderss_path
+      redirect_to purchase_orders_path
     else
       flash.now[:notice] = "Purchase Order not created."
       render 'new'
@@ -35,6 +33,13 @@ class PurchaseOrdersController < ApplicationController
   end
 
   def show
+    @supplier = @purchase_order.supplier_id
+    @categories = Product.joins(:product_suppliers,:category).where('product_suppliers.system_user_id': @supplier).pluck('categories.id','categories.title').uniq
+    @products = Hash.new
+    @categories.each do |category|
+      product = Product.joins(:product_suppliers,:category).where('product_suppliers.system_user_id': @supplier, 'category.id': category)
+      @products[category.first] = product
+    end
   end
 
   def edit
@@ -135,7 +140,16 @@ class PurchaseOrdersController < ApplicationController
     end
 
     def purchase_order_params
-      params.require(:purchase_orders).permit(:user_type, :name, :photo, :payment_method, :days_for_payment, :days_for_order_to_completion, :days_for_completion_to_delivery, :currency_symbol, :exchange_rate)
+      params.require(:purchase_order).permit(
+        :supplier_id,
+        :total_bill,
+        purchase_order_details_attributes:[
+          :purchase_order_id,
+          :product_id,
+          :cost_price,
+          :quantity
+        ]
+      )
     end
 
 end
