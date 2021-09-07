@@ -18,9 +18,64 @@
         <div class="card-header">
           <h5 class="card-title">Show</h5>
         </div>
-        <%= form_for @purchase_order, url: purchase_orders_path, method: :post do |pd| %>
-          <%= render 'form_show', pd: pd %>
-        <% end %>
+        <div class='row'>
+          <div class='col-3 offset-6'>
+            <h5 class='float-right pt-2'>Total Price</h5>
+          </div>
+          <div class='col-3'>
+            <input class="form-control order_total" type="text" value="<%= @purchase_order.total_bill %>" >
+          </div>
+        </div><br>
+        <div class="row">
+          <div class="col-lg-12">
+            <div class="faq-accordion mb-30">
+              <div class="table-responsive accordion-content">
+                <table class="table table-hover text-vertical-middle mb-0">
+                  <thead class="bort-none borpt-0">
+                    <tr>
+                      <th scope="col"><strong>Image</strong></th>
+                      <th scope="col" colspan='3'><strong>Title</strong></th>
+                      <th scope="col"><strong>Deliverd/Ordered</strong></th>
+                      <th scope="col"><strong>Stock</strong></th>
+                      <th scope="col"><strong>Cost Price</strong></th>
+                      <th scope="col"><strong>Quantity</strong></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% @purchase_order_details.each do |p_order| %>
+                      <tr>
+                        <td>
+                          <% if p_order.product.photo.attached? %>
+                            <%= image_tag(p_order.product.photo&.service_url, width: "100", height: "100", class: 'mr-3 img-thumbnail', alt: 'User Image') %>
+                          <% else %>
+                            <%= image_tag('product/product6.jpg', width: "100", height: "100", class: 'mr-3 img-thumbnail', alt: 'User Image') %>
+                          <% end %>
+                        </td>
+                        <td colspan='3'>
+                          <h5><%= p_order.product.title %></h5><br>
+                          <strong>Description: </strong><%= p_order.product.description %><br>
+                          <strong>Product SKU: </strong><%= p_order.product.sku %><br>
+                          <strong>Supplier SKU: </strong><%= p_order.product.product_suppliers.find_by(system_user_id: @supplier).product_sku %>
+                        </td>
+                        <td>0/0</td>
+                        <td><%= p_order.product.total_stock %></td>
+                        <td>
+                          <input class="form-control order_item_total" type="text" value="<%= p_order.cost_price %>" style="width: 70px;">
+                        </td>
+                        <td>
+                          <input class="form-control order_item_total" type="text" value="<%= p_order.quantity %>" style="width: 70px;">
+                        </td>
+                        <td>
+                        </td>
+                      </tr>
+                    <% end %>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <!-- End Faq accordion -->
+          </div>
+        </div>
       </div>
     </div>
   </div>
