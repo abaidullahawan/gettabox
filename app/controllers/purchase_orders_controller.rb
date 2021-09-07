@@ -34,12 +34,7 @@ class PurchaseOrdersController < ApplicationController
 
   def show
     @supplier = @purchase_order.supplier_id
-    @categories = Product.joins(:product_suppliers,:category).where('product_suppliers.system_user_id': @supplier).pluck('categories.id','categories.title').uniq
-    @products = Hash.new
-    @categories.each do |category|
-      product = Product.joins(:product_suppliers,:category).where('product_suppliers.system_user_id': @supplier, 'category.id': category)
-      @products[category.first] = product
-    end
+    @purchase_order_details = @purchase_order.purchase_order_details
   end
 
   def edit
