@@ -20,12 +20,11 @@ Rails.application.routes.draw do
 
   resources :products do
     collection do
-      get 'select2_search', to: 'products#select2_search'
-      get 'select2_system_users', to: 'products#select2_system_users'
       post 'import', to: 'products#import'
       post 'bulk_method', to: 'products#bulk_method'
       get 'archive', to: 'products#archive'
       post 'restore', to: 'products#restore'
+      post 'permanent_delete', to: 'products#permanent_delete'
     end
   end
 

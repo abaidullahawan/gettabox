@@ -17,6 +17,9 @@
     <div class="card mb-30">
       <div class="card-body">
         <div class="card-header">
+          <div class='mr-1 float-right'>
+            <%= link_to 'Seasons', seasons_path, class: 'btn btn-outline-info' %>
+          </div>
           <h5 class="card-title"> Data</h5>
         </div>
         <%= search_form_for @q, url: seasons_path, method: :get do |f| %>

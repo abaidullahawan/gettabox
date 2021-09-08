@@ -51,22 +51,6 @@ class ProductsController < ApplicationController
     redirect_to products_path
   end
 
-  def select2_search
-    @products = Product.where("sku like ?", "%#{params[:q]}%")
-
-    respond_to do |format|
-      format.json { render json: @products.map{|v| v.serializable_hash(only: [:id, :sku]) } }
-    end
-  end
-
-  def select2_system_users
-    system_users = SystemUser.where("sku like ?", "%#{params[:q]}%")
-
-    respond_to do |format|
-      format.json { render json: system_users.map{|v| v.serializable_hash(only: [:id, :sku]) } }
-    end
-  end
-
   def export_csv(products)
     request.format = 'csv'
     respond_to do |format|
@@ -122,15 +106,28 @@ class ProductsController < ApplicationController
   def restore
     if params[:object_id].present? && Product.restore(params[:object_id])
       flash[:notice] = 'Product restore successful'
-      redirect_to archive_products_path
+    elsif params[:object_ids].delete('0') && params[:object_ids].present? && params[:commit] == 'Delete'
+      params[:object_ids].each do |id|
+        Product.only_deleted.find(id).really_destroy!
+      end
+      flash[:notice] = 'Products deleted successfully'
     elsif params[:object_ids].delete('0') && params[:object_ids].present?
       params[:object_ids].each do |p|
         Product.restore(p.to_i)
       end
-      flash[:notice] = 'Products restore successful'
+      flash[:notice] = 'Products restored successfully'
+    else
+      flash[:notice] = 'Please select something to perform action'
+    end
+    redirect_to archive_products_path
+  end
+
+  def permanent_delete
+    if params[:object_id].present? && Product.only_deleted.find(params[:object_id]).really_destroy!
+      flash[:notice] = 'Product deleted successfully'
       redirect_to archive_products_path
     else
-      flash[:notice] = 'Product cannot be restore/Please select something to restore'
+      flash[:notice] = 'Product cannot be deleted/Please select something to delete'
       redirect_to archive_products_path
     end
   end
@@ -142,7 +139,7 @@ class ProductsController < ApplicationController
   end
 
   def load_resources
-    @single_products = Product.where(product_type: 'Single').map{|v| v.serializable_hash(only: [:id, :title]) }
+    @single_products = Product.where(product_type: 'single').map{|v| v.serializable_hash(only: [:id, :title]) }
     @system_users = SystemUser.all.map{|v| v.serializable_hash(only: [:id, :name]) }
     @categories = Category.all.map{|v| v.serializable_hash(only: [:id, :title]) }
     @seasons = Season.all.map{|v| v.serializable_hash(only: [:id, :name]) }

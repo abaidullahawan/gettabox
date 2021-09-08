@@ -3,7 +3,7 @@ class SystemUser < ApplicationRecord
 
   has_many :product_suppliers
   has_many :products, through: :product_suppliers
-  has_many :purchase_orders
+  has_many :purchase_orders, dependent: :destroy
   validates :name, presence: true
   has_one_attached :photo
 
