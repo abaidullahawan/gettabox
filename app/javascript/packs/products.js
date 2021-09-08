@@ -150,7 +150,6 @@ $(document).on('turbolinks:load', function () {
     }
     else {
       if (season == "") {
-        debugger;
         $('#single-product-create-modal #product_season_id_chosen').css({'border': '1px solid red', 'border-radius': '6px'});
       }
     }
@@ -162,6 +161,10 @@ $(document).on('turbolinks:load', function () {
 
   $('.product-type-field').on('change', function () {
     $('.product_type_submit').trigger('click')
+  })
+
+  $('.bulk-destroy-objects').on('click', function () {
+    $('.bulk-destroy-products').trigger('click')
   })
 
 })

@@ -3,8 +3,8 @@ class Product < ApplicationRecord
 
   validates :sku, presence:true, uniqueness: { case_sensitive: false }
   validates :title, presence: true
-  has_many :barcodes
-  has_many :product_suppliers
+  has_many :barcodes, dependent: :destroy
+  has_many :product_suppliers, dependent: :destroy
   has_many :system_users, through: :product_suppliers
   has_many :multipack_products
   has_many :products, through: :multipack_products
@@ -16,8 +16,8 @@ class Product < ApplicationRecord
   end
 
   enum product_type: {
-    Single: 0,
-    Multiple: 1
+    single: 0,
+    multiple: 1
   }, _prefix: true
 
   accepts_nested_attributes_for :barcodes, allow_destroy: true
