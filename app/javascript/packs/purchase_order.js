@@ -7,6 +7,11 @@ $(document).on('turbolinks:load', function () {
     purchaseOrderTotal()
   })
 
+  $('.purchase_delivery').on('click', function () {
+    debugger
+    $('.purchase_delivery_list').toggleClass('d-none')
+  })
+
 })
 function purchaseOrderTotal() {
   var length = $('.order_item_price').length
