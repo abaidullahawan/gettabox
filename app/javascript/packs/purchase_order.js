@@ -2,9 +2,6 @@ import $ from 'jquery'
 
 $(document).on('turbolinks:load', function () {
   purchaseOrderTotal()
-  $('.order_item_price').on('blur', function () {
-    $('.supplier-submit').trigger('click')
-  })
 
   $('.order_item_price, .order_item_quantity').on('keyup', function () {
     purchaseOrderTotal()

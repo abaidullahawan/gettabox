@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+  <!DOCTYPE html>
 <html>
     <head>
         <%# <link href='https://cdn.lineicons.com/1.0.1/LineIcons.min.css' rel='stylesheet'> %>
@@ -7,6 +7,9 @@
         <%= csp_meta_tag %>
         <%= javascript_pack_tag 'application', 'data-turbolinks-track': 'reload' %>
         <%= stylesheet_pack_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
+        <% if yield(:no_cache) %>
+            <meta name="turbolinks-cache-control" content="no-cache">
+        <% end %>
 
     </head>
 
