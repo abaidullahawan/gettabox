@@ -121,9 +121,9 @@ $(document).on('turbolinks:load', function () {
         // Expand or Collapse This Panel
         $(this).next().slideToggle('fast');
         // Hide The Other Panels
-        $('.accordion-content').not($(this).next()).slideUp('fast');
+        // $('.accordion-content').not($(this).next()).slideUp('fast');
         // Removes Active Class From Other Titles
-        $('.accordion-title').not($(this)).removeClass('active');
+        // $('.accordion-title').not($(this)).removeClass('active');
     });
     // Page Per User
     $('#change_per_page').on('change', function () {
