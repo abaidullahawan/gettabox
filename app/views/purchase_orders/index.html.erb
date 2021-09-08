@@ -63,6 +63,7 @@
                 <th class="text-center">Supplier Name</th>
                 <th class="text-center">Total Bill</th>
                 <th class="text-center">Created at</th>
+                <th class="text-center">Purchase Deliveries</th>
                 <th colspan="3" class="text-center">Actions</th>
               </tr>
               <% @purchase_orders&.each&.with_index(1) do |purchase_order, index| %>
@@ -72,7 +73,7 @@
                   <td class="text-center"><%= purchase_order.system_user.name %></td>
                   <td class="text-center"><%= purchase_order.total_bill %></td>
                   <td class="text-center"><%= purchase_order.created_at %></td>
-
+                  <td class="text-center"><%= purchase_order.purchase_deliveries.count %></td>
                   <td class="text-center">
                     <div class="dropdown dropleft">
                       <button class="btn btn-primary" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -90,6 +91,35 @@
                     </div>
                   </td>
                 </tr>
+                <% if purchase_order.purchase_deliveries.present? %>
+                  <tr class="purchase_delivery">
+                    <th class="cursur-pointer" colspan="9" class="text-center">
+                      <a class="accordion-title" href="javascript:void(0)">
+                        <i class="lni-plus"></i>
+                        Purchase Deliveries
+                      </a><hr>
+                      <div class="purchase_delivery_list d-none row mb-2">
+                        <div class="col-12">
+                          <div class="row">
+                            <div class="col-1 offset-1 text-center">ID</div>
+                            <div class="col-2 text-center">Purchase Order</div>
+                            <div class="col-4 text-center" >Total Bill</div>
+                            <div class="col-4 text-center">Created at</div>
+                          </div><hr>
+                          <% purchase_order.purchase_deliveries.each do |purchase_delivery| %>
+                            <div class="row">
+                              <div class="col-1 offset-1 text-center"><%= purchase_delivery.id %></div>
+                              <div class="col-2 text-center"><%= purchase_delivery.purchase_order_id %></div>
+                              <div class="col-4 text-center"><%= purchase_delivery.total_bill %></div>
+                              <div class="col-3 text-center"><%= purchase_delivery.created_at %></div>
+                              <div class="col-1"><%= link_to 'Show', purchase_delivery_path(purchase_delivery), class:'btn btn-outline-primary' %></div>
+                            </div><hr>
+                          <% end %>
+                        </div>
+                      </div>
+                    </th>
+                  </tr>
+                <% end %>
               <% end %>
               <%= f.submit '', class: 'bulk-method-objects d-none'%>
             </table>
