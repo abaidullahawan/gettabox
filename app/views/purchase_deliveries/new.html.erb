@@ -67,14 +67,17 @@
                             <td>0/0</td>
                             <td><%= p_order.product.total_stock %></td>
                             <td>
+                              <%= f.label :cost_price, p_order.cost_price.to_s, class: 'text-muted'%>
                               <%= f.number_field :cost_price, class: 'form-control order_item_price', placeholder: 'Price', value: p_order.cost_price %>
                             </td>
                             <td>
+                              <%= f.label :quantity, "#{p_order.quantity}", class: 'text-muted'%>
                               <%= f.number_field :quantity, class: 'form-control order_item_quantity', placeholder: 'Quantity', value: p_order.quantity %>
                               <%= f.number_field :product_id, value: p_order.product.id, class: 'form-control d-none' %>
                             </td>
                             <td>
-                              <input class="form-control order_item_total" type="text" placeholder="Total" style="width: 70px;">
+                              <label></label>
+                              <input class="form-control order_item_total mt-2"  type="text" placeholder="Total" style="width: 100px;">
                             </td>
                           </tr>
                         <% end %>
