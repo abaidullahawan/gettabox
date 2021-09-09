@@ -10,7 +10,7 @@ class Product < ApplicationRecord
   has_many :products, through: :multipack_products
 
   belongs_to :category
-  belongs_to :season
+  belongs_to :season, optional: true
   has_one_attached :photo do |attachable|
     attachable.variant :thumb, resize: "100x100"
   end
