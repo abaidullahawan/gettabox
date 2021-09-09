@@ -10,17 +10,20 @@
           <div class='row'>
             <div class='col-12'>
               <div class='row'>
-                <h5 class="fs-14 mb-1 col-4 offset-1">Name</h5>
+                <h5 class="fs-14 mb-1 col-2 offset-1">Name</h5>
                 <h5 class="fs-14 mb-1 col-3">Product Cost</h5>
-                <h5 class="fs-14 mb-1 col-4">Product SKU</h5>
+                <h5 class="fs-14 mb-1 col-3">Product SKU</h5>
+                <h5 class="fs-14 mb-1 col-3">Product Vat</h5>
               </div><hr>
               <% @product.product_suppliers.each.with_index(1) do |supplier, index| %>
                 <a href="<%= system_user_path(supplier.system_user) %>" class='link_tag' style="text-decoration: none;">
                   <div class='row'>
                     <p class="mb-1 fs-14 col-1"><strong><%= index %></strong></p>
-                    <p class="mb-1 fs-14 col-4"><%= supplier.system_user.name %></p>
+                    <p class="mb-1 fs-14 col-2"><%= supplier.system_user.name %></p>
                     <p class="mb-1 fs-14 col-3"><%= supplier.product_cost %></p>
-                    <p class="mb-1 fs-14 col-4"><%= supplier.product_sku %></p>
+                    <p class="mb-1 fs-14 col-3"><%= supplier.product_sku %></p>
+                    <p class="mb-1 fs-14 col-3"><%= supplier.product_vat %></p>
+
                   </div><hr>
                 </a>
               <% end %>

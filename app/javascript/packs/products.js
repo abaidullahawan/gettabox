@@ -16,19 +16,16 @@ $(document).on('turbolinks:load', function () {
 
   // Product Create Form JQuery start
   $('.multi_basic_info_button').on('click', function () {
-    var photo = $('#multi-product-create-modal input[name="product[photo]"]').val()
+    // var photo = $('#multi-product-create-modal input[name="product[photo]"]').val()
     var title = $('#multi-product-create-modal input[name="product[title]"]').val()
     var sku = $('#multi-product-create-modal input[name="product[sku]"]').val()
     var category = $('#multi-product-create-modal select[name="product[category_id]"]').val()
     // var product_type = $('#multi-product-create-modal select[name="product[product_type]"').val()
-    if ((photo != "") && (title != "") && (sku != "") && (category != "")) {
+    if ((title != "") && (sku != "") && (category != "")) {
       $('.multi-basic-info-form').addClass('d-none')
       $('.multi-detail-form').removeClass('d-none')
     }
     else {
-      if (photo == "") {
-        $('#multi-product-create-modal input[name="product[photo]"]').addClass('border border-danger');
-      }
       if (title == "") {
         $('#multi-product-create-modal input[name="product[title]"]').addClass('border border-danger');
       }
@@ -47,19 +44,16 @@ $(document).on('turbolinks:load', function () {
   })
 
   $('.basic_info_button').on('click', function () {
-    var photo = $('input[name="product[photo]"]').val()
+    // var photo = $('input[name="product[photo]"]').val()
     var title = $('input[name="product[title]"]').val()
     var sku = $('input[name="product[sku]"]').val()
     var category = $('select[name="product[category_id]"]').val()
     // var product_type = $('select[name="product[product_type]"]').val()
-    if ((photo != "") && (title != "") && (sku != "") && (category != "")) {
+    if ((title != "") && (sku != "") && (category != "")) {
       $('.basic-info-form').addClass('d-none')
       $('.detail-form').removeClass('d-none')
     }
     else {
-      if (photo == "") {
-        $('#single-product-create-modal input[name="product[photo]"]').addClass('border border-danger');
-      }
       if (title == "") {
         $('#single-product-create-modal input[name="product[title]"]').addClass('border border-danger');
       }
@@ -85,6 +79,7 @@ $(document).on('turbolinks:load', function () {
     if ((length != "") && (width != "") && (height != "") && (weight != "")) {
       $('.detail-form').addClass('d-none')
       $('.stock-form').removeClass('d-none')
+      $('.create_product_button').removeClass('d-none')
     }
     else {
       if (length == "") {
@@ -117,7 +112,6 @@ $(document).on('turbolinks:load', function () {
       $('.extra-form').removeClass('d-none')
       $('.extra-stock-field').removeClass('d-none')
       $('.extra-pack-field').removeClass('d-none')
-      $('.create_product_button').removeClass('d-none')
     }
     else {
       if (total_stock == "") {
@@ -135,25 +129,25 @@ $(document).on('turbolinks:load', function () {
   $('.stock_button_previous').on('click', function () {
     $('.stock-form').addClass('d-none')
     $('.detail-form').removeClass('d-none')
+    $('.create_product_button').addClass('d-none')
   })
 
   $('.extra_button_previous').on('click', function () {
     $('.extra-form').addClass('d-none')
     $('.stock-form').removeClass('d-none')
-    $('.create_product_button').addClass('d-none')
   })
 
-  $('#single-product-create-modal input[type="submit"]').on('click', function () {
-    var season = $('select[name="product[season_id]"]').val()
-    if ((season != "")) {
-      $('.create-single-product').trigger('click')
-    }
-    else {
-      if (season == "") {
-        $('#single-product-create-modal #product_season_id_chosen').css({'border': '1px solid red', 'border-radius': '6px'});
-      }
-    }
-  })
+  // $('#single-product-create-modal input[type="submit"]').on('click', function () {
+  //   var season = $('select[name="product[season_id]"]').val()
+  //   if ((season != "")) {
+  //     $('.create-single-product').trigger('click')
+  //   }
+  //   else {
+  //     if (season == "") {
+  //       $('#single-product-create-modal #product_season_id_chosen').css({'border': '1px solid red', 'border-radius': '6px'});
+  //     }
+  //   }
+  // })
   // Product Create Form JQuery end
 
   $(".nested_fields_btn").
