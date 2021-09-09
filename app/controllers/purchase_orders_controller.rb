@@ -17,6 +17,7 @@ class PurchaseOrdersController < ApplicationController
     @products = Hash.new
     @categories.each do |category|
       product = Product.joins(:product_suppliers,:category).where('product_suppliers.system_user_id': @supplier, 'category.id': category)
+      # product_supplier =  Product.joins(:product_suppliers,:category).where('product_suppliers.system_user_id': @supplier, 'category.id': category)
       @products[category.first] = product
     end
   end

@@ -58,9 +58,6 @@
               <%= f.search_field :sku_cont, class:"form-control", placeholder:"Search in Sku" %>
             </div>
             <div class="col-md-2"><br>
-              <%= f.search_field :product_type_cont, class:"form-control", placeholder:"Search in Pro" %>
-            </div>
-            <div class="col-md-2"><br>
               <%= f.select :product_type_eq, Product.product_types.map { |key, value| [key.humanize, value] }, {include_blank: 'Select an option'}, class:"form-control product-type-field chosen-select", title: 'Select Product Type' %>
             </div>
             <button type='submit' class='d-none product_type_submit'>

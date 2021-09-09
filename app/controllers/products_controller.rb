@@ -184,6 +184,7 @@ class ProductsController < ApplicationController
               :system_user_id,
               :product_cost,
               :product_sku,
+              :product_vat,
               :_destroy
             ],
             multipack_products_attributes:
