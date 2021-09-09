@@ -144,6 +144,7 @@ class PurchaseOrdersController < ApplicationController
           :purchase_order_id,
           :product_id,
           :cost_price,
+          :vat,
           :quantity
         ]
       )

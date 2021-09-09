@@ -6,7 +6,7 @@
       <a href="<%= dashboard_sales_path %>">Dashboard</a>
     </li>
     <li class="breadcrumb-item active">
-      <span class="active">/ Show</span>
+      <span class="active">Show</span>
     </li>
   </ol>
 </div>
@@ -39,6 +39,7 @@
                         <th scope="col" colspan='3'><strong>Title</strong></th>
                         <th scope="col"><strong>Deliverd/Ordered</strong></th>
                         <th scope="col"><strong>Stock</strong></th>
+                        <th scope="col"><strong>Vat</strong></th>
                         <th scope="col"><strong>Cost Price</strong></th>
                         <th scope="col"><strong>Quantity</strong></th>
                       </tr>
@@ -62,6 +63,9 @@
                           </td>
                           <td>0/0</td>
                           <td><%= f.object.product.total_stock %></td>
+                          <td>
+                            <%= f.number_field :vat, class: 'form-control order_item_price', placeholder: 'Price' %>
+                          </td>
                           <td>
                             <%= f.number_field :cost_price, class: 'form-control order_item_price', placeholder: 'Price' %>
                           </td>
