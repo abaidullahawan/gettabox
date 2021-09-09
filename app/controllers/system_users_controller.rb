@@ -7,6 +7,7 @@ class SystemUsersController < ApplicationController
     @q = SystemUser.where(user_type: 'supplier').ransack(params[:q])
     @system_users = @q.result(distinct: true).page(params[:page]).per(params[:limit])
     export_csv(@system_users) if params[:export_csv].present?
+    @purchase_orders = PurchaseOrder.all
 
     @system_user = SystemUser.new
   end
