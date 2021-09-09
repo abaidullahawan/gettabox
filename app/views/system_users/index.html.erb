@@ -65,44 +65,49 @@
           </div><br>
         <% end %>
         <%= form_with url: bulk_method_system_users_path , method: :post do |f| %>
-          <div class="table-responsive">
-            <table class="table m-0 table-hover">
-              <tr>
-                <th><input type="checkbox" id="" name="" value="" class='select-all-checkbox'></th>
-                <th class="text-center">Name</th>
-                <th class="text-center">Payment_method</th>
-                <th class="text-center">Days_for_order_to_completion</th>
-                <th class="text-center">Days_for_completion_to_delivery</th>
-                <th colspan="3" class="text-center">Actions</th>
-              </tr>
-              <% @system_users&.each&.with_index(1) do |system_user, index| %>
-                <tr class=''>
-                  <td><%= f.check_box 'object_ids[]', {}, system_user.id %></td>
-                  <td class="text-center"><%= system_user.name %></td>
-                  <td class="text-center"><%= system_user.payment_method %></td>
-                  <td class="text-center"><%= system_user.days_for_order_to_completion %></td>
-                  <td class="text-center"><%= system_user.days_for_completion_to_delivery %></td>
-
-                  <td class="text-center">
-                    <div class="dropdown dropleft">
-                      <button class="btn btn-primary" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <i data-feather='bell' class='icon wh-15 mt-minus-3'></i>
-                        Actions
-                      </button>
-                      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                        <a class="dropdown-item" href="<%= system_user_path(system_user)%>">Show</a>
-                        <%= link_to 'Archive', system_user_path(system_user), method: 'delete', data: {confirm: "Are you sure you want to archive"}, class: "dropdown-item"%>
-                      </div>
-                      <a href="<%= new_purchase_order_path(supplier: system_user) %>" class="btn btn-info text-white" role="button">
-                        <i data-feather='shopping-cart' class='icon wh-15 mt-minus-3'></i>
-                        Shop
-                      </a>
-                    </div>
-                  </td>
+          <div class="row">
+            <div class='col-lg-6'>
+              <h6 class='text-center text-muted'>Suppliers</h6>
+              <table class="table-responsive table m-0 table-hover">
+                <tr>
+                  <th><input type="checkbox" id="" name="" value="" class='select-all-checkbox'></th>
+                  <th class="text-center">Name</th>
+                  <th class="text-center">Payment method</th>
+                  <th class="text-center">Days for order to completion</th>
+                  <th class="text-center">Days for completion to delivery</th>
+                  <th colspan="3" class="text-center">Actions</th>
                 </tr>
-              <% end %>
-              <%= f.submit '', class: 'bulk-method-objects d-none'%>
-            </table>
+                <% @system_users&.each&.with_index(1) do |system_user, index| %>
+                  <tr class=''>
+                    <td><%= f.check_box 'object_ids[]', {}, system_user.id %></td>
+                    <td class="text-center"><%= system_user.name %></td>
+                    <td class="text-center"><%= system_user.payment_method %></td>
+                    <td class="text-center"><%= system_user.days_for_order_to_completion %></td>
+                    <td class="text-center"><%= system_user.days_for_completion_to_delivery %></td>
+
+                    <td class="text-center">
+                      <div class="dropdown dropleft">
+                        <button class="btn btn-primary p-1 mb-1" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title='Actions'>
+                          <i data-feather='bell' class='icon wh-15 mt-minus-3'></i>
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                          <a class="dropdown-item" href="<%= system_user_path(system_user)%>">Show</a>
+                          <%= link_to 'Archive', system_user_path(system_user), method: 'delete', data: {confirm: "Are you sure you want to archive"}, class: "dropdown-item"%>
+                        </div>
+                        <a href="<%= new_purchase_order_path(supplier: system_user) %>" class="btn btn-info text-white p-1" role="button" title='Shop'>
+                          <i data-feather='shopping-cart' class='icon wh-15 mt-minus-3'></i>
+                        </a>
+                      </div>
+                    </td>
+                  </tr>
+                <% end %>
+                <%= f.submit '', class: 'bulk-method-objects d-none'%>
+              </table>
+            </div>
+            <div class='col-lg-6 border-left'>
+              <h6 class='text-center text-muted'>Product Orders</h6>
+              <%= render 'product_orders'%>
+            </div>
           </div>
         <% end %>
         <br>
