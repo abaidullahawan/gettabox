@@ -5,7 +5,7 @@ class SeasonsController < ApplicationController
 
   def index
     @q = Season.ransack(params[:q])
-    @seasons = @q.result(distinct: true).page(params[:page]).per(params[:limit])
+    @seasons = @q.result(distinct: true).order(created_at: :desc).page(params[:page]).per(params[:limit])
     export_csv(@seasons) if params[:export_csv].present?
     @season = Season.new
   end

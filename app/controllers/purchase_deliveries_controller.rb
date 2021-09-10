@@ -5,7 +5,7 @@ class PurchaseDeliveriesController < ApplicationController
 
   def index
     @q = PurchaseDelivery.ransack(params[:q])
-    @purchase_deliveries = @q.result(distinct: true).page(params[:page]).per(params[:limit])
+    @purchase_deliveries = @q.result(distinct: true).order(created_at: :desc).page(params[:page]).per(params[:limit])
     export_csv(@purchase_deliveries) if params[:export_csv].present?
   end
 

@@ -7,7 +7,7 @@ class ProductsController < ApplicationController
 
   def index
     @q = Product.ransack(params[:q])
-    @products = @q.result(distinct: true).page(params[:page]).per(params[:limit])
+    @products = @q.result(distinct: true).order(created_at: :desc).page(params[:page]).per(params[:limit])
     export_csv(@products) if params[:export_csv].present?
     new
   end
@@ -25,8 +25,10 @@ class ProductsController < ApplicationController
       flash[:notice] = "Created successfully."
       redirect_to product_path(@product)
     else
-      flash[:alert] = "Product cannot be created!"
-      redirect_to products_path
+      @q = Product.ransack(params[:q])
+      @products = @q.result(distinct: true).order(created_at: :desc).page(params[:page]).per(params[:limit])
+      flash.now[:alert] = "Product cannot be created!"
+      render 'index'
     end
   end
 
@@ -106,12 +108,12 @@ class ProductsController < ApplicationController
   def restore
     if params[:object_id].present? && Product.restore(params[:object_id])
       flash[:notice] = 'Product restore successful'
-    elsif params[:object_ids].delete('0') && params[:object_ids].present? && params[:commit] == 'Delete'
+    elsif params[:commit] == 'Delete' && params[:object_ids].delete('0') && params[:object_ids].present?
       params[:object_ids].each do |id|
         Product.only_deleted.find(id).really_destroy!
       end
       flash[:notice] = 'Products deleted successfully'
-    elsif params[:object_ids].delete('0') && params[:object_ids].present?
+    elsif params[:commit] == 'Restore' &&params[:object_ids].delete('0') && params[:object_ids].present?
       params[:object_ids].each do |p|
         Product.restore(p.to_i)
       end

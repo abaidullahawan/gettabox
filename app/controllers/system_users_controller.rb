@@ -5,7 +5,7 @@ class SystemUsersController < ApplicationController
 
   def index
     @q = SystemUser.where(user_type: 'supplier').ransack(params[:q])
-    @system_users = @q.result(distinct: true).page(params[:page]).per(params[:limit])
+    @system_users = @q.result(distinct: true).order(created_at: :desc).page(params[:page]).per(params[:limit])
     export_csv(@system_users) if params[:export_csv].present?
     @purchase_orders = PurchaseOrder.all
 
