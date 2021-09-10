@@ -7,7 +7,7 @@ class UsersController < ApplicationController
 
   def index
     @q = User.where(role: @user_sub_role).ransack(params[:q])
-    @users = @q.result(distinct: true).page(params[:page]).per(params[:limit])
+    @users = @q.result(distinct: true).order(created_at: :desc).page(params[:page]).per(params[:limit])
     export_csv(@users) if params[:export_csv].present?
   end
 

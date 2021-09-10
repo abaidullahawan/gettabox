@@ -5,7 +5,7 @@ class CategoriesController < ApplicationController
 
   def index
     @q = Category.ransack(params[:q])
-    @categories = @q.result(distinct: true).page(params[:page]).per(params[:limit])
+    @categories = @q.result(distinct: true).order(created_at: :desc).page(params[:page]).per(params[:limit])
     export_csv(@categories) if params[:export_csv].present?
   end
 

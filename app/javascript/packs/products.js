@@ -1,5 +1,11 @@
 import $ from 'jquery'
 
+$(document).ready(function () {
+  if ($('#ErrorsProduct') == 'nul') {
+    $('#ErrorsProduct').modal('show')
+  }
+});
+
 $(document).on('turbolinks:load', function () {
 
   $('input, select').on('click', function () {
@@ -33,7 +39,7 @@ $(document).on('turbolinks:load', function () {
         $('#multi-product-create-modal input[name="product[sku]"]').addClass('border border-danger');
       }
       if (category == "") {
-        $('#multi-product-create-modal #product_category_id_chosen').css({'border': '1px solid red', 'border-radius': '6px'});
+        $('#multi-product-create-modal #product_category_id_chosen').css({ 'border': '1px solid red', 'border-radius': '6px' });
       }
     }
   })
@@ -61,7 +67,7 @@ $(document).on('turbolinks:load', function () {
         $('#single-product-create-modal input[name="product[sku]"]').addClass('border border-danger');
       }
       if (category == "") {
-        $('#single-product-create-modal #product_category_id_chosen').css({'border': '1px solid red', 'border-radius': '6px'});
+        $('#single-product-create-modal #product_category_id_chosen').css({ 'border': '1px solid red', 'border-radius': '6px' });
       }
     }
   })
