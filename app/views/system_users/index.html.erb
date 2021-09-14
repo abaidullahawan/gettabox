@@ -72,18 +72,21 @@
                 <tr>
                   <th><input type="checkbox" id="" name="" value="" class='select-all-checkbox'></th>
                   <th class="text-center">Name</th>
-                  <th class="text-center">Payment method</th>
-                  <th class="text-center">Days for order to completion</th>
-                  <th class="text-center">Days for completion to delivery</th>
+                  <th class="text-center">Not Sent</th>
+                  <th class="text-center">Pending</th>
+                  <th class="text-center">Delivered</th>
                   <th colspan="3" class="text-center">Actions</th>
                 </tr>
                 <% @system_users&.each&.with_index(1) do |system_user, index| %>
                   <tr class=''>
                     <td><%= f.check_box 'object_ids[]', {}, system_user.id %></td>
+                    <%
+                      orders = system_user.purchase_orders.present? ? system_user.purchase_orders&.count : 0
+                      deliveries = system_user.purchase_orders&.first&.purchase_deliveries.present? ? system_user.purchase_orders&.first&.purchase_deliveries&.count : 0 %>
                     <td class="text-center"><%= system_user.name %></td>
-                    <td class="text-center"><%= system_user.payment_method %></td>
-                    <td class="text-center"><%= system_user.days_for_order_to_completion %></td>
-                    <td class="text-center"><%= system_user.days_for_completion_to_delivery %></td>
+                    <td class="text-center"><%= orders %></td>
+                    <td class="text-center"><%= orders - deliveries %></td>
+                    <td class="text-center"><%= deliveries %></td>
 
                     <td class="text-center">
                       <div class="dropdown dropleft">
