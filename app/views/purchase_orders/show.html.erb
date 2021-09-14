@@ -100,27 +100,29 @@
                           <td>
                             <%= f.object.purchase_order.system_user.product_suppliers.first.product_sku %>
                           </td>
-                          <td><%= f.object.product.title %></td>
                           <td>
-                            <%= '?' %>
+                            <%= f.object.product.title %>
                           </td>
                           <td>
-                            <%= '?' %>
+                            <%= f.object.quantity %>
                           </td>
                           <td>
-                            <%= '?'  %>
+                            <%= f.object.purchase_order.purchase_order_details.where(product_id: f.object.product.id).first.quantity %>
                           </td>
                           <td>
-                            <%= '?'  %>
+                            <%= @demaged[f.object.product_id] %>
                           </td>
                           <td>
-                            <%= f.object.cost_price %> $
+                            <%= @missing[f.object.product_id] %>
                           </td>
                           <td>
-                            <%= '?'  %>
+                            $ <%= f.object.cost_price %>
                           </td>
                           <td>
-                            <%= '?' %>
+                            $ <%= f.object.quantity * f.object.cost_price  %>
+                          </td>
+                          <td>
+                            <%= f.object.purchase_order.created_at.strftime("%d/ %m/ %Y") %>
                           </td>
                         </tr>
                       <% end %>
