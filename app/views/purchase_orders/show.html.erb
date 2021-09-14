@@ -15,11 +15,55 @@
   <div class="col-xl-12">
     <div class="card mb-30">
       <div class="card-body">
-        <div class="card-header">
-          <h5 class="card-title">Show</h5>
-        </div>
+          <div class="card-header">
+              <button class="btn btn-primary float-right ml-1" type="button" >
+                Edit Order
+              </button>
+              <button class="btn btn-primary float-right ml-1" type="button" >
+                Book input
+              </button>
+              <button class="btn btn-primary float-right ml-1" type="button" >
+                Purchase Order
+              </button>
+              <button class="btn btn-primary float-right ml-1" type="button" >
+                Export CSV
+              </button>
+              <button class="btn btn-primary float-right ml-1" type="button" >
+                Get Logs
+              </button>
+            <h5 class="card-title"> Show</h5>
+          </div>
         <%= form_for @purchase_order, url: purchase_order_path(@purchase_order)  do |pd| %>
+
           <div class='row'>
+            <div class='col-6'>
+              <div class='row'>
+                <h5 class="fs-14 mb-1 col-4">Order Id</h5>
+                <p class="col-8"><%= @purchase_order.id %></p>
+                <h5 class="fs-14 mb-1 col-4">Supplier Name</h5>
+                <p class="col-8"><%= @purchase_order.system_user.name %></p>
+                <h5 class="fs-14 mb-1 col-4">Estimated Delivery Date</h5>
+                <p class="col-8"><%= @purchase_order.system_user.days_for_completion_to_delivery %> Day/Days</p>
+                <h5 class="fs-14 mb-1 col-4">Payment Method</h5>
+                <p class="col-8"><%= @purchase_order.system_user.payment_method %></p>
+                <h5 class="fs-14 mb-1 col-4">Order Status</h5>
+                <p class="col-8"><%=  %></p>
+              </div>
+            </div>
+            <div class='col-6'>
+              <div class='row'>
+                <h5 class="fs-14 mb-1 col-4">Order Date</h5>
+                <p class="col-8"><%= @purchase_order.created_at.strftime('%d-%m-%y') %></p>
+                <h5 class="fs-14 mb-1 col-4">Delivery Method</h5>
+                <p class="col-8"><%= @purchase_order.system_user.delivery_method.present? ? @purchase_order.system_user.delivery_method : 'Not Specified' %></p>
+                <h5 class="fs-14 mb-1 col-4">Order Deliverd?</h5>
+                <p class="col-8"><%=  %>Yes/No</p>
+                <h5 class="fs-14 mb-1 col-4">Order Completed?</h5>
+                <p class="col-8"><%=  %>Yes/No</p>
+              </div>
+            </div>
+          </div>
+          <!--div class='row'>
             <div class='col-3 offset-6'>
               <h5 class='float-right pt-2'>Total Price</h5>
             </div>
@@ -27,7 +71,7 @@
               <%= pd.number_field :total_bill, class: 'form-control order_total', placeholder: 'Total' %>
               <%= pd.number_field :supplier_id, value: @supplier, class: 'form-control d-none' %>
             </div>
-          </div><br>
+          </div--><br>
           <div class="row">
             <div class="col-lg-12">
               <div class="faq-accordion mb-30">
@@ -35,46 +79,48 @@
                   <table class="table table-hover text-vertical-middle mb-0">
                     <thead class="bort-none borpt-0">
                       <tr>
-                        <th scope="col"><strong>Image</strong></th>
-                        <th scope="col" colspan='3'><strong>Title</strong></th>
-                        <th scope="col"><strong>Deliverd/Ordered</strong></th>
-                        <th scope="col"><strong>Stock</strong></th>
-                        <th scope="col"><strong>Vat</strong></th>
-                        <th scope="col"><strong>Cost Price</strong></th>
-                        <th scope="col"><strong>Quantity</strong></th>
+                        <th scope="col"><strong>SKU</strong></th>
+                        <th scope="col"><strong>Supplier SKU</strong></th>
+                        <th scope="col"><strong>Category-Product</strong></th>
+                        <th scope="col"><strong>Deliverd</strong></th>
+                        <th scope="col"><strong>Ordered</strong></th>
+                        <th scope="col"><strong>Damaged</strong></th>
+                        <th scope="col"><strong>Missing</strong></th>
+                        <th scope="col"><strong>Price[FOB]</strong></th>
+                        <th scope="col"><strong>Total</strong></th>
+                        <th scope="col"><strong>Ex Fact</strong></th>
                       </tr>
                     </thead>
                     <tbody>
                       <%= pd.fields_for :purchase_order_details do |f| %>
                         <tr>
                           <td>
-                            <%= f.number_field :id, class: 'form-control d-none' %>
-                            <% if f.object.product.photo.attached? %>
-                              <%= image_tag(f.object.product.photo&.service_url, width: "100", height: "100", class: 'mr-3 img-thumbnail', alt: 'User Image') %>
-                            <% else %>
-                              <%= image_tag('product/product6.jpg', width: "100", height: "100", class: 'mr-3 img-thumbnail', alt: 'User Image') %>
-                            <% end %>
-                          </td>
-                          <td colspan='3'>
-                            <h5><%= f.object.product.title %></h5><br>
-                            <strong>Description: </strong><%= f.object.product.description %><br>
-                            <strong>Product SKU: </strong><%= f.object.product.sku %><br>
-                            <strong>Supplier SKU: </strong><%= f.object.product.product_suppliers.find_by(system_user_id: @supplier).product_sku %>
-                          </td>
-                          <td>0/0</td>
-                          <td><%= f.object.product.total_stock %></td>
-                          <td>
-                            <%= f.number_field :vat, class: 'form-control order_item_price', placeholder: 'Price' %>
+                            <%= f.object.product.sku%>
                           </td>
                           <td>
-                            <%= f.number_field :cost_price, class: 'form-control order_item_price', placeholder: 'Price' %>
+                            <%= f.object.purchase_order.system_user.product_suppliers.first.product_sku %>
+                          </td>
+                          <td><%= f.object.product.title %></td>
+                          <td>
+                            <%= '?' %>
                           </td>
                           <td>
-                            <%= f.number_field :quantity, class: 'form-control order_item_quantity', placeholder: 'Quantity' %>
-                            <%= f.number_field :product_id, value: f.object.product.id, class: 'form-control d-none' %>
+                            <%= '?' %>
                           </td>
                           <td>
-                            <input class="form-control order_item_total" type="text" placeholder="Total" style="width: 70px;">
+                            <%= '?'  %>
+                          </td>
+                          <td>
+                            <%= '?'  %>
+                          </td>
+                          <td>
+                            <%= f.object.cost_price %> $
+                          </td>
+                          <td>
+                            <%= '?'  %>
+                          </td>
+                          <td>
+                            <%= '?' %>
                           </td>
                         </tr>
                       <% end %>
