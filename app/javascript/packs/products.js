@@ -2,9 +2,9 @@ import $ from 'jquery'
 
 $(document).ready(function () {
   if ($('#ErrorsProduct') == 'nul') {
-    $('#ErrorsProduct').modal('show')
+    $('#single-product-create-modal').modal('show')
   }
-});
+}, 5000);
 
 $(document).on('turbolinks:load', function () {
 
