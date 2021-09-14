@@ -35,6 +35,8 @@ class PurchaseOrdersController < ApplicationController
 
   def show
     @supplier = @purchase_order.supplier_id
+    @missing = PurchaseOrder.where(id: @purchase_order.id).joins(purchase_deliveries: :purchase_delivery_details).group(:product_id).sum(:missing)
+    @demaged = PurchaseOrder.where(id: @purchase_order.id).joins(purchase_deliveries: :purchase_delivery_details).group(:product_id).sum(:demaged)
   end
 
   def edit
@@ -145,7 +147,9 @@ class PurchaseOrdersController < ApplicationController
           :product_id,
           :cost_price,
           :vat,
-          :quantity
+          :quantity,
+          :missing,
+          :demaged
         ]
       )
     end

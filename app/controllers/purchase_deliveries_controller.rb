@@ -138,7 +138,9 @@ class PurchaseDeliveriesController < ApplicationController
           :purchase_delivery_id,
           :product_id,
           :cost_price,
-          :quantity
+          :quantity,
+          :missing,
+          :demaged
         ]
       )
     end

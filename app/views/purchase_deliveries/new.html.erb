@@ -44,7 +44,9 @@
                         <th scope="col"><strong>Deliverd/Ordered</strong></th>
                         <th scope="col"><strong>Stock</strong></th>
                         <th scope="col"><strong>Cost Price</strong></th>
-                        <th scope="col"><strong>Quantity</strong></th>
+                        <th scope="col"><strong>Deliverd</strong></th>
+                        <th scope="col"><strong>Damaged</strong></th>
+                        <th scope="col"><strong>Missing</strong></th>
                       </tr>
                     </thead>
                     <tbody>
@@ -74,6 +76,14 @@
                               <%= f.label :quantity, "#{p_order.quantity}", class: 'text-muted'%>
                               <%= f.number_field :quantity, class: 'form-control order_item_quantity', placeholder: 'Quantity', value: p_order.quantity %>
                               <%= f.number_field :product_id, value: p_order.product.id, class: 'form-control d-none' %>
+                            </td>
+                            <td>
+                              <%= f.label :demaged, "#{p_order.demaged}", class: 'text-muted'%>
+                              <%= f.number_field :demaged, class: 'form-control order_demaged', placeholder: 'Demaged', value: p_order.demaged %>
+                            </td>
+                            <td>
+                              <%= f.label :missing, "#{p_order.missing}", class: 'text-muted'%>
+                              <%= f.number_field :missing, class: 'form-control order_missing', placeholder: 'Missing', value: p_order.demaged %>
                             </td>
                             <td>
                               <label></label>
