@@ -37,9 +37,19 @@ class PurchaseOrdersController < ApplicationController
     @supplier = @purchase_order.supplier_id
     @missing = PurchaseOrder.where(id: @purchase_order.id).joins(purchase_deliveries: :purchase_delivery_details).group(:product_id).sum(:missing)
     @demaged = PurchaseOrder.where(id: @purchase_order.id).joins(purchase_deliveries: :purchase_delivery_details).group(:product_id).sum(:demaged)
+    respond_to do |format|
+      format.html
+      format.pdf do
+        render  :pdf => "file.pdf", 
+                :viewport_size => '1280x1024',
+                :template => 'purchase_orders/show.pdf.erb'
+      end
+    end
   end
 
   def edit
+    @supplier = @purchase_order.supplier_id
+    @categories = Product.joins(:product_suppliers,:category).where('product_suppliers.system_user_id': @supplier).pluck('categories.id','categories.title').uniq
   end
 
   def update

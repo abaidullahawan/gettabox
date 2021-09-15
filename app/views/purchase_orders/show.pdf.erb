@@ -1,3 +1,10 @@
+<head>
+  <meta charset='utf-8' />
+  <%= wicked_pdf_stylesheet_link_tag "pdf" -%>
+  <%= wicked_pdf_javascript_include_tag "number_pages" %>
+  <%= wicked_pdf_stylesheet_link_tag "bootstrap" %>
+  <%= wicked_pdf_stylesheet_link_tag "application" %>
+</head>
 <!-- Main Content Header -->
 <div class="main-content-header">
   <h1><%= link_to 'Purchase Orders', purchase_orders_path, style:'color: #212529;' %></h1>
@@ -15,30 +22,11 @@
   <div class="col-xl-12">
     <div class="card mb-30">
       <div class="card-body">
-          <div class="card-header">
-                <%= link_to "Edit Order", edit_purchase_order_path, class:"btn btn-primary float-right ml-1", type:"button", style: "color: white" %>
-              <button class="btn btn-primary float-right ml-1" type="button" >
-                Book input
-              </button>
-              <button class="btn btn-primary float-right ml-1" type="button" >
-                Purchase Order
-              </button>
-              <button class="btn btn-primary float-right ml-1" type="button" >
-                Export CSV
-              </button>
-              <button class="btn btn-primary float-right ml-1" type="button" >
-                Get Logs
-              </button>
-                <%= link_to "PDF", purchase_order_path(format: :pdf), class:"btn btn-primary float-right ml-1", type:"button",style: "color: white" %>
-            <h5 class="card-title"> Show</h5>
-          </div>
         <%= form_for @purchase_order, url: purchase_order_path(@purchase_order)  do |pd| %>
-
+        <div class= "container">
           <div class='row'>
             <div class='col-6'>
               <div class='row'>
-                <h5 class="fs-14 mb-1 col-4">Order Id</h5>
-                <p class="col-8"><%= @purchase_order.id %></p>
                 <h5 class="fs-14 mb-1 col-4">Supplier Name</h5>
                 <p class="col-8"><%= @purchase_order&.system_user&.name %></p>
                 <h5 class="fs-14 mb-1 col-4">Estimated Delivery Date</h5>
@@ -132,9 +120,9 @@
               <!-- End Faq accordion -->
             </div>
           </div>
-          <%= pd.submit(@purchase_order.new_record? ? "Create" : "Update", class: 'btn btn-outline-primary create_product_button') %>
         <% end %>
       </div>
     </div>
   </div>
+</div>
 </div>

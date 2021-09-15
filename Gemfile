@@ -46,6 +46,9 @@ gem "paranoia", "~> 2.2"
 # Use for dropdown searching
 gem 'jquery-rails'
 gem 'chosen-rails'
+# Gem for PDF's
+gem 'wicked_pdf'
+gem 'wkhtmltopdf-binary'
 
 #
 gem 'capistrano', '~> 3.11'
