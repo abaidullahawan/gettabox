@@ -1,0 +1,91 @@
+<% if @body.present? && @body['errors'].present? %>
+  <div class="alert alert-danger alert-dismissible fade show" role="alert" id="ErrorsProduct">
+    <h5><%= pluralize( @body['errors']&.count, "error") %> prohibited this product_mappings from being saved:</h5>
+    <ul class='error-list'>
+      <%  @body['errors'].each do |error| %>
+        <li><%= error['message'] %></li>
+      <% end %>
+    </ul>
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+<% end %>
+
+<!-- Main Content Header -->
+<div class="main-content-header">
+    <h1>Product Mapping</h1>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a href="<%= dashboard_sales_path %>">Dashboard</a>
+        </li>
+        <li class="breadcrumb-item active">
+            <span class="active">Product Mapping</span>
+        </li>
+    </ol>
+</div>
+<!-- End Main Content Header -->
+<div class="row">
+  <div class="col-xl-12">
+    <div class="card mb-30">
+      <div class="card-body">
+        <div class="card-header">
+          <div class="dropdown">
+              <button class="btn btn-primary float-right" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Create
+              </button>
+              <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                <a href="#" class="dropdown-item" data-toggle="modal" data-target='#single-product-create-modal'>Single Pack</a>
+                <a href="#" class="dropdown-item" data-toggle="modal" data-target='#multi-product-create-modal'>Multi Pack</a>
+              </div>
+            </div>
+            <div class='mr-1 float-right'>
+              <%= link_to 'Export', products_path(format: :csv, export_csv: true), class: 'btn btn-outline-primary' %>
+            </div>
+            <div class='mr-1 float-right'>
+              <%= link_to 'Archives', archive_products_path, class: 'btn btn-outline-info' %>
+            </div>
+            <h5 class="card-title"> Data</h5>
+          </div>
+          <%= form_tag( '/product_mappings', method: :get) do |f| %>
+          <div class='row'>
+            <div class="col-md-3">
+              <%= select_tag :product_mapping, options_for_select([ "Ebay Sandbox"]), class:"form-control chosen-select", title: 'Select Mapping Category', prompt: "Please select" %>
+            </div>
+            <%= submit_tag 'Mapping', class: 'btn btn-primary'%>
+          </div><br>
+        <% end %>
+        </div>
+        <% if @body.present? && @body["inventoryItems"].present?%>
+          <div class="row">
+            <div class='col-lg-6'>
+              <h6 class='text-center text-muted'>Ebay Products</h6>
+              <table class="table-responsive table m-0 table-hover">
+                <tr>
+                  <th>Image</th>
+                  <th class="text-center">Sku</th>
+                  <th class="text-center">Type/Vat</th>
+                  <th class="text-center">Name</th>
+                </tr>
+                <% @body["inventoryItems"].each do |item| %>
+                  <tr class=''>
+                    <td>
+                      <%#= image_tag item['product']['image'], style:'width:50px; height:50px;' %>
+                    </td>
+                    <td class="text-center"><%= item['sku'] %></td>
+                    <td class="text-center"><%= item['product']['quantity'] %></td>
+                    <td class="text-center"><%= item['product']['title'] %></td>
+                  </tr>
+                <% end %>
+              </table>
+            </div>
+            <div class='col-lg-6 border-left'>
+              <h6 class='text-center text-muted'>Local Products</h6>
+              <%= %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

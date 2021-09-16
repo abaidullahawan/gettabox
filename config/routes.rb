@@ -55,7 +55,6 @@ Rails.application.routes.draw do
     end
   end
 
-  # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
   resources :system_users do
     collection do
       post 'import', to: 'system_users#import'
@@ -64,6 +63,8 @@ Rails.application.routes.draw do
       post 'restore', to: 'system_users#restore'
     end
   end
+
+  resources :product_mappings
 
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
 
