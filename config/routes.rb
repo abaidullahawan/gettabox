@@ -48,10 +48,11 @@ Rails.application.routes.draw do
 
   resources :purchase_deliveries do
     collection do
-      post 'import', to: 'purchase_orders#import'
-      post 'bulk_method', to: 'purchase_orders#bulk_method'
-      get 'archive', to: 'purchase_orders#archive'
-      post 'restore', to: 'purchase_orders#restore'
+      post 'import', to: 'purchase_deliveries#import'
+      post 'bulk_method', to: 'purchase_deliveries#bulk_method'
+      get 'archive', to: 'purchase_deliveries#archive'
+      post 'restore', to: 'purchase_deliveries#restore'
+      post 'permanent_delete', to: 'purchase_deliveries#permanent_delete'
     end
   end
 
