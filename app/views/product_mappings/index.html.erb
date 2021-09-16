@@ -56,35 +56,53 @@
           </div><br>
         <% end %>
         </div>
-        <% if @body.present? && @body["inventoryItems"].present?%>
+          <h6 class='text-center text-muted'>Total Count: <%= @body['total'] if @body.present?%></h6>
           <div class="row">
-            <div class='col-lg-6'>
-              <h6 class='text-center text-muted'>Ebay Products</h6>
-              <table class="table-responsive table m-0 table-hover">
+            <div class='col-lg-12'>
+              <table class="table m-0 text-center table-bordered table-hover">
+                <tr>
+                  <th colspan='4' class='text-center text-muted'>Ebay Products</th>
+                  <th colspan='3' class='text-center text-muted'>Local Products</th>
+                  <th colspan='2' class='text-center text-muted'>Actions</th>
+                </tr>
                 <tr>
                   <th>Image</th>
                   <th class="text-center">Sku</th>
                   <th class="text-center">Type/Vat</th>
                   <th class="text-center">Name</th>
+                  <th>Image</th>
+                  <th class="text-center">Sku</th>
+                  <th class="text-center">Name</th>
                 </tr>
-                <% @body["inventoryItems"].each do |item| %>
-                  <tr class=''>
-                    <td>
-                      <%#= image_tag item['product']['image'], style:'width:50px; height:50px;' %>
+                <% if @body.present? && @body["inventoryItems"].present? %>
+                  <% @body["inventoryItems"].each do |item| %>
+                    <tr class=''>
+                      <td>
+                        <%#= image_tag item['product']['image'], style:'width:50px; height:50px;' %>
+                      </td>
+                      <td class="text-center"><%= item['sku'] %></td>
+                      <td class="text-center"><%= item['product']['quantity'] %></td>
+                      <td class="text-center"><%= item['product']['title'] %></td>
+                      <td></td>
+                      <td>N/A</td>
+                      <td><%= select_tag :product, options_for_select(Product.all.map{|u| [u.title, u.id]}), class: 'form-control chosen-select', prompt: 'Search Product' %></td>
+                      <td class="text-center">
+                      <div class="dropdown dropleft">
+                        <button class="btn btn-primary" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                          Actions
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                          <a class="dropdown-item" href="">Hide</a>
+                          <%= link_to 'Archive', '', class: "dropdown-item"%>
+                        </div>
+                      </div>
                     </td>
-                    <td class="text-center"><%= item['sku'] %></td>
-                    <td class="text-center"><%= item['product']['quantity'] %></td>
-                    <td class="text-center"><%= item['product']['title'] %></td>
-                  </tr>
+                    </tr>
+                  <% end %>
                 <% end %>
               </table>
             </div>
-            <div class='col-lg-6 border-left'>
-              <h6 class='text-center text-muted'>Local Products</h6>
-              <%= %>
-            </div>
           </div>
-        <% end %>
       </div>
     </div>
   </div>

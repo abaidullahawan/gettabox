@@ -1,14 +1,17 @@
 <!-- Main Content Header -->
 <div class="main-content-header">
-  <h1><%= link_to 'Purchase Deliveries', purchase_deliveries_path, style:'color: #212529;' %></h1>
-  <ol class="breadcrumb">
-    <li class="breadcrumb-item">
-      <a href="<%= dashboard_sales_path %>">Dashboard</a>
-    </li>
-    <li class="breadcrumb-item active">
-      <span class="active">Purchase Deliveries</span>
-    </li>
-  </ol>
+    <h1>Purchase Deliveries</h1>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a href="<%= dashboard_sales_path %>">Dashboard</a>
+        </li>
+        <li class="breadcrumb-item">
+            <a href="<%= purchase_deliveries_path %>">Purchase Deliveries</a>
+        </li>
+        <li class="breadcrumb-item active">
+            <span class="active">Archives</span>
+        </li>
+    </ol>
 </div>
 <!-- End Main Content Header -->
 
@@ -17,18 +20,8 @@
     <div class="card mb-30">
       <div class="card-body">
         <div class="card-header">
-          <span class='mr-1 float-right'>
-            <%= form_tag import_purchase_deliveries_path, multipart: true, method: :post do %>
-              <%= file_field_tag :file, class: 'd-none import-file' %>
-              <button type='button' class='btn btn-outline-success import-btn'>Import</button>
-              <%= submit_tag "Import", class: 'd-none import-submit' %>
-            <% end %>
-          </span>
           <div class='mr-1 float-right'>
-            <%= link_to 'Export', purchase_deliveries_path(format: :csv, export_csv: true), class: 'btn btn-outline-primary' %>
-          </div>
-          <div class='mr-1 float-right'>
-            <%= link_to 'Archives', archive_purchase_deliveries_path, class: 'btn btn-outline-info' %>
+            <%= link_to 'Purchase Deliveries', purchase_deliveries_path, class: 'btn btn-outline-info' %>
           </div>
           <h5 class="card-title"> Data</h5>
         </div>
@@ -78,8 +71,8 @@
                         Actions
                       </button>
                       <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                        <a class="dropdown-item" href="<%= purchase_delivery_path(purchase_delivery)%>">Show</a>
-                        <%= link_to 'Archive', purchase_delivery_path(purchase_delivery), method: 'delete', data: {confirm: "Are you sure you want to archive"}, class: "dropdown-item"%>
+                          <%= link_to 'Restore', restore_purchase_deliveries_path(object_id: purchase_delivery), method: :post, data: {confirm: "Are you sure you want to restore"}, class: "dropdown-item"%>
+                          <%= link_to 'Permanent Delete', permanent_delete_purchase_deliveries_path(object_id: purchase_delivery), method: :post, data: {confirm: "Are you sure you want to parmanent delete"}, class: "dropdown-item"%>
                       </div>
                     </div>
                   </td>
