@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_09_14_100407) do
+ActiveRecord::Schema.define(version: 2021_09_16_111320) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -82,6 +82,15 @@ ActiveRecord::Schema.define(version: 2021_09_14_100407) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["personal_detail_id"], name: "index_contact_details_on_personal_detail_id"
+  end
+
+  create_table "general_settings", force: :cascade do |t|
+    t.string "name"
+    t.string "display_name"
+    t.string "phone"
+    t.string "address"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
   end
 
   create_table "multipack_products", force: :cascade do |t|
@@ -168,6 +177,8 @@ ActiveRecord::Schema.define(version: 2021_09_14_100407) do
     t.decimal "cost_price"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.integer "missing"
+    t.integer "demaged"
     t.index ["product_id"], name: "index_purchase_delivery_details_on_product_id"
     t.index ["purchase_delivery_id"], name: "index_purchase_delivery_details_on_purchase_delivery_id"
   end
