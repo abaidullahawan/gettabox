@@ -26,8 +26,8 @@ class PurchaseOrdersController < ApplicationController
   def create
     @supplier = SystemUser.find(params[:purchase_order][:supplier_id])
     @purchase_order = PurchaseOrder.new(purchase_order_params)
-    @purchase_order.delivery_address = @supplier.supplier_address
-    @purchase_order.invoice_address = GeneralSetting.first.address
+    # @purchase_order.delivery_address = @supplier.supplier_address
+    # @purchase_order.invoice_address = GeneralSetting.first.address
     if @purchase_order.save
       flash[:notice] = "Purchase Order created successfully."
       redirect_to purchase_order_path(@purchase_order)
