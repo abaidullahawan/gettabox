@@ -1,0 +1,12 @@
+<%= form_for @general_setting do |f| %>
+    <%= f.label :name%>
+    <%= f.text_field :name %>
+    <%= f.label :display_name%>
+    <%= f.text_field :display_name %>
+    <%= f.label :phone%>
+    <%= f.text_field :phone %>
+    <%= f.label :address%>
+    <%= f.text_field :address %>
+
+    <%= f.submit %>
+<% end %>

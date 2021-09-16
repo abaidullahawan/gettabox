@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  resources :general_settings
   resources :seasons do
     collection do
       post 'import', to: 'seasons#import'

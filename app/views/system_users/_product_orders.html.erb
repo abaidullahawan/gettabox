@@ -10,7 +10,7 @@
     <tr class=''>
       <td class="text-center"><%= purchase_order&.system_user&.name %></td>
       <td class="text-center"><%= purchase_order.total_bill %></td>
-      <td class="text-center"><%= purchase_order.created_at %></td>
+      <td class="text-center"><%= purchase_order.created_at.strftime("%d/ %m/ %Y")   %></td>
       <td class="text-center"><%= purchase_order&.purchase_deliveries&.count %></td>
       <td class="text-center">
         <div class="dropdown dropleft">
@@ -47,7 +47,7 @@
                   <div class="col-1 offset-1 text-center"><%= purchase_delivery.id %></div>
                   <div class="col-2 text-center"><%= purchase_delivery.purchase_order_id %></div>
                   <div class="col-4 text-center"><%= purchase_delivery.total_bill %></div>
-                  <div class="col-3 text-center"><%= purchase_delivery.created_at %></div>
+                  <div class="col-3 text-center"><%= purchase_delivery.created_at.strftime("%d/ %m/ %Y") %></div>
                   <div class="col-1"><%= link_to 'Show', purchase_delivery_path(purchase_delivery), class:'btn btn-outline-primary' %></div>
                 </div><hr>
               <% end %>

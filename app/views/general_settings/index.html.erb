@@ -1,0 +1,33 @@
+<p id="notice"><%= notice %></p>
+
+<h1>General Settings</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Display name</th>
+      <th>Phone</th>
+      <th>Address</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @general_settings.each do |general_setting| %>
+      <tr>
+        <td><%= general_setting.name %></td>
+        <td><%= general_setting.display_name %></td>
+        <td><%= general_setting.phone %></td>
+        <td><%= general_setting.address %></td>
+        <td><%= link_to 'Show', general_setting %></td>
+        <td><%= link_to 'Edit', edit_general_setting_path(general_setting) %></td>
+        <td><%= link_to 'Destroy', general_setting, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New General Setting', new_general_setting_path %>
