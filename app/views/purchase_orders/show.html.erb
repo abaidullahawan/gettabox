@@ -16,10 +16,6 @@
     <div class="card mb-30">
       <div class="card-body">
           <div class="card-header">
-<<<<<<< Updated upstream
-
-=======
->>>>>>> Stashed changes
         <%= form_for @purchase_order, url: purchase_order_path(@purchase_order)  do |pd| %>
                 <%= link_to "Edit Order", edit_purchase_order_path, class:"btn btn-primary float-right ml-1", type:"button", style: "color: white" %>
                 <%= link_to "Book Input", new_purchase_delivery_path(purchase_order_id: @purchase_order.id), class: "btn btn-primary float-right ml-1", type: "button" %>
@@ -50,31 +46,19 @@
                 <h5 class="fs-14 mb-1 col-4">Order Status</h5>
                 <p class="col-8"><%=  %></p>
                 <br><br>
-<<<<<<< Updated upstream
                 <!--
                 <h5 class="fs-14 mb-1 col-4">Invoice Address</h5>
                 <p class="col-8"><%#= @purchase_order&.invoice_address%> 
-=======
-                <h5 class="fs-14 mb-1 col-4">Invoice Address</h5>
-                <p class="col-8"><%= @purchase_order&.invoice_address%> 
->>>>>>> Stashed changes
                 <button type="button" class="btn btn-primary btn-xs ml-4" data-toggle="modal" data-target="#exampleModalCenter">
                   Edit
                 </button></p>
                 <br>
                 <h5 class="fs-14 mb-1 col-4">Delivery Address</h5>
-<<<<<<< Updated upstream
                 <p class="col-8"><%#= @purchase_order&.delivery_address%>
                 <button type="button" class="btn btn-primary btn-xs ml-4" data-toggle="modal" data-target="#exampleModalCenter2">
                   Edit
                 </button></p>
                 -->
-=======
-                <p class="col-8"><%= @purchase_order&.delivery_address%>
-                <button type="button" class="btn btn-primary btn-xs ml-4" data-toggle="modal" data-target="#exampleModalCenter2">
-                  Edit
-                </button></p>
->>>>>>> Stashed changes
               </div>
             </div>
             <div class='col-6'>
