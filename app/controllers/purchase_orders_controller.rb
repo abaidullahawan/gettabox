@@ -2,6 +2,7 @@ class PurchaseOrdersController < ApplicationController
 
   before_action :authenticate_user!
   before_action :find_purchase_order, only: [:show, :edit, :update, :destroy]
+  after_action :restore_childs, only: :restore
 
   def index
     @q = PurchaseOrder.ransack(params[:q])
@@ -141,6 +142,11 @@ class PurchaseOrdersController < ApplicationController
       @purchase_order = PurchaseOrder.find(params[:id])
     end
 
+    def restore_childs
+      child_ids =  PurchaseOrderDetail.only_deleted.where(purchase_delivery_id: params[:object_id]).pluck(:id)
+      PurchaseOrderDetail.restore(child_ids)
+    end
+
     def purchase_order_params
       params.require(:purchase_order).permit(
         :supplier_id,
@@ -155,6 +161,7 @@ class PurchaseOrdersController < ApplicationController
           :vat,
           :quantity,
           :missing,
+          :deleted_at,
           :demaged
         ]
       )
