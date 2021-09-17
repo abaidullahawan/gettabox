@@ -29,6 +29,7 @@
               <button class="btn btn-primary float-right ml-1" type="button" >
                 Get Logs
               </button>
+                <%= link_to "PDF", purchase_order_path(format: :pdf), class:"btn btn-primary float-right ml-1", type:"button",style: "color: white" %>
             <h5 class="card-title"> Show</h5>
           </div>
 
@@ -38,11 +39,11 @@
                 <h5 class="fs-14 mb-1 col-4">Order Id</h5>
                 <p class="col-8"><%= @purchase_order.id %></p>
                 <h5 class="fs-14 mb-1 col-4">Supplier Name</h5>
-                <p class="col-8"><%= @purchase_order.system_user.name %></p>
+                <p class="col-8"><%= @purchase_order&.system_user&.name %></p>
                 <h5 class="fs-14 mb-1 col-4">Estimated Delivery Date</h5>
-                <p class="col-8"><%= @purchase_order.system_user.days_for_completion_to_delivery %> Day/Days</p>
+                <p class="col-8"><%= @purchase_order&.system_user&.days_for_completion_to_delivery %> Day/Days</p>
                 <h5 class="fs-14 mb-1 col-4">Payment Method</h5>
-                <p class="col-8"><%= @purchase_order.system_user.payment_method %></p>
+                <p class="col-8"><%= @purchase_order&.system_user&.payment_method %></p>
                 <h5 class="fs-14 mb-1 col-4">Order Status</h5>
                 <p class="col-8"><%=  %></p>
                 <br><br>
@@ -66,7 +67,7 @@
                 <h5 class="fs-14 mb-1 col-4">Order Date</h5>
                 <p class="col-8"><%= @purchase_order.created_at.strftime('%d-%m-%y') %></p>
                 <h5 class="fs-14 mb-1 col-4">Delivery Method</h5>
-                <p class="col-8"><%= @purchase_order.system_user.delivery_method.present? ? @purchase_order.system_user.delivery_method : 'Not Specified' %></p>
+                <p class="col-8"><%= @purchase_order&.system_user&.delivery_method.present? ? @purchase_order.system_user.delivery_method : 'Not Specified' %></p>
                 <h5 class="fs-14 mb-1 col-4">Order Deliverd?</h5>
                 <p class="col-8"><%=  %>Yes/No</p>
                 <h5 class="fs-14 mb-1 col-4">Order Completed?</h5>
@@ -102,7 +103,7 @@
                             <%= f.object.product.sku%>
                           </td>
                           <td>
-                            <%= f.object.purchase_order.system_user.product_suppliers.first.product_sku %>
+                            <%= f.object.purchase_order&.system_user&.product_suppliers&.first&.product_sku %>
                           </td>
                           <td>
                             <%= f.object.product.title %>
@@ -123,7 +124,7 @@
                             $ <%= f.object.cost_price %>
                           </td>
                           <td>
-                            $ <%= f.object.quantity * f.object.cost_price  %>
+                            $ <%= f.object.quantity * f.object.cost_price if f.object.cost_price.present? && f.object.quantity.present? %>
                           </td>
                           <td>
                             <%= f.object.purchase_order.created_at.strftime("%d/ %m/ %Y") %>
