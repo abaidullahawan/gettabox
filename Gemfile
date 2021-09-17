@@ -93,3 +93,7 @@ gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 # ADD TRANSPILER TO USE ES6
 gem 'sprockets'
 gem 'sprockets-es6'
+
+# PDF
+gem 'wicked_pdf'
+gem 'wkhtmltopdf-binary'
