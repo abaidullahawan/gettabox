@@ -2,18 +2,17 @@ class SystemUsersController < ApplicationController
 
   before_action :authenticate_user!
   before_action :find_system_user, only: [:show, :edit, :update, :destroy]
-
+  before_action :new, only: [ :index ]
   def index
     @q = SystemUser.where(user_type: 'supplier').ransack(params[:q])
     @system_users = @q.result(distinct: true).order(created_at: :desc).page(params[:page]).per(params[:limit])
     export_csv(@system_users) if params[:export_csv].present?
     @purchase_orders = PurchaseOrder.all
-
-    @system_user = SystemUser.new
   end
 
   def new
     @system_user = SystemUser.new
+    @user_address = @system_user.build_address
   end
 
   def create
@@ -131,7 +130,17 @@ class SystemUsersController < ApplicationController
     end
 
     def system_user_params
-      params.require(:system_user).permit(:user_type, :name, :photo, :payment_method, :days_for_payment, :days_for_order_to_completion, :days_for_completion_to_delivery, :currency_symbol, :exchange_rate)
+      params.require(:system_user).permit(:user_type, :name, :photo, :payment_method, :days_for_payment, :days_for_order_to_completion, :days_for_completion_to_delivery, :currency_symbol, :exchange_rate, 
+        address_attributes:[ 
+        :id,
+        :company,
+        :address,
+        :city,
+        :region,
+        :postcode,
+        :country
+        ]
+      )
     end
 
 end

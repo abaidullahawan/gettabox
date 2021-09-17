@@ -13,6 +13,7 @@ class PurchaseOrdersController < ApplicationController
   def new
     @purchase_order = PurchaseOrder.new
     @purchase_order.purchase_order_details.build
+    @purchase_order.addresses.build
     @supplier = params[:supplier]
     @categories = Product.joins(:product_suppliers,:category).where('product_suppliers.system_user_id': @supplier).pluck('categories.id','categories.title').uniq
     @products = Hash.new
@@ -163,6 +164,15 @@ class PurchaseOrdersController < ApplicationController
           :missing,
           :deleted_at,
           :demaged
+        ],
+        addresses_attributes:[ 
+              :id,
+              :company,
+              :address,
+              :city,
+              :region,
+              :postcode,
+              :country
         ]
       )
     end

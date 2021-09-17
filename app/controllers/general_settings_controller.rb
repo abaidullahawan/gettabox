@@ -13,6 +13,7 @@ class GeneralSettingsController < ApplicationController
   # GET /general_settings/new
   def new
     @general_setting = GeneralSetting.new
+    @setting_address = @general_setting.build_address
   end
 
   # GET /general_settings/1/edit
@@ -64,6 +65,16 @@ class GeneralSettingsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def general_setting_params
-      params.require(:general_setting).permit(:name, :display_name, :phone, :address)
+      params.require(:general_setting).permit(:name, :display_name, :phone,
+        address_attributes:[ 
+          :id,
+          :company,
+          :address,
+          :city,
+          :region,
+          :postcode,
+          :country
+          ]
+      )
     end
 end
