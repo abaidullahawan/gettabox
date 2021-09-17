@@ -6,7 +6,8 @@ class SystemUser < ApplicationRecord
   has_many :purchase_orders, foreign_key: 'supplier_id', primary_key: 'id', dependent: :destroy
   validates :name, presence: true
   has_one_attached :photo
-
+  has_one :address, as: :addressable
+  accepts_nested_attributes_for :address
   enum user_type: {
     customer: 0,
     supplier: 1
