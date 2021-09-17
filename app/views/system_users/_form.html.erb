@@ -46,6 +46,10 @@
   <%= f.label :exchange_rate %>
   <%= f.number_field :exchange_rate, step: 0.01, class: 'form-control', placeholder: 'Enter Exchange Rate' %>
 </div>
+<!--<div class="form-group">
+  <%#= f.label :supplier_address %>
+  <%#= f.text_field :supplier_address, step: 0.01, class: 'form-control', placeholder: 'Enter Address' %>
+</div> -->
 
 <div class="form-group d-none">
   <%= f.submit(@system_user.new_record? ? "Create" : "Update", class: 'btn btn-primary mt-5 supplier-submit') %>

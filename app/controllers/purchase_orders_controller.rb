@@ -2,6 +2,7 @@ class PurchaseOrdersController < ApplicationController
 
   before_action :authenticate_user!
   before_action :find_purchase_order, only: [:show, :edit, :update, :destroy]
+  after_action :restore_childs, only: :restore
 
   def index
     @q = PurchaseOrder.ransack(params[:q])
@@ -23,7 +24,10 @@ class PurchaseOrdersController < ApplicationController
   end
 
   def create
+    @supplier = SystemUser.find(params[:purchase_order][:supplier_id])
     @purchase_order = PurchaseOrder.new(purchase_order_params)
+    # @purchase_order.delivery_address = @supplier.supplier_address
+    # @purchase_order.invoice_address = GeneralSetting.first.address
     if @purchase_order.save
       flash[:notice] = "Purchase Order created successfully."
       redirect_to purchase_order_path(@purchase_order)
@@ -35,6 +39,7 @@ class PurchaseOrdersController < ApplicationController
 
   def show
     @supplier = @purchase_order.supplier_id
+    @deliverd = PurchaseOrder.where(id: @purchase_order.id).joins(purchase_deliveries: :purchase_delivery_details).group(:product_id).sum(:quantity)
     @missing = PurchaseOrder.where(id: @purchase_order.id).joins(purchase_deliveries: :purchase_delivery_details).group(:product_id).sum(:missing)
     @demaged = PurchaseOrder.where(id: @purchase_order.id).joins(purchase_deliveries: :purchase_delivery_details).group(:product_id).sum(:demaged)
     respond_to do |format|
@@ -147,10 +152,17 @@ class PurchaseOrdersController < ApplicationController
       @purchase_order = PurchaseOrder.find(params[:id])
     end
 
+    def restore_childs
+      child_ids =  PurchaseOrderDetail.only_deleted.where(purchase_delivery_id: params[:object_id]).pluck(:id)
+      PurchaseOrderDetail.restore(child_ids)
+    end
+
     def purchase_order_params
       params.require(:purchase_order).permit(
         :supplier_id,
         :total_bill,
+        # :delivery_address,
+        # :invoice_address,
         purchase_order_details_attributes:[
           :id,
           :purchase_order_id,
@@ -159,6 +171,7 @@ class PurchaseOrdersController < ApplicationController
           :vat,
           :quantity,
           :missing,
+          :deleted_at,
           :demaged
         ]
       )

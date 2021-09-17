@@ -16,9 +16,9 @@
     <div class="card mb-30">
       <div class="card-body">
           <div class="card-header">
+        <%= form_for @purchase_order, url: purchase_order_path(@purchase_order)  do |pd| %>
                 <%= link_to "Edit Order", edit_purchase_order_path, class:"btn btn-primary float-right ml-1", type:"button", style: "color: white" %>
-              <button class="btn btn-primary float-right ml-1" type="button" >
-                Book input
+                <%= link_to "Book Input", new_purchase_delivery_path(purchase_order_id: @purchase_order.id), class: "btn btn-primary float-right ml-1", type: "button" %>
               </button>
               <button class="btn btn-primary float-right ml-1" type="button" >
                 Purchase Order
@@ -32,7 +32,6 @@
                 <%= link_to "PDF", purchase_order_path(format: :pdf), class:"btn btn-primary float-right ml-1", type:"button",style: "color: white" %>
             <h5 class="card-title"> Show</h5>
           </div>
-        <%= form_for @purchase_order, url: purchase_order_path(@purchase_order)  do |pd| %>
 
           <div class='row'>
             <div class='col-6'>
@@ -47,6 +46,20 @@
                 <p class="col-8"><%= @purchase_order&.system_user&.payment_method %></p>
                 <h5 class="fs-14 mb-1 col-4">Order Status</h5>
                 <p class="col-8"><%=  %></p>
+                <br><br>
+                <!--
+                <h5 class="fs-14 mb-1 col-4">Invoice Address</h5>
+                <p class="col-8"><%#= @purchase_order&.invoice_address%> 
+                <button type="button" class="btn btn-primary btn-xs ml-4" data-toggle="modal" data-target="#exampleModalCenter">
+                  Edit
+                </button></p>
+                <br>
+                <h5 class="fs-14 mb-1 col-4">Delivery Address</h5>
+                <p class="col-8"><%#= @purchase_order&.delivery_address%>
+                <button type="button" class="btn btn-primary btn-xs ml-4" data-toggle="modal" data-target="#exampleModalCenter2">
+                  Edit
+                </button></p>
+                -->
               </div>
             </div>
             <div class='col-6'>
@@ -62,15 +75,8 @@
               </div>
             </div>
           </div>
-          <!--div class='row'>
-            <div class='col-3 offset-6'>
-              <h5 class='float-right pt-2'>Total Price</h5>
-            </div>
-            <div class='col-3'>
-              <%= pd.number_field :total_bill, class: 'form-control order_total', placeholder: 'Total' %>
-              <%= pd.number_field :supplier_id, value: @supplier, class: 'form-control d-none' %>
-            </div>
-          </div--><br>
+          
+          <br>
           <div class="row">
             <div class="col-lg-12">
               <div class="faq-accordion mb-30">
@@ -103,7 +109,7 @@
                             <%= f.object.product.title %>
                           </td>
                           <td>
-                            <%= f.object.quantity %>
+                            <%= @deliverd[f.object.product_id]%>
                           </td>
                           <td>
                             <%= f.object.purchase_order.purchase_order_details.where(product_id: f.object.product.id).first.quantity %>
@@ -138,3 +144,57 @@
     </div>
   </div>
 </div>
+
+<!-- Modal Invoice Address 
+<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Update Invoice Address</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      <%= form_for @purchase_order, url: purchase_order_path(@purchase_order)  do |pd| %>
+          <div class='d-flex'>
+                  <h5 class="fs-14 mt-2"><%= pd.label :invoice_address %></h5>
+                <%#= pd.text_field :invoice_address, class: 'form-control order_total', placeholder: 'Invoice Address'%>
+          </div>
+          <br>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <%#= pd.submit(@purchase_order.new_record? ? "Create" : "Update", class: 'btn btn-primary btn-xs mt-1') %>
+      </div>
+      <% end %>
+    </div>
+  </div>
+</div>
+-->
+<!-- Modal Delivery Address 
+<div class="modal fade" id="exampleModalCenter2" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Update Delivery Address</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      <%= form_for @purchase_order, url: purchase_order_path(@purchase_order)  do |pd| %>
+          <div class='d-flex'>
+                  <h5 class="fs-14 mt-2"><%= pd.label :delivery_address %></h5>
+                <%#= pd.text_field :delivery_address, class: 'form-control order_total', placeholder: 'Invoice Address'%>
+          </div>
+          <br>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <%#= pd.submit(@purchase_order.new_record? ? "Create" : "Update", class: 'btn btn-primary btn-xs mt-1') %>
+      </div>
+      <% end %>
+    </div>
+  </div>
+</div> -->

@@ -1,0 +1,24 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Name:</strong>
+  <%= @general_setting.name %>
+</p>
+
+<p>
+  <strong>Display name:</strong>
+  <%= @general_setting.display_name %>
+</p>
+
+<p>
+  <strong>Phone:</strong>
+  <%= @general_setting.phone %>
+</p>
+
+<p>
+  <strong>Address:</strong>
+  <%= @general_setting.address %>
+</p>
+
+<%= link_to 'Edit', edit_general_setting_path(@general_setting) %> |
+<%= link_to 'Back', general_settings_path %>

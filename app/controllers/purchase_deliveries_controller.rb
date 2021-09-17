@@ -2,6 +2,7 @@ class PurchaseDeliveriesController < ApplicationController
 
   before_action :authenticate_user!
   before_action :find_purchase_delivery, only: [:show, :edit, :update, :destroy]
+  after_action :restore_childs, only: :restore
 
   def index
     @q = PurchaseDelivery.ransack(params[:q])
@@ -124,9 +125,30 @@ class PurchaseDeliveriesController < ApplicationController
     end
   end
 
+  def permanent_delete
+    if params[:object_id].present? && PurchaseDelivery.only_deleted.find(params[:object_id]).really_destroy!
+      flash[:notice] = 'Purchase Order deleted successfully'
+      redirect_to archive_purchase_deliveries_path
+    else
+      flash[:notice] = 'Purchase Order cannot be deleted/Please select something to delete'
+      redirect_to archive_purchase_deliveries_path
+    end
+  end
+
   private
     def find_purchase_delivery
       @purchase_delivery = PurchaseDelivery.find(params[:id])
+    end
+
+    def restore_childs
+      @purchase_deliveries = PurchaseDeliveryDetail.only_deleted.where(purchase_delivery_id: params[:object_id])
+      @purchase_deliveries&.each do |detail|
+        return unless detail.restore
+
+        @product = Product.find(detail.product.id)
+        @stock = @product.total_stock.to_f+detail.quantity.to_f
+        @product.update(total_stock: @stock)
+      end
     end
 
     def purchase_delivery_params
@@ -140,6 +162,7 @@ class PurchaseDeliveriesController < ApplicationController
           :cost_price,
           :quantity,
           :missing,
+          :deleted_at,
           :demaged
         ]
       )

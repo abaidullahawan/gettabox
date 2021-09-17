@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  resources :general_settings
   resources :seasons do
     collection do
       post 'import', to: 'seasons#import'
@@ -48,14 +49,14 @@ Rails.application.routes.draw do
 
   resources :purchase_deliveries do
     collection do
-      post 'import', to: 'purchase_orders#import'
-      post 'bulk_method', to: 'purchase_orders#bulk_method'
-      get 'archive', to: 'purchase_orders#archive'
-      post 'restore', to: 'purchase_orders#restore'
+      post 'import', to: 'purchase_deliveries#import'
+      post 'bulk_method', to: 'purchase_deliveries#bulk_method'
+      get 'archive', to: 'purchase_deliveries#archive'
+      post 'restore', to: 'purchase_deliveries#restore'
+      post 'permanent_delete', to: 'purchase_deliveries#permanent_delete'
     end
   end
 
-  # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
   resources :system_users do
     collection do
       post 'import', to: 'system_users#import'
@@ -64,6 +65,8 @@ Rails.application.routes.draw do
       post 'restore', to: 'system_users#restore'
     end
   end
+
+  resources :product_mappings
 
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
 

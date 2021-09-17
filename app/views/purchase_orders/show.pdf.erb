@@ -7,14 +7,9 @@
 </head>
 <!-- Main Content Header -->
 <div class="main-content-header">
-  <h1><%= link_to 'Purchase Orders', purchase_orders_path, style:'color: #212529;' %></h1>
+
+  <h1><%= link_to 'Purchase Order', purchase_orders_path, style:'color: #212529;' %></h1>
   <ol class="breadcrumb">
-    <li class="breadcrumb-item">
-      <a href="<%= dashboard_sales_path %>">Dashboard</a>
-    </li>
-    <li class="breadcrumb-item active">
-      <span class="active">Show</span>
-    </li>
   </ol>
 </div>
 <!-- End Main Content Header -->
@@ -23,7 +18,7 @@
     <div class="card mb-30">
       <div class="card-body">
         <%= form_for @purchase_order, url: purchase_order_path(@purchase_order)  do |pd| %>
-        <div class= "container">
+
           <div class='row'>
             <div class='col-6'>
               <div class='row'>
@@ -39,7 +34,8 @@
             </div>
             <div class='col-6'>
               <div class='row'>
-                <h5 class="fs-14 mb-1 col-4">Order Date</h5>
+
+                <h5 class="fs-14 mb-1 col-4 pdf_style">Order Date</h5>
                 <p class="col-8"><%= @purchase_order.created_at.strftime('%d-%m-%y') %></p>
                 <h5 class="fs-14 mb-1 col-4">Delivery Method</h5>
                 <p class="col-8"><%= @purchase_order&.system_user&.delivery_method.present? ? @purchase_order.system_user.delivery_method : 'Not Specified' %></p>
@@ -124,5 +120,4 @@
       </div>
     </div>
   </div>
-</div>
 </div>
