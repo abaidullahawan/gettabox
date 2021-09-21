@@ -50,6 +50,9 @@ gem 'chosen-rails'
 gem 'wicked_pdf'
 gem 'wkhtmltopdf-binary'
 
+gem 'rest-client'
+gem 'httparty'
+
 #
 gem 'capistrano', '~> 3.11'
 gem 'capistrano-rails', '~> 1.4'
