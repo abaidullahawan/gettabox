@@ -20,10 +20,10 @@ class PurchaseDeliveriesController < ApplicationController
   def create
     @purchase_delivery = PurchaseDelivery.new(purchase_delivery_params)
     if @purchase_delivery.save
-      flash[:notice] = "Purchase Order created successfully."
-      redirect_to purchase_delivery_path(@purchase_delivery)
+      flash[:notice] = "Order Delivered Successfully."
+      redirect_to purchase_order_path(@purchase_delivery.purchase_order_id)
     else
-      flash.now[:notice] = "Purchase Order not created."
+      flash.now[:notice] = "Not Succesfully Delivered."
       render 'new'
     end
   end
@@ -37,20 +37,20 @@ class PurchaseDeliveriesController < ApplicationController
 
   def update
     if @purchase_delivery.update(purchase_delivery_params)
-      flash[:notice] = "Purchase Order updated successfully."
+      flash[:notice] = "Order Delivery updated successfully."
       redirect_to purchase_delivery_path(@purchase_delivery)
     else
-      flash.now[:notice] = "Purchase Order not updated."
+      flash.now[:notice] = "Order Delivery not updated."
       render 'show'
     end
   end
 
   def destroy
     if @purchase_delivery.destroy
-      flash[:notice] = "Purchase Order archive successfully."
+      flash[:notice] = "Purchase Delivery archive successfully."
       redirect_to purchase_deliveries_path
     else
-      flash.now[:notice] = "Purchase Order not archived."
+      flash.now[:notice] = "Purchase Delivery not archived."
       render purchase_deliveries_path
     end
   end
@@ -58,7 +58,7 @@ class PurchaseDeliveriesController < ApplicationController
   def export_csv(purchase_deliveries)
     request.format = 'csv'
     respond_to do |format|
-      format.csv { send_data purchase_deliveries.to_csv, filename: "purchase-orders-#{Date.today}.csv" }
+      format.csv { send_data purchase_deliveries.to_csv, filename: "purchase-deliveries-#{Date.today}.csv" }
     end
   end
 
@@ -95,7 +95,7 @@ class PurchaseDeliveriesController < ApplicationController
         product = PurchaseDelivery.find(p.to_i)
         product.delete
       end
-      flash[:notice] = 'Purchase Orders archive successfully'
+      flash[:notice] = 'Purchase Delivery archive successfully'
       redirect_to purchase_deliveries_path
     else
       flash[:alert] = 'Please select something to perform action.'
@@ -110,27 +110,27 @@ class PurchaseDeliveriesController < ApplicationController
 
   def restore
     if params[:object_id].present? && PurchaseDelivery.restore(params[:object_id])
-      flash[:notice] = 'Purchase Order restore successful'
+      flash[:notice] = 'Purchase Delviery restore successful'
       redirect_to archive_purchase_deliveries_path
     elsif params[:object_ids].present?
       params[:object_ids].delete('0')
       params[:object_ids].each do |p|
         PurchaseDelivery.restore(p.to_i)
       end
-      flash[:notice] = 'Purchase Orders restore successful'
+      flash[:notice] = 'Purchase Delivery restore successful'
       redirect_to archive_purchase_deliveries_path
     else
-      flash[:notice] = 'Purchase Order cannot be restore'
+      flash[:notice] = 'Purchase Delivery cannot be restore'
       redirect_to archive_purchase_deliveries_path
     end
   end
 
   def permanent_delete
     if params[:object_id].present? && PurchaseDelivery.only_deleted.find(params[:object_id]).really_destroy!
-      flash[:notice] = 'Purchase Order deleted successfully'
+      flash[:notice] = 'Purchase Delivery deleted successfully'
       redirect_to archive_purchase_deliveries_path
     else
-      flash[:notice] = 'Purchase Order cannot be deleted/Please select something to delete'
+      flash[:notice] = 'Purchase Delivery cannot be deleted/Please select something to delete'
       redirect_to archive_purchase_deliveries_path
     end
   end
