@@ -18,7 +18,7 @@ class ApplicationController < ActionController::Base
 
   def refresh_token
     @refresh_token = RefreshToken.last
-    if @refresh_token.access_token_expiry.localtime < DateTime.now
+    if @refresh_token.present? && @refresh_token.access_token_expiry.localtime < DateTime.now
       begin
         data = { :redirect_uri => 'Channel_Dispatc-ChannelD-Channe-imqsnuapo',
           :grant_type => 'refresh_token',
