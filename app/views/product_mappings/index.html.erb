@@ -31,13 +31,9 @@
       <div class="card-body">
         <div class="card-header">
           <div class="dropdown">
-              <button class="btn btn-primary float-right" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <button type="button" class="btn btn-primary float-right" data-toggle="modal" data-target="#product-mappings-create-modal">
                 Create
               </button>
-              <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                <a href="#" class="dropdown-item" data-toggle="modal" data-target='#single-product-create-modal'>Single Pack</a>
-                <a href="#" class="dropdown-item" data-toggle="modal" data-target='#multi-product-create-modal'>Multi Pack</a>
-              </div>
             </div>
             <div class='mr-1 float-right'>
               <%= link_to 'Export', products_path(format: :csv, export_csv: true), class: 'btn btn-outline-primary' %>
@@ -50,9 +46,10 @@
           <%= form_tag( '/product_mappings', method: :get) do |f| %>
           <div class='row'>
             <div class="col-md-3">
-              <%= select_tag :product_mapping, options_for_select([ "Ebay Sandbox"]), class:"form-control chosen-select", title: 'Select Mapping Category', prompt: "Please select" %>
+              <%= select_tag :product_mapping, options_for_select([ "Ebay Sandbox"]), class:"form-control chosen-select product-mapping-select", title: 'Select Mapping Category', prompt: "Please select" %>
             </div>
-            <%= submit_tag 'Mapping', class: 'btn btn-primary'%>
+            <%= submit_tag 'Mapping', class: 'btn btn-primary product-mapping-request'%>
+            <%= link_to 'Ebay Request', 'https://auth.sandbox.ebay.com/oauth2/authorize?client_id=ChannelD-ChannelD-SBX-ea2849bbb-a8a59ad3&response_type=code&redirect_uri=Channel_Dispatc-ChannelD-Channe-imqsnuapo&scope=https://api.ebay.com/oauth/api_scope https://api.ebay.com/oauth/api_scope/buy.order.readonly https://api.ebay.com/oauth/api_scope/buy.guest.order https://api.ebay.com/oauth/api_scope/sell.marketing.readonly https://api.ebay.com/oauth/api_scope/sell.marketing https://api.ebay.com/oauth/api_scope/sell.inventory.readonly https://api.ebay.com/oauth/api_scope/sell.inventory https://api.ebay.com/oauth/api_scope/sell.account.readonly https://api.ebay.com/oauth/api_scope/sell.account https://api.ebay.com/oauth/api_scope/sell.fulfillment.readonly https://api.ebay.com/oauth/api_scope/sell.fulfillment https://api.ebay.com/oauth/api_scope/sell.analytics.readonly https://api.ebay.com/oauth/api_scope/sell.marketplace.insights.readonly https://api.ebay.com/oauth/api_scope/commerce.catalog.readonly https://api.ebay.com/oauth/api_scope/buy.shopping.cart https://api.ebay.com/oauth/api_scope/buy.offer.auction https://api.ebay.com/oauth/api_scope/commerce.identity.readonly https://api.ebay.com/oauth/api_scope/commerce.identity.email.readonly https://api.ebay.com/oauth/api_scope/commerce.identity.phone.readonly https://api.ebay.com/oauth/api_scope/commerce.identity.address.readonly https://api.ebay.com/oauth/api_scope/commerce.identity.name.readonly https://api.ebay.com/oauth/api_scope/commerce.identity.status.readonly https://api.ebay.com/oauth/api_scope/sell.finances https://api.ebay.com/oauth/api_scope/sell.item.draft https://api.ebay.com/oauth/api_scope/sell.payment.dispute https://api.ebay.com/oauth/api_scope/sell.item https://api.ebay.com/oauth/api_scope/sell.reputation https://api.ebay.com/oauth/api_scope/sell.reputation.readonly https://api.ebay.com/oauth/api_scope/commerce.notification.subscription https://api.ebay.com/oauth/api_scope/commerce.notification.subscription.readonly' , target: 'blank', class: 'btn btn-info text-center ml-2' %>
           </div><br>
         <% end %>
         </div>
@@ -85,7 +82,23 @@
                       <td class="text-center"><%= item['product']['title'] %></td>
                       <td></td>
                       <td>N/A</td>
-                      <td><%= select_tag :product, options_for_select(Product.all.map{|u| [u.title, u.id]}), class: 'form-control chosen-select', prompt: 'Search Product' %></td>
+                      <% if item['matching'].present? %>
+                        <td>
+                        <div class="text-left d-flex ">
+                            <div class="productSearchContainer">
+                              <span class='text-warning'>(Suggestion)-</span><%= item['matching']['title'] %>
+                            </div>
+                            <div class="productSearchContainer">
+                              <button class="productSearchBtn btn btn-primary mt-2">
+                                <i data-feather='search' class='icon wh-15 mt-minus-3'></i>
+                              </button>
+                            </div>
+                          </div>
+                          <%= select_tag :product, options_for_select(Product.all.map{|u| [u.title, u.id]}), class: 'form-control d-none productSearch', prompt: 'Search Product' %>
+                        </td>
+                      <% else %>
+                        <td><%= select_tag :product, options_for_select(Product.all.map{|u| [u.title, u.id]}), class: 'form-control chosen-select', prompt: 'Search Product' %></td>
+                      <% end %>
                       <td class="text-center">
                       <div class="dropdown dropleft">
                         <button class="btn btn-primary" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -107,3 +120,20 @@
     </div>
   </div>
 </div>
+<%= form_with url: product_mappings_path, method: :post, remote: true, html: { id: "form-id" } do |f| %>
+  <div class="modal fade" id="product-mappings-create-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Create Product Mapping</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <%= render 'form', f: f %>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>

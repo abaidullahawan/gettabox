@@ -56,7 +56,6 @@
                           </thead>
                           <tbody>
                             <%= pd.fields_for :purchase_order_details do |f| %>
-                              <% if f.object.product.category.title == name %>
                                 <tr>
                                   <td>
                                     <% if f.object.product.photo.attached? %>
@@ -77,10 +76,10 @@
                                     <%= f.number_field :product_id, value: f.object.product.id, class: 'form-control d-none' %>
                                   </td>
                                   <td>
-                                    <%= f.number_field :vat, value: f.object.product.product_suppliers.first.product_vat, class: 'form-control order_item_vat', placeholder: 'Vat' %>
+                                    <%= f.number_field :vat, value: f.object.vat, class: 'form-control order_item_vat', placeholder: 'Vat' %>
                                   </td>
                                   <td>
-                                    <%= f.number_field :cost_price, value: f.object.product.product_suppliers.first.product_cost, class: 'form-control order_item_price', placeholder: 'Price' %>
+                                    <%= f.number_field :cost_price, value: f.object.cost_price, class: 'form-control order_item_price', placeholder: 'Price' %>
                                   </td>
                                   <td>
                                     <%= f.number_field :quantity, class: 'form-control order_item_quantity', placeholder: 'Quantity' %>
@@ -90,7 +89,6 @@
                                   </td>
                                 </tr>
                               <% end %>
-                            <% end %>
                           </tbody>
                         </table>
                       </div>

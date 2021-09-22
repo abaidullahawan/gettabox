@@ -50,6 +50,9 @@ gem 'chosen-rails'
 gem 'wicked_pdf'
 gem 'wkhtmltopdf-binary'
 
+gem 'rest-client'
+gem 'httparty'
+
 #
 gem 'capistrano', '~> 3.11'
 gem 'capistrano-rails', '~> 1.4'
@@ -93,3 +96,7 @@ gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 # ADD TRANSPILER TO USE ES6
 gem 'sprockets'
 gem 'sprockets-es6'
+
+# PDF
+gem 'wicked_pdf'
+gem 'wkhtmltopdf-binary'

@@ -1,0 +1,15 @@
+<div class="form-group">
+  <%= f.label :response_type %>
+  <%= f.text_field :response_type, autofocus: true, required: true, class: 'form-control', placeholder: 'Enter Response Type' %>
+</div>
+<div class="form-group">
+  <%= f.label :grant_type %>
+  <%= f.text_field :grant_type, required: true, class: 'form-control', placeholder: 'Enter Grant type' %>
+</div>
+<div class="form-group">
+  <%= f.label :code %>
+  <%= f.text_area :code, required: true, class: 'form-control', placeholder: 'Enter Code' %>
+</div>
+<div class="form-group">
+  <%= f.submit "Create", class: 'btn btn-outline-primary rounded float-right' %>
+</div>
