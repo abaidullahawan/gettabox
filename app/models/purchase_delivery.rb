@@ -15,5 +15,4 @@ class PurchaseDelivery < ApplicationRecord
       end
     end
   end
-
 end
