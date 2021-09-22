@@ -1,0 +1,9 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  product: 
+  mapping_sku: MyString
+
+two:
+  product: 
+  mapping_sku: MyString
