@@ -12,27 +12,27 @@
       <ul class="info">
         <li>
           <i data-feather="map-pin" class="icon"></i>
-          Institue: <%= @user.personal_detail.study_details.last.school %>
+          Institue: <%= @user.personal_detail&.study_details&.last&.school %>
         </li>
         <li>
           <i data-feather="edit" class="icon"></i>
-          Degree: <%= @user.personal_detail.study_details.last.degree %>
+          Degree: <%= @user.personal_detail&.study_details&.last&.degree %>
         </li>
         <li>
           <i data-feather="align-justify" class="icon"></i>
-          Format: <%= @user.personal_detail.study_details.last.format %>
+          Format: <%= @user.personal_detail&.study_details&.last&.format %>
         </li>
         <li>
           <i data-feather="calendar" class="icon"></i>
-          From: <%= @user.personal_detail.study_details.last.from %>
+          From: <%= @user.personal_detail&.study_details&.last&.from %>
         </li>
         <li>
           <i data-feather="phone" class="icon"></i>
-          To: <%= @user.personal_detail.study_details.last.to %>
+          To: <%= @user.personal_detail&.study_details&.last&.to %>
         </li>
         <li>
           <i data-feather="align-justify" class="icon"></i>
-          Description: <%= @user.personal_detail.study_details.last.description %>
+          Description: <%= @user.personal_detail&.study_details&.last&.description %>
         </li>
       </ul>
     </div>

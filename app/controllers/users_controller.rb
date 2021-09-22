@@ -1,7 +1,7 @@
 class UsersController < ApplicationController
   before_action :authenticate_user!
   before_action :user_sub_role
-  before_action :find_user, only: [:edit, :update, :show, :destroy]
+  before_action :find_user, only: [:edit, :show, :destroy]
   before_action :load_resources, only: [ :show, :edit ]
   # before_filter :default_created_by, only: :create
 
@@ -46,6 +46,11 @@ class UsersController < ApplicationController
   end
 
   def update
+    if params[:user][:password].blank? || params[:user][:password_confirmation].blank?
+      params[:user].delete(:password)
+      params[:user].delete(:password_confirmation)
+    end
+    @user = User.find(params[:id])
     if @user.update(user_params)
       flash[:notice] = "User updated successfully."
       redirect_to user_path(@user)

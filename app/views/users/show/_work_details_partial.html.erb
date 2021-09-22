@@ -12,25 +12,25 @@
       <ul class="info">
         <li>
           <i data-feather="map-pin" class="icon"></i>
-          Company Name: <%= @user.personal_detail.work_details.last.company_name %>
+          Company Name: <%= @user.personal_detail&.work_details&.last&.company_name %>
         </li>
         <li>
           <i data-feather="edit" class="icon"></i>
-          Position: <%= @user.personal_detail.work_details.last.position %>
+          Position: <%= @user.personal_detail&.work_details&.last&.position %>
         </li>
         <li>
           <i data-feather="calendar" class="icon"></i>
-          City: <%= @user.personal_detail.work_details.last.city %>
+          City: <%= @user.personal_detail&.work_details&.last&.city %>
         </li>
         <li>
           <i data-feather="align-justify" class="icon"></i>
-          Description: <%= @user.personal_detail.work_details.last.description %>
+          Description: <%= @user.personal_detail&.work_details&.last&.description %>
         </li>
         <li>
           <i data-feather="calendar" class="icon"></i>
-          Joining Date: <%= @user.personal_detail.work_details.last.from %>
+          Joining Date: <%= @user.personal_detail&.work_details&.last&.from %>
         </li>
-        <% if @user.personal_detail.work_details.last.currently_working == true %>
+        <% if @user.personal_detail&.work_details&.last&.currently_working == true %>
           <li>
             <i data-feather="calendar" class="icon"></i>
             Currently Working
@@ -38,7 +38,7 @@
         <% else %>
           <li>
             <i data-feather="calendar" class="icon"></i>
-            Leaved on: <%= @user.personal_detail.work_details.last.to %>
+            Leaved on: <%= @user.personal_detail&.work_details&.last&.to %>
           </li>
         <% end %>
       </ul>

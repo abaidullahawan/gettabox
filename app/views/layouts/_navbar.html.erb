@@ -265,8 +265,8 @@
             <li class="nav-item dropdown profile-nav-item">
                 <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     <div class="menu-profile">
-                        <span class="name">Aaron Rossi</span>
-                        <%= image_tag("profile.jpg", alt: "Profile Image", class: "rounded-circle") %>
+                        <span class="name"><%= current_user.personal_detail.first_name+" "+current_user.personal_detail.last_name %></span>
+                        <%= image_tag(current_user.profile_image, alt: "Profile Image", class: "rounded-circle") %>
                     </div>
                 </a>
 
