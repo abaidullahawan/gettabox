@@ -12,23 +12,23 @@
       <ul class="info">
         <li>
           <i data-feather="map-pin" class="icon"></i>
-          Country: <%= @user.personal_detail.contact_details.last.country %>
+          Country: <%= @user.personal_detail&.contact_details&.last&.country %>
         </li>
         <li>
           <i data-feather="map-pin" class="icon"></i>
-          City: <%= @user.personal_detail.contact_details.last.city %>
+          City: <%= @user.personal_detail&.contact_details&.last&.city %>
         </li>
         <li>
           <i data-feather="map-pin" class="icon"></i>
-          Country: <%= @user.personal_detail.contact_details.last.country %>
+          Country: <%= @user.personal_detail&.contact_details&.last&.country %>
         </li>
         <li>
           <i data-feather="phone" class="icon"></i>
-          Phone: <%= @user.personal_detail.contact_details.last.phone_number %>
+          Phone: <%= @user.personal_detail&.contact_details&.last&.phone_number %>
         </li>
         <li>
           <i data-feather="mail" class="icon"></i>
-          Email: <%= @user.personal_detail.contact_details.last.email %>
+          Email: <%= @user.personal_detail&.contact_details&.last&.email %>
         </li>
       </ul>
     </div>
