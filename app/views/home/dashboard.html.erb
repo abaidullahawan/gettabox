@@ -1,0 +1,341 @@
+<div class="main-content-header">
+  <h1>Dashboard</h1>
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item">
+        <a href="<%= home_path %>">Home</a>
+    </li>
+    <li class="breadcrumb-item active">
+        <span class="active">Dashboard</span>
+    </li>
+  </ol>
+</div>
+
+<div class="row">
+  <div class="col-lg-3 col-sm-6">
+    <div class="stats-card-two mb-30">
+      <div class="media align-items-center justify-content-between">
+        <div class="ml-0">
+          <p class="mb-10 line-height-1"><a href="<%= products_path %>" class="link_tag">Products</a></p>
+          <h3 class="mb-0 fs-25"><%= @total_counts[:products_count] %></h3>
+        </div>
+        <div class="avatar avatar-blue radius-0">
+          <a href="<%= products_path %>" class="link_tag"><i data-feather="grid"></i></a>
+        </div>
+      </div>
+      <div class="mt-15">
+        <div class="d-flex justify-content-between">
+          <div class="d-flex align-items-center">
+            <span>Monthly Goal</span>
+          </div>
+          <span class="fw-600">70%</span>
+        </div>
+        <div class="progress progress-sm mt-1">
+          <div class="progress-bar bg-primary" style="width: 70%"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-3 col-sm-6">
+    <div class="stats-card-two mb-30">
+      <div class="media align-items-center justify-content-between">
+        <div class="ml-0">
+          <p class="mb-10 line-height-1"><a href="<%= system_users_path %>" class="link_tag">Suppliers</a></p>
+          <h3 class="mb-0 fs-25"><%= @total_counts[:suppliers_count] %></h3>
+        </div>
+        <div class="avatar avatar-purple radius-0">
+          <a href="<%= system_users_path %>" class="link_tag"><i data-feather="users"></i></a>
+        </div>
+      </div>
+      <div class="mt-15">
+        <div class="d-flex justify-content-between">
+          <div class="d-flex align-items-center">
+            <span>Monthly Goal</span>
+          </div>
+          <span class="fw-600">45%</span>
+        </div>
+        <div class="progress progress-sm mt-1">
+          <div class="progress-bar bg-purple" style="width: 45%"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-3 col-sm-6">
+    <div class="stats-card-two mb-30">
+      <div class="media align-items-center justify-content-between">
+        <div class="ml-0">
+          <p class="mb-10 line-height-1"><a href="<%= purchase_orders_path %>" class="link_tag">Purchase Orders</a></p>
+          <h3 class="mb-0 fs-25"><%= @total_counts[:purchase_orders_count] %></h3>
+        </div>
+        <div class="avatar avatar-cyan radius-0">
+          <a href="<%= purchase_orders_path %>" class="link_tag"><i data-feather="file-text"></i></a>
+        </div>
+      </div>
+      <div class="mt-15">
+        <div class="d-flex justify-content-between">
+          <div class="d-flex align-items-center">
+            <span>Monthly Goal</span>
+          </div>
+          <span class="fw-600">60%</span>
+        </div>
+        <div class="progress progress-sm mt-1">
+          <div class="progress-bar bg-success" style="width: 60%"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-3 col-sm-6">
+    <div class="stats-card-two mb-30">
+      <div class="media align-items-center justify-content-between">
+        <div class="ml-0">
+          <p class="mb-10 line-height-1"><a href="<%= purchase_deliveries_path %>" class="link_tag">Purchase Deliveries</a></p>
+          <h3 class="mb-0 fs-25"><%= @total_counts[:purchase_deliveries_count] %></h3>
+        </div>
+        <div class="avatar avatar-cyan radius-0">
+          <a href="<%= purchase_deliveries_path %>" class="link_tag"><i data-feather="file-text"></i></a>
+        </div>
+      </div>
+      <div class="mt-15">
+        <div class="d-flex justify-content-between">
+          <div class="d-flex align-items-center">
+            <span>Monthly Goal</span>
+          </div>
+          <span class="fw-600">60%</span>
+        </div>
+        <div class="progress progress-sm mt-1">
+          <div class="progress-bar bg-success" style="width: 60%"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <%= render 'products_partial' %>
+  <%= render 'suppliers_partial' %>
+</div>
+
+<div class="row">
+  <%= render 'purchase_orders_partial' %>
+  <%= render 'purchase_deliveries_partial' %>
+</div>
+
+<!-- Team Members & Assigned tasks-->
+<div class="row">
+    <div class="col-lg-4">
+        <div class="card mb-30">
+            <div class="card-body">
+                <div class="card-header">
+                    <a href="#" class="btn btn-primary float-right">View all</a>
+                    <h5 class="card-title">Upcoming Meeting</h5>
+                </div>
+
+                <div class="d-flex mb-20">
+                    <div class="text-center">
+                        <div class="avatar avatar-blue wh-50 rounded">
+                            <span class="line-height-1 pt-12">
+                                17 <br> <span class="fs-11">May</span>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="ml-3">
+                        <h6 class="mb-1 mt-1 fs-15">Project Meeting</h6>
+                        <p class="mb-0">Lorem ipsum dolor sit amet, consectetur.</p>
+                    </div>
+                </div>
+
+                <div class="d-flex mb-20">
+                    <div class="text-center">
+                        <div class="avatar avatar-cyan wh-50 rounded">
+                            <span class="line-height-1 pt-12">
+                                20 <br> <span class="fs-11">May</span>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="ml-3">
+                        <h6 class="mb-1 mt-1 fs-15">Designer Discussion</h6>
+                        <p class="mb-0">Lorem ipsum dolor sit amet, consectetur.</p>
+                    </div>
+                </div>
+
+                <div class="d-flex mb-20">
+                    <div class="text-center">
+                        <div class="avatar avatar-gold wh-50 rounded">
+                            <span class="line-height-1 pt-12">
+                                22 <br> <span class="fs-11">May</span>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="ml-3">
+                        <h6 class="mb-1 mt-1 fs-15">Development Discussion</h6>
+                        <p class="mb-0">Lorem ipsum dolor sit amet, consectetur.</p>
+                    </div>
+                </div>
+
+                <div class="d-flex">
+                    <div class="text-center">
+                        <div class="avatar avatar-red wh-50 rounded">
+                            <span class="line-height-1 pt-12">
+                                25 <br> <span class="fs-11">May</span>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="ml-3">
+                        <h6 class="mb-0 mt-2 fs-15">Development Plan Discussion</h6>
+                        <p class="mb-0">Lorem ipsum dolor sit amet, consectetur.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card mb-30">
+            <div class="card-body">
+                <div class="card-header">
+                    <a href="#" class="btn btn-primary float-right">View all</a>
+                    <h5 class="card-title">Activity</h5>
+                </div>
+
+                <div class="height-265">
+                    <div class="timeline">
+                        <div class="timeline-list">
+                            <i class="icofont-check timeline-icon primary-color"></i>
+                            <h6 class="mb-1 fs-15">Colin Firth</h6>
+                            <p>Finished the project. Lorem ipsum dolor sit amet.</p>
+
+                            <span class="fs-13 mt-2">
+                                <i class="icofont-wall-clock"></i>
+                                <span class="m-l-5">9:00 AM</span>
+                            </span>
+                        </div>
+
+                        <div class="timeline-list">
+                            <i class="icofont-check timeline-icon primary-color"></i>
+                            <h6 class="mb-1 fs-15">Michael Sheen</h6>
+                            <p>Great work!. Lorem ipsum dolor sit amet.</p>
+
+                            <span class="fs-13 mt-2">
+                                <i class="icofont-wall-clock"></i>
+                                <span class="m-l-5">9:10 AM</span>
+                            </span>
+                        </div>
+                        
+                        <div class="timeline-list">
+                            <i class="icofont-check timeline-icon primary-color"></i>
+                            <h6 class="mb-1 fs-15">Tom Hardy</h6>
+                            <p>Hello Jems, Lorem ipsum dolor sit amet.</p>
+
+                            <span class="fs-13 mt-2">
+                                <i class="icofont-wall-clock"></i>
+                                <span class="m-l-5">9:30 AM</span>
+                            </span>
+                        </div>
+
+                        <div class="timeline-list">
+                            <i class="icofont-check timeline-icon primary-color"></i>
+                            <h6 class="mb-1 fs-15">Daniel Craig</h6>
+                            <p>Finished the project, Lorem ipsum dolor sit amet.</p>
+
+                            <span class="fs-13 mt-2">
+                                <i class="icofont-wall-clock"></i>
+                                <span class="m-l-5">10:30 AM</span>
+                            </span>
+                        </div>
+
+                        <div class="timeline-list">
+                            <i class="icofont-check timeline-icon primary-color"></i>
+                            <h6 class="mb-1 fs-15">Michael Sheen</h6>
+                            <p>Great work!. Lorem ipsum dolor sit amet.</p>
+
+                            <span class="fs-13 mt-2">
+                                <i class="icofont-wall-clock"></i>
+                                <span class="m-l-5">9:10 AM</span>
+                            </span>
+                        </div>
+
+                        <div class="timeline-list">
+                            <i class="icofont-check timeline-icon primary-color"></i>
+                            <h6 class="mb-1 fs-15">Colin Firth</h6>
+                            <p>Finished the project. Lorem ipsum dolor sit amet.</p>
+
+                            <span class="fs-13 mt-2">
+                                <i class="icofont-wall-clock"></i>
+                                <span class="m-l-5">9:00 AM</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card mb-30">
+            <div class="card-body">
+                <div class="card-header">
+                    <a href="#" class="btn btn-primary float-right">View all</a>
+                    <h5 class="card-title">Project issues</h5>
+                </div>
+
+                <div class="d-flex mb-20">
+                    <div class="text-center">
+                        <div class="avatar avatar-blue wh-50 rounded">
+                            <span class="fw-600 pt-3">20</span>
+                        </div>
+                    </div>
+
+                    <div class="ml-3">
+                        <h6 class="mb-1 mt-1 fs-15">Errors</h6>
+                        <p class="mb-0">Lorem ipsum dolor sit amet, consectetur.</p>
+                    </div>
+                </div>
+
+                <div class="d-flex mb-20">
+                    <div class="text-center">
+                        <div class="avatar avatar-cyan wh-50 rounded">
+                            <span class="fw-600 pt-3">25</span>
+                        </div>
+                    </div>
+
+                    <div class="ml-3">
+                        <h6 class="mb-1 mt-1 fs-15">Design Issue</h6>
+                        <p class="mb-0">Lorem ipsum dolor sit amet, consectetur.</p>
+                    </div>
+                </div>
+
+                <div class="d-flex mb-20">
+                    <div class="text-center">
+                      <div class="avatar avatar-gold wh-50 rounded">
+                        <span class="fw-600 pt-3">5</span>
+                      </div>
+                    </div>
+
+                    <div class="ml-3">
+                        <h6 class="mb-1 mt-1 fs-15">Development Issue</h6>
+                        <p class="mb-0">Lorem ipsum dolor sit amet, consectetur.</p>
+                    </div>
+                </div>
+
+                <div class="d-flex">
+                    <div class="text-center">
+                        <div class="avatar avatar-red wh-50 rounded">
+                            <span class="fw-600 pt-3">25</span>
+                        </div>
+                    </div>
+
+                    <div class="ml-3">
+                        <h6 class="mb-0 mt-2 fs-15">Coding Issue</h6>
+                        <p class="mb-0">Lorem ipsum dolor sit amet, consectetur.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
