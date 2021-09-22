@@ -1,0 +1,45 @@
+<div class="col-lg-12 col-xl-6">
+  <div class="card mb-30">
+    <div class="card-body">
+      <div class="card-header">
+        <a href="<%= purchase_orders_path %>" class="btn btn-primary float-right">View all</a>
+        <h5 class="card-title">Purchase Order List</h5>
+      </div>
+      <div class="table-responsive">
+        <div class="pagination justify-content-center">
+          <%= paginate @purchase_orders,theme: "twitter-bootstrap-4",pagination_class: "pagination-sm",nav_class: "d-inline-b" %>
+        </div>
+        <table class="table table-hover text-vertical-middle mb-0">
+          <thead class="bort-none borpt-0">
+            <tr>
+              <th>Supplier Name</th>
+              <th>Total Bill</th>
+              <th>Purchase Deliveries</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <% @purchase_orders.each do |purchase_order| %>
+              <tr>
+                <td>
+                  <strong><%= purchase_order.system_user.name %></strong>
+                </td>
+                <td><%= purchase_order.total_bill %></td>
+                <td class="text-center"><%= purchase_order.purchase_deliveries&.count %></td>
+                <td>
+                  <span class="badge badge-info">
+                    <span class="fw-600"><a class="link_tag" href="<%= purchase_order_path(purchase_order)%>">Show</a></span>
+                  </span>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+        <div class='float-right mt-3'>
+          <%= page_entries_info @purchase_orders %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

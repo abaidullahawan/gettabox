@@ -1,0 +1,56 @@
+<div class="col-lg-12 col-xl-8">
+  <div class="card mb-30">
+    <div class="card-body">
+      <div class="card-header">
+        <a href="<%= products_path %>" class="btn btn-primary float-right">View all</a>
+        <h5 class="card-title">Products List</h5>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-hover text-vertical-middle mb-0">
+          <thead class="bort-none borpt-0">
+            <tr>
+              <th>Product</th>
+              <th>SKU</th>
+              <th>Quantity</th>
+              <th>Category</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <% @products.each do |product| %>
+              <tr>
+                <td>
+                  <div class="media align-items-center">
+                    <% if product.photo.attached? %>
+                      <%= image_tag product.photo&.service_url, class: "wh-30 mr-2", alt: "Project Image" %>
+                    <% else %>
+                      <%= image_tag("projects/1.jpg", alt: "Project Image", class: "wh-30 mr-2") %>
+                    <% end %>
+                    <strong><%= product.title %></strong>
+                  </div>
+                </td>
+                <td><%= product.sku %></td>
+                <td class="text-center"><%= product.total_stock.to_i %></td>
+                <td>
+                  <span class="badge badge-cyan"><%= product.category&.title %></span>
+                </td>
+                <td>
+                  <span class="badge badge-info">
+                    <span class="fw-600"><a class="link_tag" href="<%= product_path(product)%>">Show</a></span>
+                  </span>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+        <div class='float-right mt-3'>
+          <%= page_entries_info @products %>
+        </div>
+        <div class="pagination mt-3">
+          <%= paginate @products,theme: "twitter-bootstrap-4",pagination_class: "pagination-sm",nav_class: "d-inline-b" %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
