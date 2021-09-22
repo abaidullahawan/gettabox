@@ -58,7 +58,7 @@ class PurchaseDeliveriesController < ApplicationController
   def export_csv(purchase_deliveries)
     request.format = 'csv'
     respond_to do |format|
-      format.csv { send_data purchase_deliveries.to_csv, filename: "purchase-orders-#{Date.today}.csv" }
+      format.csv { send_data purchase_deliveries.to_csv, filename: "purchase-deliveries-#{Date.today}.csv" }
     end
   end
 

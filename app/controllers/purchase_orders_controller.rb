@@ -43,13 +43,25 @@ class PurchaseOrdersController < ApplicationController
     @deliverd = PurchaseOrder.where(id: @purchase_order.id).joins(purchase_deliveries: :purchase_delivery_details).group(:product_id).sum(:quantity)
     @missing = PurchaseOrder.where(id: @purchase_order.id).joins(purchase_deliveries: :purchase_delivery_details).group(:product_id).sum(:missing)
     @demaged = PurchaseOrder.where(id: @purchase_order.id).joins(purchase_deliveries: :purchase_delivery_details).group(:product_id).sum(:demaged)
-    respond_to do |format|
-      format.html
-      format.pdf do
-        render  :pdf => "file.pdf", 
-                :viewport_size => '1280x1024',
-                :template => 'purchase_orders/show.pdf.erb'
+    @deliveries = @purchase_order.purchase_deliveries
+    if params[:single_csv].present?
+      single_csv(@purchase_order)
+    else
+      respond_to do |format|
+        format.html
+        format.pdf do
+          render  :pdf => "file.pdf", 
+                  :viewport_size => '1280x1024',
+                  :template => 'purchase_orders/show.pdf.erb'
+        end
       end
+    end
+  end
+
+  def single_csv(purchase_order)
+    request.format = 'csv'
+    respond_to do |format|
+      format.csv { send_data PurchaseOrder.to_single_csv(purchase_order), filename: "purchase-order-#{Date.today}.csv" }
     end
   end
 
