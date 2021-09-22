@@ -6,6 +6,21 @@ class ProductMappingsController < ApplicationController
   def index
     if params[:product_mapping] == 'Ebay Sandbox'
       product_invetory_call(@refresh_token)
+      ids = ChannelProduct.joins(:product_mapping).pluck(:id)
+      @body = ChannelProduct.where("id NOT IN (?)", ids)
+      @matching_products = {}
+      @body.each do |item|
+        matching = Product.find_by("sku LIKE ?", "%#{item.product_data['sku']}%")
+        @matching_products[item.id] = matching if matching.present?
+      end
+    end
+    if params[:mapped_status] == 'Mapped'
+      @body = ChannelProduct.joins(:product_mapping).includes(:product_mapping)
+      @matching_products = {}
+      @body.each do |item|
+        matching = item.product_mapping.product
+        @matching_products[item.id] = matching if matching.present?
+      end
     end
   end
 
@@ -19,6 +34,12 @@ class ProductMappingsController < ApplicationController
   end
 
   def create
+    if params[:commit] == 'Map'
+      product_id = params[:anything]['product_id'] || params['product_id']
+      @product_mapping = ProductMapping.create!(channel_product_id: params[:anything]['channel_product_id'], product_id: product_id)
+      flash[:notice] = 'Product mapped successfully'
+      redirect_to product_mappings_path(product_mapping: 'Ebay Sandbox')
+    end
   end
 
   def update
@@ -41,12 +62,11 @@ class ProductMappingsController < ApplicationController
       uri = URI(url)
       request = Net::HTTP.get_response(uri, headers)
 
-      @body = JSON.parse(request.body) # e.g {answer: 'because it was there'}
+      body = JSON.parse(request.body)
 
-      if @body["inventoryItems"].present?
-        @body["inventoryItems"].each do |item|
-          matching = Product.find_by("sku LIKE ?", "%#{item['sku']}%")
-          matching.present? ? item['matching'] = matching : item['matching'] = nil
+      if body["inventoryItems"].present?
+        body["inventoryItems"].each do |item|
+          ChannelProduct.where(channel_type: 'ebay', product_data: item).first_or_create
         end
       end
       respond_to do |format|

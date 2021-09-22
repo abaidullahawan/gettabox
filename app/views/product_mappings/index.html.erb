@@ -1,28 +1,16 @@
-<% if @body.present? && @body['errors'].present? %>
-  <div class="alert alert-danger alert-dismissible fade show" role="alert" id="ErrorsProduct">
-    <h5><%= pluralize( @body['errors']&.count, "error") %> prohibited this product_mappings from being saved:</h5>
-    <ul class='error-list'>
-      <%  @body['errors'].each do |error| %>
-        <li><%= error['message'] %></li>
-      <% end %>
-    </ul>
-    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-      <span aria-hidden="true">&times;</span>
-    </button>
-  </div>
-<% end %>
+
 
 <!-- Main Content Header -->
 <div class="main-content-header">
-    <h1>Product Mapping</h1>
-    <ol class="breadcrumb">
-        <li class="breadcrumb-item">
-            <a href="<%= dashboard_sales_path %>">Dashboard</a>
-        </li>
-        <li class="breadcrumb-item active">
-            <span class="active">Product Mapping</span>
-        </li>
-    </ol>
+  <h1>Product Mapping</h1>
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item">
+      <a href="<%= dashboard_sales_path %>">Dashboard</a>
+    </li>
+    <li class="breadcrumb-item active">
+      <span class="active">Product Mapping</span>
+    </li>
+  </ol>
 </div>
 <!-- End Main Content Header -->
 <div class="row">
@@ -31,62 +19,72 @@
       <div class="card-body">
         <div class="card-header">
           <div class="dropdown">
-              <button type="button" class="btn btn-primary float-right" data-toggle="modal" data-target="#product-mappings-create-modal">
-                Create
-              </button>
-            </div>
-            <div class='mr-1 float-right'>
-              <%= link_to 'Export', products_path(format: :csv, export_csv: true), class: 'btn btn-outline-primary' %>
-            </div>
-            <div class='mr-1 float-right'>
-              <%= link_to 'Archives', archive_products_path, class: 'btn btn-outline-info' %>
-            </div>
-            <h5 class="card-title"> Data</h5>
+            <button type="button" class="btn btn-primary float-right" data-toggle="modal" data-target="#product-mappings-create-modal">
+              Create
+            </button>
           </div>
+          <div class='mr-1 float-right'>
+            <%= link_to 'Export', products_path(format: :csv, export_csv: true), class: 'btn btn-outline-primary' %>
+          </div>
+          <div class='mr-1 float-right'>
+            <%= link_to 'Archives', archive_products_path, class: 'btn btn-outline-info' %>
+          </div>
+          <h5 class="card-title"> Data</h5>
+        </div>
           <%= form_tag( '/product_mappings', method: :get) do |f| %>
           <div class='row'>
             <div class="col-md-3">
               <%= select_tag :product_mapping, options_for_select([ "Ebay Sandbox"]), class:"form-control chosen-select product-mapping-select", title: 'Select Mapping Category', prompt: "Please select" %>
             </div>
-            <%= submit_tag 'Mapping', class: 'btn btn-primary product-mapping-request'%>
-            <%= link_to 'Ebay Request', 'https://auth.sandbox.ebay.com/oauth2/authorize?client_id=ChannelD-ChannelD-SBX-ea2849bbb-a8a59ad3&response_type=code&redirect_uri=Channel_Dispatc-ChannelD-Channe-imqsnuapo&scope=https://api.ebay.com/oauth/api_scope https://api.ebay.com/oauth/api_scope/buy.order.readonly https://api.ebay.com/oauth/api_scope/buy.guest.order https://api.ebay.com/oauth/api_scope/sell.marketing.readonly https://api.ebay.com/oauth/api_scope/sell.marketing https://api.ebay.com/oauth/api_scope/sell.inventory.readonly https://api.ebay.com/oauth/api_scope/sell.inventory https://api.ebay.com/oauth/api_scope/sell.account.readonly https://api.ebay.com/oauth/api_scope/sell.account https://api.ebay.com/oauth/api_scope/sell.fulfillment.readonly https://api.ebay.com/oauth/api_scope/sell.fulfillment https://api.ebay.com/oauth/api_scope/sell.analytics.readonly https://api.ebay.com/oauth/api_scope/sell.marketplace.insights.readonly https://api.ebay.com/oauth/api_scope/commerce.catalog.readonly https://api.ebay.com/oauth/api_scope/buy.shopping.cart https://api.ebay.com/oauth/api_scope/buy.offer.auction https://api.ebay.com/oauth/api_scope/commerce.identity.readonly https://api.ebay.com/oauth/api_scope/commerce.identity.email.readonly https://api.ebay.com/oauth/api_scope/commerce.identity.phone.readonly https://api.ebay.com/oauth/api_scope/commerce.identity.address.readonly https://api.ebay.com/oauth/api_scope/commerce.identity.name.readonly https://api.ebay.com/oauth/api_scope/commerce.identity.status.readonly https://api.ebay.com/oauth/api_scope/sell.finances https://api.ebay.com/oauth/api_scope/sell.item.draft https://api.ebay.com/oauth/api_scope/sell.payment.dispute https://api.ebay.com/oauth/api_scope/sell.item https://api.ebay.com/oauth/api_scope/sell.reputation https://api.ebay.com/oauth/api_scope/sell.reputation.readonly https://api.ebay.com/oauth/api_scope/commerce.notification.subscription https://api.ebay.com/oauth/api_scope/commerce.notification.subscription.readonly' , target: 'blank', class: 'btn btn-info text-center ml-2' %>
+            <div class="col-md-2">
+              <%= select_tag :mapped_status, options_for_select([ "Unmapped", "Mapped"]), class:"form-control chosen-select", title: 'Select Mapping Status' %>
+            </div>
+            <%= submit_tag 'Mapping', class: 'btn btn-primary product-mapping-request' %>
+            <%= link_to 'Ebay Request', 'https://auth.sandbox.ebay.com/oauth2/authorize?client_id=ChannelD-ChannelD-SBX-ea2849bbb-a8a59ad3&response_type=code&redirect_uri=Channel_Dispatc-ChannelD-Channe-imqsnuapo&scope=https://api.ebay.com/oauth/api_scope https://api.ebay.com/oauth/api_scope/buy.order.readonly https://api.ebay.com/oauth/api_scope/buy.guest.order https://api.ebay.com/oauth/api_scope/sell.marketing.readonly https://api.ebay.com/oauth/api_scope/sell.marketing https://api.ebay.com/oauth/api_scope/sell.inventory.readonly https://api.ebay.com/oauth/api_scope/sell.inventory https://api.ebay.com/oauth/api_scope/sell.account.readonly https://api.ebay.com/oauth/api_scope/sell.account https://api.ebay.com/oauth/api_scope/sell.fulfillment.readonly https://api.ebay.com/oauth/api_scope/sell.fulfillment https://api.ebay.com/oauth/api_scope/sell.analytics.readonly https://api.ebay.com/oauth/api_scope/sell.marketplace.insights.readonly https://api.ebay.com/oauth/api_scope/commerce.catalog.readonly https://api.ebay.com/oauth/api_scope/buy.shopping.cart https://api.ebay.com/oauth/api_scope/buy.offer.auction https://api.ebay.com/oauth/api_scope/commerce.identity.readonly https://api.ebay.com/oauth/api_scope/commerce.identity.email.readonly https://api.ebay.com/oauth/api_scope/commerce.identity.phone.readonly https://api.ebay.com/oauth/api_scope/commerce.identity.address.readonly https://api.ebay.com/oauth/api_scope/commerce.identity.name.readonly https://api.ebay.com/oauth/api_scope/commerce.identity.status.readonly https://api.ebay.com/oauth/api_scope/sell.finances https://api.ebay.com/oauth/api_scope/sell.item.draft https://api.ebay.com/oauth/api_scope/sell.payment.dispute https://api.ebay.com/oauth/api_scope/sell.item https://api.ebay.com/oauth/api_scope/sell.reputation https://api.ebay.com/oauth/api_scope/sell.reputation.readonly https://api.ebay.com/oauth/api_scope/commerce.notification.subscription https://api.ebay.com/oauth/api_scope/commerce.notification.subscription.readonly' , target: 'blank', class: 'btn btn-info text-center ml-2 d-none' %>
           </div><br>
-        <% end %>
-        </div>
-          <h6 class='text-center text-muted'>Total Count: <%= @body['total'] if @body.present?%></h6>
-          <div class="row">
-            <div class='col-lg-12'>
-              <table class="table m-0 text-center table-bordered table-hover">
-                <tr>
-                  <th colspan='4' class='text-center text-muted'>Ebay Products</th>
-                  <th colspan='3' class='text-center text-muted'>Local Products</th>
-                  <th colspan='2' class='text-center text-muted'>Actions</th>
-                </tr>
-                <tr>
-                  <th>Image</th>
-                  <th class="text-center">Sku</th>
-                  <th class="text-center">Type/Vat</th>
-                  <th class="text-center">Name</th>
-                  <th>Image</th>
-                  <th class="text-center">Sku</th>
-                  <th class="text-center">Name</th>
-                </tr>
-                <% if @body.present? && @body["inventoryItems"].present? %>
-                  <% @body["inventoryItems"].each do |item| %>
+          <% end %>
+      </div>
+        <h6 class='text-center text-muted'>Total Count: <%= @body.count if @body.present?%></h6>
+        <div class="row">
+          <div class='col-lg-12'>
+            <table class="table m-0 text-center table-bordered table-hover">
+              <tr>
+                <th colspan='4' class='text-center text-muted'>Ebay Products</th>
+                <th colspan='3' class='text-center text-muted'>Local Products</th>
+                <th colspan='2' class='text-center text-muted'>Actions</th>
+              </tr>
+              <tr>
+                <th>Image</th>
+                <th class="text-center">Sku</th>
+                <th class="text-center">Type/Vat</th>
+                <th class="text-center">Name</th>
+                <th>Image</th>
+                <th class="text-center">Sku</th>
+                <th class="text-center">Name</th>
+              </tr>
+              <% if @body.present?%>
+                <% @body.each do |item| %>
+                  <%= form_for :anything, url: product_mappings_path do |f| %>
                     <tr class=''>
                       <td>
                         <%#= image_tag item['product']['image'], style:'width:50px; height:50px;' %>
                       </td>
                       <td class="text-center"><%= item['sku'] %></td>
-                      <td class="text-center"><%= item['product']['quantity'] %></td>
-                      <td class="text-center"><%= item['product']['title'] %></td>
-                      <td></td>
-                      <td>N/A</td>
-                      <% if item['matching'].present? %>
+                      <%= f.hidden_field :channel_product_id, value: item.id %>
+                      <td class="text-center"><%= item.product_data['product']['quantity'] %></td>
+                      <td class="text-center"><%= item.product_data['product']['title'] %></td>
+                      <% if @matching_products[item.id].present? %>
+                        <% if @matching_products[item.id].photo.attached? %>
+                          <td><%= image_tag(@matching_products[item.id].photo&.service_url, width: "50", height: "50", class: 'mr-3 img-thumbnail') %></td>
+                        <% else %>
+                          <td><%= image_tag('user/1.jpg', width: "50", height: "50", class: 'mr-3 img-thumbnail', alt: 'User Image') %></td>
+                        <% end %>
+                        <td><%= @matching_products[item.id].sku%></td>
+                        <%= f.hidden_field :product_id, value: @matching_products[item.id].id %>
                         <td>
-                        <div class="text-left d-flex ">
+                          <div class="text-left d-flex ">
                             <div class="productSearchContainer">
-                              <span class='text-warning'>(Suggestion)-</span><%= item['matching']['title'] %>
+                              <span class='text-warning'>(Suggestion)-</span><%= @matching_products[item.id].title %>
                             </div>
                             <div class="productSearchContainer">
                               <button class="productSearchBtn btn btn-primary mt-2">
@@ -94,28 +92,33 @@
                               </button>
                             </div>
                           </div>
-                          <%= select_tag :product, options_for_select(Product.all.map{|u| [u.title, u.id]}), class: 'form-control d-none productSearch', prompt: 'Search Product' %>
+                          <%= select_tag :product_id, options_for_select(Product.all.map{|u| [u.title, u.id]}), class: 'form-control d-none productSearch', prompt: 'Search Product' %>
                         </td>
                       <% else %>
-                        <td><%= select_tag :product, options_for_select(Product.all.map{|u| [u.title, u.id]}), class: 'form-control chosen-select', prompt: 'Search Product' %></td>
+                        <td></td>
+                        <td>N/A</td>
+                        <td><%= select_tag :product_id, options_for_select(Product.all.map{|u| [u.title, u.id]}), class: 'form-control chosen-select', prompt: 'Search Product' %></td>
                       <% end %>
                       <td class="text-center">
-                      <div class="dropdown dropleft">
-                        <button class="btn btn-primary" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                          Actions
-                        </button>
-                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                          <a class="dropdown-item" href="">Hide</a>
-                          <%= link_to 'Archive', '', class: "dropdown-item"%>
+                        <div class="dropdown dropleft">
+                          <button class="btn btn-primary" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Actions
+                          </button>
+                          <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            <a class="dropdown-item" href="">Hide</a>
+                            <%= f.submit 'Create', class: "dropdown-item"%>
+                            <%= f.submit 'Map', class: "dropdown-item"%>
+                            <%= link_to 'Archive', '', class: "dropdown-item"%>
+                          </div>
                         </div>
-                      </div>
-                    </td>
+                      </td>
                     </tr>
                   <% end %>
                 <% end %>
-              </table>
-            </div>
+              <% end %>
+            </table>
           </div>
+        </div>
       </div>
     </div>
   </div>

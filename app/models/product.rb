@@ -8,6 +8,7 @@ class Product < ApplicationRecord
   has_many :system_users, through: :product_suppliers
   has_many :multipack_products
   has_many :products, through: :multipack_products
+  has_one :product_mapping
 
   belongs_to :category
   belongs_to :season, optional: true
