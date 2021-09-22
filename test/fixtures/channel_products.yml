@@ -1,0 +1,9 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  channel_type: 1
+  product_data: 
+
+two:
+  channel_type: 1
+  product_data: 
