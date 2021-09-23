@@ -37,7 +37,7 @@
               <%= select_tag :product_mapping, options_for_select([ "Ebay Sandbox"]), class:"form-control chosen-select product-mapping-select", title: 'Select Mapping Category', prompt: "Please select" %>
             </div>
             <div class="col-md-2">
-              <%= select_tag :mapped_status, options_for_select([ "Unmapped", "Mapped"]), class:"form-control chosen-select", title: 'Select Mapping Status' %>
+              <%= select_tag :mapped_status, options_for_select([ "Unmapped", "Mapped"], params[:mapped_status]), class:"form-control", title: 'Select Mapping Status' %>
             </div>
             <%= submit_tag 'Mapping', class: 'btn btn-primary product-mapping-request' %>
             <%= link_to 'Ebay Request', 'https://auth.sandbox.ebay.com/oauth2/authorize?client_id=ChannelD-ChannelD-SBX-ea2849bbb-a8a59ad3&response_type=code&redirect_uri=Channel_Dispatc-ChannelD-Channe-imqsnuapo&scope=https://api.ebay.com/oauth/api_scope https://api.ebay.com/oauth/api_scope/buy.order.readonly https://api.ebay.com/oauth/api_scope/buy.guest.order https://api.ebay.com/oauth/api_scope/sell.marketing.readonly https://api.ebay.com/oauth/api_scope/sell.marketing https://api.ebay.com/oauth/api_scope/sell.inventory.readonly https://api.ebay.com/oauth/api_scope/sell.inventory https://api.ebay.com/oauth/api_scope/sell.account.readonly https://api.ebay.com/oauth/api_scope/sell.account https://api.ebay.com/oauth/api_scope/sell.fulfillment.readonly https://api.ebay.com/oauth/api_scope/sell.fulfillment https://api.ebay.com/oauth/api_scope/sell.analytics.readonly https://api.ebay.com/oauth/api_scope/sell.marketplace.insights.readonly https://api.ebay.com/oauth/api_scope/commerce.catalog.readonly https://api.ebay.com/oauth/api_scope/buy.shopping.cart https://api.ebay.com/oauth/api_scope/buy.offer.auction https://api.ebay.com/oauth/api_scope/commerce.identity.readonly https://api.ebay.com/oauth/api_scope/commerce.identity.email.readonly https://api.ebay.com/oauth/api_scope/commerce.identity.phone.readonly https://api.ebay.com/oauth/api_scope/commerce.identity.address.readonly https://api.ebay.com/oauth/api_scope/commerce.identity.name.readonly https://api.ebay.com/oauth/api_scope/commerce.identity.status.readonly https://api.ebay.com/oauth/api_scope/sell.finances https://api.ebay.com/oauth/api_scope/sell.item.draft https://api.ebay.com/oauth/api_scope/sell.payment.dispute https://api.ebay.com/oauth/api_scope/sell.item https://api.ebay.com/oauth/api_scope/sell.reputation https://api.ebay.com/oauth/api_scope/sell.reputation.readonly https://api.ebay.com/oauth/api_scope/commerce.notification.subscription https://api.ebay.com/oauth/api_scope/commerce.notification.subscription.readonly' , target: 'blank', class: 'btn btn-info text-center ml-2 d-none' %>
@@ -84,13 +84,18 @@
                         <td>
                           <div class="text-left d-flex ">
                             <div class="productSearchContainer">
-                              <span class='text-warning'>(Suggestion)-</span><%= @matching_products[item.id].title %>
+                              <% if params['mapped_status'] != 'Mapped'%>
+                              <span class='text-warning'>(Suggestion)-</span>
+                              <% end %>
+                              <%= @matching_products[item.id].title %>
                             </div>
-                            <div class="productSearchContainer">
-                              <button class="productSearchBtn btn btn-primary mt-2">
-                                <i data-feather='search' class='icon wh-15 mt-minus-3'></i>
-                              </button>
-                            </div>
+                            <% if params['mapped_status'] != 'Mapped' %>
+                              <div class="productSearchContainer">
+                                <button class="productSearchBtn btn btn-primary mt-2">
+                                  <i data-feather='search' class='icon wh-15 mt-minus-3'></i>
+                                </button>
+                              </div>
+                            <% end %>
                           </div>
                           <%= select_tag :product_id, options_for_select(Product.all.map{|u| [u.title, u.id]}), class: 'form-control d-none productSearch', prompt: 'Search Product' %>
                         </td>
@@ -105,9 +110,9 @@
                             Actions
                           </button>
                           <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                            <a class="dropdown-item" href="">Hide</a>
-                            <%= f.submit 'Create', class: "dropdown-item"%>
-                            <%= f.submit 'Map', class: "dropdown-item"%>
+                            <%= f.submit 'Un-map', class: "dropdown-item" if params['mapped_status'] == 'Mapped' %>
+                            <%= f.submit 'Create', class: "dropdown-item" if params['mapped_status'] != 'Mapped'%>
+                            <%= f.submit 'Map', class: "dropdown-item" if params['mapped_status'] != 'Mapped'%>
                             <%= link_to 'Archive', '', class: "dropdown-item"%>
                           </div>
                         </div>
