@@ -9,5 +9,9 @@ class PersonalDetail < ApplicationRecord
   accepts_nested_attributes_for :contact_details,  allow_destroy: true
   accepts_nested_attributes_for :study_details, allow_destroy: true
 
-
+  enum gender:{
+    Male: 0,
+    Female: 1,
+    Other: 2
+  }, _prefix: true
 end
