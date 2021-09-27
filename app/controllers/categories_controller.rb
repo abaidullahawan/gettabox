@@ -6,7 +6,9 @@ class CategoriesController < ApplicationController
   def index
     @q = Category.ransack(params[:q])
     @categories = @q.result(distinct: true).order(created_at: :desc).page(params[:page]).per(params[:limit])
+    if params[:export_csv].present?
     export_csv(@categories) if params[:export_csv].present?
+    else
     respond_to do |format|
       format.html
       format.pdf do
@@ -14,6 +16,7 @@ class CategoriesController < ApplicationController
                 :viewport_size => '1280x1024',
                 :template => 'categories/index.pdf.erb'
       end
+    end
     end
   end
 

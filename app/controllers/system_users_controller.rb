@@ -6,15 +6,18 @@ class SystemUsersController < ApplicationController
   def index
     @q = SystemUser.where(user_type: 'supplier').ransack(params[:q])
     @system_users = @q.result(distinct: true).order(created_at: :desc).page(params[:page]).per(params[:limit])
-    export_csv(@system_users) if params[:export_csv].present?
     @purchase_orders = PurchaseOrder.all
-    respond_to do |format|
+    if params[:export_csv].present?
+      export_csv(@system_users) if params[:export_csv].present?
+    else
+      respond_to do |format|
       format.html
       format.pdf do
         render  :pdf => "file.pdf", 
                 :viewport_size => '1280x1024',
                 :template => 'system_users/index.pdf.erb'
       end
+    end
     end
   end
 

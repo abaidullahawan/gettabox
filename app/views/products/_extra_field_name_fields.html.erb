@@ -1,0 +1,27 @@
+<%= form_for(@product, url: product_path) do |f| %>
+  <!-- Extra Field Modal -->
+  <div class="modal fade" id="product-extra-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Extra Fields</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class='links text-right'>
+            <%= link_to_add_association '<i data-feather="plus" class="icon wh-15"></i>'.html_safe , f, :extra_field_names %>
+          </div>
+          <%= f.fields_for :extra_field_names do |supplier|%>
+            <%= render 'product_supplier_fields', f: supplier %>
+          <% end %>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <%= f.submit(@product.new_record? ? "Create" : "Save changes", class: 'btn btn-outline-primary') %>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>

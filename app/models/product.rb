@@ -1,5 +1,7 @@
 class Product < ApplicationRecord
   acts_as_paranoid
+  has_many :extra_field_names, as: :fieldnameable
+  has_many :extra_field_values, as: :fieldvalueable
 
   validates :sku, presence:true, uniqueness: { case_sensitive: false }
   validates :title, presence: true
