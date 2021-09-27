@@ -133,6 +133,6 @@ Rails.application.configure do
     domain: "smtp.gmail.com"
   }
 
-  config.action_mailer.default_url_options = { :host => "http://http://142.93.32.58"}
+  config.action_mailer.default_url_options = { :host => "http://channeldispatch.co.uk/"}
 
 end
