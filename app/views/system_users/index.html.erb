@@ -17,6 +17,9 @@
           <button type="button" class="btn btn-primary float-right" data-toggle="modal" data-target="#ModalScrollable">
               Create
           </button>
+          <div class='mr-1 float-right'>
+            <%= link_to 'PDF', system_users_path(format: :pdf), class:"btn btn-primary float-right ml-1", type:"button"%>
+          </div>
           <span class='mr-1 float-right'>
             <%= form_tag import_system_users_path, multipart: true, method: :post do %>
               <%= file_field_tag :file, class: 'd-none import-file' %>

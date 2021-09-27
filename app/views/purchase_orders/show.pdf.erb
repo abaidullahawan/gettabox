@@ -1,14 +1,7 @@
-<head>
-  <meta charset='utf-8' />
-  <%= wicked_pdf_stylesheet_link_tag "pdf" -%>
-  <%= wicked_pdf_javascript_include_tag "number_pages" %>
-  <%= wicked_pdf_stylesheet_link_tag "application" %>
-</head>
-<!-- Main Content Header -->
-<br>
+<%= wicked_pdf_stylesheet_link_tag ("pdf") -%>
 <div class="main-content-header">
 
-  <h1><%= link_to 'Purchase Order', purchase_orders_path, style:'color: #212529;' %></h1>
+  <h1>Purchase Order</h1>
   <ol class="breadcrumb">
   </ol>
 </div>

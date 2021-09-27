@@ -1,0 +1,33 @@
+
+<%= form_with url: bulk_method_products_path, method: :post do |f| %>
+  <div class="table-responsive">
+    <table class="table m-0 table-hover">
+      <tr>
+        <th>Image</th>
+        <th>Title</th>
+        <th class="text-center">SKU</th>
+        <th class="text-center">Quantity (Total)</th>
+        <th class="text-center">Product type</th>
+      </tr>
+      <% @products&.each&.with_index(1) do |product, index| %>
+        <tr class='<%= (product.minimum.to_i > product.total_stock.to_i ) ? 'table-danger' : '' %>'>
+          <td>
+            <% if  product.photo.attached? %>
+              <%= image_tag product.photo&.service_url, style:'width:50px; height:50px;' %>
+            <% end %>
+          </td>
+          <td><%= product.title %></td>
+          <td class="text-center font-weight-bold"><%= product.sku %></td>
+          <td><%= product.total_stock%></td>
+          <td><%= product.product_type %></td>
+        </tr>
+      <% end %>
+      <%= f.submit '', class: 'bulk-method-objects d-none'%>
+    </table>
+  </div>
+<% end %>
+
+<div class='float-right'>
+<%= page_entries_info @products %>
+</div><br>
+

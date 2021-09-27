@@ -1,0 +1,22 @@
+
+<%= form_with url: bulk_method_categories_path , method: :post do |f| %>
+    <div class="table-responsive">
+    <table class="table m-0 table-hover">
+        <tr>
+        <th class="text-center">Tilte</th>
+        <th class="text-center">Description</th>
+        </tr>
+        <% @categories&.each&.with_index(1) do |category, index| %>
+        <tr class=''>
+            <td class="text-center"><%= category.title %></td>
+            <td class="text-center"><%= category.description %></td>
+        </tr>
+        <% end %>
+        <%= f.submit '', class: 'bulk-method-objects d-none'%>
+    </table>
+    </div>
+<% end %>
+<br>
+<div class='float-right'>
+    <%= page_entries_info @categories %>
+</div><br>

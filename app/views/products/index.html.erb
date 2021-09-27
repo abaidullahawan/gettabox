@@ -40,6 +40,9 @@
                 <a href="#" class="dropdown-item" data-toggle="modal" data-target='#multi-product-create-modal'>Multi Pack</a>
               </div>
             </div>
+            <div class='mr-1 float-right'>
+                <%= link_to 'PDF', products_path(format: :pdf), class:"btn btn-primary float-right ml-1", type:"button"%>
+              </div>
           <span class='mr-1 float-right'>
             <%= form_tag import_products_path, multipart: true, method: :post do %>
               <%= file_field_tag :file, class: 'd-none import-file' %>
