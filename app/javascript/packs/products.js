@@ -8,6 +8,52 @@ $(document).ready(function () {
 
 $(document).on('turbolinks:load', function () {
 
+  $('#product-title-search').on('keyup', function () {
+    var product_title = this.value
+    $.ajax({
+      url: "/products/products_by_title",
+      type: "POST",
+      data: { 'product_title': product_title },
+      success: function(response) {
+        debugger
+        $(".product-list-item").remove()
+        // var listitems = [];
+        if(response.length == 0) {
+          $(".product-dropdown-list").append('<li><a class="dropdown-item product-list-item" href="#">No result found</a></li>')
+        }
+        else {
+          $(".product-dropdown-list").append('<li><a class="dropdown-item product-list-item" href="#">Select the Product</a></li>')
+          $.each(response,function() {
+            $(".product-dropdown-list").append('<li><a class="dropdown-item product-list-item" href="/products/'+this.id+'">'+ this.title +'</a></li>')
+          });
+        }
+      }
+    })
+  })
+
+  $('#category-title-search').on('keyup', function () {
+    var category_title = this.value
+    $.ajax({
+      url: "/products/check_category",
+      type: "POST",
+      data: { 'category_title': category_title },
+      success: function(response) {
+        debugger
+        $(".category-dropdown-list").children().remove()
+        // var listitems = [];
+        if(response.length == 0) {
+          $(".category-dropdown-list").append('<li><label class="dropdown-item product-list-item">No result found</label></li>')
+        }
+        else {
+          $(".category-dropdown-list").append('<li><label class="dropdown-item product-list-item">Select the Product</label></li>')
+          $.each(response,function() {
+            $(".category-dropdown-list").append('<li><label class="dropdown-item product-list-item" value='+this.id+'">'+ this.title +'</label></li>')
+          });
+        }
+      }
+    })
+  })
+
   $('input, select').on('click', function () {
     var name = this.name
     if (name.includes('product')) {

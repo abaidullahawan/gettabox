@@ -32,6 +32,18 @@ class ProductsController < ApplicationController
 
   def create
     @product = Product.new(product_params)
+    @category_name = params[:category_name]
+    @s_category = Category.where("lower(title) LIKE ?", "#{@category_name}").or(Category.where("title LIKE ?", "#{@category_name}")).first
+    if @s_category.present?
+      save_product
+    else
+      @s_category = Category.create(title: @category_name)
+      save_product
+    end
+  end
+
+  def save_product
+    @product.category_id = @s_category.id
     if @product.save
       flash[:notice] = "Created successfully."
       redirect_to product_path(@product)
@@ -142,6 +154,20 @@ class ProductsController < ApplicationController
     else
       flash[:notice] = 'Product cannot be deleted/Please select something to delete'
       redirect_to archive_products_path
+    end
+  end
+
+  def search_products_by_title
+    @searched_products = Product.where("lower(title) LIKE ?", "%#{ params[:product_title].downcase }%")
+    respond_to do |format|
+      format.json  { render json: @searched_products }
+    end
+  end
+
+  def search_category
+    @searched_category = Category.where("lower(title) LIKE ?", "%#{ params[:category_title].downcase }%")
+    respond_to do |format|
+      format.json  { render json: @searched_category }
     end
   end
 

@@ -265,8 +265,18 @@
             <li class="nav-item dropdown profile-nav-item">
                 <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     <div class="menu-profile">
-                        <span class="name"><%= current_user.personal_detail.first_name+" "+current_user.personal_detail.last_name %></span>
-                        <%= image_tag(current_user&.profile_image, alt: "Profile Image", class: "rounded-circle") if current_user&.profile_image.present? %>
+                        <span class="name">
+                            <% if (current_user.personal_detail.first_name && current_user.personal_detail.last_name).present? %>
+                                <%= current_user.personal_detail.first_name+" "+current_user.personal_detail.last_name %>
+                            <% else %>
+                                User's Info
+                            <% end %>
+                        </span>
+                        <% if current_user&.profile_image.present? %>
+                            <%= image_tag(current_user&.profile_image, alt: "Profile Image", class: "rounded-circle") %>
+                        <% else %>
+                            <%= image_tag("user/3.jpg", alt: "Profile Image", class: "rounded-circle") %>
+                        <% end %>
                     </div>
                 </a>
 
