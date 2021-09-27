@@ -16,6 +16,9 @@
         <div class="card-header">
           <a href="/categories/new" class="btn btn-primary float-right">Create</a>
           <div class='mr-1 float-right'>
+            <%= link_to 'PDF', categories_path(format: :pdf), class:"btn btn-primary float-right ml-1", type:"button"%>
+          </div>
+          <div class='mr-1 float-right'>
             <%= link_to 'Export', categories_path(format: :csv, export_csv: true), class: 'btn btn-outline-primary' %>
           </div>
           <div class='mr-1 float-right'>

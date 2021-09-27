@@ -1,0 +1,42 @@
+            <%= wicked_pdf_stylesheet_link_tag ("pdf") -%>
+        <%= form_with url: bulk_method_system_users_path , method: :post do |f| %>
+          <div class="row">
+            <div class='col-lg-6'>
+              <h6 class='text-center text-muted'>Suppliers</h6>
+              <table class="table-responsive table m-0 table-hover">
+                <tr>
+                  <th class="text-center">Name</th>
+                  <th class="text-center">Not Sent</th>
+                  <th class="text-center">Pending</th>
+                  <th class="text-center">Delivered</th>
+                </tr>
+                <% @system_users&.each&.with_index(1) do |system_user, index| %>
+                  <tr class=''>
+                    <%
+                      orders = system_user.purchase_orders.present? ? system_user.purchase_orders&.count : 0
+                      deliveries = system_user.purchase_orders&.first&.purchase_deliveries.present? ? system_user.purchase_orders&.first&.purchase_deliveries&.count : 0 %>
+                    <td class="text-center"><%= system_user.name %></td>
+                    <td class="text-center"><%= orders %></td>
+                    <td class="text-center"><%= orders - deliveries %></td>
+                    <td class="text-center"><%= deliveries %></td>
+                  </tr>
+                <% end %>
+              </table>
+            </div>
+          </div>
+        <% end %>
+        <br>
+        <div class='float-right'>
+          <%= page_entries_info @system_users %>
+        </div><br>
+        <div class="pagination justify-content-center mt-3">
+          <%= paginate @system_users,theme: "twitter-bootstrap-4",pagination_class: "pagination-sm",nav_class: "d-inline-b" %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+</div>
