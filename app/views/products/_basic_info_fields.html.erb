@@ -16,8 +16,12 @@
 
     <div class="form-group required">
       <%= f.label :category_id %>
-      <%= f.select :category_id, @categories&.map{|u| [u['title'], u['id']]}, {include_blank: 'Enter Select Category'}, class: 'form-control chosen-select', required: true %>
+      <input name='category_name' class= 'form-control dropdown-toggle' id= 'category-title-search' data-toggle= 'dropdown' autocomplete= 'off' placeholder='Select the Category' %>
+      <ul class="dropdown-menu category-dropdown-list" aria-labelledby="category-title-search">
+        <li><a class="dropdown-item category-list-item" href="#">Search Category</a></li>
+      </ul>
     </div>
+
     <div class="form-group form-row">
       <%= f.label :description %>
       <%= f.text_area :description, class: 'form-control', placeholder: 'Add Product Description' %>

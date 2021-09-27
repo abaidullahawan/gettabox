@@ -26,6 +26,9 @@ Rails.application.routes.draw do
       get 'archive', to: 'products#archive'
       post 'restore', to: 'products#restore'
       post 'permanent_delete', to: 'products#permanent_delete'
+      post 'products_by_title', to: 'products#search_products_by_title'
+      post 'check_category', to: 'products#search_category'
+      
     end
   end
 

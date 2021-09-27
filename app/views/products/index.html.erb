@@ -68,8 +68,11 @@
                 <a class="dropdown-item" href='#' data-toggle="modal" data-target='#archive-modal'>Archive</a>
               </div>
             </div>
-            <div class="col-md-2"><br>
-              <%= f.search_field :title_cont, class:"form-control", placeholder:"Search in title" %>
+            <div class="col-md-2 dropdown"><br>
+              <%= f.search_field :title_cont, class: 'form-control dropdown-toggle', id: 'product-title-search', data: {toggle: 'dropdown'}, area: {haspopup: true, expanded: 'false'}, autocomplete: 'off', placeholder:"Search in Title" %>
+              <ul class="dropdown-menu product-dropdown-list" aria-labelledby="product-title-search">
+                <li><a class="dropdown-item product-list-item" href="#">Select the Product</a></li>
+              </ul>
             </div>
             <div class="col-md-2"><br>
               <%= f.search_field :sku_cont, class:"form-control", placeholder:"Search in Sku" %>
@@ -110,8 +113,8 @@
                     </td>
                     <td><%= product.title %></td>
                     <td class="text-center font-weight-bold"><%= product.sku %></td>
-                    <td><%= product.total_stock%></td>
-                    <td><%= product.product_type %></td>
+                    <td class="text-center"><%= product.total_stock%></td>
+                    <td class="text-center"><%= product.product_type %></td>
 
                     <td class="text-center">
                       <div class="dropdown dropleft">
