@@ -47,7 +47,8 @@ gem "paranoia", "~> 2.2"
 gem 'jquery-rails'
 gem 'chosen-rails'
 # Gem for PDF's
-gem 'wicked_pdf'
+# PDF
+gem 'wicked_pdf', github: 'mileszs/wicked_pdf'
 gem 'wkhtmltopdf-binary'
 
 gem 'rest-client'
@@ -97,6 +98,3 @@ gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 gem 'sprockets'
 gem 'sprockets-es6'
 
-# PDF
-gem 'wicked_pdf'
-gem 'wkhtmltopdf-binary'
