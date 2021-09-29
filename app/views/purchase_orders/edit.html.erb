@@ -56,6 +56,7 @@
                           </thead>
                           <tbody>
                             <%= pd.fields_for :purchase_order_details do |f| %>
+                              <% if name == f.object.product.category.title %>
                                 <tr>
                                   <td>
                                     <% if f.object.product.photo.attached? %>
@@ -89,6 +90,7 @@
                                   </td>
                                 </tr>
                               <% end %>
+                            <% end %>
                           </tbody>
                         </table>
                       </div>
@@ -99,7 +101,42 @@
               <!-- End Faq accordion -->
             </div>
           </div>
-          <%= pd.submit(@purchase_order.new_record? ? "Create" : "Update", class: 'btn btn-outline-primary create_product_button') %>
+          <!-- Button trigger modal -->
+          <button type="button" class="btn btn-outline-primary" data-toggle="modal" data-target="#BasicModal">
+            Update
+          </button>
+
+          <!-- Modal -->
+          <div class="modal fade" id="BasicModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="exampleModalLabel">Order Status</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" name="gridRadios" id="gridRadios1" value="<%= @purchase_order.order_status_completed! %>" checked>
+                    <label class="form-check-label" for="gridRadios1">
+                      Completed
+                    </label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" name="gridRadios" id="gridRadios2" value="<%= @purchase_order.order_status_partially_delivered! %>">
+                    <label class="form-check-label" for="gridRadios2">
+                      Not Completed
+                    </label>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                  <%= pd.submit(@purchase_order.new_record? ? "Create" : "Update", class: 'btn btn-outline-primary create_product_button') %>
+                </div>
+              </div>
+            </div>
+          </div>
         <% end %>
       </div>
     </div>

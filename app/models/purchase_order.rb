@@ -7,6 +7,18 @@ class PurchaseOrder < ApplicationRecord
 
   accepts_nested_attributes_for :purchase_order_details, allow_destroy: true
 
+  enum order_status: {
+    created: 0,
+    sent: 1,
+    completed: 2,
+    partially_delivered: 3
+  }, _prefix: true
+
+  enum payment_method: {
+    unpaid: 0,
+    paid: 1
+  }, _prefix: true
+
   def self.to_csv
     attributes = all.column_names
     CSV.generate(headers: true) do |csv|

@@ -31,7 +31,7 @@
           <div class='mr-1 float-right'>
             <%= link_to 'Archives', archive_users_path, class: 'btn btn-outline-info' %>
           </div>
-          <h5 class="card-title"><%= @user_sub_role.capitalize %> Data</h5>
+          <h5 class="card-title"><%= @user_sub_role&.capitalize %> Data</h5>
         </div>
         <%= search_form_for @q, url: users_path, method: :get do |f| %>
           <div class='row'>

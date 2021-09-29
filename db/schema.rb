@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_09_16_111320) do
+ActiveRecord::Schema.define(version: 2021_09_29_113101) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -43,6 +43,20 @@ ActiveRecord::Schema.define(version: 2021_09_16_111320) do
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
+  create_table "addresses", force: :cascade do |t|
+    t.string "company"
+    t.string "address"
+    t.string "city"
+    t.string "region"
+    t.string "postcode"
+    t.string "country"
+    t.string "addressable_type"
+    t.bigint "addressable_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["addressable_type", "addressable_id"], name: "index_addresses_on_addressable"
+  end
+
   create_table "attribute_settings", force: :cascade do |t|
     t.string "model"
     t.bigint "user_id"
@@ -70,6 +84,13 @@ ActiveRecord::Schema.define(version: 2021_09_16_111320) do
     t.index ["deleted_at"], name: "index_categories_on_deleted_at"
   end
 
+  create_table "channel_products", force: :cascade do |t|
+    t.integer "channel_type"
+    t.jsonb "product_data"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
   create_table "contact_details", force: :cascade do |t|
     t.string "phone_number"
     t.string "email"
@@ -84,11 +105,28 @@ ActiveRecord::Schema.define(version: 2021_09_16_111320) do
     t.index ["personal_detail_id"], name: "index_contact_details_on_personal_detail_id"
   end
 
+  create_table "extra_field_names", force: :cascade do |t|
+    t.json "field_name"
+    t.string "fieldnameable_type"
+    t.bigint "fieldnameable_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["fieldnameable_type", "fieldnameable_id"], name: "index_extra_field_names_on_fieldnameable"
+  end
+
+  create_table "extra_field_values", force: :cascade do |t|
+    t.json "field_value"
+    t.string "fieldvalueable_type"
+    t.bigint "fieldvalueable_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["fieldvalueable_type", "fieldvalueable_id"], name: "index_extra_field_values_on_fieldvalueable"
+  end
+
   create_table "general_settings", force: :cascade do |t|
     t.string "name"
     t.string "display_name"
     t.string "phone"
-    t.string "address"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
   end
@@ -114,6 +152,15 @@ ActiveRecord::Schema.define(version: 2021_09_16_111320) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["bio_type", "bio_id"], name: "index_personal_details_on_bio"
+  end
+
+  create_table "product_mappings", force: :cascade do |t|
+    t.bigint "channel_product_id"
+    t.bigint "product_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["channel_product_id"], name: "index_product_mappings_on_channel_product_id"
+    t.index ["product_id"], name: "index_product_mappings_on_product_id"
   end
 
   create_table "product_suppliers", force: :cascade do |t|
@@ -154,9 +201,9 @@ ActiveRecord::Schema.define(version: 2021_09_16_111320) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.datetime "deleted_at"
-    t.integer "product_type"
     t.bigint "season_id"
     t.text "description"
+    t.integer "product_type"
     t.index ["category_id"], name: "index_products_on_category_id"
     t.index ["deleted_at"], name: "index_products_on_deleted_at"
     t.index ["season_id"], name: "index_products_on_season_id"
@@ -209,8 +256,20 @@ ActiveRecord::Schema.define(version: 2021_09_16_111320) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.datetime "deleted_at"
+    t.integer "order_status"
+    t.integer "payment_method"
     t.index ["deleted_at"], name: "index_purchase_orders_on_deleted_at"
     t.index ["supplier_id"], name: "index_purchase_orders_on_supplier_id"
+  end
+
+  create_table "refresh_tokens", force: :cascade do |t|
+    t.string "channel"
+    t.string "refresh_token"
+    t.datetime "refresh_token_expiry"
+    t.string "access_token"
+    t.datetime "access_token_expiry"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
   end
 
   create_table "seasons", force: :cascade do |t|
@@ -248,6 +307,8 @@ ActiveRecord::Schema.define(version: 2021_09_16_111320) do
     t.string "currency_symbol"
     t.decimal "exchange_rate"
     t.datetime "deleted_at"
+    t.string "email"
+    t.string "phone_number"
     t.index ["deleted_at"], name: "index_system_users_on_deleted_at"
   end
 

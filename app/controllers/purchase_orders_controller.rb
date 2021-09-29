@@ -26,6 +26,7 @@ class PurchaseOrdersController < ApplicationController
   def create
     @supplier = SystemUser.find(params[:purchase_order][:supplier_id])
     @purchase_order = PurchaseOrder.new(purchase_order_params)
+    @purchase_order.order_status_created!
     # @purchase_order.delivery_address = @supplier.supplier_address
     # @purchase_order.invoice_address = GeneralSetting.first.address
     if @purchase_order.save
@@ -49,12 +50,26 @@ class PurchaseOrdersController < ApplicationController
       respond_to do |format|
         format.html
         format.pdf do
-          render  :pdf => "file.pdf", 
-                  :viewport_size => '1280x1024',
-                  :template => 'purchase_orders/show.pdf.erb'
+          render pdf: "file.pdf", viewport_size: '1280x1024', template: 'purchase_orders/show.pdf.erb'
         end
       end
     end
+  end
+
+  def send_mail_to_supplier
+    @purchase_order = PurchaseOrder.find(params[:p])
+    @supplier = @purchase_order.supplier_id
+    @deliverd = PurchaseOrder.where(id: @purchase_order.id).joins(purchase_deliveries: :purchase_delivery_details).group(:product_id).sum(:quantity)
+    @missing = PurchaseOrder.where(id: @purchase_order.id).joins(purchase_deliveries: :purchase_delivery_details).group(:product_id).sum(:missing)
+    @demaged = PurchaseOrder.where(id: @purchase_order.id).joins(purchase_deliveries: :purchase_delivery_details).group(:product_id).sum(:demaged)
+    @deliveries = @purchase_order.purchase_deliveries
+    @pdf_file = render(pdf: "file.pdf", template: 'purchase_orders/show.pdf.erb', filename: 'Purchase Order')
+    pdf=[[@pdf_file,'Purchase Order']]
+    email = @purchase_order.system_user.email
+    name = @purchase_order.system_user.name
+    subject = "Purchase Order Slip"
+    PurchaseOrderMailer.send_email(pdf,subject,email,name).deliver if email.present?
+    @purchase_order.order_status_sent!
   end
 
   def single_csv(purchase_order)
@@ -173,6 +188,7 @@ class PurchaseOrdersController < ApplicationController
       params.require(:purchase_order).permit(
         :supplier_id,
         :total_bill,
+        :payment_method,
         # :delivery_address,
         # :invoice_address,
         purchase_order_details_attributes:[

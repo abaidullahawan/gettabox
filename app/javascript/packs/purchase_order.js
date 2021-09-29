@@ -12,6 +12,24 @@ $(document).on('turbolinks:load', function () {
     $('.purchase_delivery_list').toggleClass('d-none')
   })
 
+  if($('.payment_method_value').val() == "paid") {
+      $('.payment_method').attr('checked', 'checked');
+    }
+    else {
+      $('.payment_method').removeAttr('checked');
+    }
+
+  $('.payment_method').on('click', function () {
+    if(this.checked == true){
+      $('.payment_method_value').val("paid")
+    }
+    else {
+      $('.payment_method_value').val("unpaid")
+    }
+    debugger
+    $('.edit_purchase_order').submit();
+  })
+
 })
 function purchaseOrderTotal() {
   var length = $('.order_item_price').length
