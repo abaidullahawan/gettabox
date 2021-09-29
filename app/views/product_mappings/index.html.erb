@@ -67,9 +67,9 @@
                   <%= form_for :anything, url: product_mappings_path do |f| %>
                     <tr class=''>
                       <td>
-                        <%#= image_tag item['product']['image'], style:'width:50px; height:50px;' %>
+                        <%= image_tag item['product_data']['product']['imageUrls'].first, style:'width:50px; height:50px;' %>
                       </td>
-                      <td class="text-center"><%= item['sku'] %></td>
+                      <td class="text-center"><%= item['product_data']['sku'] %></td>
                       <%= f.hidden_field :channel_product_id, value: item.id %>
                       <td class="text-center"><%= item.product_data['product']['quantity'] %></td>
                       <td class="text-center"><%= item.product_data['product']['title'] %></td>
@@ -106,14 +106,16 @@
                       <% end %>
                       <td class="text-center">
                         <div class="dropdown dropleft">
-                          <button class="btn btn-primary" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                          <button class="btn btn-primary" type="button" class="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             Actions
                           </button>
                           <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                            <%= f.submit 'Un-map', class: "dropdown-item" if params['mapped_status'] == 'Mapped' %>
-                            <%= f.submit 'Create', class: "dropdown-item" if params['mapped_status'] != 'Mapped'%>
-                            <%= f.submit 'Map', class: "dropdown-item" if params['mapped_status'] != 'Mapped'%>
+                            <%= f.submit 'Un-map', data: { disable_with: false }, class: "dropdown-item" if params['mapped_status'] == 'Mapped' %>
+                            <%#= f.submit 'Create', data: { disable_with: false }, class: "dropdown-item" if params['mapped_status'] != 'Mapped'%>
+                            <%= f.submit 'Map', data: { disable_with: false }, class: "dropdown-item" if params['mapped_status'] != 'Mapped'%>
                             <%= link_to 'Archive', '', class: "dropdown-item"%>
+                            <a class="dropdown-item create-single-product" data-id="<%= item.id %>" data-item = '<%= item.to_json.html_safe %>' >Create Single Pack</a>
+                            <a class="dropdown-item create-multi-product" data-id="<%= item.id %>" data-item = '<%= item.to_json.html_safe %>' >Create Multi Pack</a>
                           </div>
                         </div>
                       </td>
@@ -140,6 +142,52 @@
         </div>
         <div class="modal-body">
           <%= render 'form', f: f %>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>
+
+<%= form_for(@product, url: product_mappings_path) do |f| %>
+  <div class="modal fade" id="single-product-create-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Create Single Pack Product</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <%= hidden_field_tag :channel_product_id, value: ''%>
+          <%= render partial: 'products/single_product_form', locals: { f: f }  %>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary mr-auto" data-dismiss="modal">Close</button>
+            <%= f.submit(@product.new_record? ? "Create" : "Save changes", class: 'btn btn-outline-primary create_product_button d-none') %>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>
+
+<%= form_for(@product, url: product_mappings_path) do |f| %>
+  <div class="modal fade" id="multi-product-create-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Create Multi Pack Product</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <%= hidden_field_tag :channel_product_id, value: ''%>
+          <%= render 'products/multi_product_form', f: f %>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary mr-auto" data-dismiss="modal">Close</button>
+            <%= f.submit(@product.new_record? ? "Create" : "Save changes", class: 'btn btn-outline-primary create_product_button') %>
         </div>
       </div>
     </div>
