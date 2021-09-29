@@ -41,9 +41,24 @@
     <div class='col-sm-3'>
       <button type='button' class='stock_button_previous btn btn-sm btn-outline-secondary'>Previous</button>
     </div>
-    <!--div class='col-sm-3'>
-      <button type='button' class='stock_button btn btn-sm btn-outline-info float-right'>Next</button>
-    </div-->
+    <div class='col-sm-3'>
+      <button type='button' class='extra_feild btn btn-sm btn-outline-info float-right'>Next</button>
+    </div>
+  </div>
+</div>
+
+<div class='extra-field-form d-none'>
+  <div class='row'>
+    <div class='col-sm-12'>
+      <h5 class='text-center'>Extra Fields</h5>
+    </div>
+  </div><hr>
+  <%= render '/products/new_partials/extra_field_partial', f: f %>
+  <hr>
+  <div class='row justify-content-between'>
+    <div class='col-sm-3'>
+      <button type='button' class='extra_button_previous btn btn-sm btn-outline-secondary'>Previous</button>
+    </div>
   </div>
 </div>
 <!--div class='extra-form d-none'>
