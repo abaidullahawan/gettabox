@@ -6,6 +6,7 @@ Rails.application.routes.draw do
       post 'bulk_method', to: 'seasons#bulk_method'
       get 'archive', to: 'seasons#archive'
       post 'restore', to: 'seasons#restore'
+      post 'season_by_name', to: 'seasons#search_season_by_name'
     end
   end
   devise_for :users
@@ -27,8 +28,8 @@ Rails.application.routes.draw do
       post 'restore', to: 'products#restore'
       post 'permanent_delete', to: 'products#permanent_delete'
       post 'products_by_title', to: 'products#search_products_by_title'
+      post 'products_by_sku', to: 'products#search_products_by_sku'
       post 'check_category', to: 'products#search_category'
-      
     end
   end
 
@@ -38,6 +39,7 @@ Rails.application.routes.draw do
       post 'bulk_method', to: 'categories#bulk_method'
       get 'archive', to: 'categories#archive'
       post 'restore', to: 'categories#restore'
+      post 'category_by_title', to: 'categories#search_category_by_title'
     end
   end
 
@@ -66,6 +68,7 @@ Rails.application.routes.draw do
       post 'bulk_method', to: 'system_users#bulk_method'
       get 'archive', to: 'system_users#archive'
       post 'restore', to: 'system_users#restore'
+      post 'system_user_by_name', to: 'system_users#search_system_user_by_name'
     end
   end
 

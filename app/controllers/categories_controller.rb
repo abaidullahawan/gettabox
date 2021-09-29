@@ -105,6 +105,13 @@ class CategoriesController < ApplicationController
     end
   end
 
+  def search_category_by_title
+    @searched_category_by_title = Category.where("lower(title) LIKE ?", "%#{ params[:category_title].downcase }%").uniq
+    respond_to do |format|
+      format.json  { render json: @searched_category_by_title }
+    end
+  end
+
   private
     def find_category
       @category = Category.find(params[:id])
