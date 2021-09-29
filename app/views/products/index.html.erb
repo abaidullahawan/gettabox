@@ -71,11 +71,14 @@
             <div class="col-md-2 dropdown"><br>
               <%= f.search_field :title_cont, class: 'form-control dropdown-toggle', id: 'product-title-search', data: {toggle: 'dropdown'}, area: {haspopup: true, expanded: 'false'}, autocomplete: 'off', placeholder:"Search in Title" %>
               <ul class="dropdown-menu product-dropdown-list" aria-labelledby="product-title-search">
-                <li><a class="dropdown-item product-list-item" href="#">Select the Product</a></li>
+                <li><label class="dropdown-item product-list-item">Select the Product</label></li>
               </ul>
             </div>
             <div class="col-md-2"><br>
-              <%= f.search_field :sku_cont, class:"form-control", placeholder:"Search in Sku" %>
+              <%= f.search_field :sku_cont, class: 'form-control dropdown-toggle', id: 'product-sku-search', data: {toggle: 'dropdown'}, area: {haspopup: true, expanded: 'false'}, autocomplete: 'off', placeholder:"Search in Sku" %>
+              <ul class="dropdown-menu product-sku-dropdown-list" aria-labelledby="product-sku-search">
+                <li><label class="dropdown-item product-sku-list-item">Select Product SKU</label></li>
+              </ul>
             </div>
             <div class="col-md-2"><br>
               <%= f.select :product_type_eq, Product.product_types.map { |key, value| [key.humanize, value] }, {include_blank: 'Select an option'}, class:"form-control product-type-field chosen-select", title: 'Select Product Type' %>
