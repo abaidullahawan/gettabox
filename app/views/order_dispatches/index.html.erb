@@ -1,0 +1,79 @@
+
+
+<!-- Main Content Header -->
+<div class="main-content-header">
+  <h1>Order Dispatch</h1>
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item">
+      <a href="<%= dashboard_sales_path %>">Dashboard</a>
+    </li>
+    <li class="breadcrumb-item active">
+      <span class="active">Order Dispatch</span>
+    </li>
+  </ol>
+</div>
+<!-- End Main Content Header -->
+<div class="row">
+  <div class="col-lg-2">
+    <div class="card text-center mb-30">
+      <div class="header card-header">Order</div>
+      <div class="card-body">
+        <div class="card-title h5 text-success">4</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-2">
+    <div class="card text-center mb-30">
+      <div class="header card-header">Order Issues</div>
+      <div class="card-body">
+        <div class="card-title h5 text-danger">2</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-2">
+    <div class="card text-center mb-30">
+      <div class="header card-header">Product</div>
+      <div class="card-body">
+        <div class="card-title h5 text-success">10</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-2">
+    <div class="card text-center mb-30">
+      <div class="header card-header">Product Issues</div>
+      <div class="card-body">
+        <div class="card-title h5 text-danger">5</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="col-lg-12">
+  <div class="card mb-30">
+    <div class="card-body">
+      <div class="tabs-style-two">
+        <ul class="nav nav-tabs">
+          <li class="nav-item">
+            <a class="nav-link active" data-toggle="tab" href="#demo_two_home">Unprocessed Orders</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#demo_two_profile">Issue Orders</a>
+          </li>
+        </ul>
+
+        <div class="tab-content">
+          <div class="tab-pane fade show active" id="demo_two_home" role="tabpanel">
+            <%= render 'unprocessed_orders'%>
+          </div>
+
+          <div class="tab-pane fade" id="demo_two_profile" role="tabpanel">
+            <%= render 'issue_orders' %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

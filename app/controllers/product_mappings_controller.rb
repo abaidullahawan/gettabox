@@ -22,6 +22,18 @@ class ProductMappingsController < ApplicationController
         @matching_products[item.id] = matching if matching.present?
       end
     end
+    new_product
+  end
+
+  def new_product
+    @product = Product.new
+    @product.barcodes.build
+    @product.product_suppliers.build
+    @product.multipack_products.build
+    @single_products = Product.where(product_type: 'single').map{|v| v.serializable_hash(only: [:id, :title]) }
+    @system_users = SystemUser.all.map{|v| v.serializable_hash(only: [:id, :name]) }
+    @categories = Category.all.map{|v| v.serializable_hash(only: [:id, :title]) }
+    @seasons = Season.all.map{|v| v.serializable_hash(only: [:id, :name]) }
   end
 
   def show
@@ -53,18 +65,26 @@ class ProductMappingsController < ApplicationController
       redirect_to product_mappings_path(mapped_status: 'Mapped')
     end
     if params[:commit] == 'Create'
-      cd = ChannelProduct.find(params[:anything]['channel_product_id'])
-      category = Category.first
+      cd = ChannelProduct.find(params['channel_product_id'])
       begin
-        @product = Product.new(sku: cd.product_data['sku'], title: cd.product_data['product']['title'], category_id: category.id, description: cd.product_data['description'], available_stock: cd.product_data['product']['availability']['shipToLocationAvailability']['quantity'])
+        @product = Product.new(product_mapping_params)
       rescue NoMethodError
         flash[:alert] = 'Product params not matched'
         # redirect_to product_mappings_path(product_mapping: 'Ebay Sandbox')
       end
       if @product&.save
         ProductMapping.create(channel_product_id: cd.id, product_id: @product.id)
-        flash[:notice] = 'Product created successfully'
-        redirect_to product_mappings_path(product_mapping: 'Ebay Sandbox')
+        url = URI.parse(cd.product_data['product']['imageUrls'].first)
+        filename = File.basename(url.path)
+        begin
+          file = URI.open(url)
+          @product.photo.attach(io: file, filename: filename) if file.present?
+          flash[:notice] = 'Product created successfully'
+          redirect_to product_mappings_path(product_mapping: 'Ebay Sandbox')
+        rescue OpenURI::HTTPError => e
+          flash[:alert] = 'Product created! Cannot upload image'
+          redirect_to product_mappings_path(product_mapping: 'Ebay Sandbox')
+        end
       else
         flash[:alert] = 'Product cannot be created!'
         redirect_to product_mappings_path(product_mapping: 'Ebay Sandbox')
@@ -80,6 +100,55 @@ class ProductMappingsController < ApplicationController
 
   private
     def product_mapping_params
+      params.
+      require(:product).
+      permit( :sku,
+              :title,
+              :photo,
+              :total_stock,
+              :fake_stock,
+              :pending_orders,
+              :allocated_orders,
+              :available_stock,
+              :length,
+              :width,
+              :height,
+              :weight,
+              :pack_quantity,
+              :cost_price,
+              :gst,
+              :vat,
+              :hst,
+              :pst,
+              :qst,
+              :minimum,
+              :maximum,
+              :optimal,
+              :category_id,
+              :product_type,
+              :season_id,
+              :description,
+              barcodes_attributes:
+              [ :id,
+                :title,
+                :_destroy
+              ],
+              product_suppliers_attributes:
+              [ :id,
+                :system_user_id,
+                :product_cost,
+                :product_sku,
+                :product_vat,
+                :_destroy
+              ],
+              multipack_products_attributes:
+              [ :id,
+                :product_id,
+                :child_id,
+                :quantity,
+                :_destroy
+              ]
+      )
     end
 
     def product_invetory_call(refresh_token)
