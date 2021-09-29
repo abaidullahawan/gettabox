@@ -180,6 +180,13 @@ class ProductsController < ApplicationController
     end
   end
 
+  def search_products_by_sku
+    @searched_product_by_sku = Product.where("lower(sku) LIKE ?", "%#{ params[:product_sku].downcase }%")
+    respond_to do |format|
+      format.json  { render json: @searched_product_by_sku }
+    end
+  end
+
   def search_category
     @searched_category = Category.where("lower(title) LIKE ?", "%#{ params[:category_title].downcase }%")
     respond_to do |format|

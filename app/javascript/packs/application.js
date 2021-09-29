@@ -23,10 +23,13 @@ require("packs/custom")
 require("packs/system_users")
 require("packs/products")
 require("packs/purchase_order")
+require("packs/category")
+require("packs/season")
 require("packs/purchase_delivery")
 require("packs/chosen-jquery")
 require("packs/chosen")
 require('data-confirm-modal')
+require("packs/product_mapping")
 
 // Uncomment to copy all static images under ../images to the output folder and reference
 // them with the image_pack_tag helper in views (e.g <%= image_pack_tag 'rails.png' %>)

@@ -15,20 +15,49 @@ $(document).on('turbolinks:load', function () {
       type: "POST",
       data: { 'product_title': product_title },
       success: function(response) {
-        debugger
         $(".product-list-item").remove()
-        // var listitems = [];
         if(response.length == 0) {
-          $(".product-dropdown-list").append('<li><a class="dropdown-item product-list-item" href="#">No result found</a></li>')
+          $(".product-dropdown-list").append('<li><label class="dropdown-item product-list-item">No result found</label></li>')
         }
         else {
-          $(".product-dropdown-list").append('<li><a class="dropdown-item product-list-item" href="#">Select the Product</a></li>')
+          $(".product-dropdown-list").append('<li><label class="dropdown-item product-list-item">Select the Product</label></li>')
           $.each(response,function() {
-            $(".product-dropdown-list").append('<li><a class="dropdown-item product-list-item" href="/products/'+this.id+'">'+ this.title +'</a></li>')
+            $(".product-dropdown-list").append('<li><label class="dropdown-item product-list-item">'+ this.title +'</label></li>')
           });
         }
       }
     })
+  })
+
+  $('.product-dropdown-list').on('click', '.product-list-item', function () {
+    $('#product-title-search').val(this.outerText)
+    $('#product_search').submit();
+  })
+
+  $('#product-sku-search').on('keyup', function () {
+    var product_sku = this.value
+    $.ajax({
+      url: "/products/products_by_sku",
+      type: "POST",
+      data: { 'product_sku': product_sku },
+      success: function(response) {
+        $(".product-sku-list-item").remove()
+        if(response.length == 0) {
+          $(".product-sku-dropdown-list").append('<li><label class="dropdown-item product-sku-list-item">No result found</label></li>')
+        }
+        else {
+          $(".product-sku-dropdown-list").append('<li><label class="dropdown-item product-sku-list-item">Select the Product</label></li>')
+          $.each(response,function() {
+            $(".product-sku-dropdown-list").append('<li><label class="dropdown-item product-sku-list-item">'+ this.sku +'</label></li>')
+          });
+        }
+      }
+    })
+  })
+
+  $('.product-sku-dropdown-list').on('click', '.product-sku-list-item', function () {
+    $('#product-sku-search').val(this.outerText)
+    $('#product_search').submit();
   })
 
   $('#category-title-search').on('keyup', function () {
@@ -38,20 +67,23 @@ $(document).on('turbolinks:load', function () {
       type: "POST",
       data: { 'category_title': category_title },
       success: function(response) {
-        debugger
         $(".category-dropdown-list").children().remove()
-        // var listitems = [];
         if(response.length == 0) {
-          $(".category-dropdown-list").append('<li><label class="dropdown-item product-list-item">No result found</label></li>')
+          $(".category-dropdown-list").append('<li><label class="dropdown-item category-list-item">No result found</label></li>')
         }
         else {
-          $(".category-dropdown-list").append('<li><label class="dropdown-item product-list-item">Select the Product</label></li>')
+          $(".category-dropdown-list").append('<li><label class="dropdown-item category-list-item">Select the Category</label></li>')
           $.each(response,function() {
-            $(".category-dropdown-list").append('<li><label class="dropdown-item product-list-item" value='+this.id+'">'+ this.title +'</label></li>')
+            $(".category-dropdown-list").append('<li><label class="dropdown-item category-list-item" value='+this.title+'">'+ this.title +'</label></li>')
           });
         }
       }
     })
+  })
+
+
+  $('.category-dropdown-list').on('click', '.category-list-item', function () {
+    $('#category-title-search').val(this.outerText)
   })
 
   $('input, select').on('click', function () {
