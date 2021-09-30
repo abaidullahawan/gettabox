@@ -120,14 +120,13 @@ Rails.application.configure do
   config.assets.digest = true
   config.assets.enabled = true
 
+  config.action_mailer.default_url_options = { host: "channeldispatch.co.uk", protocol: "http" }
   config.action_mailer.delivery_method = :smtp
-  host = '142.93.32.58'
-  config.action_mailer.default_url_options = { host: host }
-
   # SMTP settings for gmail
   config.action_mailer.smtp_settings = {
     :address              => "smtp.gmail.com",
     :port                 => 587,
+    :domain               => "channeldispatch.co.uk"
     :user_name            => "email.from.devbox@gmail.com",
     :password             => "$devbox123$",
     :authentication       => "plain",
