@@ -119,19 +119,19 @@ Rails.application.configure do
   # Generate digests for assets URLs
   config.assets.digest = true
   config.assets.enabled = true
-  
-  config.action_mailer.default_url_options = { host: '142.93.32.58' }
-  config.action_mailer.perform_deliveries = true
-  config.action_mailer.raise_delivery_errors = true
+
   config.action_mailer.delivery_method = :smtp
+  host = '142.93.32.58'
+  config.action_mailer.default_url_options = { host: host }
+
+  # SMTP settings for gmail
   config.action_mailer.smtp_settings = {
-    address: "smtp.gmail.com",
-    port: 587,
-    authentication: "plain",
-    user_name: "email.from.devbox@gmail.com",
-    password: "$devbox123$",
-    domain: "gmail.com",
-    enable_starttls_auto: true
+    :address              => "smtp.gmail.com",
+    :port                 => 587,
+    :user_name            => "email.from.devbox@gmail.com",
+    :password             => "$devbox123$",
+    :authentication       => "plain",
+    :enable_starttls_auto => true
   }
 
 end
