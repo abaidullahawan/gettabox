@@ -10,12 +10,12 @@ $(document).on('turbolinks:load', function () {
       success: function(response) {
         $(".category-list-item").remove()
         if(response.length == 0) {
-          $(".category-dropdown-list").append('<li><label class="dropdown-item category-list-item">No result found</label></li>')
+          $(".category-dropdown-list").append('<li><a href="#" class="dropdown-item category-list-item">No result found</a></li>')
         }
         else {
-          $(".category-dropdown-list").append('<li><label class="dropdown-item category-list-item">Select Supplier</label></li>')
+          $(".category-dropdown-list").append('<li><a href="#" class="dropdown-item category-list-item">Select Supplier</a></li>')
           $.each(response,function() {
-            $(".category-dropdown-list").append('<li><label class="dropdown-item category-list-item">'+ this.title +'</label></li>')
+            $(".category-dropdown-list").append('<li><a href="#" class="dropdown-item category-list-item">'+ this.title +'</a></li>')
           });
         }
       }

@@ -119,7 +119,8 @@ Rails.application.configure do
   # Generate digests for assets URLs
   config.assets.digest = true
   config.assets.enabled = true
-
+  
+  config.action_mailer.default_url_options = { host: "http://channeldispatch.co.uk/"}
   config.action_mailer.perform_deliveries = true
   config.action_mailer.raise_delivery_errors = true
   config.action_mailer.delivery_method = :smtp
@@ -127,12 +128,9 @@ Rails.application.configure do
     address: "smtp.gmail.com",
     port: 587,
     authentication: "plain",
-    enable_starttls_auto: true,
     user_name: "email.from.devbox@gmail.com",
     password: "$devbox123$",
-    domain: "smtp.gmail.com"
+    domain: "gmail.com"
   }
-
-  config.action_mailer.default_url_options = { :host => "http://channeldispatch.co.uk/"}
 
 end

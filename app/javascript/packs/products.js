@@ -17,12 +17,12 @@ $(document).on('turbolinks:load', function () {
       success: function(response) {
         $(".product-list-item").remove()
         if(response.length == 0) {
-          $(".product-dropdown-list").append('<li><label class="dropdown-item product-list-item">No result found</label></li>')
+          $(".product-dropdown-list").append('<li><a href="#" class="dropdown-item product-list-item">No result found</a></li>')
         }
         else {
-          $(".product-dropdown-list").append('<li><label class="dropdown-item product-list-item">Select the Product</label></li>')
+          $(".product-dropdown-list").append('<li><a href="#" class="dropdown-item product-list-item">Select the Product</a></li>')
           $.each(response,function() {
-            $(".product-dropdown-list").append('<li><label class="dropdown-item product-list-item">'+ this.title +'</label></li>')
+            $(".product-dropdown-list").append('<li><a href="#" class="dropdown-item product-list-item">'+ this.title +'</a></li>')
           });
         }
       }
@@ -43,12 +43,12 @@ $(document).on('turbolinks:load', function () {
       success: function(response) {
         $(".product-sku-list-item").remove()
         if(response.length == 0) {
-          $(".product-sku-dropdown-list").append('<li><label class="dropdown-item product-sku-list-item">No result found</label></li>')
+          $(".product-sku-dropdown-list").append('<li><a href="#" class="dropdown-item product-sku-list-item">No result found</a></li>')
         }
         else {
-          $(".product-sku-dropdown-list").append('<li><label class="dropdown-item product-sku-list-item">Select the Product</label></li>')
+          $(".product-sku-dropdown-list").append('<li><a href="#" class="dropdown-item product-sku-list-item">Select the Product</a></li>')
           $.each(response,function() {
-            $(".product-sku-dropdown-list").append('<li><label class="dropdown-item product-sku-list-item">'+ this.sku +'</label></li>')
+            $(".product-sku-dropdown-list").append('<li><a href="#" class="dropdown-item product-sku-list-item">'+ this.sku +'</a></li>')
           });
         }
       }
@@ -83,7 +83,8 @@ $(document).on('turbolinks:load', function () {
 
 
   $('.category-dropdown-list').on('click', '.category-list-item', function () {
-    $('#category-title-search').val(this.outerText)
+    $('#category-title-search').val(this.outerText);
+    return false;
   })
 
   $('input, select').on('click', function () {

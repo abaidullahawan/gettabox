@@ -10,12 +10,12 @@ $(document).on('turbolinks:load', function () {
       success: function(response) {
         $(".season-list-item").remove()
         if(response.length == 0) {
-          $(".season-dropdown-list").append('<li><label class="dropdown-item season-list-item">No result found</label></li>')
+          $(".season-dropdown-list").append('<li><a href="#" class="dropdown-item season-list-item">No result found</a></li>')
         }
         else {
-          $(".season-dropdown-list").append('<li><label class="dropdown-item season-list-item">Select Supplier</label></li>')
+          $(".season-dropdown-list").append('<li><a href="#" class="dropdown-item season-list-item">Select Supplier</a></li>')
           $.each(response,function() {
-            $(".season-dropdown-list").append('<li><label class="dropdown-item season-list-item">'+ this.name +'</label></li>')
+            $(".season-dropdown-list").append('<li><a href="#" class="dropdown-item season-list-item">'+ this.name +'</a></li>')
           });
         }
       }
