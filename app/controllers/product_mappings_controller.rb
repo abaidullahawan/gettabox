@@ -1,7 +1,10 @@
 class ProductMappingsController < ApplicationController
+  include NewProduct
+
   before_action :authenticate_user!
   before_action :set_product_mapping, only: %i[ show update destroy ]
   before_action :refresh_token, only: %i[ index ]
+  before_action :new_product, :product_load_resources, only: %i[ index ]
 
   def index
     if params[:product_mapping] == 'Ebay Sandbox' || params[:mapped_status] == 'Unmapped'
@@ -22,18 +25,6 @@ class ProductMappingsController < ApplicationController
         @matching_products[item.id] = matching if matching.present?
       end
     end
-    new_product
-  end
-
-  def new_product
-    @product = Product.new
-    @product.barcodes.build
-    @product.product_suppliers.build
-    @product.multipack_products.build
-    @single_products = Product.where(product_type: 'single').map{|v| v.serializable_hash(only: [:id, :title]) }
-    @system_users = SystemUser.all.map{|v| v.serializable_hash(only: [:id, :name]) }
-    @categories = Category.all.map{|v| v.serializable_hash(only: [:id, :title]) }
-    @seasons = Season.all.map{|v| v.serializable_hash(only: [:id, :name]) }
   end
 
   def show
@@ -66,12 +57,8 @@ class ProductMappingsController < ApplicationController
     end
     if params[:commit] == 'Create'
       cd = ChannelProduct.find(params['channel_product_id'])
-      begin
-        @product = Product.new(product_mapping_params)
-      rescue NoMethodError
-        flash[:alert] = 'Product params not matched'
-        # redirect_to product_mappings_path(product_mapping: 'Ebay Sandbox')
-      end
+      @product = Product.new(product_mapping_params)
+      first_or_create_category
       if @product&.save
         ProductMapping.create(channel_product_id: cd.id, product_id: @product.id)
         url = URI.parse(cd.product_data['product']['imageUrls'].first)

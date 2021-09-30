@@ -110,6 +110,14 @@
                 </a>
 
                 <a
+                    class="nav-link <%= active_klass(order_dispatches_path) %>"
+                    href="<%= order_dispatches_path %>"
+                >
+                    <i data-feather="shopping-bag" class="icon"></i>
+                    <span class="title">Order Dispatch</span>
+                </a>
+
+                <a
                     class="nav-link <%= active_klass(extra_field_names_path) %>"
                     href="<%= extra_field_names_path %>"
                 >

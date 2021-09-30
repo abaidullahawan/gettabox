@@ -1,6 +1,7 @@
 class Category < ApplicationRecord
   acts_as_paranoid
   has_many :products
+  validates :title, presence: true
 
   def self.to_csv
     attributes = all.column_names
