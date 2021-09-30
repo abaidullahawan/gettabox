@@ -28,12 +28,12 @@ $(document).on('turbolinks:load', function () {
       success: function(response) {
         $(".supplier-name-list-item").remove()
         if(response.length == 0) {
-          $(".supplier-name-dropdown-list").append('<li><label class="dropdown-item supplier-name-list-item">No result found</label></li>')
+          $(".supplier-name-dropdown-list").append('<li><a href="#" class="dropdown-item supplier-name-list-item">No result found</a></li>')
         }
         else {
-          $(".supplier-name-dropdown-list").append('<li><label class="dropdown-item supplier-name-list-item">Select Supplier</label></li>')
+          $(".supplier-name-dropdown-list").append('<li><a href="#" class="dropdown-item supplier-name-list-item">Select Supplier</a></li>')
           $.each(response,function() {
-            $(".supplier-name-dropdown-list").append('<li><label class="dropdown-item supplier-name-list-item">'+ this.name +'</label></li>')
+            $(".supplier-name-dropdown-list").append('<li><a href="#" class="dropdown-item supplier-name-list-item">'+ this.name +'</a></li>')
           });
         }
       }
