@@ -3,7 +3,9 @@ class ProductsController < ApplicationController
   before_action :authenticate_user!
   before_action :find_product, only: [:edit, :update, :show, :destroy]
   before_action :load_resources, only: [:index, :new, :edit, :show, :create, :update]
+  before_action :get_field_names, only: [ :new, :create, :show, :index ]
   # before_action :attributes_for_filter, only: [:index]
+  skip_before_action :verify_authenticity_token, :only => [:create, :update]
 
   def index
     @q = Product.ransack(params[:q])
@@ -28,10 +30,18 @@ class ProductsController < ApplicationController
     @product.barcodes.build
     @product.product_suppliers.build
     @product.multipack_products.build
+    @product.extra_field_names.build
+    @product.build_extra_field_value
+    @pros = Product.all
   end
 
   def create
     @product = Product.new(product_params)
+    @product.build_extra_field_value
+    @product.extra_field_value.field_value = {} if @product.extra_field_value.field_value.nil?
+    @field_names.each do |field_name|
+      @product.extra_field_value.field_value["#{field_name}"] = params[:"#{field_name}"]
+    end
     @category_name = params[:category_name]
     @s_category = Category.where("lower(title) LIKE ?", "#{@category_name}").or(Category.where("title LIKE ?", "#{@category_name}")).first
     if @s_category.present?
@@ -59,11 +69,17 @@ class ProductsController < ApplicationController
   end
 
   def update
-    if @product.update(product_params)
+    if params[:product][:extra_field_value_attributes].present?
+      @product.extra_field_value.update(field_value: params[:product][:extra_field_value_attributes])
       flash[:notice] = "Updated successfully."
       redirect_to product_path(@product)
     else
-      render 'show'
+      if @product.update(product_params)
+        flash[:notice] = "Updated successfully."
+        redirect_to product_path(@product)
+      else
+        render 'show'
+      end
     end
   end
 
@@ -191,6 +207,11 @@ class ProductsController < ApplicationController
     @seasons = Season.all.map{|v| v.serializable_hash(only: [:id, :name]) }
   end
 
+  def get_field_names
+    @field_names = []
+    @field_names= ExtraFieldName.where(fieldnameable_type: "Product").pluck(:field_name)
+  end
+
   def product_params
     params.
     require(:product).
@@ -239,6 +260,15 @@ class ProductsController < ApplicationController
               :child_id,
               :quantity,
               :_destroy
+            ],
+            extra_field_names_attributes:
+            [ :id,
+              :field_name
+            ],
+            extra_field_value_attributes:
+            [
+              :id,
+              :field_value
             ]
     )
   end

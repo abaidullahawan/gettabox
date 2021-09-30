@@ -163,7 +163,7 @@ $(document).on('turbolinks:load', function () {
     if ((length != "") && (width != "") && (height != "") && (weight != "")) {
       $('.detail-form').addClass('d-none')
       $('.stock-form').removeClass('d-none')
-      $('.create_product_button').removeClass('d-none')
+      $('.create_product_button').addClass('d-none')
     }
     else {
       if (length == "") {
@@ -219,6 +219,36 @@ $(document).on('turbolinks:load', function () {
   $('.extra_button_previous').on('click', function () {
     $('.extra-form').addClass('d-none')
     $('.stock-form').removeClass('d-none')
+    $('.create_product_button').addClass('d-none')
+  })
+
+  $('.extra_feild').on('click', function(){
+    $('.stock-form').addClass('d-none')
+    $('.extra-field-form').removeClass('d-none')
+    $('.create_product_button').removeClass('d-none')
+  })
+
+
+  $('.extra_button_previous').on('click', function(){
+    var total_stock = $('input[name="product[total_stock]"]').val()
+    var vat = $('input[name="product[vat]"]').val()
+    var supplier = $('select[name="product[product_suppliers_attributes][1][system_user_id]"]').val()
+    if ((total_stock != "") && (vat != "") && (supplier != "")) {
+      $('.stock-form').removeClass('d-none')
+      $('.extra-field-form').addClass('d-none')
+      $('.create_product_button').addClass('d-none')
+    }
+    else {
+      if (total_stock == "") {
+        $('input[name="product[total_stock]"]').addClass('border border-danger');
+      }
+      if (vat == "") {
+        $('input[name="product[vat]"]').addClass('border border-danger');
+      }
+      if (supplier == "") {
+        $('select[name="product[product_suppliers_attributes][1][system_user_id]"]').addClass('border border-danger');
+      }
+    }
   })
 
   // $('#single-product-create-modal input[type="submit"]').on('click', function () {

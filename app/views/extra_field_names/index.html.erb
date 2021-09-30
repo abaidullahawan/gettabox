@@ -1,0 +1,30 @@
+<!-- Main Content Header -->
+<div class="main-content-header">
+    <h1>Extra Fields</h1>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a href="<%= dashboard_sales_path %>">Dashboard</a>
+        </li>
+        <li class="breadcrumb-item active">
+            <span class="active">Extra Fields</span>
+        </li>
+    </ol>
+</div>
+
+<%= render 'form', extra_field_name: @extra_field_name %>
+
+
+<div class="table-responsive">
+    <table class="table m-0 table-hover">
+    <tr>
+        <th>Field Name</th>
+        <th class="text-center">Field type</th>
+    </tr>
+    <% @extra_field_names&.each do |extra_field| %>
+        <tr>
+        <td><%= extra_field.field_name %></td>
+        <td class="text-center font-weight-bold"><%= extra_field.fieldnameable_type %></td>
+        </tr>
+    <% end %>
+    </table>
+</div>
