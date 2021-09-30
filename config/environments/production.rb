@@ -127,7 +127,7 @@ Rails.application.configure do
   config.action_mailer.smtp_settings = {
     :address              => "smtp.gmail.com",
     :port                 => 587,
-    :domain               => "channeldispatch.co.uk"
+    :domain               => "channeldispatch.co.uk",
     :user_name            => "email.from.devbox@gmail.com",
     :password             => "$devbox123$",
     :authentication       => "plain",
