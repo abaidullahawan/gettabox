@@ -1,4 +1,4 @@
-<% if @product.product_type_single? %>
+<% if @product.product_type_single? && @product.extra_field_value.present? %>
   <div class="notifications-card mb-30">
     <h5 class="noti-card-title">
       Extra Fields
