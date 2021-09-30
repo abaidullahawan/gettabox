@@ -114,8 +114,8 @@
                             <%#= f.submit 'Create', data: { disable_with: false }, class: "dropdown-item" if params['mapped_status'] != 'Mapped'%>
                             <%= f.submit 'Map', data: { disable_with: false }, class: "dropdown-item" if params['mapped_status'] != 'Mapped'%>
                             <%= link_to 'Archive', '', class: "dropdown-item"%>
-                            <a class="dropdown-item create-single-product" data-id="<%= item.id %>" data-item = '<%= item.to_json.html_safe %>' >Create Single Pack</a>
-                            <a class="dropdown-item create-multi-product" data-id="<%= item.id %>" data-item = '<%= item.to_json.html_safe %>' >Create Multi Pack</a>
+                            <a type="button" class="dropdown-item create-single-product" data-id="<%= item.id %>" data-item = '<%= item.to_json.html_safe %>' >Create Single Pack</a>
+                            <a type="button" class="dropdown-item create-multi-product" data-id="<%= item.id %>" data-item = '<%= item.to_json.html_safe %>' >Create Multi Pack</a>
                           </div>
                         </div>
                       </td>
