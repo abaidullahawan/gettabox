@@ -123,6 +123,7 @@ Rails.application.configure do
   config.action_mailer.default_url_options = { host: "channeldispatch.co.uk", protocol: "http" }
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.perform_deliveries = true
+  # SMTP settings for gmail
   config.action_mailer.smtp_settings = {
     :address              => "smtp.gmail.com",
     :port                 => 587,
