@@ -11,15 +11,22 @@ class PurchaseDeliveriesController < ApplicationController
   end
 
   def new
-    @purchase_delivery = PurchaseDelivery.new
-    @purchase_delivery.purchase_delivery_details.build
     @purchase_order = PurchaseOrder.find(params[:purchase_order_id])
-    @purchase_order_details = @purchase_order.purchase_order_details
+    if @purchase_order.order_status == "completed"
+      flash[:notice] = "Order Delivery is already completed."
+      redirect_to purchase_order_path(@purchase_order)
+    else
+      @purchase_order_details = @purchase_order.purchase_order_details
+      @purchase_delivery = PurchaseDelivery.new
+      @purchase_delivery.purchase_delivery_details.build
+    end
   end
 
   def create
     @purchase_delivery = PurchaseDelivery.new(purchase_delivery_params)
     if @purchase_delivery.save
+      @p_order = PurchaseOrder.find(@purchase_delivery.purchase_order_id)
+      @p_order.update(order_status: params[:order_status])
       flash[:notice] = "Order Delivered Successfully."
       redirect_to purchase_order_path(@purchase_delivery.purchase_order_id)
     else
@@ -36,12 +43,17 @@ class PurchaseDeliveriesController < ApplicationController
   end
 
   def update
-    if @purchase_delivery.update(purchase_delivery_params)
-      flash[:notice] = "Order Delivery updated successfully."
+    if @purchase_delivery.purchase_order.order_status == "completed"
+      flash[:notice] = "Order Delivery is already completed."
       redirect_to purchase_delivery_path(@purchase_delivery)
     else
-      flash.now[:notice] = "Order Delivery not updated."
-      render 'show'
+      if @purchase_delivery.update(purchase_delivery_params)
+        flash[:notice] = "Order Delivery updated successfully."
+        redirect_to purchase_delivery_path(@purchase_delivery)
+      else
+        flash.now[:notice] = "Order Delivery not updated."
+        render 'show'
+      end
     end
   end
 

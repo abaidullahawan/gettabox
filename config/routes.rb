@@ -49,6 +49,7 @@ Rails.application.routes.draw do
       post 'bulk_method', to: 'purchase_orders#bulk_method'
       get 'archive', to: 'purchase_orders#archive'
       post 'restore', to: 'purchase_orders#restore'
+      post 'send_email', to: 'purchase_orders#send_mail_to_supplier'
     end
   end
 

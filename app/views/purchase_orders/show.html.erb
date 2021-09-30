@@ -15,15 +15,17 @@
   <div class="col-xl-12">
     <div class="card mb-30">
       <div class="card-body">
-          <div class="card-header">
         <%= form_for @purchase_order, url: purchase_order_path(@purchase_order)  do |pd| %>
-                <%= link_to "Edit Order", edit_purchase_order_path, class:"btn btn-primary float-right ml-1", type:"button", style: "color: white" %>
-                <%= link_to "Book Input", new_purchase_delivery_path(purchase_order_id: @purchase_order.id), class: "btn btn-primary float-right ml-1", type: "button" %>
-                <%= link_to "Export", purchase_order_path(format: :csv, single_csv: true), class: 'btn btn-primary float-right ml-1', type: "button" %>
-              <button class="btn btn-primary float-right ml-1" type="button" >
-                Get Logs
-              </button>
-                <%= link_to "PDF", purchase_order_path(format: :pdf), class:"btn btn-primary float-right ml-1", type:"button",style: "color: white" %>
+          <div class="card-header">
+            <%= link_to "Edit Order", edit_purchase_order_path, class:"btn btn-primary float-right ml-1", type:"button", style: "color: white" %>
+            <%= link_to "Book Input", new_purchase_delivery_path(purchase_order_id: @purchase_order.id), class: "btn btn-primary float-right ml-1", type: "button" %>
+            <%= link_to "Export", purchase_order_path(format: :csv, single_csv: true), class: 'btn btn-primary float-right ml-1', type: "button" %>
+            <button class="btn btn-primary float-right ml-1" type="button" >
+              Get Logs
+            </button>
+            <%= link_to "PDF", purchase_order_path(format: :pdf), class:"btn btn-primary float-right ml-1", type:"button",style: "color: white" %>
+            <%= link_to "Send Email", send_email_purchase_orders_path(p: @purchase_order), method: :post, class:"btn btn-primary float-right ml-1", type:"button",style: "color: white" %>
+            
             <h5 class="card-title"> Show</h5>
           </div>
 
@@ -36,24 +38,9 @@
                 <p class="col-8"><%= @purchase_order&.system_user&.name %></p>
                 <h5 class="fs-14 mb-1 col-4">Estimated Delivery Date</h5>
                 <p class="col-8"><%= @purchase_order&.system_user&.days_for_completion_to_delivery %> Day/Days</p>
-                <h5 class="fs-14 mb-1 col-4">Payment Method</h5>
-                <p class="col-8"><%= @purchase_order&.system_user&.payment_method %></p>
                 <h5 class="fs-14 mb-1 col-4">Order Status</h5>
-                <p class="col-8"><%=  %></p>
+                <p class="col-8"><%= @purchase_order&.order_status&.capitalize %></p>
                 <br><br>
-                <!--
-                <h5 class="fs-14 mb-1 col-4">Invoice Address</h5>
-                <p class="col-8"><%#= @purchase_order&.invoice_address%> 
-                <button type="button" class="btn btn-primary btn-xs ml-4" data-toggle="modal" data-target="#exampleModalCenter">
-                  Edit
-                </button></p>
-                <br>
-                <h5 class="fs-14 mb-1 col-4">Delivery Address</h5>
-                <p class="col-8"><%#= @purchase_order&.delivery_address%>
-                <button type="button" class="btn btn-primary btn-xs ml-4" data-toggle="modal" data-target="#exampleModalCenter2">
-                  Edit
-                </button></p>
-                -->
               </div>
             </div>
             <div class='col-6'>
@@ -62,14 +49,22 @@
                 <p class="col-8"><%= @purchase_order.created_at.strftime('%d-%m-%y') %></p>
                 <h5 class="fs-14 mb-1 col-4">Delivery Method</h5>
                 <p class="col-8"><%= @purchase_order&.system_user&.delivery_method.present? ? @purchase_order.system_user.delivery_method : 'Not Specified' %></p>
-                <h5 class="fs-14 mb-1 col-4">Order Deliverd?</h5>
-                <p class="col-8"><%=  %>Yes/No</p>
-                <h5 class="fs-14 mb-1 col-4">Order Completed?</h5>
-                <p class="col-8"><%=  %>Yes/No</p>
+                <h5 class="fs-14 mb-1 col-4">Payment Method</h5>
+                <p class="col-8"><%= @purchase_order&.system_user&.payment_method&.capitalize %></p>
+                <% if @purchase_order&.system_user&.payment_method&.capitalize == "Debit" %>
+                  <h5 class="fs-14 mb-1 col-4">Unpaid / Paid</h5>
+                  <div class='col-8'>
+                    <label class="switch">
+                      <input type="checkbox" class="payment_method">
+                      <span class="slider round"></span>
+                      <%= pd.hidden_field :payment_method, class: 'payment_method_value' %>
+                    </label>
+                  </div>
+                <% end %>
               </div>
             </div>
           </div>
-          
+
           <br>
           <div class="row">
             <div class="col-lg-12">
@@ -135,37 +130,38 @@
         <% end %>
         <br>
         <br>
-    <!-- Delivery Data -->
-    <% if @deliveries.present? %>
-    <h2>Delivery Details</h2>
-    <div class="row">
-        <div class="col-lg-12">
-          <div class="faq-accordion mb-30">
-            <div class="table-responsive accordion-content">
-              <table class="table table-hover text-vertical-middle mb-0">
-                <thead class="bort-none borpt-0">
-                  <tr>
-                    <th scope="col"><strong>Purchase Delivery Id</strong></th>
-                    <th scope="col"><strong>Purchase Order Id</strong></th>
-                    <th scope="col"><strong>Total Bill</strong></th>
-                    <th scope="col"><strong>Created At</strong></th>
-                  </tr>
-                </thead>
-                <tbody>
-                    <% @deliveries.each do |delivery|%>
+        <!-- Delivery Data -->
+        <% if @deliveries.present? %>
+          <h2>Delivery Details</h2>
+          <div class="row">
+            <div class="col-lg-12">
+              <div class="faq-accordion mb-30">
+                <div class="table-responsive accordion-content">
+                  <table class="table table-hover text-vertical-middle mb-0">
+                    <thead class="bort-none borpt-0">
                       <tr>
-                      <td><%= delivery.id%></td>
-                      <td><%= delivery.purchase_order_id%></td>
-                      <td><%= delivery.total_bill%></td>
-                      <td><%= delivery.created_at.strftime("%d/ %m/ %Y")%>
+                        <th scope="col"><strong>Purchase Delivery Id</strong></th>
+                        <th scope="col"><strong>Purchase Order Id</strong></th>
+                        <th scope="col"><strong>Total Bill</strong></th>
+                        <th scope="col"><strong>Created At</strong></th>
                       </tr>
-                    <% end %>
-                </tbody>
-              </table>
+                    </thead>
+                    <tbody>
+                      <% @deliveries.each do |delivery|%>
+                        <tr>
+                        <td><%= delivery.id%></td>
+                        <td><%= delivery.purchase_order_id%></td>
+                        <td><%= delivery.total_bill%></td>
+                        <td><%= delivery.created_at.strftime("%d/ %m/ %Y")%>
+                        </tr>
+                      <% end %>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
             </div>
-            <% end %>
-            <!-- End Deliveries -->
           </div>
+        <% end %>
       </div>
     </div>
   </div>
