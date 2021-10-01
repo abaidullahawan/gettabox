@@ -12,100 +12,64 @@
 
 <div class="row">
   <div class="col-lg-3 col-sm-6">
-    <div class="stats-card-two mb-30">
+    <div class="stats-card-two hover-card mb-30">
       <div class="media align-items-center justify-content-between">
         <div class="ml-0">
-          <p class="mb-10 line-height-1"><a href="<%= products_path %>" class="link_tag">Products</a></p>
-          <h3 class="mb-0 fs-25"><%= @total_counts[:products_count] %></h3>
+          <a href="<%= products_path %>" class="link_tag">
+            <p class="mb-10 line-height-1">Total Products</p>
+            <h3 class="mb-0 fs-25"><%= @total_counts[:products_count] %></h3>
+          </a>
         </div>
-        <div class="avatar avatar-blue radius-0">
-          <a href="<%= products_path %>" class="link_tag"><i data-feather="grid"></i></a>
-        </div>
-      </div>
-      <div class="mt-15">
-        <div class="d-flex justify-content-between">
-          <div class="d-flex align-items-center">
-            <span>Monthly Goal</span>
-          </div>
-          <span class="fw-600">70%</span>
-        </div>
-        <div class="progress progress-sm mt-1">
-          <div class="progress-bar bg-primary" style="width: 70%"></div>
+        <div class="avatar avatar-gold ">
+          <a href="<%= products_path %>" class="link_tag"><i data-feather="shopping-bag"></i></a>
         </div>
       </div>
     </div>
   </div>
 
   <div class="col-lg-3 col-sm-6">
-    <div class="stats-card-two mb-30">
+    <div class="stats-card-two hover-card mb-30">
       <div class="media align-items-center justify-content-between">
         <div class="ml-0">
-          <p class="mb-10 line-height-1"><a href="<%= system_users_path %>" class="link_tag">Suppliers</a></p>
-          <h3 class="mb-0 fs-25"><%= @total_counts[:suppliers_count] %></h3>
+          <a href="<%= system_users_path %>" class="link_tag">
+            <p class="mb-10 line-height-1">Total Suppliers</p>
+            <h3 class="mb-0 fs-25"><%= @total_counts[:suppliers_count] %></h3>
+          </a>
         </div>
-        <div class="avatar avatar-purple radius-0">
+        <div class="avatar avatar-purple ">
           <a href="<%= system_users_path %>" class="link_tag"><i data-feather="users"></i></a>
         </div>
       </div>
-      <div class="mt-15">
-        <div class="d-flex justify-content-between">
-          <div class="d-flex align-items-center">
-            <span>Monthly Goal</span>
-          </div>
-          <span class="fw-600">45%</span>
-        </div>
-        <div class="progress progress-sm mt-1">
-          <div class="progress-bar bg-purple" style="width: 45%"></div>
-        </div>
-      </div>
     </div>
   </div>
 
   <div class="col-lg-3 col-sm-6">
-    <div class="stats-card-two mb-30">
+    <div class="stats-card-two hover-card mb-30">
       <div class="media align-items-center justify-content-between">
         <div class="ml-0">
-          <p class="mb-10 line-height-1"><a href="<%= purchase_orders_path %>" class="link_tag">Purchase Orders</a></p>
-          <h3 class="mb-0 fs-25"><%= @total_counts[:purchase_orders_count] %></h3>
+          <a href="<%= purchase_orders_path %>" class="link_tag">
+            <p class="mb-10 line-height-1">Total Purchase Orders</p>
+            <h3 class="mb-0 fs-25"><%= @total_counts[:purchase_orders_count] %></h3>
+          </a>
         </div>
-        <div class="avatar avatar-cyan radius-0">
+        <div class="avatar avatar-blue ">
           <a href="<%= purchase_orders_path %>" class="link_tag"><i data-feather="file-text"></i></a>
         </div>
       </div>
-      <div class="mt-15">
-        <div class="d-flex justify-content-between">
-          <div class="d-flex align-items-center">
-            <span>Monthly Goal</span>
-          </div>
-          <span class="fw-600">60%</span>
-        </div>
-        <div class="progress progress-sm mt-1">
-          <div class="progress-bar bg-success" style="width: 60%"></div>
-        </div>
-      </div>
     </div>
   </div>
 
   <div class="col-lg-3 col-sm-6">
-    <div class="stats-card-two mb-30">
+    <div class="stats-card-two hover-card mb-30">
       <div class="media align-items-center justify-content-between">
         <div class="ml-0">
-          <p class="mb-10 line-height-1"><a href="<%= purchase_deliveries_path %>" class="link_tag">Purchase Deliveries</a></p>
-          <h3 class="mb-0 fs-25"><%= @total_counts[:purchase_deliveries_count] %></h3>
+          <a href="<%= purchase_deliveries_path %>" class="link_tag">
+            <p class="mb-10 line-height-1">Total Purchase Deliveries</p>
+            <h3 class="mb-0 fs-25"><%= @total_counts[:purchase_deliveries_count] %></h3>
+          </a>
         </div>
-        <div class="avatar avatar-cyan radius-0">
+        <div class="avatar avatar-cyan ">
           <a href="<%= purchase_deliveries_path %>" class="link_tag"><i data-feather="file-text"></i></a>
-        </div>
-      </div>
-      <div class="mt-15">
-        <div class="d-flex justify-content-between">
-          <div class="d-flex align-items-center">
-            <span>Monthly Goal</span>
-          </div>
-          <span class="fw-600">60%</span>
-        </div>
-        <div class="progress progress-sm mt-1">
-          <div class="progress-bar bg-success" style="width: 60%"></div>
         </div>
       </div>
     </div>
