@@ -46,10 +46,12 @@
               </div>
             </div>
             <div class="col-md-2"><br>
-              <%= f.search_field :name_cont, class: 'form-control dropdown-toggle', id: 'supplier-name-search', data: {toggle: 'dropdown'}, area: {haspopup: true, expanded: 'false'}, autocomplete: 'off', placeholder:"Search in Name", title: 'Search in Name' %>
-              <ul class="dropdown-menu supplier-name-dropdown-list search-list" aria-labelledby="supplier-name-search">
-                <li><a href="#" class="dropdown-item supplier-name-list-item">Select Supplier</a></li>
-              </ul>
+              <div class="dropdown">
+                <%= f.search_field :name_cont, class: 'form-control dropdown-toggle', id: 'supplier-name-search', data: {toggle: 'dropdown'}, area: {haspopup: true, expanded: 'false'}, autocomplete: 'off', placeholder:"Search in Name", title: 'Search in Name' %>
+                <ul class="dropdown-menu supplier-name-dropdown-list search-list" aria-labelledby="supplier-name-search">
+                  <li><a href="#" class="dropdown-item supplier-name-list-item">Select Supplier</a></li>
+                </ul>
+              </div>
             </div>
             <div class="col-md-2"><br>
               <%= f.select :payment_method_eq, SystemUser.payment_methods.map { |key, value| [key.humanize, value] }, {include_blank: 'Select an option'}, class:"form-control payment-method-field chosen-select d-none", title: 'Select Payment Type' %>

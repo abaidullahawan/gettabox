@@ -21,7 +21,7 @@ $(document).on('turbolinks:load', function () {
 
   $('#supplier-name-search').on('keyup', function () {
     var supplier_name = this.value
-    $(".supplier-name-dropdown-list").show()
+    $('.supplier-name-dropdown-list').show();
     $.ajax({
       url: "/system_users/system_user_by_name",
       type: "POST",
@@ -42,11 +42,9 @@ $(document).on('turbolinks:load', function () {
 
   $('.supplier-name-dropdown-list').on('click', '.supplier-name-list-item', function () {
     $('#supplier-name-search').val(this.outerText)
-    $('#system_user_search').submit();
-  })
-
-  $('#supplier-name-search').on('blur', function () {
-    $(".supplier-name-dropdown-list").hide()
+    $('.supplier-name-dropdown-list').hide();
+    $('#supplier-name-search').focus();
+    return false
   })
 
 })
