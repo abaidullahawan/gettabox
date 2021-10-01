@@ -37,10 +37,12 @@
               </div>
             </div>
             <div class="col-md-2"><br>
-              <%= f.search_field :title_cont, class: 'form-control dropdown-toggle', id: 'category-title-search', data: {toggle: 'dropdown'}, area: {haspopup: true, expanded: 'false'}, autocomplete: 'off', placeholder:"Search in title" %>
-              <ul class="dropdown-menu category-dropdown-list" aria-labelledby="category-title-search">
-                <li><a href="#" class="dropdown-item category-list-item">Select Category</a></li>
-              </ul>
+              <div class="dropdown">
+                <%= f.search_field :title_cont, class: 'form-control dropdown-toggle', id: 'category-title-search', data: {toggle: 'dropdown'}, area: {haspopup: true, expanded: 'false'}, autocomplete: 'off', placeholder:"Search in title" %>
+                <ul class="dropdown-menu category-dropdown-list" aria-labelledby="category-title-search">
+                  <li><a href="#" class="dropdown-item category-list-item">Select Category</a></li>
+                </ul>
+              </div>
             </div>
             <div class='col-1 offset-8'>
               <label for="inputState">Per Page</label>

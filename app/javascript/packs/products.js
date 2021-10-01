@@ -8,9 +8,10 @@ $(document).ready(function () {
 
 $(document).on('turbolinks:load', function () {
 
-  $('#product-title-search').on('keyup', function () {
-    $(".product-dropdown-list").show()
+  $('#product-title-search').on('keyup click', function () {
     var product_title = this.value
+    $(".product-sku-dropdown-list").hide()
+    $(".product-dropdown-list").show()
     $.ajax({
       url: "/products/products_by_title",
       type: "POST",
@@ -30,16 +31,15 @@ $(document).on('turbolinks:load', function () {
   })
 
   $('.product-dropdown-list').on('click', '.product-list-item', function () {
+    $('.product-dropdown-list').hide()
+    $('#product-title-search').focus()
     $('#product-title-search').val(this.outerText)
-    $('#product_search').submit();
+    return false
   })
 
-  $('#product-title-search').on('blur', function () {
-    $(".product-dropdown-list").hide()
-  })
-
-  $('#product-sku-search').on('keyup', function () {
+  $('#product-sku-search').on('keyup click', function () {
     var product_sku = this.value
+    $(".product-dropdown-list").hide()
     $(".product-sku-dropdown-list").show()
     $.ajax({
       url: "/products/products_by_sku",
@@ -60,17 +60,15 @@ $(document).on('turbolinks:load', function () {
   })
 
   $('.product-sku-dropdown-list').on('click', '.product-sku-list-item', function () {
+    $('.product-sku-dropdown-list').hide()
+    $('#product-sku-search').focus()
     $('#product-sku-search').val(this.outerText)
-    $('#product_search').submit();
-  })
-
-  $('#product-sku-search').on('blur', function () {
-    $(".product-sku-dropdown-list").hide()
+    return false
   })
 
   $('#category-title-search').on('keyup', function () {
     var category_title = this.value
-    $('.category-dropdown-list').show();
+    $(".category-dropdown-list").show()
     $.ajax({
       url: "/products/check_category",
       type: "POST",
@@ -94,10 +92,6 @@ $(document).on('turbolinks:load', function () {
     $('#category-title-search').val(this.outerText);
     $('.category-dropdown-list').hide();
     return false;
-  })
-
-  $('#category-title-search').on('blur', function () {
-    $(".category-dropdown-list").hide()
   })
 
   $('input, select').on('click', function () {

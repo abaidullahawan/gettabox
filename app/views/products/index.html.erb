@@ -68,26 +68,34 @@
                 <a class="dropdown-item" href='#' data-toggle="modal" data-target='#archive-modal'>Archive</a>
               </div>
             </div>
-            <div class="col-md-2 dropdown"><br>
-              <%= f.search_field :title_cont, class: 'form-control dropdown-toggle', id: 'product-title-search', data: {toggle: 'dropdown'}, area: {haspopup: true, expanded: 'false'}, autocomplete: 'off', placeholder:"Search in Title" %>
-              <ul class="dropdown-menu product-dropdown-list search-list" aria-labelledby="product-title-search">
-                <li><label class="dropdown-item product-list-item">Select the Product</label></li>
-              </ul>
+            <div class="col-md-3"><br>
+              <div class="dropdown">
+                <%= f.search_field :title_cont, class: 'form-control dropdown-toggle', id: 'product-title-search', data: {toggle: 'dropdown'}, autocomplete: 'off', placeholder:"Search in Title" %>
+                <ul class="dropdown-menu product-dropdown-list search-list" aria-labelledby="product-title-search">
+                  <li><label class="dropdown-item product-list-item">Select the Product</label></li>
+                </ul>
+              </div>
             </div>
-            <div class="col-md-2"><br>
-              <%= f.search_field :sku_cont, class: 'form-control dropdown-toggle', id: 'product-sku-search', data: {toggle: 'dropdown'}, area: {haspopup: true, expanded: 'false'}, autocomplete: 'off', placeholder:"Search in Sku" %>
-              <ul class="dropdown-menu product-sku-dropdown-list search-list" aria-labelledby="product-sku-search">
-                <li><a href="#" class="dropdown-item product-sku-list-item">Select Product SKU</a></li>
-              </ul>
+            <div class="col-md-3"><br>
+              <div class="dropdown">
+                <%= f.search_field :sku_cont, class: 'form-control dropdown-toggle', id: 'product-sku-search', data: {toggle: 'dropdown'}, area: {haspopup: true, expanded: 'false'}, autocomplete: 'off', placeholder:"Search in Sku" %>
+                <ul class="dropdown-menu product-sku-dropdown-list search-list" aria-labelledby="product-sku-search">
+                  <li><a href="#" class="dropdown-item product-sku-list-item">Select Product SKU</a></li>
+                </ul>
+              </div>
             </div>
-            <div class="col-md-2"><br>
+            <div class="col-md-3"><br>
               <%= f.select :product_type_eq, Product.product_types.map { |key, value| [key.humanize, value] }, {include_blank: 'Select an option'}, class:"form-control product-type-field chosen-select", title: 'Select Product Type' %>
             </div>
-            <button type='submit' class='d-none product_type_submit'>
-            <div class='col-md-1 offset-2'>
-              <label for="inputState">Per Page</label>
-              <%= select_tag :limit, options_for_select([5, 10, 15, 20], selected: params[:limit] || 10), id: 'change_per_page', class: 'form-control' %>
-              <button type="submit" id="per_page_submit" hidden="hidden"></button>
+            <div class=' col-md-1'>
+              <button type='submit' class='product_type_submit btn btn-primary mt-4'>Search</button>
+            </div>
+            <div class='col-md-1'>
+              <div class='float-right'>
+                <label for="inputState">Per Page</label>
+                <%= select_tag :limit, options_for_select([5, 10, 15, 20], selected: params[:limit] || 10), id: 'change_per_page', class: 'form-control' %>
+                <button type="submit" id="per_page_submit" hidden="hidden"></button>
+              </div>
             </div>
           </div><br>
         <% end %>
