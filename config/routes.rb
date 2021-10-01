@@ -74,6 +74,7 @@ Rails.application.routes.draw do
   end
 
   get '/home', to: 'home#dashboard'
+  get '/settings', to: 'settings#index'
 
   resources :product_mappings
   resources :extra_field_names
