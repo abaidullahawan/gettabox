@@ -3,6 +3,7 @@ import $ from 'jquery'
 $(document).on('turbolinks:load', function () {
   $('#season-name-search').on('keyup', function () {
     var season_name = this.value
+    $(".season-dropdown-list").show()
     $.ajax({
       url: "/seasons/season_by_name",
       type: "POST",
@@ -25,5 +26,9 @@ $(document).on('turbolinks:load', function () {
   $('.season-dropdown-list').on('click', '.season-list-item', function () {
     $('#season-name-search').val(this.outerText)
     $('#season_search').submit();
+  })
+
+  $('#season-name-search').on('blur', function () {
+    $(".season-dropdown-list").hide()
   })
 })

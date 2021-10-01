@@ -9,6 +9,7 @@ $(document).ready(function () {
 $(document).on('turbolinks:load', function () {
 
   $('#product-title-search').on('keyup', function () {
+    $(".product-dropdown-list").show()
     var product_title = this.value
     $.ajax({
       url: "/products/products_by_title",
@@ -20,7 +21,6 @@ $(document).on('turbolinks:load', function () {
           $(".product-dropdown-list").append('<li><a href="#" class="dropdown-item product-list-item">No result found</a></li>')
         }
         else {
-          $(".product-dropdown-list").append('<li><a href="#" class="dropdown-item product-list-item">Select the Product</a></li>')
           $.each(response,function() {
             $(".product-dropdown-list").append('<li><a href="#" class="dropdown-item product-list-item">'+ this.title +'</a></li>')
           });
@@ -34,8 +34,13 @@ $(document).on('turbolinks:load', function () {
     $('#product_search').submit();
   })
 
+  $('#product-title-search').on('blur', function () {
+    $(".product-dropdown-list").hide()
+  })
+
   $('#product-sku-search').on('keyup', function () {
     var product_sku = this.value
+    $(".product-sku-dropdown-list").show()
     $.ajax({
       url: "/products/products_by_sku",
       type: "POST",
@@ -46,7 +51,6 @@ $(document).on('turbolinks:load', function () {
           $(".product-sku-dropdown-list").append('<li><a href="#" class="dropdown-item product-sku-list-item">No result found</a></li>')
         }
         else {
-          $(".product-sku-dropdown-list").append('<li><a href="#" class="dropdown-item product-sku-list-item">Select the Product</a></li>')
           $.each(response,function() {
             $(".product-sku-dropdown-list").append('<li><a href="#" class="dropdown-item product-sku-list-item">'+ this.sku +'</a></li>')
           });
@@ -60,8 +64,13 @@ $(document).on('turbolinks:load', function () {
     $('#product_search').submit();
   })
 
+  $('#product-sku-search').on('blur', function () {
+    $(".product-sku-dropdown-list").hide()
+  })
+
   $('#category-title-search').on('keyup', function () {
     var category_title = this.value
+    $('.category-dropdown-list').show();
     $.ajax({
       url: "/products/check_category",
       type: "POST",
@@ -72,7 +81,6 @@ $(document).on('turbolinks:load', function () {
           $(".category-dropdown-list").append('<li><label class="dropdown-item category-list-item">No result found</label></li>')
         }
         else {
-          $(".category-dropdown-list").append('<li><label class="dropdown-item category-list-item">Select the Category</label></li>')
           $.each(response,function() {
             $(".category-dropdown-list").append('<li><label class="dropdown-item category-list-item" value='+this.title+'">'+ this.title +'</label></li>')
           });
@@ -84,7 +92,12 @@ $(document).on('turbolinks:load', function () {
 
   $('.category-dropdown-list').on('click', '.category-list-item', function () {
     $('#category-title-search').val(this.outerText);
+    $('.category-dropdown-list').hide();
     return false;
+  })
+
+  $('#category-title-search').on('blur', function () {
+    $(".category-dropdown-list").hide()
   })
 
   $('input, select').on('click', function () {

@@ -3,6 +3,7 @@ import $ from 'jquery'
 $(document).on('turbolinks:load', function () {
   $('#category-title-search').on('keyup', function () {
     var category_title = this.value
+    $(".category-dropdown-list").show()
     $.ajax({
       url: "/categories/category_by_title",
       type: "POST",
@@ -13,7 +14,6 @@ $(document).on('turbolinks:load', function () {
           $(".category-dropdown-list").append('<li><a href="#" class="dropdown-item category-list-item">No result found</a></li>')
         }
         else {
-          $(".category-dropdown-list").append('<li><a href="#" class="dropdown-item category-list-item">Select Supplier</a></li>')
           $.each(response,function() {
             $(".category-dropdown-list").append('<li><a href="#" class="dropdown-item category-list-item">'+ this.title +'</a></li>')
           });
@@ -26,4 +26,9 @@ $(document).on('turbolinks:load', function () {
     $('#category-title-search').val(this.outerText)
     $('#category_search').submit();
   })
+
+  $('#category-title-search').on('blur', function () {
+    $(".category-dropdown-list").hide()
+  })
+
 })

@@ -20,6 +20,7 @@
               <p class="fs-14"><strong>Product SKU: </strong><%= @product.sku %></p>
               <p class="fs-14"><strong>Product Category: </strong><%= @product.category.title if @product.category.present? %></p>
               <p class="fs-14"><strong>Product Description: </strong><%= @product.description %></p>
+              <p class="fs-14"><strong>Product Type: </strong><%= @product.product_type.capitalize %></p>
             </div>
           </div>
         </div>

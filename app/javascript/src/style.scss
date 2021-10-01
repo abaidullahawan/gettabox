@@ -78,9 +78,11 @@ input:checked + .slider:before {
 .search-list {
   max-height: 300px;
   overflow: auto;
+  width: 85%;
 }
 
 .category-dropdown-list {
   max-height: 100px;
   overflow: auto;
+  width: 100%;
 }
