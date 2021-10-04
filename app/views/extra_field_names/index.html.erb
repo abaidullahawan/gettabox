@@ -23,7 +23,7 @@
     <% @extra_field_names&.each do |extra_field| %>
         <tr>
         <td><%= extra_field.field_name %></td>
-        <td class="text-center font-weight-bold"><%= extra_field.fieldnameable_type %></td>
+        <td class="text-center font-weight-bold"><%= extra_field.table_name %></td>
         </tr>
     <% end %>
     </table>

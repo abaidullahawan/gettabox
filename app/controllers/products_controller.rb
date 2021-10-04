@@ -30,7 +30,6 @@ class ProductsController < ApplicationController
     @product.barcodes.build
     @product.product_suppliers.build
     @product.multipack_products.build
-    @product.extra_field_names.build
     @product.build_extra_field_value
     @pros = Product.all
   end
@@ -209,7 +208,7 @@ class ProductsController < ApplicationController
 
   def get_field_names
     @field_names = []
-    @field_names= ExtraFieldName.where(fieldnameable_type: "Product").pluck(:field_name)
+    @field_names= ExtraFieldName.where(table_name: "Product").pluck(:field_name)
   end
 
   def product_params
@@ -260,10 +259,6 @@ class ProductsController < ApplicationController
               :child_id,
               :quantity,
               :_destroy
-            ],
-            extra_field_names_attributes:
-            [ :id,
-              :field_name
             ],
             extra_field_value_attributes:
             [

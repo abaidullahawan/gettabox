@@ -7,11 +7,6 @@ class ExtraFieldNamesController < ApplicationController
 
     def create
         @extra_field_name = ExtraFieldName.new(extra_field_name_params)
-        if @extra_field_name.fieldnameable_type == "Product"
-            @extra_field_name.fieldnameable_id  = 1
-        else
-            @extra_field_name.fieldnameable_id  = 2
-        end
         respond_to do |format|
         if @extra_field_name.save
             format.html { redirect_to extra_field_names_path, notice: "Extra Field successfully created." }
@@ -26,6 +21,6 @@ class ExtraFieldNamesController < ApplicationController
     private
 
     def extra_field_name_params
-      params.require(:extra_field_name).permit(:field_name, :fieldnameable_type)
+      params.require(:extra_field_name).permit(:field_name, :table_name)
     end
 end

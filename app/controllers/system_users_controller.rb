@@ -2,32 +2,40 @@ class SystemUsersController < ApplicationController
 
   before_action :authenticate_user!
   before_action :find_system_user, only: [:show, :edit, :update, :destroy]
+  before_action :get_field_names, only: [ :new, :create, :show, :index, :update ]
   before_action :new, only: [ :index ]
+  skip_before_action :verify_authenticity_token, :only => [:create, :update]
   def index
     @q = SystemUser.where(user_type: 'supplier').ransack(params[:q])
     @system_users = @q.result(distinct: true).order(created_at: :desc).page(params[:page]).per(params[:limit])
     @purchase_orders = PurchaseOrder.all
     if params[:export_csv].present?
-      export_csv(@system_users) if params[:export_csv].present?
+      export_csv(@system_users)
     else
       respond_to do |format|
-      format.html
-      format.pdf do
-        render  :pdf => "file.pdf", 
-                :viewport_size => '1280x1024',
-                :template => 'system_users/index.pdf.erb'
+        format.html
+        format.pdf do
+          render  :pdf => "file.pdf", 
+                  :viewport_size => '1280x1024',
+                  :template => 'system_users/index.pdf.erb'
+        end
       end
-    end
     end
   end
 
   def new
     @system_user = SystemUser.new
     @user_address = @system_user.build_address
+    @system_user.build_extra_field_value
   end
 
   def create
     @system_user = SystemUser.new(system_user_params)
+    @system_user.build_extra_field_value
+    @system_user.extra_field_value.field_value = {} if @system_user.extra_field_value.field_value.nil?
+    @field_names.each do |field_name|
+      @system_user.extra_field_value.field_value["#{field_name}"] = params[:"#{field_name}"]
+    end
     if @system_user.save
       @system_user.update(user_type: 'supplier')
       flash[:notice] = "Supplier created successfully."
@@ -45,6 +53,10 @@ class SystemUsersController < ApplicationController
   end
 
   def update
+    @system_user.extra_field_value.field_value = {} if @system_user.extra_field_value.field_value.nil?
+    @field_names.each do |field_name|
+      @system_user.extra_field_value.field_value["#{field_name}"] = params[:"#{field_name}"]
+    end
     if @system_user.update(system_user_params)
       @system_user.update(user_type: 'supplier')
       flash[:notice] = "Supplier updated successfully."
@@ -147,6 +159,11 @@ class SystemUsersController < ApplicationController
       @system_user = SystemUser.find(params[:id])
     end
 
+    def get_field_names
+      @field_names = []
+      @field_names= ExtraFieldName.where(table_name: "SystemUser").pluck(:field_name)
+    end
+
     def system_user_params
       params.require(:system_user).permit(:user_type, :name, :photo, :payment_method, :days_for_payment, :days_for_order_to_completion, :days_for_completion_to_delivery, :currency_symbol, :exchange_rate, :email, :phone_number,
         address_attributes:[ 
@@ -157,6 +174,11 @@ class SystemUsersController < ApplicationController
         :region,
         :postcode,
         :country
+        ],
+        extra_field_value_attributes:
+        [
+          :id,
+          :field_value
         ]
       )
     end

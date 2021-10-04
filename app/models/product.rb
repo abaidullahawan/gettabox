@@ -1,6 +1,5 @@
 class Product < ApplicationRecord
   acts_as_paranoid
-  has_many :extra_field_names, as: :fieldnameable
   has_one :extra_field_value, as: :fieldvalueable
 
   validates :sku, presence:true, uniqueness: { case_sensitive: false }
@@ -27,7 +26,6 @@ class Product < ApplicationRecord
   accepts_nested_attributes_for :product_suppliers, allow_destroy: true
   accepts_nested_attributes_for :multipack_products, allow_destroy: true
   accepts_nested_attributes_for :extra_field_value
-  accepts_nested_attributes_for :extra_field_names
 
   def self.to_csv
     attributes = all.column_names
