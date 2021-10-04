@@ -80,7 +80,9 @@
     <%= pd.text_field :country, step: 0.01, class: 'form-control', placeholder: 'Enter Country' %>
   </div>
 <% end %>
-
+<% if @field_names.present? %>
+  <%= render 'extra_field_value'%>
+<% end %>
 <div class="form-group d-none">
   <%= f.submit(@system_user.new_record? ? "Create" : "Update", class: 'btn btn-primary mt-5 supplier-submit') %>
 </div>

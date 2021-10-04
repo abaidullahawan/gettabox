@@ -3,6 +3,7 @@ class SystemUser < ApplicationRecord
 
   has_many :product_suppliers
   has_many :products, through: :product_suppliers
+  has_one :extra_field_value, as: :fieldvalueable
   has_many :purchase_orders, foreign_key: 'supplier_id', primary_key: 'id', dependent: :destroy
   validates :name, presence: true
   validates :email, presence: true
@@ -10,6 +11,7 @@ class SystemUser < ApplicationRecord
   has_one_attached :photo
   has_one :address, as: :addressable
   accepts_nested_attributes_for :address
+  accepts_nested_attributes_for :extra_field_value
   enum user_type: {
     customer: 0,
     supplier: 1
