@@ -8,8 +8,7 @@ $(document).on('turbolinks:load', function () {
   })
 
   $('.purchase_delivery').on('click', function () {
-    debugger
-    $('.purchase_delivery_list').toggleClass('d-none')
+    $(this).find('.purchase_delivery_list').toggleClass('d-none')
   })
 
   if($('.payment_method_value').val() == "paid") {

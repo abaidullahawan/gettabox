@@ -74,9 +74,9 @@
         <% end %>
         <%= form_with url: bulk_method_system_users_path , method: :post do |f| %>
           <div class="row">
-            <div class='col-lg-6'>
+            <div class='col-sm-6 col-md-6 col-lg-6 col-xl-6'>
               <h6 class='text-center text-muted'>Suppliers</h6>
-              <table class="table-responsive table m-0 table-hover">
+              <table class="overflow-auto w-100 table m-0 table-hover">
                 <tr>
                   <th><input type="checkbox" id="" name="" value="" class='select-all-checkbox'></th>
                   <th class="text-center">Name</th>
@@ -104,10 +104,8 @@
                         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                           <a class="dropdown-item" href="<%= system_user_path(system_user)%>">Show</a>
                           <%= link_to 'Archive', system_user_path(system_user), method: 'delete', data: {confirm: "Are you sure you want to archive"}, class: "dropdown-item"%>
+                          <a href="<%= new_purchase_order_path(supplier: system_user) %>" class="dropdown-item">Place Order</a>
                         </div>
-                        <a href="<%= new_purchase_order_path(supplier: system_user) %>" class="btn btn-info text-white p-1" role="button" title='Shop'>
-                          <i data-feather='shopping-cart' class='icon wh-15 mt-minus-3'></i>
-                        </a>
                       </div>
                     </td>
                   </tr>
@@ -115,7 +113,7 @@
                 <%= f.submit '', class: 'bulk-method-objects d-none'%>
               </table>
             </div>
-            <div class='col-lg-6 border-left'>
+            <div class='col-sm-6 col-md-6 col-lg-6 col-xl-6 border-left'>
               <h6 class='text-center text-muted'>Product Orders</h6>
               <%= render 'product_orders'%>
             </div>

@@ -87,6 +87,10 @@ $(document).on('turbolinks:load', function () {
     })
   })
 
+  $('.card, .card-body, .card-header, .main-content, .main-content-header, .row').on('click', function () {
+    $('.category-dropdown-list, .product-sku-dropdown-list, .product-dropdown-list').hide();
+  })
+
 
   $('.category-dropdown-list').on('click', '.category-list-item', function () {
     $('#category-title-search').val(this.outerText);
