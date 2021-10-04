@@ -6,7 +6,6 @@ module NewProduct
     @product.barcodes.build
     @product.product_suppliers.build
     @product.multipack_products.build
-    @product.extra_field_names.build
     @product.build_extra_field_value
     @pros = Product.all
   end

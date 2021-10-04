@@ -1,5 +1,5 @@
-
 <% if @field_names.present? %>
+<% if @system_user.extra_field_value.present? %>
     <% @field_names&.each do |field_name| %>
         <% if @system_user&.extra_field_value&.field_value.present? %>
             <% @system_user.extra_field_value.field_value.each do |extra_field|%>
@@ -15,4 +15,5 @@
             <%= text_field_tag :"#{field_name}" ,"", class: 'form-control', placeholder: "Enter #{field_name}"%>
         <% end %>
     <% end %>
+<% end %>
 <% end %>
