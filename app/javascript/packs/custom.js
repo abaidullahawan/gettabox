@@ -156,18 +156,6 @@ $(document).on('turbolinks:load', function () {
   $('.bulk-delete-objects').on('click', function () {
     $('.bulk-method-objects').trigger('click')
   })
-  $('.product-mapping-select').on('select', function () {
-    // debugger;
-    $('.product-mapping-request').trigger('click')
-  })
-
-  $('.productSearchBtn').on('click', function () {
-    $('.productSearch, .productSearchContainer').toggleClass('d-none', 3000);
-  })
-
-  $('.productSearch').on('focusout', function () {
-    $('.productSearch, .productSearchContainer').toggleClass('d-none', 3000);
-  })
 
   $('.searchclear').on('click', function () {
     debugger
