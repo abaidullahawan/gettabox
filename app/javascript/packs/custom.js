@@ -169,6 +169,12 @@ $(document).on('turbolinks:load', function () {
     $('.productSearch, .productSearchContainer').toggleClass('d-none', 3000);
   })
 
+  $('.searchclear').on('click', function () {
+    debugger
+    $(this).prev('input').val('');
+    return false;
+  })
+
 });
 
 // Preloader JS
