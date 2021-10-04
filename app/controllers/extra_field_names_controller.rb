@@ -8,9 +8,9 @@ class ExtraFieldNamesController < ApplicationController
     def create
         @extra_field_name = ExtraFieldName.new(extra_field_name_params)
         if @extra_field_name.fieldnameable_type == "Product"
-            @extra_field_name.fieldnameable_id  = 1
+            @extra_field_name.fieldnameable_id  = Product.first.id
         else
-            @extra_field_name.fieldnameable_id  = 2
+            @extra_field_name.fieldnameable_id  = SystemUser.first.id
         end
         respond_to do |format|
         if @extra_field_name.save
