@@ -37,13 +37,13 @@ Rails.application.configure do
   config.action_mailer.default_url_options = { host: 'localhost:3000' }
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.smtp_settings = {
-    address: "smtp.gmail.com",
+    address: "smtp.zoho.com",
     port: 587,
     authentication: "plain",
     enable_starttls_auto: true,
-    user_name: "munchionclick@gmail.com",
-    password: "munchi@123",
-    domain: "smtp.gmail.com"
+    user_name: "mohammad.haris@devbox.co",
+    password: "harris..,,12345",
+    domain: "smtp.zoho.com"
   }
 
   config.action_mailer.perform_caching = false
