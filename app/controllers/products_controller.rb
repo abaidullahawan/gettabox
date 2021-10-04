@@ -27,12 +27,6 @@ class ProductsController < ApplicationController
   end
 
   def new
-    @product = Product.new
-    @product.barcodes.build
-    @product.product_suppliers.build
-    @product.multipack_products.build
-    @product.build_extra_field_value
-    @pros = Product.all
   end
 
   def create
