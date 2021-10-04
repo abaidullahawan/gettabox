@@ -86,3 +86,13 @@ input:checked + .slider:before {
   overflow: auto;
   width: 100%;
 }
+
+.searchclear {
+  position: absolute;
+  top: 24%;
+  left: 89.4%;
+  opacity: 0;
+  pointer-events: auto;
+  text-decoration: none;
+  cursor: pointer;
+}
