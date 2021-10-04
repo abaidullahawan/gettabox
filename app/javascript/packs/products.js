@@ -8,8 +8,10 @@ $(document).ready(function () {
 
 $(document).on('turbolinks:load', function () {
 
-  $('#product-title-search').on('keyup', function () {
+  $('#product-title-search').on('keyup click', function () {
     var product_title = this.value
+    $(".product-sku-dropdown-list").hide()
+    $(".product-dropdown-list").show()
     $.ajax({
       url: "/products/products_by_title",
       type: "POST",
@@ -17,12 +19,11 @@ $(document).on('turbolinks:load', function () {
       success: function(response) {
         $(".product-list-item").remove()
         if(response.length == 0) {
-          $(".product-dropdown-list").append('<li><label class="dropdown-item product-list-item">No result found</label></li>')
+          $(".product-dropdown-list").append('<li><a href="#" class="dropdown-item product-list-item">No result found</a></li>')
         }
         else {
-          $(".product-dropdown-list").append('<li><label class="dropdown-item product-list-item">Select the Product</label></li>')
           $.each(response,function() {
-            $(".product-dropdown-list").append('<li><label class="dropdown-item product-list-item">'+ this.title +'</label></li>')
+            $(".product-dropdown-list").append('<li><a href="#" class="dropdown-item product-list-item">'+ this.title +'</a></li>')
           });
         }
       }
@@ -30,12 +31,16 @@ $(document).on('turbolinks:load', function () {
   })
 
   $('.product-dropdown-list').on('click', '.product-list-item', function () {
+    $('.product-dropdown-list').hide()
+    $('#product-title-search').focus()
     $('#product-title-search').val(this.outerText)
-    $('#product_search').submit();
+    return false
   })
 
-  $('#product-sku-search').on('keyup', function () {
+  $('#product-sku-search').on('keyup click', function () {
     var product_sku = this.value
+    $(".product-dropdown-list").hide()
+    $(".product-sku-dropdown-list").show()
     $.ajax({
       url: "/products/products_by_sku",
       type: "POST",
@@ -43,12 +48,11 @@ $(document).on('turbolinks:load', function () {
       success: function(response) {
         $(".product-sku-list-item").remove()
         if(response.length == 0) {
-          $(".product-sku-dropdown-list").append('<li><label class="dropdown-item product-sku-list-item">No result found</label></li>')
+          $(".product-sku-dropdown-list").append('<li><a href="#" class="dropdown-item product-sku-list-item">No result found</a></li>')
         }
         else {
-          $(".product-sku-dropdown-list").append('<li><label class="dropdown-item product-sku-list-item">Select the Product</label></li>')
           $.each(response,function() {
-            $(".product-sku-dropdown-list").append('<li><label class="dropdown-item product-sku-list-item">'+ this.sku +'</label></li>')
+            $(".product-sku-dropdown-list").append('<li><a href="#" class="dropdown-item product-sku-list-item">'+ this.sku +'</a></li>')
           });
         }
       }
@@ -56,12 +60,15 @@ $(document).on('turbolinks:load', function () {
   })
 
   $('.product-sku-dropdown-list').on('click', '.product-sku-list-item', function () {
+    $('.product-sku-dropdown-list').hide()
+    $('#product-sku-search').focus()
     $('#product-sku-search').val(this.outerText)
-    $('#product_search').submit();
+    return false
   })
 
   $('#category-title-search').on('keyup', function () {
     var category_title = this.value
+    $(".category-dropdown-list").show()
     $.ajax({
       url: "/products/check_category",
       type: "POST",
@@ -72,7 +79,6 @@ $(document).on('turbolinks:load', function () {
           $(".category-dropdown-list").append('<li><label class="dropdown-item category-list-item">No result found</label></li>')
         }
         else {
-          $(".category-dropdown-list").append('<li><label class="dropdown-item category-list-item">Select the Category</label></li>')
           $.each(response,function() {
             $(".category-dropdown-list").append('<li><label class="dropdown-item category-list-item" value='+this.title+'">'+ this.title +'</label></li>')
           });
@@ -81,9 +87,15 @@ $(document).on('turbolinks:load', function () {
     })
   })
 
+  $('.card, .card-body, .card-header, .main-content, .main-content-header, .row').on('click', function () {
+    $('.category-dropdown-list, .product-sku-dropdown-list, .product-dropdown-list').hide();
+  })
+
 
   $('.category-dropdown-list').on('click', '.category-list-item', function () {
-    $('#category-title-search').val(this.outerText)
+    $('#category-title-search').val(this.outerText);
+    $('.category-dropdown-list').hide();
+    return false;
   })
 
   $('input, select').on('click', function () {

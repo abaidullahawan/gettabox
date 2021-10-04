@@ -46,10 +46,12 @@
               </div>
             </div>
             <div class="col-md-2"><br>
-              <%= f.search_field :name_cont, class: 'form-control dropdown-toggle', id: 'season-name-search', data: {toggle: 'dropdown'}, area: {haspopup: true, expanded: 'false'}, autocomplete: 'off', placeholder:"Search in Name" %>
-              <ul class="dropdown-menu season-dropdown-list" aria-labelledby="season-name-search">
-                <li><label class="dropdown-item season-list-item">Select Category</label></li>
-              </ul>
+              <div class="dropdown">
+                <%= f.search_field :name_cont, class: 'form-control dropdown-toggle', id: 'season-name-search', data: {toggle: 'dropdown'}, area: {haspopup: true, expanded: 'false'}, autocomplete: 'off', placeholder:"Search in Name" %>
+                <ul class="dropdown-menu season-dropdown-list search-list" aria-labelledby="season-name-search">
+                  <li><a href="#" class="dropdown-item season-list-item">Select Category</a></li>
+                </ul>
+              </div>
             </div>
             <div class='col-1 offset-8'>
               <label for="inputState">Per Page</label>
@@ -76,9 +78,8 @@
 
                   <td class="text-center">
                     <div class="dropdown dropleft">
-                      <button class="btn btn-primary" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                      <button class="btn btn-primary" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Actions">
                         <i data-feather='bell' class='icon wh-15 mt-minus-3'></i>
-                        Actions
                       </button>
                       <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                         <a class="dropdown-item" href="<%= season_path(season)%>">Show</a>

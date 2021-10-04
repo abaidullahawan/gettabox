@@ -18,9 +18,9 @@
       <div class="card-body">
         <div class="card-header">
           <div class='mr-1 float-right'>
-            <%= link_to "#{@user_sub_role.capitalize}s", users_path, class: 'btn btn-outline-info' %>
+            <%= link_to "#{@user_sub_role&.capitalize}", users_path, class: 'btn btn-outline-info' %>
           </div>
-          <h5 class="card-title"><%= @user_sub_role.capitalize %> Data</h5>
+          <h5 class="card-title"><%= @user_sub_role&.capitalize %> Data</h5>
         </div>
         <%= search_form_for @q, url: archive_users_path, method: :get do |f| %>
           <div class='row'>

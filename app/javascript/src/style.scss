@@ -74,3 +74,15 @@ input:checked + .slider:before {
 .slider.round:before {
   border-radius: 50%;
 }
+
+.search-list {
+  max-height: 300px;
+  overflow: auto;
+  width: 100%;
+}
+
+.category-dropdown-list {
+  max-height: 100px;
+  overflow: auto;
+  width: 100%;
+}

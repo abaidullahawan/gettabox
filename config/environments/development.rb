@@ -41,8 +41,8 @@ Rails.application.configure do
     port: 587,
     authentication: "plain",
     enable_starttls_auto: true,
-    user_name: "email.from.devbox@gmail.com",
-    password: "$devbox123$",
+    user_name: "munchionclick@gmail.com",
+    password: "munchi@123",
     domain: "smtp.gmail.com"
   }
 

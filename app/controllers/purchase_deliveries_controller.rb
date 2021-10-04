@@ -48,6 +48,7 @@ class PurchaseDeliveriesController < ApplicationController
       redirect_to purchase_delivery_path(@purchase_delivery)
     else
       if @purchase_delivery.update(purchase_delivery_params)
+        @purchase_delivery.purchase_order.update(order_status: params[:order_status])
         flash[:notice] = "Order Delivery updated successfully."
         redirect_to purchase_delivery_path(@purchase_delivery)
       else

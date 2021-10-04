@@ -266,7 +266,7 @@
                 <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     <div class="menu-profile">
                         <span class="name">
-                            <% if (current_user.personal_detail.first_name && current_user.personal_detail.last_name).present? %>
+                            <% if (current_user&.personal_detail&.first_name && current_user&.personal_detail&.last_name).present? %>
                                 <%= current_user.personal_detail.first_name+" "+current_user.personal_detail.last_name %>
                             <% else %>
                                 User's Info
@@ -275,7 +275,9 @@
                         <% if current_user&.profile_image.present? %>
                             <%= image_tag(current_user&.profile_image, alt: "Profile Image", class: "rounded-circle") %>
                         <% else %>
-                            <%= image_tag("user/3.jpg", alt: "Profile Image", class: "rounded-circle") %>
+                            <%= image_tag("user/user-male.png", alt: "Profile Image", class: "rounded-circle") if !current_user&.personal_detail&.gender? %>
+                            <%= image_tag("user/user-male.png", alt: "Profile Image", class: "rounded-circle") if current_user&.personal_detail&.gender == "Male" %>
+                            <%= image_tag("user/user-female.png", alt: "Profile Image", class: "rounded-circle") if current_user&.personal_detail&.gender == "Female" %>
                         <% end %>
                     </div>
                 </a>
@@ -293,12 +295,10 @@
                         <i data-feather="help-circle" class="icon"></i>
                         Support
                     </a>
-                    <% if current_user.role_admin? || current_user.role_super_admin? %>
-                    <a class="dropdown-item <%= active_klass(users_path) %>" href="<%= users_path %>">
+                    <a class="dropdown-item <%= active_klass(settings_path) %>" href="<%= settings_path %>">
                         <i data-feather="settings" class="icon"></i>
                         Settings
                     </a>
-                    <% end %>
                     <%= button_to 'Logout', destroy_user_session_path, method: :delete, class:'dropdown-item' %>
                 </div>
             </li>

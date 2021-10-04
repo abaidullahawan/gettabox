@@ -1,10 +1,12 @@
 class ProductsController < ApplicationController
+  include NewProduct
 
   before_action :authenticate_user!
   before_action :find_product, only: [:edit, :update, :show, :destroy]
-  before_action :load_resources, only: [:index, :new, :edit, :show, :create, :update]
+  before_action :product_load_resources, only: [:index, :new, :edit, :show, :create, :update]
   before_action :get_field_names, only: [ :new, :create, :show, :index ]
   # before_action :attributes_for_filter, only: [:index]
+  before_action :new_product, only: %i[ index ]
   skip_before_action :verify_authenticity_token, :only => [:create, :update]
 
   def index
@@ -16,13 +18,12 @@ class ProductsController < ApplicationController
       respond_to do |format|
         format.html
         format.pdf do
-          render  :pdf => "file.pdf", 
+          render  :pdf => "file.pdf",
                   :viewport_size => '1280x1024',
                   :template => 'products/index.pdf.erb'
         end
       end
     end
-    new
   end
 
   def new
@@ -41,18 +42,7 @@ class ProductsController < ApplicationController
     @field_names.each do |field_name|
       @product.extra_field_value.field_value["#{field_name}"] = params[:"#{field_name}"]
     end
-    @category_name = params[:category_name]
-    @s_category = Category.where("lower(title) LIKE ?", "#{@category_name}").or(Category.where("title LIKE ?", "#{@category_name}")).first
-    if @s_category.present?
-      save_product
-    else
-      @s_category = Category.create(title: @category_name)
-      save_product
-    end
-  end
-
-  def save_product
-    @product.category_id = @s_category.id
+    first_or_create_category
     if @product.save
       flash[:notice] = "Created successfully."
       redirect_to product_path(@product)
@@ -197,13 +187,6 @@ class ProductsController < ApplicationController
 
   def find_product
     @product = Product.find(params[:id])
-  end
-
-  def load_resources
-    @single_products = Product.where(product_type: 'single').map{|v| v.serializable_hash(only: [:id, :title]) }
-    @system_users = SystemUser.all.map{|v| v.serializable_hash(only: [:id, :name]) }
-    @categories = Category.all.map{|v| v.serializable_hash(only: [:id, :title]) }
-    @seasons = Season.all.map{|v| v.serializable_hash(only: [:id, :name]) }
   end
 
   def get_field_names
