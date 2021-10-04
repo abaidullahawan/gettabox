@@ -40,4 +40,20 @@ $(document).on('turbolinks:load', function () {
     $('#multi-product-create-modal .modal-body #product_description').val(description)
     $('#multi-product-create-modal').modal('show')
   })
+
+  $('.productSearchBtn').on('click', function () {
+    $(this).closest('td').find('.productSearchContainer').toggleClass('d-none', 3000);
+    $(this).closest('td').find('.productSearch').toggleClass('d-none', 3000);
+    $(this).closest('td').find('.productSearch').trigger( "focus" )
+  })
+
+  $('.productSearch').on('focusout', function () {
+    $(this).closest('td').find('.productSearchContainer').toggleClass('d-none', 3000);
+    $(this).closest('td').find('.productSearch').toggleClass('d-none', 3000);
+  })
+
+  $('#mapped_status, #product_mapping').on('change', function () {
+    $('.product-mapping-request').trigger('click')
+  })
+
 })
