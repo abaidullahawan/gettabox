@@ -130,7 +130,7 @@ Rails.application.configure do
     :domain               => "channeldispatch.co.uk",
     :user_name            => "email.from.devbox@gmail.com",
     :password             => "$devbox123$",
-    :authentication       => "plain",
+    :authentication       => "login",
     :enable_starttls_auto => true
   }
 

@@ -76,18 +76,16 @@
                   <td class="text-center"><%= purchase_order.purchase_deliveries.count %></td>
                   <td class="text-center">
                     <div class="dropdown dropleft">
-                      <button class="btn btn-primary" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                      <button class="btn btn-primary" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Actions">
                         <i data-feather='bell' class='icon wh-15 mt-minus-3'></i>
-                        Actions
                       </button>
                       <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <a href="<%= new_purchase_delivery_path(purchase_order_id: purchase_order) %>" class="dropdown-item" role="button">
+                          Place Order
+                        </a>
                         <a class="dropdown-item" href="<%= purchase_order_path(purchase_order)%>">Show</a>
                         <%= link_to 'Archive', purchase_order_path(purchase_order), method: 'delete', data: {confirm: "Are you sure you want to archive"}, class: "dropdown-item"%>
                       </div>
-                      <a href="<%= new_purchase_delivery_path(purchase_order_id: purchase_order) %>" class="btn btn-info text-white" role="button">
-                        <i data-feather='shopping-cart' class='icon wh-15 mt-minus-3'></i>
-                        Shop
-                      </a>
                     </div>
                   </td>
                 </tr>
@@ -101,19 +99,21 @@
                       <div class="purchase_delivery_list d-none row mb-2">
                         <div class="col-12">
                           <div class="row">
-                            <div class="col-1 offset-1 text-center">ID</div>
+                            <div class="col-1 text-center">ID</div>
                             <div class="col-2 text-center">Purchase Order</div>
                             <div class="col-4 text-center" >Total Bill</div>
-                            <div class="col-4 text-center">Created at</div>
+                            <div class="col-3 text-center">Created at</div>
                           </div><hr>
                           <% purchase_order.purchase_deliveries.each do |purchase_delivery| %>
-                            <div class="row">
-                              <div class="col-1 offset-1 text-center"><%= purchase_delivery.id %></div>
+                            <a href="<%= purchase_delivery_path(purchase_delivery) %>" class="row" role="button">
+                              <div class="col-1 text-center"><%= purchase_delivery.id %></div>
                               <div class="col-2 text-center"><%= purchase_delivery.purchase_order_id %></div>
                               <div class="col-4 text-center"><%= purchase_delivery.total_bill %></div>
                               <div class="col-3 text-center"><%= purchase_delivery.created_at %></div>
-                              <div class="col-1"><%= link_to 'Show', purchase_delivery_path(purchase_delivery), class:'btn btn-outline-primary' %></div>
-                            </div><hr>
+                              <div class="col-1">
+                                <i data-feather='eye' class='icon wh-15 mt-minus-3'></i>
+                              </div>
+                            </a><hr>
                           <% end %>
                         </div>
                       </div>
