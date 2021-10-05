@@ -67,6 +67,9 @@ class ProductsController < ApplicationController
   end
 
   def show
+    if @product.extra_field_value.nil?
+    @product.build_extra_field_value
+    end
   end
 
   def destroy

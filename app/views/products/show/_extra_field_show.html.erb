@@ -1,4 +1,4 @@
-<% if @product.product_type_single? && @product.extra_field_value.present? %>
+<% if @product.product_type_single? %>
   <div class="notifications-card mb-30">
     <h5 class="noti-card-title">
       Extra Fields
@@ -7,11 +7,15 @@
     <div class="list-group">
     <div class="list-group-item">
       <div class='row'>
-      <% @product.extra_field_value.field_value.each do |extra_field_value|%>
-        <div class='col-3'>
-          <h5 class="fs-14 mb-1"><%= extra_field_value[0] %></h5>
-          <p class="m-0"><%= extra_field_value[1] %></p>
-        </div>
+      <% if @product.extra_field_value.field_value.present? %>
+        <% @product.extra_field_value.field_value.each do |extra_field_value|%>
+          <% if extra_field_value[0] != 'id' %>
+            <div class='col-3'>
+              <h5 class="fs-14 mb-1"><%= extra_field_value[0] %></h5>
+              <p class="m-0"><%= extra_field_value[1] %></p>
+            </div>
+          <% end %>
+        <% end %>
       <% end %>
       </div>
     </div>

@@ -14,16 +14,18 @@
 <%= render 'form', extra_field_name: @extra_field_name %>
 
 
-<div class="table-responsive">
+<div class="table-responsive" style="background: white">
     <table class="table m-0 table-hover">
     <tr>
         <th>Field Name</th>
-        <th class="text-center">Field type</th>
+        <th class="text-center">Table Name</th>
+        <th>Actions</th>
     </tr>
     <% @extra_field_names&.each do |extra_field| %>
         <tr>
         <td><%= extra_field.field_name %></td>
         <td class="text-center font-weight-bold"><%= extra_field.table_name %></td>
+        <td><%= link_to "Delete", extra_field_name_path(extra_field), :confirm => "Are you sure?", :method => :delete , class:"btn btn-danger text-light"%></td>
         </tr>
     <% end %>
     </table>
