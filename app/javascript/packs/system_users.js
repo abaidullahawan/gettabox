@@ -47,4 +47,8 @@ $(document).on('turbolinks:load', function () {
     return false
   })
 
+  $('.supplier-name-dropdown-list').on('focus', '.supplier-name-list-item', function () {
+    $('#supplier-name-search').val(this.outerText)
+  })
+
 })
