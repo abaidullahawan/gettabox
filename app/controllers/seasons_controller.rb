@@ -116,7 +116,7 @@ class SeasonsController < ApplicationController
   end
 
   def search_season_by_name
-    @searched_season_by_name = Season.where("lower(name) LIKE ?", "%#{ params[:season_name].downcase }%").uniq
+    @searched_season_by_name = Season.where("lower(name) LIKE ?", "#{ params[:season_name].downcase }%").uniq
     respond_to do |format|
       format.json { render json: @searched_season_by_name }
     end
