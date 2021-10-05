@@ -1,12 +1,12 @@
 <%= form_with url: '/create', local: true, method: :post do |f| %>
-<div class="form-row">
-    <% if @field_names.present? %>
-    <% @field_names&.each do |field_name| %>
-    <div class="form-group col-md-6 required">
-        <%= f.label :"#{field_name}" %>
-        <%= f.text_field :"#{field_name}", step: 0.01, class: 'form-control'%>
+    <div class="form-row">
+        <% if @field_names.present? %>
+            <% @field_names&.each do |field_name| %>
+                <div class="form-group col-md-6">
+                    <%= f.label :"#{field_name}" %>
+                    <%= f.text_field :"#{field_name}", class: 'form-control'%>
+                </div>
+            <% end %>
+        <% end %>
     </div>
-    <% end %>
-    <% end %>
-</div>
 <% end %>

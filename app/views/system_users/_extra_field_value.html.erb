@@ -1,19 +1,9 @@
 <% if @field_names.present? %>
-<% if @system_user.extra_field_value.present? %>
     <% @field_names&.each do |field_name| %>
-        <% if @system_user&.extra_field_value&.field_value.present? %>
-            <% @system_user.extra_field_value.field_value.each do |extra_field|%>
-                <% if extra_field[0] == field_name %>
-                <div class="form-group ">
-                    <%= label_tag :"#{field_name}" %>
-                    <%= text_field_tag :"#{field_name}", "", value: extra_field[1], class: 'form-control', placeholder: "Enter '#{field_name}'" %>
-                </div>
-                <% end %>
-            <% end %>
-        <% else %>
+        <div class="form-group ">
             <%= label_tag :"#{field_name}" %>
-            <%= text_field_tag :"#{field_name}" ,"", class: 'form-control', placeholder: "Enter #{field_name}"%>
-        <% end %>
+            <% extra_value = @system_user.extra_field_value&.field_value.present? ? @system_user.extra_field_value&.field_value[field_name.to_s] : ""%>
+            <%= text_field_tag :"#{field_name}", "", value: extra_value, class: 'form-control', placeholder: "Enter #{field_name}" %>
+        </div>
     <% end %>
-<% end %>
 <% end %>

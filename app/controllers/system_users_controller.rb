@@ -53,6 +53,9 @@ class SystemUsersController < ApplicationController
   end
 
   def update
+    if @system_user.extra_field_value.nil?
+      @system_user.build_extra_field_value
+    end
     @system_user.extra_field_value.field_value = {} if @system_user.extra_field_value.field_value.nil?
     @field_names.each do |field_name|
       @system_user.extra_field_value.field_value["#{field_name}"] = params[:"#{field_name}"]
