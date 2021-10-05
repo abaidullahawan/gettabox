@@ -28,7 +28,7 @@ class ApplicationController < ActionController::Base
         @result = HTTParty.post('https://api.ebay.com/identity/v1/oauth2/token'.to_str,
           :body => body,
           :headers => { 'Content-Type' => 'application/x-www-form-urlencoded',
-            'Authorization' => 'Basic Q2hhbm5lbEQtQ2hhbm5lbEQtUFJELWRhMjhlYzY5MC00YTlmMzYzYzpQUkQt\nYTI4ZWM2OTA4ZWE5LTdjNDMtNGZkOS1iZTQzLTBlN2Q=' } )
+            'Authorization' => 'Basic Q2hhbm5lbEQtQ2hhbm5lbEQtUFJELWRhMjhlYzY5MC00YTlmMzYzYzpQUkQtYTI4ZWM2OTA4ZWE5LTdjNDMtNGZkOS1iZTQzLTBlN2Q=' } )
 
       rescue
         flash[:alert] = 'Please contact your administration for process'
@@ -55,7 +55,7 @@ class ApplicationController < ActionController::Base
         @result = HTTParty.post('https://api.ebay.com/identity/v1/oauth2/token'.to_str,
           :body => body,
           :headers => { 'Content-Type' => 'application/x-www-form-urlencoded',
-            'Authorization' => 'Basic Q2hhbm5lbEQtQ2hhbm5lbEQtUFJELWRhMjhlYzY5MC00YTlmMzYzYzpQUkQt\nYTI4ZWM2OTA4ZWE5LTdjNDMtNGZkOS1iZTQzLTBlN2Q=' } )
+            'Authorization' => 'Basic Q2hhbm5lbEQtQ2hhbm5lbEQtUFJELWRhMjhlYzY5MC00YTlmMzYzYzpQUkQtYTI4ZWM2OTA4ZWE5LTdjNDMtNGZkOS1iZTQzLTBlN2Q=' } )
       rescue
         flash[:alert] = 'Please contact your administration for process'
         redirect_to root_path
