@@ -94,17 +94,15 @@ Rails.application.configure do
 
   config.action_mailer.default_url_options = { host: '142.93.32.58' }
   config.action_mailer.delivery_method = :smtp
-
   # SMTP settings for gmail
   # window Computer PW: dhyqjlwnezfvtpel
   # Mac Computer PW: layascwrwthtlbsw
   config.action_mailer.smtp_settings = {
     :address              => "smtp.gmail.com",
     :port                 => 25,
-    :user_name            => "ahsanraxae32@gmail.com",
-    :password             => "wapdamtubidy123",
+    :user_name            => "channeldispatch.donotreply@gmail.com",
+    :password             => "devbox@123",
     :authentication       => "plain",
     :enable_starttls_auto => true
   }
-
 end
