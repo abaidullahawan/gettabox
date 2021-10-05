@@ -20,15 +20,15 @@ class ApplicationController < ActionController::Base
     @refresh_token = RefreshToken.last
     if @refresh_token.present? && @refresh_token.access_token_expiry.localtime < DateTime.now
       begin
-        data = { :redirect_uri => 'Channel_Dispatc-ChannelD-Channe-imqsnuapo',
+        data = { :redirect_uri => 'Channel_Dispatc-ChannelD-Channe-flynitdm',
           :grant_type => 'refresh_token',
           :refresh_token => @refresh_token.refresh_token
         }
         body = URI.encode_www_form(data)
-        @result = HTTParty.post('https://api.sandbox.ebay.com/identity/v1/oauth2/token'.to_str,
+        @result = HTTParty.post('https://api.ebay.com/identity/v1/oauth2/token'.to_str,
           :body => body,
           :headers => { 'Content-Type' => 'application/x-www-form-urlencoded',
-            'Authorization' => 'Basic Q2hhbm5lbEQtQ2hhbm5lbEQtU0JYLWVhMjg0OWJiYi1hOGE1OWFkMzpTQlgtYTI4NDliYmJiMzFhLTMyODctNGQ0Yi05YzI1LTRlOWU=' } )
+            'Authorization' => 'Basic Q2hhbm5lbEQtQ2hhbm5lbEQtUFJELWRhMjhlYzY5MC00YTlmMzYzYzpQUkQt\nYTI4ZWM2OTA4ZWE5LTdjNDMtNGZkOS1iZTQzLTBlN2Q=' } )
 
       rescue
         flash[:alert] = 'Please contact your administration for process'
@@ -47,15 +47,15 @@ class ApplicationController < ActionController::Base
   def authentication_tokens
     if params['code'].present? && params['expires_in'].present?
       begin
-        data = { :redirect_uri => 'Channel_Dispatc-ChannelD-Channe-imqsnuapo',
+        data = { :redirect_uri => 'Channel_Dispatc-ChannelD-Channe-flynitdm',
           :grant_type => 'authorization_code',
           :code => params['code']
         }
         body=URI.encode_www_form(data)
-        @result = HTTParty.post('https://api.sandbox.ebay.com/identity/v1/oauth2/token'.to_str,
+        @result = HTTParty.post('https://api.ebay.com/identity/v1/oauth2/token'.to_str,
           :body => body,
           :headers => { 'Content-Type' => 'application/x-www-form-urlencoded',
-            'Authorization' => 'Basic Q2hhbm5lbEQtQ2hhbm5lbEQtU0JYLWVhMjg0OWJiYi1hOGE1OWFkMzpTQlgtYTI4NDliYmJiMzFhLTMyODctNGQ0Yi05YzI1LTRlOWU=' } )
+            'Authorization' => 'Basic Q2hhbm5lbEQtQ2hhbm5lbEQtUFJELWRhMjhlYzY5MC00YTlmMzYzYzpQUkQt\nYTI4ZWM2OTA4ZWE5LTdjNDMtNGZkOS1iZTQzLTBlN2Q=' } )
       rescue
         flash[:alert] = 'Please contact your administration for process'
         redirect_to root_path
