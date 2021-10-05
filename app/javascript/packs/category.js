@@ -27,4 +27,9 @@ $(document).on('turbolinks:load', function () {
     $('#category-title-search').focus()
     return false
   })
+
+  $('.category-dropdown-list').on('focus', '.category-list-item', function () {
+    $('#category-title-search').val(this.outerText)
+  })
+
 })

@@ -70,7 +70,7 @@
             </div>
             <div class="col-md-3"><br>
               <div class="dropdown form-group">
-                <%= f.search_field :title_cont, class: 'form-control dropdown-toggle', id: 'product-title-search', data: {toggle: 'dropdown'}, autocomplete: 'off', placeholder:"Search in Title" %>
+                <%= f.search_field :title_cont, class: 'form-control dropdown-toggle', id: 'product-title-search', data: {toggle: 'dropdown', option: {array: {index: 0} } }, autocomplete: 'off', placeholder:"Search in Title" %>
                 <span class="searchclear">@@</span>
                 <ul class="dropdown-menu product-dropdown-list search-list" aria-labelledby="product-title-search">
                   <li><label class="dropdown-item product-list-item">Select the Product</label></li>
@@ -79,7 +79,7 @@
             </div>
             <div class="col-md-3"><br>
               <div class="dropdown">
-                <%= f.search_field :sku_cont, class: 'form-control dropdown-toggle', id: 'product-sku-search', data: {toggle: 'dropdown'}, area: {haspopup: true, expanded: 'false'}, autocomplete: 'off', placeholder:"Search in Sku" %>
+                <%= f.search_field :sku_cont, class: 'form-control dropdown-toggle', id: 'product-sku-search', data: {toggle: 'dropdown', option: {array: {index: 0} } }, area: {haspopup: true, expanded: 'false'}, autocomplete: 'off', placeholder:"Search in Sku" %>
                 <span class="searchclear">@@</span>
                 <ul class="dropdown-menu product-sku-dropdown-list search-list" aria-labelledby="product-sku-search">
                   <li><a href="#" class="dropdown-item product-sku-list-item">Select Product SKU</a></li>

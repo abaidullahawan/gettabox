@@ -29,4 +29,8 @@ $(document).on('turbolinks:load', function () {
     return false
   })
 
+  $('.season-dropdown-list').on('focus', '.season-list-item', function () {
+    $('#season-name-search').val(this.outerText)
+  })
+
 })

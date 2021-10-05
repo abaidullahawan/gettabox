@@ -17,13 +17,16 @@ $(document).on('turbolinks:load', function () {
       type: "POST",
       data: { 'product_title': product_title },
       success: function(response) {
+        var index = 0;
         $(".product-list-item").remove()
         if(response.length == 0) {
-          $(".product-dropdown-list").append('<li><a href="#" class="dropdown-item product-list-item">No result found</a></li>')
+          index = index + 1;
+          $(".product-dropdown-list").append('<li><a href="#" class="dropdown-item product-list-item" data-option-array-index='+ index +'>No result found</a></li>')
         }
         else {
           $.each(response,function() {
-            $(".product-dropdown-list").append('<li><a href="#" class="dropdown-item product-list-item">'+ this.title +'</a></li>')
+            index = index + 1;
+            $(".product-dropdown-list").append('<li><a href="#" class="dropdown-item product-list-item" data-option-array-index='+ index +'>'+ this.title +'</a></li>')
           });
         }
       }
@@ -37,6 +40,10 @@ $(document).on('turbolinks:load', function () {
     return false
   })
 
+  $('.product-dropdown-list').on('focus', '.product-list-item', function () {
+    $('#product-title-search').val(this.outerText)
+  })
+
   $('#product-sku-search').on('keyup click', function () {
     var product_sku = this.value
     $(".product-dropdown-list").hide()
@@ -46,13 +53,14 @@ $(document).on('turbolinks:load', function () {
       type: "POST",
       data: { 'product_sku': product_sku },
       success: function(response) {
+        var index = 0;
         $(".product-sku-list-item").remove()
         if(response.length == 0) {
-          $(".product-sku-dropdown-list").append('<li><a href="#" class="dropdown-item product-sku-list-item">No result found</a></li>')
+          $(".product-sku-dropdown-list").append('<li><a href="#" class="dropdown-item product-sku-list-item" data-option-array-index='+ index +'>No result found</a></li>')
         }
         else {
           $.each(response,function() {
-            $(".product-sku-dropdown-list").append('<li><a href="#" class="dropdown-item product-sku-list-item">'+ this.sku +'</a></li>')
+            $(".product-sku-dropdown-list").append('<li><a href="#" class="dropdown-item product-sku-list-item" data-option-array-index='+ index +'>'+ this.sku +'</a></li>')
           });
         }
       }
@@ -66,6 +74,10 @@ $(document).on('turbolinks:load', function () {
     return false
   })
 
+  $('.product-sku-dropdown-list').on('focus', '.product-sku-list-item', function () {
+    $('#product-sku-search').val(this.outerText)
+  })
+
   $('#category-title-search').on('keyup', function () {
     var category_title = this.value
     $(".category-dropdown-list").show()
@@ -74,13 +86,16 @@ $(document).on('turbolinks:load', function () {
       type: "POST",
       data: { 'category_title': category_title },
       success: function(response) {
+        var index = 0
         $(".category-dropdown-list").children().remove()
         if(response.length == 0) {
-          $(".category-dropdown-list").append('<li><label class="dropdown-item category-list-item">No result found</label></li>')
+          index = index + 1;
+          $(".category-dropdown-list").append('<li><label class="dropdown-item category-list-item" data-option-array-index='+ index +'>No result found</label></li>')
         }
         else {
           $.each(response,function() {
-            $(".category-dropdown-list").append('<li><label class="dropdown-item category-list-item" value='+this.title+'">'+ this.title +'</label></li>')
+            index = index + 1;
+            $(".category-dropdown-list").append('<li><label class="dropdown-item category-list-item" value='+this.title+' data-option-array-index='+ index +'>'+ this.title +'</label></li>')
           });
         }
       }
@@ -96,6 +111,10 @@ $(document).on('turbolinks:load', function () {
     $('#category-title-search').val(this.outerText);
     $('.category-dropdown-list').hide();
     return false;
+  })
+
+  $('.category-dropdown-list').on('focus', '.category-list-item', function () {
+    $('#category-title-search').val(this.outerText);
   })
 
   $('input, select').on('click', function () {
