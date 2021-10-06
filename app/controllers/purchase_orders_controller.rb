@@ -57,6 +57,7 @@ class PurchaseOrdersController < ApplicationController
   end
 
   def send_mail_to_supplier
+    @template = EmailTemplate.where(template_name: "PurchaseOrder").first
     @purchase_order = PurchaseOrder.find(params[:p])
     @supplier = @purchase_order.supplier_id
     @deliverd = PurchaseOrder.where(id: @purchase_order.id).joins(purchase_deliveries: :purchase_delivery_details).group(:product_id).sum(:quantity)
@@ -67,8 +68,9 @@ class PurchaseOrdersController < ApplicationController
     pdf=[[@pdf_file,'Purchase Order']]
     email = @purchase_order.system_user.email
     name = @purchase_order.system_user.name
-    subject = "Purchase Order Slip"
-    PurchaseOrderMailer.send_email(pdf,subject,email,name).deliver if email.present?
+    subject = @template.subject
+    body = @template.body
+    PurchaseOrderMailer.send_email(pdf,subject,email,name,body).deliver if email.present?
     @purchase_order.order_status_sent!
   end
 
