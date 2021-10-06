@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  resources :email_templates
   resources :general_settings
   resources :seasons do
     collection do
@@ -79,6 +80,9 @@ Rails.application.routes.draw do
   resources :product_mappings
   resources :extra_field_names
   resources :order_dispatches
+
+  # Order Dispatch Routes
+  get 'all_order_data', to: 'order_dispatches#all_order_data'
 
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
 

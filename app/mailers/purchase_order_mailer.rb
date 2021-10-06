@@ -1,6 +1,7 @@
 class PurchaseOrderMailer < ApplicationMailer
-  def send_email(pdf, subject, email, name)
+  def send_email(pdf, subject, email, name, body)
       @supplier_name = name
+      @body = body
       @subject = subject
       pdf.each_with_index do |pdf_s, index|
         attachments["#{pdf_s.last}.pdf"] = pdf_s.first

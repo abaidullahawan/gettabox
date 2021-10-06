@@ -1,8 +1,13 @@
 class OrderDispatchesController < ApplicationController
   before_action :authenticate_user!
-  # before_action :refresh_token, only: %i[ index ]
+  before_action :refresh_token, only: %i[ index ]
 
   def index
+    @all_orders = ChannelOrder.all
+    @orders = @all_orders.order(created_at: :desc).page(params[:page]).per(params[:limit])
+    if params[:all_product_data].present?
+      all_order_data
+    end
   end
 
   def show
@@ -11,29 +16,56 @@ class OrderDispatchesController < ApplicationController
   def create
   end
 
-  private
-    def order_mapping_params
-    end
-
-    def order_invetory_call(refresh_token)
-      require 'uri'
-      require 'net/http'
-      url = ('https://api.sandbox.ebay.com/sell/inventory/v1/inventory_item?offset=0')
-      params = { :limit => 10, :page => 3 }
-      headers = { 'authorization' => "Bearer <#{refresh_token.access_token}>",
-                  'accept-language' => 'en-US'}
-      uri = URI(url)
-      request = Net::HTTP.get_response(uri, headers)
-
-      body = JSON.parse(request.body)
-
-      if body["inventoryItems"].present?
-        body["inventoryItems"].each do |item|
-          ChannelProduct.where(channel_type: 'ebay', order_data: item).first_or_create
-        end
+  def all_order_data
+    require 'uri'
+    require 'net/http'
+    url = ('https://api.ebay.com/sell/fulfillment/v1/order?&limit=1000&offset=0')
+    headers = { 'authorization' => "Bearer <#{@refresh_token.access_token}>",
+                 'content-type' => "application/json",
+                 'accept' => "application/json"
+                }
+    uri = URI(url)
+    request = Net::HTTP.get_response(uri, headers)
+    body = JSON.parse(request.body)
+    if body["orders"].present?
+      body["orders"].each do |item|
+        item = item.to_json
+        ChannelOrder.where(order_data: item).first_or_create
       end
+    end
+    if body["next"].present?
+      remaining_data(headers,body["next"])
+    else
       respond_to do |format|
         format.html
       end
     end
+
+  end
+
+  def remaining_data(headers,url)
+    url = url
+    headers = headers
+    uri = URI(url)
+    request = Net::HTTP.get_response(uri, headers)
+    body = JSON.parse(request.body)
+    if body["orders"].present?
+      body["orders"].each do |item|
+        item = item.to_json
+        ChannelOrder.where(channeltype: "Ebay", order_data: item).first_or_create
+      end
+    end
+    if body["next"].present?
+      remaining_data(headers,body["next"])
+    else
+      respond_to do |format|
+        format.html
+      end
+    end
+  end
+
+  private
+    def order_mapping_params
+    end
+
 end
