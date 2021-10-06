@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<GetMyeBaySellingRequest xmlns="urn:ebay:apis:eBLBaseComponents">
+  <RequesterCredentials>
+    <eBayAuthToken><%= @refresh_token.access_token %></eBayAuthToken>
+  </RequesterCredentials>
+	<ErrorLanguage>en_US</ErrorLanguage>
+	<WarningLevel>High</WarningLevel>
+  <ActiveList>
+    <Sort>TimeLeft</Sort>
+  </ActiveList>
+</GetMyeBaySellingRequest>
