@@ -17,7 +17,7 @@ Rails.application.configure do
 
   config.active_storage.service = :amazon
 
-  config.time_zone = "Karachi"
+  config.time_zone = "London"
   config.active_record.default_timezone = :local
 
   # Full error reports are disabled and caching is turned on.

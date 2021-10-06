@@ -38,7 +38,7 @@ class ApplicationController < ActionController::Base
         flash[:alert] = "#{@result['error_description']}"
         redirect_to product_mappings_path
       else @result.body.present?
-        @refresh_token.update(access_token: @result['access_token'], access_token_expiry: DateTime.now + @result['expires_in'].seconds )
+        @refresh_token.update(access_token: @result['access_token'], access_token_expiry: DateTime.now + @result['expires_in'].to_i.seconds )
       end
     end
     @refresh_token
@@ -64,7 +64,7 @@ class ApplicationController < ActionController::Base
         flash[:alert] = "#{@result['error_description']}"
         redirect_to product_mappings_path
       else @result.body.present?
-        @refresh_token = RefreshToken.create(access_token: @result['access_token'], access_token_expiry: DateTime.now + @result['expires_in'], refresh_token: @result['refresh_token'], refresh_token_expiry: DateTime.now + @result['refresh_token_expires_in'] )
+        @refresh_token = RefreshToken.create(access_token: @result['access_token'], access_token_expiry: DateTime.now + @result['expires_in'].to_i.seconds, refresh_token: @result['refresh_token'], refresh_token_expiry: DateTime.now + @result['refresh_token_expires_in'].to_i.seconds )
         flash[:alert] = "Refresh token generated successfully!"
         redirect_to product_mappings_path
       end
