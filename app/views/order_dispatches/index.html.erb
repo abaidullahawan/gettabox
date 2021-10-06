@@ -11,11 +11,6 @@
       <span class="active">Order Dispatch</span>
     </li>
   </ol>
-  <div class="card-body">
-    <div class="card-header">
-      <%= link_to "Ebay Orders", order_dispatches_path(all_product_data: true) ,class:"btn btn-primary float-right ml-1", type:"button", style: "color: white" %>
-    </div>
-  </div>
 </div>
 <!-- End Main Content Header -->
 <div class="row">
@@ -53,6 +48,9 @@
         <div class="card-title h5 text-danger">5</div>
       </div>
     </div>
+  </div>
+  <div class="card-body p-0 mr-5">
+    <%= link_to "Ebay Orders", order_dispatches_path(all_product_data: true) ,class:"btn btn-primary float-right ml-1", type:"button", style: "color: white" %>
   </div>
 </div>
 
