@@ -7,6 +7,8 @@ class OrderDispatchesController < ApplicationController
     @orders = @all_orders.order(created_at: :desc).page(params[:page]).per(params[:limit])
     if params[:all_product_data].present?
       all_order_data
+      flash[:notice] = 'All orders are displaying'
+      redirect_to order_dispatches_path
     end
   end
 
@@ -52,7 +54,7 @@ class OrderDispatchesController < ApplicationController
     if body["orders"].present?
       body["orders"].each do |item|
         item = item.to_json
-        ChannelOrder.where(channeltype: "Ebay", order_data: item).first_or_create
+        ChannelOrder.where(channel_type: "ebay", order_data: item).first_or_create
       end
     end
     if body["next"].present?
