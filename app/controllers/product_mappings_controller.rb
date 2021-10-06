@@ -8,13 +8,18 @@ class ProductMappingsController < ApplicationController
 
   def index
     if params[:product_mapping] == 'Ebay Sandbox' || params[:mapped_status] == 'Unmapped'
-      product_invetory_call(@refresh_token) if @refresh_token.present?
-      ids = ChannelProduct.joins(:product_mapping).pluck(:id)
-      ids.any? ? @body = ChannelProduct.where("id NOT IN (?)", ids) : @body = ChannelProduct.all
-      @matching_products = {}
-      @body&.each do |item|
-        matching = Product.find_by("sku LIKE ?", "%#{item.product_data['sku']}%")
-        @matching_products[item.id] = matching if matching.present?
+      if @refresh_token.present?
+        product_invetory_call(@refresh_token)
+        ids = ChannelProduct.joins(:product_mapping).pluck(:id)
+        ids.any? ? @body = ChannelProduct.where("id NOT IN (?)", ids) : @body = ChannelProduct.all
+       @matching_products = {}
+        @body&.each do |item|
+          matching = Product.find_by("sku LIKE ?", "%#{item.product_data['sku']}%")
+          @matching_products[item.id] = matching if matching.present?
+        end
+      else
+        flash[:alert] = 'Fresh token not found'
+        redirect_to product_mappings_path
       end
     end
     if params[:mapped_status] == 'Mapped'

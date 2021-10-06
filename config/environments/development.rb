@@ -74,4 +74,7 @@ Rails.application.configure do
 
   config.hosts.clear
 
+  config.time_zone = "London"
+  config.active_record.default_timezone = :local
+
 end
