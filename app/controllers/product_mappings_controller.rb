@@ -3,7 +3,7 @@ class ProductMappingsController < ApplicationController
 
   before_action :authenticate_user!
   before_action :set_product_mapping, only: %i[ show update destroy ]
-  before_action :refresh_token, only: %i[ index ]
+  before_action :refresh_token, only: %i[ index xml_file ]
   before_action :new_product, :product_load_resources, only: %i[ index ]
 
   def index
@@ -39,6 +39,9 @@ class ProductMappingsController < ApplicationController
   end
 
   def new
+  end
+
+  def xml_file
   end
 
   def edit
