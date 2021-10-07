@@ -7,14 +7,12 @@ class ExtraFieldNamesController < ApplicationController
 
   def create
     @extra_field_name = ExtraFieldName.new(extra_field_name_params)
-    respond_to do |format|
     if @extra_field_name.save
-      format.html { redirect_to extra_field_names_path, notice: "Extra Field successfully created." }
-      format.json { render :index, status: :created }
+      flash[:notice] = "Extra Field successfully created."
+      redirect_to extra_field_names_path
     else
-      format.html { render :index, status: :unprocessable_entity }
-      format.json { render json: @extra_field_name.errors, status: :unprocessable_entity }
-    end
+      flash[:notice] = "Extra Field cannot be created."
+      redirect_to extra_field_names_path
     end
   end
 
