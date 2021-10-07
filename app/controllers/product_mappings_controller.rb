@@ -11,7 +11,8 @@ class ProductMappingsController < ApplicationController
       if @refresh_token.present?
         product_invetory_call(@refresh_token)
         ids = ChannelProduct.joins(:product_mapping).pluck(:id)
-        ids.any? ? @body = ChannelProduct.where("id NOT IN (?)", ids) : @body = ChannelProduct.all
+        ids.any? ? @body = ChannelProduct.where("id NOT IN (?)", ids) : @q = ChannelProduct.ransack(params[:q])
+        @body = @q.result(distinct: true).order(created_at: :desc).page(params[:page]).per(params[:limit])
        @matching_products = {}
         @body&.each do |item|
           matching = Product.find_by("sku LIKE ?", "%#{item.product_data['sku']}%")
@@ -180,10 +181,22 @@ class ProductMappingsController < ApplicationController
       require 'json'
       require 'active_support/core_ext'
       require "rexml/document"
+      require 'builder'
 
-      @xml_data = File.open('app/views/product_mappings/xml_file.xml.erb').read
+      @xml_data = Builder::XmlMarkup.new()
+      @xml_data.instruct!
+      @xml_data.GetMyeBaySellingRequest("xmlns" => "urn:ebay:apis:eBLBaseComponents"){
+        @xml_data.RequesterCredentials{
+          @xml_data.eBayAuthToken "#{refresh_token.access_token}"
+        }
+        @xml_data.ErrorLanguage "en_US"
+        @xml_data.WarningLevel "High"
+        @xml_data.ActiveList{
+          @xml_data.Sort "TimeLeft"
+        }
+      }
       response = HTTP.post("https://api.ebay.com/ws/api.dll",
-        :body => @xml_data,
+        :body => @xml_data.to_xml.split("<inspect/>").first,
         :headers => {
           'X-EBAY-API-SITEID' => '3',
           'X-EBAY-API-COMPATIBILITY-LEVEL' => '967',
@@ -197,7 +210,7 @@ class ProductMappingsController < ApplicationController
       @xml_response_data = Nokogiri::XML(response.body)
       @data_xml_re = Hash.from_xml(@xml_response_data.to_xml)
       @data_xml_re['GetMyeBaySellingResponse']['ActiveList']['ItemArray']['Item'].each do |item|
-        ChannelProduct.where(channel_type: 'ebay', product_data: item).first_or_create
+        ChannelProduct.create_with(channel_type: 'ebay', item_id: item["ItemID"].to_i, product_data: item, item_sku: item["SKU"]).find_or_create_by(channel_type: 'ebay', item_id: item["ItemID"].to_i)
       end
     end
 
