@@ -4,7 +4,7 @@ class OrderDispatchesController < ApplicationController
 
   def index
     @all_orders = ChannelOrder.all
-    @orders = @all_orders.order(created_at: :asc).page(params[:page]).per(params[:limit])
+    @orders = @all_orders.order(created_at: :desc).page(params[:page]).per(params[:limit])
     if params[:all_product_data].present?
       all_order_data
       flash[:notice] = 'All orders are displaying'
