@@ -1,9 +1,18 @@
 <!-- Main Content Header -->
 <div class="main-content-header">
-  <h1><%= link_to 'Season', seasons_path, style:'color: #212529;' %></h1>
+  <h1>Seasons</h1>
   <ol class="breadcrumb">
+    <li class="breadcrumb-item">
+      <a href="<%= home_path %>">Dashboard</a>
+    </li>
+    <li class="breadcrumb-item">
+      <a href="<%= settings_path %>">Settings</a>
+    </li>
     <li class="breadcrumb-item active">
-      <span class="active">/ Show</span>
+      <a href="<%= seasons_path %>">Seasons</a>
+    </li>
+    <li class="breadcrumb-item active">
+      <span class="active">Show</span>
     </li>
   </ol>
 </div>

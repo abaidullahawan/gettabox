@@ -9,16 +9,14 @@ $(document).on('turbolinks:load', function () {
     $(".main-content").toggleClass("hide-sidemenu");
   });
 
-  $('#currently-working-check').on('click', function () {
-    if ($(`#user_personal_detail_attributes_work_details_attributes_0_currently_working`).prop('checked') == true)
-       {
-         $('#to_form_field').addClass('d-none');
-       }
-       else
-       {
-        $('#to_form_field').removeClass('d-none');;
-       }
-  })
+  window.currently_working = function (event) {
+    if ($("#user_personal_detail_attributes_work_details_attributes_" + event.currentTarget.id.split('_')[7] + "_currently_working").prop('checked') == true) {
+      $("#user_personal_detail_attributes_work_details_attributes_" + event.currentTarget.id.split('_')[7] + "_to").closest('.form-group').addClass('d-none');
+    }
+    else {
+      $("#user_personal_detail_attributes_work_details_attributes_" + event.currentTarget.id.split('_')[7] + "_to").closest('.form-group').removeClass('d-none');
+    }
+  }
 
   // Burger menu click show toggle x class
   $(".burger-menu").on('click', function () {
@@ -154,7 +152,7 @@ $(document).on('turbolinks:load', function () {
   });
 
   $('.bulk-delete-objects').on('click', function () {
-    $('.bulk-method-objects').trigger('click')
+    $('.bulk-method-delete-objects').trigger('click')
   })
 
   $('.searchclear').on('click', function () {

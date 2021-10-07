@@ -3,7 +3,7 @@
   <h1><%= link_to 'Supplier', system_users_path, style:'color: #212529;' %></h1>
   <ol class="breadcrumb">
     <li class="breadcrumb-item">
-        <a href="<%= dashboard_sales_path %>">Dashboard</a>
+        <a href="<%= home_path %>">Dashboard</a>
     </li>
     <li class="breadcrumb-item">
         <a href="<%= system_users_path %>">Suppliers</a>
@@ -90,7 +90,7 @@
                   </td>
                 </tr>
               <% end %>
-              <%= f.submit '', class: 'bulk-method-objects d-none'%>
+              <%= f.submit '', class: 'bulk-method-delete-objects d-none'%>
             </table>
           </div>
         <% end %>

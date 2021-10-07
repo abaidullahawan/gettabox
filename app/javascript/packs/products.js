@@ -303,7 +303,7 @@ $(document).on('turbolinks:load', function () {
   })
 
   $('.bulk-destroy-objects').on('click', function () {
-    $('.bulk-destroy-products').trigger('click')
+    $('.bulk-method-destroy-objects').trigger('click')
   })
 
 })

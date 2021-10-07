@@ -1,11 +1,14 @@
 <!-- Main Content Header -->
 <div class="main-content-header">
-  <h1><%= link_to 'Supplier', system_users_path, style:'color: #212529;' %></h1>
-  <ol class="breadcrumb">
-    <li class="breadcrumb-item active">
-      <span class="active">Index</span>
-    </li>
-  </ol>
+    <h1>Suppliers</h1>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a href="<%= home_path %>">Dashboard</a>
+        </li>
+        <li class="breadcrumb-item active">
+            <span class="active">Suppliers</span>
+        </li>
+    </ol>
 </div>
 <!-- End Main Content Header -->
 
@@ -111,7 +114,7 @@
                     </td>
                   </tr>
                 <% end %>
-                <%= f.submit '', class: 'bulk-method-objects d-none'%>
+                <%= f.submit '', class: 'bulk-method-delete-objects d-none'%>
               </table>
             </div>
             <div class='col-sm-6 col-md-6 col-lg-6 col-xl-6 border-left'>

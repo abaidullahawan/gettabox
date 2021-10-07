@@ -47,12 +47,12 @@
 
   <div class='row mb-4 my-2'>
     <div class='col-lg-6 col-sm-12'>
-      <div class="form-check" id= "currently-working-check">
-        <%= f.check_box :currently_working, class: 'form-check-input' %>
+      <div class="form-check currently-working-check">
+        <%= f.check_box :currently_working, class: 'form-check-input', onclick: 'currently_working(event)' %>
         <%= f.label :currently_working, class: 'form-check-label' %>
       </div>
     </div>
   </div>
 
-  <%= link_to_remove_association "Remove Contact", f, class: 'btn btn-outline-secondary rounded mb-3' %>
+  <%= link_to_remove_association "Remove Work", f, class: 'btn btn-outline-secondary rounded mb-3' %>
 </div>

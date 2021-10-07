@@ -69,7 +69,7 @@ class CategoriesController < ApplicationController
   end
 
   def bulk_method
-    params[:object_ids].delete('0')
+    params[:object_ids].delete('0') if params[:object_ids].present?
     if params[:object_ids].present?
       params[:object_ids].each do |p|
         category = Category.find(p.to_i)
@@ -89,18 +89,31 @@ class CategoriesController < ApplicationController
   end
 
   def restore
+    params[:object_ids].delete('0') if params[:object_ids].present?
     if params[:object_id].present? && Category.restore(params[:object_id])
-      flash[:notice] = 'Category restore successful'
-      redirect_to archive_categories_path
-    elsif params[:object_ids].present?
-      params[:object_ids].delete('0')
+      flash[:notice] = 'Categories restore successfully'
+    elsif params[:commit] == 'Delete' && params[:object_ids].present?
+      params[:object_ids].each do |id|
+        Category.only_deleted.find(id).really_destroy!
+      end
+      flash[:notice] = 'Categories deleted successfully'
+    elsif params[:commit] == 'Restore' && params[:object_ids].present?
       params[:object_ids].each do |p|
         Category.restore(p.to_i)
       end
-      flash[:notice] = 'Categories restore successful'
+      flash[:notice] = 'Categories restored successfully'
+    else
+      flash[:notice] = 'Please select something to perform action'
+    end
+    redirect_to archive_categories_path
+  end
+
+  def permanent_delete
+    if params[:object_id].present? && Category.only_deleted.find(params[:object_id]).really_destroy!
+      flash[:notice] = 'Category deleted successfully'
       redirect_to archive_categories_path
     else
-      flash[:notice] = 'Category cannot be restore'
+      flash[:notice] = 'Category cannot be deleted/Please select something to delete'
       redirect_to archive_categories_path
     end
   end

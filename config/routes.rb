@@ -7,6 +7,7 @@ Rails.application.routes.draw do
       post 'bulk_method', to: 'seasons#bulk_method'
       get 'archive', to: 'seasons#archive'
       post 'restore', to: 'seasons#restore'
+      post 'permanent_delete', to: 'seasons#permanent_delete'
       post 'season_by_name', to: 'seasons#search_season_by_name'
     end
   end
@@ -40,6 +41,7 @@ Rails.application.routes.draw do
       post 'bulk_method', to: 'categories#bulk_method'
       get 'archive', to: 'categories#archive'
       post 'restore', to: 'categories#restore'
+      post 'permanent_delete', to: 'categories#permanent_delete'
       post 'category_by_title', to: 'categories#search_category_by_title'
     end
   end

@@ -1,12 +1,15 @@
 <!-- Main Content Header -->
 <div class="main-content-header">
-  <h1>Purchase Order</h1>
+  <h1>Purchase Orders</h1>
   <ol class="breadcrumb">
     <li class="breadcrumb-item">
-      <a href="<%= dashboard_sales_path %>">Dashboard</a>
+      <a href="<%= home_path %>" role="button">Dashboard</a>
     </li>
     <li class="breadcrumb-item">
-      <a href="<%= system_users_path %>">Suppliers</a>
+      <a href="<%= purchase_orders_path %>">Purchase Orders</a>
+    </li>
+    <li class="breadcrumb-item">
+      <a href="<%= purchase_order_path(@purchase_order) %>">Purchase Order</a>
     </li>
     <li class="breadcrumb-item active">
       <span class="active">Edit</span>

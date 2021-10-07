@@ -102,7 +102,7 @@ class PurchaseDeliveriesController < ApplicationController
   end
 
   def bulk_method
-    params[:object_ids].delete('0')
+    params[:object_ids].delete('0') if params[:object_ids].present?
     if params[:object_ids].present?
       params[:object_ids].each do |p|
         product = PurchaseDelivery.find(p.to_i)
