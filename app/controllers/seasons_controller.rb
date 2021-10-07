@@ -79,7 +79,7 @@ class SeasonsController < ApplicationController
   end
 
   def bulk_method
-    params[:object_ids].delete('0')
+    params[:object_ids].delete('0') if params[:object_ids].present?
     if params[:object_ids].present?
       params[:object_ids].each do |p|
         season = Season.find(p.to_i)
@@ -99,18 +99,31 @@ class SeasonsController < ApplicationController
   end
 
   def restore
+    params[:object_ids].delete('0') if params[:object_ids].present?
     if params[:object_id].present? && Season.restore(params[:object_id])
-      flash[:notice] = 'Season restore successful'
-      redirect_to archive_seasons_path
-    elsif params[:object_ids].present?
-      params[:object_ids].delete('0')
+      flash[:notice] = 'Seasons restore successfully'
+    elsif params[:commit] == 'Delete' && params[:object_ids].present?
+      params[:object_ids].each do |id|
+        Season.only_deleted.find(id).really_destroy!
+      end
+      flash[:notice] = 'Seasons deleted successfully'
+    elsif params[:commit] == 'Restore' && params[:object_ids].present?
       params[:object_ids].each do |p|
         Season.restore(p.to_i)
       end
-      flash[:notice] = 'Seasons restore successful'
+      flash[:notice] = 'Seasons restored successfully'
+    else
+      flash[:notice] = 'Please select something to perform action'
+    end
+    redirect_to archive_seasons_path
+  end
+
+  def permanent_delete
+    if params[:object_id].present? && Season.only_deleted.find(params[:object_id]).really_destroy!
+      flash[:notice] = 'Season deleted successfully'
       redirect_to archive_seasons_path
     else
-      flash[:notice] = 'Season cannot be restore'
+      flash[:notice] = 'Season cannot be deleted/Please select something to delete'
       redirect_to archive_seasons_path
     end
   end

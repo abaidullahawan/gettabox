@@ -114,7 +114,7 @@ class SystemUsersController < ApplicationController
   end
 
   def bulk_method
-    params[:object_ids].delete('0')
+    params[:object_ids].delete('0') if params[:object_ids].present?
     if params[:object_ids].present?
       params[:object_ids].each do |p|
         product = SystemUser.find(p.to_i)
@@ -138,7 +138,6 @@ class SystemUsersController < ApplicationController
       flash[:notice] = 'Supplier restore successful'
       redirect_to archive_system_users_path
     elsif params[:object_ids].present?
-      params[:object_ids].delete('0')
       params[:object_ids].each do |p|
         SystemUser.restore(p.to_i)
       end

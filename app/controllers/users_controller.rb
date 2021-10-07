@@ -98,7 +98,7 @@ class UsersController < ApplicationController
   end
 
   def bulk_method
-    params[:object_ids].delete('0')
+    params[:object_ids].delete('0') if params[:object_ids].present?
     if params[:object_ids].present?
       params[:object_ids].each do |p|
         user = User.find(p.to_i)
@@ -177,7 +177,8 @@ class UsersController < ApplicationController
               :dob,
               :gender,
               contact_details_attributes:
-              [ :phone_number,
+              [ :id,
+                :phone_number,
                 :email,
                 :street_address,
                 :city,
@@ -188,7 +189,8 @@ class UsersController < ApplicationController
 
               ],
               work_details_attributes:
-              [ :company_name,
+              [ :id,
+                :company_name,
                 :position,
                 :city,
                 :description,
@@ -198,7 +200,8 @@ class UsersController < ApplicationController
                 :_destroy
               ],
               study_details_attributes:
-              [ :school,
+              [ :id,
+                :school,
                 :degree,
                 :format,
                 :description,

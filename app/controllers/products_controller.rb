@@ -111,7 +111,7 @@ class ProductsController < ApplicationController
   end
 
   def bulk_method
-    params[:object_ids].delete('0')
+    params[:object_ids].delete('0') if params[:object_ids].present?
     if params[:object_ids].present?
       params[:object_ids].each do |p|
         product = Product.find(p.to_i)
@@ -131,14 +131,15 @@ class ProductsController < ApplicationController
   end
 
   def restore
+    params[:object_ids].delete('0') if params[:object_ids].present?
     if params[:object_id].present? && Product.restore(params[:object_id])
       flash[:notice] = 'Product restore successful'
-    elsif params[:commit] == 'Delete' && params[:object_ids].delete('0') && params[:object_ids].present?
+    elsif params[:commit] == 'Delete' && params[:object_ids].present?
       params[:object_ids].each do |id|
         Product.only_deleted.find(id).really_destroy!
       end
       flash[:notice] = 'Products deleted successfully'
-    elsif params[:commit] == 'Restore' &&params[:object_ids].delete('0') && params[:object_ids].present?
+    elsif params[:commit] == 'Restore' && params[:object_ids].present?
       params[:object_ids].each do |p|
         Product.restore(p.to_i)
       end

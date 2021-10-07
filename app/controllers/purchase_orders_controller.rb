@@ -99,10 +99,10 @@ class PurchaseOrdersController < ApplicationController
   def destroy
     if @purchase_order.destroy
       flash[:notice] = "Purchase Order archive successfully."
-      redirect_to purchase_orderss_path
+      redirect_to purchase_orders_path
     else
       flash.now[:notice] = "Purchase Order not archived."
-      render purchase_orderss_path
+      render purchase_orders_path
     end
   end
 
@@ -140,7 +140,7 @@ class PurchaseOrdersController < ApplicationController
   end
 
   def bulk_method
-    params[:object_ids].delete('0')
+    params[:object_ids].delete('0') if params[:object_ids].present?
     if params[:object_ids].present?
       params[:object_ids].each do |p|
         product = PurchaseOrder.find(p.to_i)
@@ -169,10 +169,10 @@ class PurchaseOrdersController < ApplicationController
         PurchaseOrder.restore(p.to_i)
       end
       flash[:notice] = 'Purchase Orders restore successful'
-      redirect_to archive_purchase_orderss_path
+      redirect_to archive_purchase_orders_path
     else
       flash[:notice] = 'Purchase Order cannot be restore'
-      redirect_to archive_purchase_orderss_path
+      redirect_to archive_purchase_orders_path
     end
   end
 
