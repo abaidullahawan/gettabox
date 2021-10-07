@@ -4,6 +4,8 @@ class EmailTemplatesController < ApplicationController
   # GET /email_templates or /email_templates.json
   def index
     @email_templates = EmailTemplate.all
+    @email_template = EmailTemplate.new
+
   end
 
   # GET /email_templates/1 or /email_templates/1.json
