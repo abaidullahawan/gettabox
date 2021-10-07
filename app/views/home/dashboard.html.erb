@@ -12,67 +12,67 @@
 
 <div class="row">
   <div class="col-lg-3 col-sm-6">
+    <%= link_to products_path do %>
     <div class="stats-card-two hover-card mb-30">
       <div class="media align-items-center justify-content-between">
         <div class="ml-0">
-          <a href="<%= products_path %>" class="link_tag">
-            <p class="mb-10 line-height-1">Total Products</p>
-            <h3 class="mb-0 fs-25"><%= @total_counts[:products_count] %></h3>
-          </a>
+          <p class="mb-10 line-height-1">Total Products</p>
+          <h3 class="mb-0 fs-25"><%= @total_counts[:products_count] %></h3>
         </div>
         <div class="avatar avatar-gold ">
-          <a href="<%= products_path %>" class="link_tag"><i data-feather="shopping-bag"></i></a>
+         <i data-feather="shopping-bag"></i>
         </div>
       </div>
     </div>
+    <% end %>
   </div>
 
   <div class="col-lg-3 col-sm-6">
+    <%= link_to system_users_path do %>
     <div class="stats-card-two hover-card mb-30">
       <div class="media align-items-center justify-content-between">
         <div class="ml-0">
-          <a href="<%= system_users_path %>" class="link_tag">
-            <p class="mb-10 line-height-1">Total Suppliers</p>
-            <h3 class="mb-0 fs-25"><%= @total_counts[:suppliers_count] %></h3>
-          </a>
+          <p class="mb-10 line-height-1">Total Suppliers</p>
+          <h3 class="mb-0 fs-25"><%= @total_counts[:suppliers_count] %></h3>
         </div>
         <div class="avatar avatar-purple ">
-          <a href="<%= system_users_path %>" class="link_tag"><i data-feather="users"></i></a>
+          <i data-feather="users"></i>
         </div>
       </div>
     </div>
+    <% end %>
   </div>
 
   <div class="col-lg-3 col-sm-6">
+    <%= link_to purchase_orders_path do %>
     <div class="stats-card-two hover-card mb-30">
       <div class="media align-items-center justify-content-between">
         <div class="ml-0">
-          <a href="<%= purchase_orders_path %>" class="link_tag">
-            <p class="mb-10 line-height-1">Total Purchase Orders</p>
-            <h3 class="mb-0 fs-25"><%= @total_counts[:purchase_orders_count] %></h3>
-          </a>
+          <p class="mb-10 line-height-1">Total Purchase Orders</p>
+          <h3 class="mb-0 fs-25"><%= @total_counts[:purchase_orders_count] %></h3>
         </div>
         <div class="avatar avatar-blue ">
-          <a href="<%= purchase_orders_path %>" class="link_tag"><i data-feather="file-text"></i></a>
+          <i data-feather="file-text"></i>
         </div>
       </div>
     </div>
+    <% end %>
   </div>
 
   <div class="col-lg-3 col-sm-6">
+    <%= link_to purchase_deliveries_path do %>
     <div class="stats-card-two hover-card mb-30">
       <div class="media align-items-center justify-content-between">
         <div class="ml-0">
-          <a href="<%= purchase_deliveries_path %>" class="link_tag">
-            <p class="mb-10 line-height-1">Total Purchase Deliveries</p>
-            <h3 class="mb-0 fs-25"><%= @total_counts[:purchase_deliveries_count] %></h3>
-          </a>
+          <p class="mb-10 line-height-1">Total Purchase Deliveries</p>
+          <h3 class="mb-0 fs-25"><%= @total_counts[:purchase_deliveries_count] %></h3>
         </div>
         <div class="avatar avatar-cyan ">
-          <a href="<%= purchase_deliveries_path %>" class="link_tag"><i data-feather="file-text"></i></a>
+          <i data-feather="file-text"></i>
         </div>
       </div>
     </div>
+    <% end %>
   </div>
 </div>
 

@@ -1,4 +1,4 @@
-<div class="col-lg-12 col-xl-8">
+<div class="col-lg-12 col-xl-7">
   <div class="card mb-30">
     <div class="card-body">
       <div class="card-header">
@@ -48,7 +48,7 @@
           <%= page_entries_info @products %>
         </div>
         <div class="pagination mt-3">
-          <%= paginate @products,theme: "twitter-bootstrap-4",pagination_class: "pagination-sm",nav_class: "d-inline-b" %>
+          <%= paginate @products, :param_name => :product_page, theme: "twitter-bootstrap-4",pagination_class: "pagination-sm",nav_class: "d-inline-b" %>
         </div>
       </div>
     </div>

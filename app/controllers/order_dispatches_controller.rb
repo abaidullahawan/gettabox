@@ -4,7 +4,7 @@ class OrderDispatchesController < ApplicationController
 
   def index
     @all_orders = ChannelOrder.all
-    @orders = @all_orders.order(created_at: :desc).page(params[:page]).per(params[:limit])
+    @orders = @all_orders.order(created_at: :asc).page(params[:page]).per(params[:limit])
     if params[:all_product_data].present?
       all_order_data
       flash[:notice] = 'All orders are displaying'
@@ -31,8 +31,10 @@ class OrderDispatchesController < ApplicationController
     body = JSON.parse(request.body)
     if body["orders"].present?
       body["orders"].each do |item|
+        creationdate = item["creationDate"]
         item = item.to_json
-        ChannelOrder.where(order_data: item).first_or_create
+        order = ChannelOrder.where(channel_type: "ebay", order_data: item).first_or_create
+        order.update(created_at: creationdate)
       end
     end
     if body["next"].present?
@@ -53,8 +55,10 @@ class OrderDispatchesController < ApplicationController
     body = JSON.parse(request.body)
     if body["orders"].present?
       body["orders"].each do |item|
+        creationdate = item["creationDate"]
         item = item.to_json
-        ChannelOrder.where(channel_type: "ebay", order_data: item).first_or_create
+        order = ChannelOrder.where(channel_type: "ebay", order_data: item).first_or_create
+        order.update(created_at: creationdate)
       end
     end
     if body["next"].present?

@@ -7,7 +7,7 @@
       </div>
       <div class="table-responsive">
         <div class="pagination justify-content-center">
-          <%= paginate @purchase_orders,theme: "twitter-bootstrap-4",pagination_class: "pagination-sm",nav_class: "d-inline-b" %>
+          <%= paginate @purchase_orders, :param_name => :order_page,theme: "twitter-bootstrap-4",pagination_class: "pagination-sm",nav_class: "d-inline-b" %>
         </div>
         <table class="table table-hover text-vertical-middle mb-0">
           <thead class="bort-none borpt-0">
