@@ -12,83 +12,83 @@
 
 <div class="row">
   <div class="col-lg-4 col-sm-6">
+  <%= link_to products_path do %>
     <div class="stats-card-two hover-card mb-30">
       <div class="media align-items-center justify-content-between">
         <div class="ml-0">
-          <a href="<%= products_path %>" class="link_tag">
-            <p class="mb-10 line-height-1">Total Products</p>
-            <h3 class="mb-0 fs-25"><%= @total_counts[:products_count] %></h3>
-          </a>
+          <p class="mb-10 line-height-1">Total Products</p>
+          <h3 class="mb-0 fs-25"><%= @total_counts[:products_count] %></h3>
         </div>
         <div class="avatar avatar-gold">
-          <a href="<%= products_path %>" class="link_tag"><i data-feather="shopping-bag"></i></a>
+          <i data-feather="shopping-bag"></i>
         </div>
       </div>
     </div>
+    <% end %>
   </div>
 
   <div class="col-lg-4 col-sm-6">
+    <%= link_to users_path do %>
     <div class="stats-card-two hover-card mb-30">
       <div class="media align-items-center justify-content-between">
         <div class="ml-0">
-          <a href="<%= users_path %>" class="link_tag">
-            <p class="mb-10 line-height-1">Total Users</p>
-            <h3 class="mb-0 fs-25"><%= @total_counts[:users_count] %></h3>
-          </a>
+          <p class="mb-10 line-height-1">Total Users</p>
+          <h3 class="mb-0 fs-25"><%= @total_counts[:users_count] %></h3>
         </div>
         <div class="avatar avatar-purple ">
-          <a href="<%= users_path %>" class="link_tag"><i data-feather="users"></i></a>
+          <i data-feather="users"></i>
         </div>
       </div>
     </div>
+    <% end %>
   </div>
 
   <div class="col-lg-4 col-sm-6">
+    <%= link_to categories_path do %>
     <div class="stats-card-two hover-card mb-30">
       <div class="media align-items-center justify-content-between">
         <div class="ml-0">
-          <a href="<%= categories_path %>" class="link_tag">
-            <p class="mb-10 line-height-1">Total Product Categories</p>
-            <h3 class="mb-0 fs-25"><%= @total_counts[:categories_count] %></h3>
-          </a>
+          <p class="mb-10 line-height-1">Total Product Categories</p>
+          <h3 class="mb-0 fs-25"><%= @total_counts[:categories_count] %></h3>
         </div>
         <div class="avatar avatar-blue ">
-          <a href="<%= categories_path %>" class="link_tag"><i data-feather="briefcase"></i></a>
+          <i data-feather="briefcase"></i>
         </div>
       </div>
     </div>
+    <% end %>
   </div>
 
   <div class="col-lg-4 col-sm-6">
+    <%= link_to seasons_path do %>
     <div class="stats-card-two hover-card mb-30">
       <div class="media align-items-center justify-content-between">
         <div class="ml-0">
-          <a href="<%= seasons_path %>" class="link_tag">
-            <p class="mb-10 line-height-1">Total Seasons</p>
-            <h3 class="mb-0 fs-25"><%= @total_counts[:seasons_count] %></h3>
-          </a>
+          <p class="mb-10 line-height-1">Total Seasons</p>
+          <h3 class="mb-0 fs-25"><%= @total_counts[:seasons_count] %></h3>
         </div>
         <div class="avatar avatar-red ">
-          <a href="<%= seasons_path %>" class="link_tag"><i data-feather="calendar"></i></a>
+          <i data-feather="calendar"></i>
         </div>
       </div>
     </div>
+    <% end %>
   </div>
 
   <div class="col-lg-4 col-sm-6">
+    <%= link_to extra_field_names_path do %>
     <div class="stats-card-two hover-card mb-30">
       <div class="media align-items-center justify-content-between">
         <div class="ml-0">
-          <a href="<%= extra_field_names_path %>" class="link_tag">
           <p class="mb-10 line-height-1">Add</p>
           <h3 class="mb-0 fs-25">Extra Fields</h3>
-          </a>
         </div>
         <div class="avatar avatar-cyan ">
-          <a href="<%= extra_field_names_path %>" class="link_tag"><i data-feather="link"></i></a>
+          <i data-feather="link"></i>
         </div>
       </div>
     </div>
+    <% end %>
   </div>
 
 </div>
