@@ -138,7 +138,6 @@ class SystemUsersController < ApplicationController
       flash[:notice] = 'Supplier restore successful'
       redirect_to archive_system_users_path
     elsif params[:object_ids].present?
-      pr
       params[:object_ids].each do |p|
         SystemUser.restore(p.to_i)
       end
