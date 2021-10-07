@@ -37,10 +37,10 @@
               <%= select_tag :product_mapping, options_for_select([ "Ebay Sandbox", "Ebay Production"]), class:"form-control chosen-select product-mapping-select", title: 'Select Mapping Category', prompt: "Please select" %>
             </div>
             <div class="col-md-2">
-              <%= select_tag :mapped_status, options_for_select([ "Unmapped", "Mapped"], params[:mapped_status]), class:"form-control", title: 'Select Mapping Status' %>
+              <%= select_tag :mapped_status, options_for_select([ "Select Map or Un-map ", "Unmapped", "Mapped"], params[:mapped_status]), class:"form-control", title: 'Select Mapping Status' %>
             </div>
-            <%= submit_tag 'Mapping', class: 'btn btn-primary product-mapping-request' %>
-            <%= link_to 'Ebay Request', 'https://auth.ebay.com/oauth2/authorize?client_id=ChannelD-ChannelD-PRD-da28ec690-4a9f363c&response_type=code&redirect_uri=Channel_Dispatc-ChannelD-Channe-flynitdm&scope=https://api.ebay.com/oauth/api_scope https://api.ebay.com/oauth/api_scope/sell.marketing.readonly https://api.ebay.com/oauth/api_scope/sell.marketing https://api.ebay.com/oauth/api_scope/sell.inventory.readonly https://api.ebay.com/oauth/api_scope/sell.inventory https://api.ebay.com/oauth/api_scope/sell.account.readonly https://api.ebay.com/oauth/api_scope/sell.account https://api.ebay.com/oauth/api_scope/sell.fulfillment.readonly https://api.ebay.com/oauth/api_scope/sell.fulfillment https://api.ebay.com/oauth/api_scope/sell.analytics.readonly https://api.ebay.com/oauth/api_scope/sell.finances https://api.ebay.com/oauth/api_scope/sell.payment.dispute https://api.ebay.com/oauth/api_scope/commerce.identity.readonly https://api.ebay.com/oauth/api_scope/commerce.notification.subscription https://api.ebay.com/oauth/api_scope/commerce.notification.subscription.readonly' , target: 'blank', class: 'btn btn-info text-center ml-2' %>
+            <%= submit_tag 'Mapping', class: 'btn btn-primary product-mapping-request d-none' %>
+            <%= link_to 'Ebay Request', 'https://auth.ebay.com/oauth2/authorize?client_id=ChannelD-ChannelD-PRD-da28ec690-4a9f363c&response_type=code&redirect_uri=Channel_Dispatc-ChannelD-Channe-flynitdm&scope=https://api.ebay.com/oauth/api_scope https://api.ebay.com/oauth/api_scope/sell.marketing.readonly https://api.ebay.com/oauth/api_scope/sell.marketing https://api.ebay.com/oauth/api_scope/sell.inventory.readonly https://api.ebay.com/oauth/api_scope/sell.inventory https://api.ebay.com/oauth/api_scope/sell.account.readonly https://api.ebay.com/oauth/api_scope/sell.account https://api.ebay.com/oauth/api_scope/sell.fulfillment.readonly https://api.ebay.com/oauth/api_scope/sell.fulfillment https://api.ebay.com/oauth/api_scope/sell.analytics.readonly https://api.ebay.com/oauth/api_scope/sell.finances https://api.ebay.com/oauth/api_scope/sell.payment.dispute https://api.ebay.com/oauth/api_scope/commerce.identity.readonly https://api.ebay.com/oauth/api_scope/commerce.notification.subscription https://api.ebay.com/oauth/api_scope/commerce.notification.subscription.readonly' , target: 'blank', class: 'btn btn-info text-center ml-2 d-none' %>
           </div><br>
           <% end %>
       </div>
@@ -54,8 +54,7 @@
               </tr>
               <tr>
                 <th>Image</th>
-                <th class="text-center">Sku</th>
-                <th class="text-center">Type/Vat</th>
+                <th colspan='2' class="text-center">Sku / <span class="badge bg-info text-white">Item ID</span></th>
                 <th class="text-center">Name</th>
                 <th>Image</th>
                 <th class="text-center">Sku</th>
@@ -73,9 +72,11 @@
                           <%= image_tag('user/1.jpg', width: "50", height: "50", class: 'mr-3 img-thumbnail', alt: 'User Image') %>
                         <% end %>
                       </td>
-                      <td class="text-center"><%= item.product_data["SKU"] if item.product_data["SKU"].present? %></td>
+                      <td colspan='2' class="text-center">
+                        <%= item.item_sku %><br>
+                        <span class="badge bg-info text-white"><%= item.item_id %></span>
+                      </td>
                       <%= f.hidden_field :channel_product_id, value: item.id %>
-                      <td class="text-center"><%= "" %></td>
                       <td class="text-center"><%= item.product_data["Title"] if item.product_data["Title"].present? %></td>
                       <% if @matching_products[item.id].present? %>
                         <% if @matching_products[item.id].photo.attached? %>

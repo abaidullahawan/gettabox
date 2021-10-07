@@ -175,6 +175,9 @@ class ProductMappingsController < ApplicationController
 
     def ebay_production_call(refresh_token)
 
+      @page_no = 1
+      @total_pages = 1
+
       require 'net/http'
       require 'base64'
       require 'http'
@@ -183,34 +186,50 @@ class ProductMappingsController < ApplicationController
       require "rexml/document"
       require 'builder'
 
-      @xml_data = Builder::XmlMarkup.new()
-      @xml_data.instruct!
-      @xml_data.GetMyeBaySellingRequest("xmlns" => "urn:ebay:apis:eBLBaseComponents"){
-        @xml_data.RequesterCredentials{
-          @xml_data.eBayAuthToken "#{refresh_token.access_token}"
+      loop do
+        @xml_data = Builder::XmlMarkup.new()
+        @xml_data.instruct!
+        @xml_data.GetMyeBaySellingRequest("xmlns" => "urn:ebay:apis:eBLBaseComponents"){
+          @xml_data.RequesterCredentials{
+            @xml_data.eBayAuthToken "#{refresh_token.access_token}"
+          }
+          @xml_data.ErrorLanguage "en_US"
+          @xml_data.WarningLevel "High"
+          @xml_data.ActiveList{
+            @xml_data.Sort "TimeLeft"
+            @xml_data.Pagination{
+              @xml_data.PageNumber "#{@page_no}"
+            }
+          }
         }
-        @xml_data.ErrorLanguage "en_US"
-        @xml_data.WarningLevel "High"
-        @xml_data.ActiveList{
-          @xml_data.Sort "TimeLeft"
-        }
-      }
-      response = HTTP.post("https://api.ebay.com/ws/api.dll",
-        :body => @xml_data.to_xml.split("<inspect/>").first,
-        :headers => {
-          'X-EBAY-API-SITEID' => '3',
-          'X-EBAY-API-COMPATIBILITY-LEVEL' => '967',
-          'X-EBAY-API-CALL-NAME' => 'GetMyeBaySelling',
-          'X-EBAY-API-APP-NAME' => 'ChannelD-ChannelD-PRD-da28ec690-4a9f363c',
-          'X-EBAY-API-DEV-NAME' => '8a3c7cee-7507-45ca-bb47-22ffe194a94b',
-          'X-EBAY-API-CERT-NAME' => 'PRD-a28ec6908ea9-7c43-4fd9-be43-0e7d',
-          'X-EBAY-API-DETAIL-LEVEL' => '0'
-        }
-      )
-      @xml_response_data = Nokogiri::XML(response.body)
-      @data_xml_re = Hash.from_xml(@xml_response_data.to_xml)
-      @data_xml_re['GetMyeBaySellingResponse']['ActiveList']['ItemArray']['Item'].each do |item|
-        ChannelProduct.create_with(channel_type: 'ebay', item_id: item["ItemID"].to_i, product_data: item, item_sku: item["SKU"]).find_or_create_by(channel_type: 'ebay', item_id: item["ItemID"].to_i)
+        response = HTTP.post("https://api.ebay.com/ws/api.dll",
+          :body => @xml_data.to_xml.split("<inspect/>").first,
+          :headers => {
+            'X-EBAY-API-SITEID' => '3',
+            'X-EBAY-API-COMPATIBILITY-LEVEL' => '967',
+            'X-EBAY-API-CALL-NAME' => 'GetMyeBaySelling',
+            'X-EBAY-API-APP-NAME' => 'ChannelD-ChannelD-PRD-da28ec690-4a9f363c',
+            'X-EBAY-API-DEV-NAME' => '8a3c7cee-7507-45ca-bb47-22ffe194a94b',
+            'X-EBAY-API-CERT-NAME' => 'PRD-a28ec6908ea9-7c43-4fd9-be43-0e7d',
+            'X-EBAY-API-DETAIL-LEVEL' => '0'
+          }
+        )
+        @xml_response_data = Nokogiri::XML(response.body)
+        @data_xml_re = Hash.from_xml(@xml_response_data.to_xml)
+        @total_pages = @data_xml_re['GetMyeBaySellingResponse']['ActiveList']['PaginationResult']['TotalNumberOfPages'].to_i
+        @data_xml_re['GetMyeBaySellingResponse']['ActiveList']['ItemArray']['Item'].each do |item|
+          if item['Variations'].present?
+            item['Variations']['Variation'].each do |variation|
+              ChannelProduct.create_with(channel_type: 'ebay', item_id: item["ItemID"].to_i, product_data: item, item_sku: variation["SKU"]).find_or_create_by(channel_type: 'ebay', item_id: item["ItemID"].to_i, item_sku: variation["SKU"])
+            end
+          else
+            ChannelProduct.create_with(channel_type: 'ebay', item_id: item["ItemID"].to_i, product_data: item, item_sku: item["SKU"]).find_or_create_by(channel_type: 'ebay', item_id: item["ItemID"].to_i)
+          end
+        end
+        @page_no += 1
+        if @page_no > @total_pages
+          break
+        end
       end
     end
 
