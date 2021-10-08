@@ -34,6 +34,10 @@ class ProductMappingsController < ApplicationController
     if params[:product_mapping] == 'Ebay Production'
       ebay_production_call(@refresh_token) if @refresh_token.present?
     end
+    if params[:export_csv].present?
+      @products = ChannelProduct.all
+      export_csv(@products)
+    end
   end
 
   def show
@@ -91,6 +95,13 @@ class ProductMappingsController < ApplicationController
     end
   end
 
+  def export_csv(products)
+    request.format = 'csv'
+    respond_to do |format|
+      format.csv { send_data csv_export(products), filename: "ChannelProducts-#{Date.today}.csv" }
+    end
+  end
+
   def update
   end
 
@@ -98,6 +109,17 @@ class ProductMappingsController < ApplicationController
   end
 
   private
+
+    def csv_export(products)
+      attributes = ChannelProduct.column_names.excluding('created_at', 'updated_at')
+      CSV.generate(headers: true) do |csv|
+        csv << attributes
+        ChannelProduct.all.each do |products|
+          csv << attributes.map{ |attr| products.send(attr) }
+        end
+      end
+    end
+
     def product_mapping_params
       params.
       require(:product).
