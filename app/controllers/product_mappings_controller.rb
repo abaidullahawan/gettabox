@@ -83,7 +83,7 @@ class ProductMappingsController < ApplicationController
           redirect_to product_mappings_path
         rescue OpenURI::HTTPError => e
           flash[:alert] = 'Product created! Cannot upload image'
-          redirect_to product_mappings_pat
+          redirect_to product_mappings_path
         end
       else
         flash[:alert] = 'Product cannot be created!'
