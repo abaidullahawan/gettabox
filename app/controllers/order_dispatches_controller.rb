@@ -29,13 +29,8 @@ class OrderDispatchesController < ApplicationController
     uri = URI(url)
     request = Net::HTTP.get_response(uri, headers)
     body = JSON.parse(request.body)
-    if body["orders"].present?
-      body["orders"].each do |item|
-        creationdate = item["creationDate"]
-        item = item.to_json
-        order = ChannelOrder.where(channel_type: "ebay", order_data: item).first_or_create
-        order.update(created_at: creationdate)
-      end
+    if body.present?
+      ChannelResponseData.create(channel: "ebay", response: body, api_url: url, api_call: "getOrders")
     end
     if body["next"].present?
       remaining_data(headers,body["next"])
@@ -53,13 +48,8 @@ class OrderDispatchesController < ApplicationController
     uri = URI(url)
     request = Net::HTTP.get_response(uri, headers)
     body = JSON.parse(request.body)
-    if body["orders"].present?
-      body["orders"].each do |item|
-        creationdate = item["creationDate"]
-        item = item.to_json
-        order = ChannelOrder.where(channel_type: "ebay", order_data: item).first_or_create
-        order.update(created_at: creationdate)
-      end
+    if body.present?
+      ChannelResponseData.create(channel: "ebay", response: body, api_url: url, api_call: "getOrders")
     end
     if body["next"].present?
       remaining_data(headers,body["next"])
