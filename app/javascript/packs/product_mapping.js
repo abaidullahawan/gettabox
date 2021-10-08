@@ -3,17 +3,16 @@ import $ from 'jquery'
 $(document).on('turbolinks:load', function () {
 
   $('.create-single-product').on('click', function () {
-    debugger;
     var json = this.dataset.item
     var cd_id = this.dataset.id
     var data = JSON.parse(json)
-    var sku = data.product_data.sku
-    var title = data.product_data.product.title
-    var description = data.product_data.product.description
+    var sku = data.item_sku
+    var title = data.product_data.Title
+    var description = data.product_data.description
     // var imageUrl = data.product_data.product.imageUrls[0]
     // var urlSplit = imageUrl.split('/')
     // var imageName = urlSplit[urlSplit.length - 1]
-    var quantity = data.product_data.availability.shipToLocationAvailability.quantity
+    var quantity = data.product_data.Quantity
 
     $('#single-product-create-modal .modal-body #channel_product_id').val(cd_id)
     $('#single-product-create-modal .modal-body #product_title').val(title)
@@ -26,13 +25,12 @@ $(document).on('turbolinks:load', function () {
   })
 
   $('.create-multi-product').on('click', function () {
-    debugger;
     var json = this.dataset.item
     var cd_id = this.dataset.id
     var data = JSON.parse(json)
-    var sku = data.product_data.sku
-    var title = data.product_data.product.title
-    var description = data.product_data.product.description
+    var sku = data.item_sku
+    var title = data.product_data.Title
+    var description = data.product_data.description
 
     $('#multi-product-create-modal .modal-body #channel_product_id').val(cd_id)
     $('#multi-product-create-modal .modal-body #product_title').val(title)
@@ -52,7 +50,7 @@ $(document).on('turbolinks:load', function () {
     $(this).closest('td').find('.productSearch').toggleClass('d-none', 3000);
   })
 
-  $('#mapped_status, #product_mapping').on('change', function () {
+  $('#q_status_eq, #product_mapping').on('change', function () {
     $('.product-mapping-request').trigger('click')
   })
 

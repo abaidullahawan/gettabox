@@ -1,5 +1,3 @@
-
-
 <!-- Main Content Header -->
 <div class="main-content-header">
   <h1>Product Mapping</h1>
@@ -31,15 +29,21 @@
           </div>
           <h5 class="card-title"> Data</h5>
         </div>
-          <%= form_tag( '/product_mappings', method: :get) do |f| %>
+          <%= search_form_for @q, url: product_mappings_path, method: :get do |f| %>
           <div class='row'>
             <div class="col-md-3">
               <%= select_tag :product_mapping, options_for_select([ "Ebay Sandbox", "Ebay Production"]), class:"form-control chosen-select product-mapping-select", title: 'Select Mapping Category', prompt: "Please select" %>
             </div>
             <div class="col-md-2">
-              <%= select_tag :mapped_status, options_for_select([ "Select Map or Un-map ", "Unmapped", "Mapped"], params[:mapped_status]), class:"form-control", title: 'Select Mapping Status' %>
+              <%= f.select :status_eq, ChannelProduct.statuses.map { |key, value| [key.humanize, value] }, {include_blank: 'Select an option'}, class:"form-control", title: 'Select Mapping Status' %>
             </div>
-            <%= submit_tag 'Mapping', class: 'btn btn-primary product-mapping-request d-none' %>
+            <div class="col-md-2">
+              <%= f.search_field :item_id_eq, class:"form-control", title: 'Search item id', placeholder: 'Search Item Id' %>
+            </div>
+            <div class="col-md-2">
+              <%= f.search_field :item_sku_eq, class:"form-control", title: 'Search item sku', placeholder: 'Search Item Sku' %>
+            </div>
+            <%= f.submit 'Mapping', class: 'btn btn-primary product-mapping-request d-none' %>
             <%= link_to 'Ebay Request', 'https://auth.ebay.com/oauth2/authorize?client_id=ChannelD-ChannelD-PRD-da28ec690-4a9f363c&response_type=code&redirect_uri=Channel_Dispatc-ChannelD-Channe-flynitdm&scope=https://api.ebay.com/oauth/api_scope https://api.ebay.com/oauth/api_scope/sell.marketing.readonly https://api.ebay.com/oauth/api_scope/sell.marketing https://api.ebay.com/oauth/api_scope/sell.inventory.readonly https://api.ebay.com/oauth/api_scope/sell.inventory https://api.ebay.com/oauth/api_scope/sell.account.readonly https://api.ebay.com/oauth/api_scope/sell.account https://api.ebay.com/oauth/api_scope/sell.fulfillment.readonly https://api.ebay.com/oauth/api_scope/sell.fulfillment https://api.ebay.com/oauth/api_scope/sell.analytics.readonly https://api.ebay.com/oauth/api_scope/sell.finances https://api.ebay.com/oauth/api_scope/sell.payment.dispute https://api.ebay.com/oauth/api_scope/commerce.identity.readonly https://api.ebay.com/oauth/api_scope/commerce.notification.subscription https://api.ebay.com/oauth/api_scope/commerce.notification.subscription.readonly' , target: 'blank', class: 'btn btn-info text-center ml-2 d-none' %>
           </div><br>
           <% end %>
@@ -85,16 +89,16 @@
                           <td><%= image_tag('user/1.jpg', width: "50", height: "50", class: 'mr-3 img-thumbnail', alt: 'User Image') %></td>
                         <% end %>
                         <td><%= @matching_products[item.id].sku%></td>
-                        <%= f.hidden_field :product_id, value: @matching_products[item.id].id %>
+                        <%= f.hidden_field :mapped_product_id, value: @matching_products[item.id].id %>
                         <td>
                           <div class="text-left d-flex ">
                             <div class="productSearchContainer">
-                              <% if params['mapped_status'] != 'Mapped'%>
-                              <span class='text-warning'>(Suggestion)-</span>
+                              <% if item.status_unmapped? %>
+                                <span class='text-warning'>(Suggestion)-</span>
                               <% end %>
                               <%= @matching_products[item.id].title %>
                             </div>
-                            <% if params['mapped_status'] != 'Mapped' %>
+                            <% if item.status_unmapped? %>
                               <div class="productSearchContainer">
                                 <button class="productSearchBtn btn btn-primary mt-2">
                                   <i data-feather='search' class='icon wh-15 mt-minus-3'></i>
@@ -123,12 +127,13 @@
                             Actions
                           </button>
                           <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                            <%= f.submit 'Un-map', data: { disable_with: false }, class: "dropdown-item" if params['mapped_status'] == 'Mapped' %>
-                            <%#= f.submit 'Create', data: { disable_with: false }, class: "dropdown-item" if params['mapped_status'] != 'Mapped'%>
-                            <%= f.submit 'Map', data: { disable_with: false }, class: "dropdown-item" if params['mapped_status'] != 'Mapped'%>
+                            <%= f.submit 'Un-map', data: { disable_with: false }, class: "dropdown-item" if item.status_mapped? %>
+                            <% if item.status_unmapped? %>
+                              <%= f.submit 'Map', data: { disable_with: false }, class: "dropdown-item" %>
+                              <a type="button" class="dropdown-item create-single-product" data-id="<%= item.id %>" data-item = '<%= item.to_json.html_safe %>' >Create Single Pack</a>
+                              <a type="button" class="dropdown-item create-multi-product" data-id="<%= item.id %>" data-item = '<%= item.to_json.html_safe %>' >Create Multi Pack</a>
+                            <% end %>
                             <%= link_to 'Archive', '', class: "dropdown-item"%>
-                            <a type="button" class="dropdown-item create-single-product" data-id="<%= item.id %>" data-item = '<%= item.to_json.html_safe %>' >Create Single Pack</a>
-                            <a type="button" class="dropdown-item create-multi-product" data-id="<%= item.id %>" data-item = '<%= item.to_json.html_safe %>' >Create Multi Pack</a>
                           </div>
                         </div>
                       </td>
