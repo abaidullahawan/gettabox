@@ -58,6 +58,8 @@ gem "http"
 gem 'rexml', '~> 3.2.4'
 gem 'builder'
 
+gem 'sidekiq'
+
 gem 'capistrano', '~> 3.11'
 gem 'capistrano-rails', '~> 1.4'
 gem 'capistrano-passenger', '~> 0.2.0'

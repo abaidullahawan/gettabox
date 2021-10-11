@@ -21,33 +21,26 @@ class OrderDispatchesController < ApplicationController
   def all_order_data
     require 'uri'
     require 'net/http'
-    @offset = 0
-    @total_order = 0
-    loop do
-      url = ("https://api.ebay.com/sell/fulfillment/v1/order?&limit=1000&offset=#{@offset}")
-      headers = { 'authorization' => "Bearer <#{@refresh_token.access_token}>",
-                  'content-type' => "application/json",
-                  'accept' => "application/json"
-                  }
-      uri = URI(url)
-      request = Net::HTTP.get_response(uri, headers)
-      @body = JSON.parse(request.body)
-      # if body["orders"].present?
-      #   body["orders"].each do |item|
-      #     creationdate = item["creationDate"]
-      #     ChannelOrder.create_with(channel_type: "ebay", order_data: item, ebayorder_id: item["orderId"], created_at: creationdate).find_or_create_by(channel_type: "ebay", ebayorder_id: item["orderId"])
-      #   end
-      # end
 
-      channel_response = ChannelResponseData.new(channel: "ebay", response: @body, api_url: url, api_call: "getOrders")
-      if channel_response.save
-        @total_order = @body['total']
-        @offset += 1000
-        if @total_order.nil? || @offset > @total_order
-          break
-        end
+    url = ("https://api.ebay.com/sell/fulfillment/v1/order?&limit=1&offset=0")
+    headers = { 'authorization' => "Bearer <#{@refresh_token.access_token}>",
+    'content-type' => "application/json",
+    'accept' => "application/json"
+    }
+
+    uri = URI(url)
+    request = Net::HTTP.get_response(uri, headers)
+    @body = JSON.parse(request.body)
+    @offset = 0
+    loop do
+      ChannelResponseData.create_with(channel: "ebay", api_url: "https://api.ebay.com/sell/fulfillment/v1/order?&limit=1000&offset=#{@offset}", api_call: "getOrders").find_or_create_by(api_url: "https://api.ebay.com/sell/fulfillment/v1/order?&limit=1000&offset=#{@offset}", api_call: "getOrders")
+      @offset += 1000
+      if @offset > @body['total']
+        break
       end
     end
+    CreateChannelOrderResponseJob.perform_later
+    CreateChannelOrderJob.perform_later
   end
 
   private
