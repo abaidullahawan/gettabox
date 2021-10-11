@@ -150,7 +150,7 @@ class SystemUsersController < ApplicationController
   end
 
   def search_system_user_by_name
-    @searched_supplier_by_name = SystemUser.where("lower(name) LIKE ?", "#{ params[:supplier_name].downcase }%").uniq
+    @searched_supplier_by_name = SystemUser.where("lower(name) LIKE ?", "#{ params[:search_value].downcase }%").pluck(:name).uniq
     respond_to do |format|
       format.json  { render json: @searched_supplier_by_name }
     end
