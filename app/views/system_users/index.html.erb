@@ -50,7 +50,7 @@
             </div>
             <div class="col-md-3"><br>
               <div class="dropdown">
-                <%= f.search_field :name_cont, class: 'form-control dropdown-toggle', id: 'supplier-name-search', data: {toggle: 'dropdown'}, area: {haspopup: true, expanded: 'false'}, autocomplete: 'off', placeholder:"Search in Name", title: 'Search in Name' %>
+                <%= f.search_field :name_cont, class: 'form-control dropdown-toggle', id: 'supplier-name-search', data: {toggle: 'dropdown'}, area: {haspopup: true, expanded: 'false'}, autocomplete: 'off', placeholder:"Search in Name", title: 'Search in Name', onkeyup: "dropdown_search( '/system_users/system_user_by_name', 'supplier-name-dropdown-list', 'supplier-name-list-item', event)", onclick: "dropdown_search( '/system_users/system_user_by_name', 'supplier-name-dropdown-list', 'supplier-name-list-item', event)" %>
                 <span class="searchclear">@@</span>
                 <ul class="dropdown-menu supplier-name-dropdown-list search-list" aria-labelledby="supplier-name-search">
                   <li><a href="#" class="dropdown-item supplier-name-list-item">Select Supplier</a></li>
@@ -60,16 +60,16 @@
             <div class="col-md-2"><br>
               <%= f.select :payment_method_eq, SystemUser.payment_methods.map { |key, value| [key.humanize, value] }, {include_blank: 'Select an option'}, class:"form-control payment-method-field chosen-select d-none", title: 'Select Payment Type' %>
             </div>
-            <div class="col-md-2"><br>
+            <!--div class="col-md-2"><br>
               <%= f.search_field :days_for_order_to_completion_eq, class:"form-control", placeholder:"Search in Order to Completion", title: 'Search in Order to Completion' %>
             </div>
             <div class="col-md-2"><br>
               <%= f.search_field :days_for_completion_to_delivery_eq, class:"form-control", placeholder:"Search in Completion to Delivery",title: 'Search in Completion to Delivery' %>
-            </div>
+            </div-->
             <div class="d-none">
               <button type='submit' class='d-none payment-method-button'></button>
             </div>
-            <div class='col-1 offset-1'>
+            <div class='col-1 offset-5'>
               <label for="inputState">Per Page</label>
               <%= select_tag :limit, options_for_select([10, 50, 100, 500, 1000], selected: params[:limit] || 10), id: 'change_per_page', class: 'form-control' %>
               <button type="submit" id="per_page_submit" hidden="hidden"></button>

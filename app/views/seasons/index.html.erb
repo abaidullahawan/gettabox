@@ -50,7 +50,7 @@
             </div>
             <div class="col-md-3"><br>
               <div class="dropdown">
-                <%= f.search_field :name_cont, class: 'form-control dropdown-toggle', id: 'season-name-search', data: {toggle: 'dropdown'}, area: {haspopup: true, expanded: 'false'}, autocomplete: 'off', placeholder:"Search in Name" %>
+                <%= f.search_field :name_cont, class: 'form-control dropdown-toggle', id: 'season-name-search', data: {toggle: 'dropdown'}, area: {haspopup: true, expanded: 'false'}, autocomplete: 'off', placeholder:"Search in Name", onkeyup: "dropdown_search( '/seasons/season_by_name', 'season-dropdown-list', 'season-list-item', event)", onclick: "dropdown_search( '/seasons/season_by_name', 'season-dropdown-list', 'season-list-item', event)" %>
                 <span class="searchclear">@@</span>
                 <ul class="dropdown-menu season-dropdown-list search-list" aria-labelledby="season-name-search">
                   <li><a href="#" class="dropdown-item season-list-item">Select Category</a></li>

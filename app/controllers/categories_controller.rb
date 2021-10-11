@@ -12,7 +12,7 @@ class CategoriesController < ApplicationController
     respond_to do |format|
       format.html
       format.pdf do
-        render  :pdf => "file.pdf", 
+        render  :pdf => "file.pdf",
                 :viewport_size => '1280x1024',
                 :template => 'categories/index.pdf.erb'
       end
@@ -119,7 +119,7 @@ class CategoriesController < ApplicationController
   end
 
   def search_category_by_title
-    @searched_category_by_title = Category.where("lower(title) LIKE ?", "#{ params[:category_title].downcase }%").uniq
+    @searched_category_by_title = Category.where("lower(title) LIKE ?", "#{ params[:search_value].downcase }%").pluck(:title).uniq
     respond_to do |format|
       format.json  { render json: @searched_category_by_title }
     end

@@ -19,27 +19,6 @@ $(document).on('turbolinks:load', function () {
     $('.payment-method-button').trigger('click')
   })
 
-  $('#supplier-name-search').on('keyup', function () {
-    var supplier_name = this.value
-    $('.supplier-name-dropdown-list').show();
-    $.ajax({
-      url: "/system_users/system_user_by_name",
-      type: "POST",
-      data: { 'supplier_name': supplier_name },
-      success: function(response) {
-        $(".supplier-name-list-item").remove()
-        if(response.length == 0) {
-          $(".supplier-name-dropdown-list").append('<li><a href="#" class="dropdown-item supplier-name-list-item">No result found</a></li>')
-        }
-        else {
-          $.each(response,function() {
-            $(".supplier-name-dropdown-list").append('<li><a href="#" class="dropdown-item supplier-name-list-item">'+ this.name +'</a></li>')
-          });
-        }
-      }
-    })
-  })
-
   $('.supplier-name-dropdown-list').on('click', '.supplier-name-list-item', function () {
     $('#supplier-name-search').val(this.outerText)
     $('.supplier-name-dropdown-list').hide();
