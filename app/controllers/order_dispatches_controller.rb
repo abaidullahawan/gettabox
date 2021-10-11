@@ -21,41 +21,28 @@ class OrderDispatchesController < ApplicationController
   def all_order_data
     require 'uri'
     require 'net/http'
-    url = ('https://api.ebay.com/sell/fulfillment/v1/order?&limit=1000&offset=0')
-    headers = { 'authorization' => "Bearer <#{@refresh_token.access_token}>",
-                 'content-type' => "application/json",
-                 'accept' => "application/json"
-                }
-    uri = URI(url)
-    request = Net::HTTP.get_response(uri, headers)
-    body = JSON.parse(request.body)
-    if body.present?
-      ChannelResponseData.create(channel: "ebay", response: body, api_url: url, api_call: "getOrders")
-    end
-    if body["next"].present?
-      remaining_data(headers,body["next"])
-    else
-      respond_to do |format|
-        format.html
+    @offset = 0
+    @total_order = 0
+    loop do
+      url = ("https://api.ebay.com/sell/fulfillment/v1/order?&limit=1000&offset=#{@offset}")
+      headers = { 'authorization' => "Bearer <#{@refresh_token.access_token}>",
+                  'content-type' => "application/json",
+                  'accept' => "application/json"
+                  }
+      uri = URI(url)
+      request = Net::HTTP.get_response(uri, headers)
+      body = JSON.parse(request.body)
+      if body["orders"].present?
+        body["orders"].each do |item|
+          creationdate = item["creationDate"]
+          ChannelOrder.create_with(channel_type: "ebay", order_data: item, ebayorder_id: item["orderId"], created_at: creationdate).find_or_create_by(channel_type: "ebay", ebayorder_id: item["orderId"])
+        end
       end
-    end
-
-  end
-
-  def remaining_data(headers,url)
-    url = url
-    headers = headers
-    uri = URI(url)
-    request = Net::HTTP.get_response(uri, headers)
-    body = JSON.parse(request.body)
-    if body.present?
-      ChannelResponseData.create(channel: "ebay", response: body, api_url: url, api_call: "getOrders")
-    end
-    if body["next"].present?
-      remaining_data(headers,body["next"])
-    else
-      respond_to do |format|
-        format.html
+      # byebug
+      @total_order = body['total']
+      @offset += 1000
+      if @total_order.nil? || @offset > @total_order
+        break
       end
     end
   end
