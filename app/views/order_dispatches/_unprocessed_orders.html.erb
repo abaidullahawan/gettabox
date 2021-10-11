@@ -25,18 +25,17 @@
               </tr>
             </thead>
             <% @orders.each do |order| %>
-            <% order_data = JSON.parse(order.order_data) %>
               <tbody>
                 <tr>
                   <td><strong><%= order&.channel_type %></strong></td>
                   <td>
                     <%= image_tag('user/1.jpg', class: 'wh-30 mr-1 rounded', alt: 'Image') %>
-                    <%= order_data["buyer"]["username"] %>
+                    <%= order.order_data["buyer"]["username"] %>
                   </td>
-                  <td><%= order_data["fulfillmentStartInstructions"][0]['shippingStep']["shipTo"]["email"]%></td>
-                  <td><%= order_data["creationDate"].to_time.strftime("%m/%d/%Y %H:%M") %></td>
-                  <td><%= order_data["pricingSummary"]["priceSubtotal"]["value"]%> <%= order_data["pricingSummary"]["priceSubtotal"]["currency"]%></td>
-                  <td><span class="badge badge_warning py-1"><%= order_data["orderFulfillmentStatus"]%></span></td>
+                  <td><%= order.order_data["fulfillmentStartInstructions"][0]['shippingStep']["shipTo"]["email"]%></td>
+                  <td><%= order.order_data["creationDate"].to_time.strftime("%m/%d/%Y %H:%M") %></td>
+                  <td><%= order.order_data["pricingSummary"]["priceSubtotal"]["value"]%> <%= order.order_data["pricingSummary"]["priceSubtotal"]["currency"]%></td>
+                  <td><span class="badge badge_warning py-1"><%= order.order_data["orderFulfillmentStatus"]%></span></td>
                   <td>
                     <button class="btn btn-primary" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                       <i data-feather='refresh-ccw' class='icon wh-15 mt-minus-3'></i>
