@@ -31,18 +31,21 @@ class OrderDispatchesController < ApplicationController
                   }
       uri = URI(url)
       request = Net::HTTP.get_response(uri, headers)
-      body = JSON.parse(request.body)
-      if body["orders"].present?
-        body["orders"].each do |item|
-          creationdate = item["creationDate"]
-          ChannelOrder.create_with(channel_type: "ebay", order_data: item, ebayorder_id: item["orderId"], created_at: creationdate).find_or_create_by(channel_type: "ebay", ebayorder_id: item["orderId"])
+      @body = JSON.parse(request.body)
+      # if body["orders"].present?
+      #   body["orders"].each do |item|
+      #     creationdate = item["creationDate"]
+      #     ChannelOrder.create_with(channel_type: "ebay", order_data: item, ebayorder_id: item["orderId"], created_at: creationdate).find_or_create_by(channel_type: "ebay", ebayorder_id: item["orderId"])
+      #   end
+      # end
+
+      channel_response = ChannelResponseData.new(channel: "ebay", response: @body, api_url: url, api_call: "getOrders")
+      if channel_response.save
+        @total_order = @body['total']
+        @offset += 1000
+        if @total_order.nil? || @offset > @total_order
+          break
         end
-      end
-      # byebug
-      @total_order = body['total']
-      @offset += 1000
-      if @total_order.nil? || @offset > @total_order
-        break
       end
     end
   end

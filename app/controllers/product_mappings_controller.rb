@@ -236,15 +236,16 @@ class ProductMappingsController < ApplicationController
         @xml_response_data = Nokogiri::XML(response.body)
         @data_xml_re = Hash.from_xml(@xml_response_data.to_xml)
         @total_pages = @data_xml_re['GetMyeBaySellingResponse']['ActiveList']['PaginationResult']['TotalNumberOfPages'].to_i
-        @data_xml_re['GetMyeBaySellingResponse']['ActiveList']['ItemArray']['Item'].each do |item|
-          if item['Variations'].present?
-            item['Variations']['Variation'].each do |variation|
-              ChannelProduct.create_with(channel_type: 'ebay', item_id: item["ItemID"].to_i, product_data: item, item_sku: variation["SKU"]).find_or_create_by(channel_type: 'ebay', item_id: item["ItemID"].to_i, item_sku: variation["SKU"])
-            end
-          else
-            ChannelProduct.create_with(channel_type: 'ebay', item_id: item["ItemID"].to_i, product_data: item, item_sku: item["SKU"]).find_or_create_by(channel_type: 'ebay', item_id: item["ItemID"].to_i)
-          end
-        end
+        # @data_xml_re['GetMyeBaySellingResponse']['ActiveList']['ItemArray']['Item'].each do |item|
+        #   if item['Variations'].present?
+        #     item['Variations']['Variation'].each do |variation|
+        #       ChannelProduct.create_with(channel_type: 'ebay', item_id: item["ItemID"].to_i, product_data: item, item_sku: variation["SKU"]).find_or_create_by(channel_type: 'ebay', item_id: item["ItemID"].to_i, item_sku: variation["SKU"])
+        #     end
+        #   else
+        #     ChannelProduct.create_with(channel_type: 'ebay', item_id: item["ItemID"].to_i, product_data: item, item_sku: item["SKU"]).find_or_create_by(channel_type: 'ebay', item_id: item["ItemID"].to_i)
+        #   end
+        # end
+        ChannelResponseData.create(channel: "ebay", response: @data_xml_re, api_url: "https://api.ebay.com/ws/api.dll", api_call: "GetMyeBaySelling")
         @page_no += 1
         if @page_no > @total_pages
           break
