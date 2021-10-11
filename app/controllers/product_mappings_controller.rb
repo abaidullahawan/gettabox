@@ -7,27 +7,17 @@ class ProductMappingsController < ApplicationController
   before_action :new_product, :product_load_resources, only: %i[ index ]
 
   def index
-    if params[:product_mapping] == 'Ebay Sandbox' || params[:mapped_status] == 'Unmapped'
-      if @refresh_token.present?
-        product_invetory_call(@refresh_token)
-        ids = ChannelProduct.joins(:product_mapping).pluck(:id)
-        ids.any? ? @body = ChannelProduct.where("id NOT IN (?)", ids) : @q = ChannelProduct.ransack(params[:q])
-        @body = @q.result(distinct: true).order(created_at: :desc).page(params[:page]).per(params[:limit])
-       @matching_products = {}
-        @body&.each do |item|
-          matching = Product.find_by("sku LIKE ?", "%#{item.product_data['sku']}%")
-          @matching_products[item.id] = matching if matching.present?
-        end
-      else
-        flash[:alert] = 'Fresh token not found'
-        redirect_to product_mappings_path
+    @q = ChannelProduct.ransack(params[:q])
+    @body = @q.result(distinct: true).order(created_at: :desc).page(params[:page]).per(params[:limit])
+    @matching_products = {}
+    @body&.each do |item|
+      matching = Product.find_by("sku LIKE ?", "%#{item.item_sku}%")
+      @matching_products[item.id] = matching if matching.present?
       end
-    end
-    if params[:mapped_status] == 'Mapped'
-      @body = ChannelProduct.joins(:product_mapping).includes(:product_mapping)
+    if params[:q].present? && params[:q][:status_eq] == '1'
       @matching_products = {}
       @body&.each do |item|
-        matching = item.product_mapping.product
+        matching = item.product_mapping&.product
         @matching_products[item.id] = matching if matching.present?
       end
     end
@@ -54,22 +44,29 @@ class ProductMappingsController < ApplicationController
 
   def create
     if params[:commit] == 'Map'
-      product_id = params[:anything]['product_id'] || params['product_id']
+      product_id = params[:anything]['mapped_product_id'] || params['mapped_product_id']
       if product_id.present?
         @product_mapping = ProductMapping.create!(channel_product_id: params[:anything]['channel_product_id'], product_id: product_id)
+        byebug
+        ChannelProduct.find(params[:anything]['channel_product_id']).status_mapped! if @product_mapping.present?
         flash[:notice] = 'Product mapped successfully'
-        redirect_to product_mappings_path(product_mapping: 'Ebay Sandbox')
+        redirect_to product_mappings_path
       else
         flash[:alert] = 'Please select product to map'
-        redirect_to product_mappings_path(product_mapping: 'Ebay Sandbox')
+        redirect_to product_mappings_path
       end
     end
     if params[:commit] == 'Un-map'
-      product_id = params[:anything]['product_id'] || params['product_id']
+      product_id = params[:anything]['mapped_product_id'] || params['mapped_product_id']
       @product_mapping = ProductMapping.find_by(channel_product_id: params[:anything]['channel_product_id'], product_id: product_id)
-      @product_mapping&.destroy
-      flash[:notice] = 'Product Un-mapped successfully'
-      redirect_to product_mappings_path(mapped_status: 'Mapped')
+      if @product_mapping&.destroy
+        ChannelProduct.find(params[:anything]['channel_product_id']).status_unmapped!
+        flash[:notice] = 'Product Un-mapped successfully'
+        redirect_to product_mappings_path
+      else
+        flash[:notice] = 'Product cannot be Un-mapped'
+        redirect_to product_mappings_path
+      end
     end
     if params[:commit] == 'Create'
       cd = ChannelProduct.find(params['channel_product_id'])
@@ -77,20 +74,20 @@ class ProductMappingsController < ApplicationController
       first_or_create_category
       if @product&.save
         ProductMapping.create(channel_product_id: cd.id, product_id: @product.id)
-        url = URI.parse(cd.product_data['product']['imageUrls'].first)
+        url = URI.parse(cd.product_data['ListingDetails']['ViewItemURL'])
         filename = File.basename(url.path)
         begin
           file = URI.open(url)
           @product.photo.attach(io: file, filename: filename) if file.present?
           flash[:notice] = 'Product created successfully'
-          redirect_to product_mappings_path(product_mapping: 'Ebay Sandbox')
+          redirect_to product_mappings_path
         rescue OpenURI::HTTPError => e
           flash[:alert] = 'Product created! Cannot upload image'
-          redirect_to product_mappings_path(product_mapping: 'Ebay Sandbox')
+          redirect_to product_mappings_path
         end
       else
         flash[:alert] = 'Product cannot be created!'
-        redirect_to product_mappings_path(product_mapping: 'Ebay Sandbox')
+        redirect_to product_mappings_path
       end
     end
   end
