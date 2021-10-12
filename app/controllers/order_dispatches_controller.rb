@@ -1,6 +1,7 @@
 class OrderDispatchesController < ApplicationController
   before_action :authenticate_user!
   before_action :refresh_token, only: %i[ index ]
+  after_action :create_orders_job, only: %i[ index ]
 
   def index
     @all_orders = ChannelOrder.all
@@ -40,6 +41,9 @@ class OrderDispatchesController < ApplicationController
       end
     end
     CreateChannelOrderResponseJob.perform_later
+  end
+
+  def create_orders_job
     CreateChannelOrderJob.perform_later
   end
 

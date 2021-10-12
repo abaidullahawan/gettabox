@@ -4,7 +4,7 @@ class CreateChannelOrderJob < ApplicationJob
   def perform(*args)
     @response_orders = ChannelResponseData.all
     @response_orders.each do |response_order|
-      if response_order.api_call == "getOrders"
+      if ((response_order.api_call == "getOrders") && (response_order.status == "panding"))
         response_order.response['orders'].each do |order|
           creationdate = order["creationDate"]
           record = ChannelOrder.find_by(ebayorder_id: order["orderId"])
@@ -14,6 +14,7 @@ class CreateChannelOrderJob < ApplicationJob
             ChannelOrder.create(channel_type: "ebay", order_data: order, ebayorder_id: order["orderId"], created_at: creationdate)
           end
         end
+        response_order.update(status: "executed")
       end
     end
   end
