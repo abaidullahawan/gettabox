@@ -19,7 +19,7 @@ class CreateChannelOrderResponseJob < ApplicationJob
           @body = JSON.parse(request.body)
           if @body['errors'].nil?
             body_response = ChannelResponseData.find_by(api_url: @url)
-            body_response.update(channel: "ebay", response: @body)
+            body_response.update(channel: "ebay", response: @body, status: "panding")
             break
           end
         end
