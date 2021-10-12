@@ -19,15 +19,4 @@ $(document).on('turbolinks:load', function () {
     $('.payment-method-button').trigger('click')
   })
 
-  $('.supplier-name-dropdown-list').on('click', '.supplier-name-list-item', function () {
-    $('#supplier-name-search').val(this.outerText)
-    $('.supplier-name-dropdown-list').hide();
-    $('#supplier-name-search').focus();
-    return false
-  })
-
-  $('.supplier-name-dropdown-list').on('focus', '.supplier-name-list-item', function () {
-    $('#supplier-name-search').val(this.outerText)
-  })
-
 })

@@ -155,41 +155,6 @@ $(document).on('turbolinks:load', function () {
     $('.bulk-method-delete-objects').trigger('click')
   })
 
-  $('.searchclear').on('click', function () {
-    $(this).prev('input').val('');
-    return false;
-  })
-
-  window.dropdown_search = function (url, dropdownClass, listClass, event) {
-    var target = event.currentTarget
-    var product_title = target.value
-    var list_class = '.' + listClass
-    var dropdown_class = '.' + dropdownClass
-
-    $.ajax({
-      url: url,
-      type: "POST",
-      data: { 'search_value': product_title },
-      success: function (response) {
-        var index = 0;
-        $(list_class).remove()
-        $(dropdown_class).children().remove()
-        if (response.length == 0) {
-          index += 1;
-          $(dropdown_class).append('<li><a href="#" class="dropdown-item ' + listClass + '" data-option-array-index='+ index +'>No result found</a></li>')
-        }
-        else {
-          $.each(response, function () {
-            index += 1;
-            $(dropdown_class).append('<li><a href="#" class="dropdown-item ' + listClass + '" data-option-array-index='+ index +'>' + this + '</a></li>')
-          });
-        }
-      }
-    })
-    $(target.closest('div')).find('ul').show()
-
-  }
-
 });
 
 // Preloader JS

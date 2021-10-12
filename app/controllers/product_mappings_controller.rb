@@ -11,7 +11,7 @@ class ProductMappingsController < ApplicationController
     @body = @q.result(distinct: true).order(created_at: :desc).page(params[:page]).per(params[:limit])
     @matching_products = {}
     @body&.each do |item|
-      matching = Product.find_by("sku LIKE ?", "%#{item.item_sku}%")
+      matching = item.product_mapping&.product || Product.find_by("sku LIKE ?", "%#{item.item_sku}%")
       @matching_products[item.id] = matching if matching.present?
       end
     if params[:q].present? && params[:q][:status_eq] == '1'
@@ -44,10 +44,12 @@ class ProductMappingsController < ApplicationController
 
   def create
     if params[:commit] == 'Map'
-      product_id = params[:anything]['mapped_product_id'] || params['mapped_product_id']
+      product_id =  params[:anything][:product_id].empty? ? params[:anything][:mapped_product_id] : params[:anything][:product_id]
       if product_id.present?
+        if product_id.to_i.to_s != product_id
+          product_id =  Product.find_by(title: product_id).id
+        end
         @product_mapping = ProductMapping.create!(channel_product_id: params[:anything]['channel_product_id'], product_id: product_id)
-        byebug
         ChannelProduct.find(params[:anything]['channel_product_id']).status_mapped! if @product_mapping.present?
         flash[:notice] = 'Product mapped successfully'
         redirect_to product_mappings_path
