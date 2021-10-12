@@ -37,6 +37,9 @@ require 'capistrano/rails'
 require 'capistrano/passenger'
 require 'capistrano/rbenv'
 
+require 'capistrano/sidekiq'
+install_plugin Capistrano::Sidekiq::Upstart
+
 set :rbenv_type, :user
 set :rbenv_ruby, '3.0.1'
 

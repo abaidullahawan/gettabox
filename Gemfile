@@ -59,6 +59,7 @@ gem 'rexml', '~> 3.2.4'
 gem 'builder'
 
 gem 'sidekiq'
+gem 'capistrano-sidekiq'
 
 gem 'capistrano', '~> 3.11'
 gem 'capistrano-rails', '~> 1.4'
