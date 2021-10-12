@@ -292,6 +292,8 @@ GEM
     rb-inotify (0.10.1)
       ffi (~> 1.0)
     redis (4.4.0)
+    redis-namespace (1.8.1)
+      redis (>= 3.0.4)
     regexp_parser (2.1.1)
     responders (3.0.1)
       actionpack (>= 5.0)
@@ -411,6 +413,7 @@ DEPENDENCIES
   rails (~> 6.1.4)
   ransack
   redis (~> 4.0)
+  redis-namespace (~> 1.8.1)
   rest-client
   rexml (~> 3.2.4)
   sass-rails (>= 6)
