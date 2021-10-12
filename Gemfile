@@ -60,6 +60,7 @@ gem 'builder'
 
 gem 'sidekiq'
 gem 'capistrano-sidekiq'
+gem 'redis-namespace', '~> 1.8.1'
 
 gem 'capistrano', '~> 3.11'
 gem 'capistrano-rails', '~> 1.4'
