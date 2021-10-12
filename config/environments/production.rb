@@ -16,8 +16,6 @@ Rails.application.configure do
   config.assets.initialize_on_precompile = false
 
   config.active_storage.service = :amazon
-  config.active_storage.queue = :default
-
 
   config.time_zone = "London"
   config.active_record.default_timezone = :local
