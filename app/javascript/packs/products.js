@@ -8,42 +8,6 @@ $(document).ready(function () {
 
 $(document).on('turbolinks:load', function () {
 
-  $('.product-dropdown-list').on('click', '.product-list-item', function () {
-    $('.product-dropdown-list').hide()
-    $('#product-title-search').focus()
-    $('#product-title-search').val(this.outerText)
-    return false
-  })
-
-  $('.product-dropdown-list').on('focus', '.product-list-item', function () {
-    $('#product-title-search').val(this.outerText)
-  })
-
-  $('.product-sku-dropdown-list').on('click', '.product-sku-list-item', function () {
-    $('.product-sku-dropdown-list').hide()
-    $('#product-sku-search').focus()
-    $('#product-sku-search').val(this.outerText)
-    return false
-  })
-
-  $('.product-sku-dropdown-list').on('focus', '.product-sku-list-item', function () {
-    $('#product-sku-search').val(this.outerText)
-  })
-
-  $('.card, .card-body, .card-header, .main-content, .main-content-header, .row').on('click', function () {
-    $('.search-list').hide();
-  })
-
-  $('.category-dropdown-list').on('click', '.category-list-item', function () {
-    $('#category-title-search').val(this.outerText);
-    $('.category-dropdown-list').hide();
-    return false;
-  })
-
-  $('.category-dropdown-list').on('focus', '.category-list-item', function () {
-    $('#category-title-search').val(this.outerText);
-  })
-
   $('input, select').on('click', function () {
     var name = this.name
     if (name.includes('product')) {
