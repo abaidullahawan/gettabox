@@ -76,6 +76,7 @@ class ProductMappingsController < ApplicationController
       first_or_create_category
       if @product&.save
         ProductMapping.create(channel_product_id: cd.id, product_id: @product.id)
+        cd.status_mapped!
         url = URI.parse(cd.product_data['ListingDetails']['ViewItemURL'])
         filename = File.basename(url.path)
         begin
