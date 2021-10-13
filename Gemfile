@@ -33,6 +33,7 @@ gem "font-awesome-rails"
 gem "cocoon"
 gem 'ransack'
 gem 'bootstrap4-kaminari-views'
+gem 'activerecord-import'
 
 
 # Use for amazon s3 bucket
