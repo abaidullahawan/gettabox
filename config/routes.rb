@@ -87,6 +87,7 @@ Rails.application.routes.draw do
 
   # Order Dispatch Routes
   get 'all_order_data', to: 'order_dispatches#all_order_data'
+  get 'get_response_orders', to: 'order_dispatches#get_response_orders'
 
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
 
