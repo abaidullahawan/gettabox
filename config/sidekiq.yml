@@ -20,3 +20,8 @@ production:
   :concurrency: 20
 staging:
   :concurrency: 15
+
+# :schedule:
+#   get_eBay_orders_from_API:
+#     in: 1m
+#     class: CreateChannelOrderResponseJob

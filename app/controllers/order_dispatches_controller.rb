@@ -1,6 +1,6 @@
 class OrderDispatchesController < ApplicationController
   before_action :authenticate_user!
-  before_action :refresh_token, only: %i[ index ]
+  before_action :refresh_token, only: %i[ index all_order_data ]
   before_action :check_status, only: %i[ index get_response_orders ]
 
   def index
@@ -18,27 +18,6 @@ class OrderDispatchesController < ApplicationController
   end
 
   def all_order_data
-    require 'uri'
-    require 'net/http'
-
-    url = ("https://api.ebay.com/sell/fulfillment/v1/order?&limit=1&offset=0")
-    headers = { 'authorization' => "Bearer <#{@refresh_token.access_token}>",
-    'content-type' => "application/json",
-    'accept' => "application/json"
-    }
-
-    uri = URI(url)
-    request = Net::HTTP.get_response(uri, headers)
-    @body = JSON.parse(request.body)
-    @offset = 0
-    loop do
-      ebay_url = "https://api.ebay.com/sell/fulfillment/v1/order?&limit=1000&offset=#{@offset}"
-      ChannelResponseData.create_with(channel: "ebay", api_url: ebay_url, api_call: "getOrders", status: "not available").find_or_create_by(api_url: ebay_url, api_call: "getOrders")
-      @offset += 1000
-      if @offset > @body['total']
-        break
-      end
-    end
     CreateChannelOrderResponseJob.perform_later
     flash[:notice] = "CALL sent to eBay API"
     redirect_to order_dispatches_path
