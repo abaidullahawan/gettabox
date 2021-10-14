@@ -36,7 +36,6 @@ install_plugin Capistrano::SCM::Git
 require 'capistrano/rails'
 require 'capistrano/passenger'
 require 'capistrano/rbenv'
-require 'capistrano/sidekiq'
 install_plugin Capistrano::Sidekiq::Upstart
 
 set :rbenv_type, :user
