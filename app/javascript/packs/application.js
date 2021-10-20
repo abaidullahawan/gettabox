@@ -32,13 +32,6 @@ require('data-confirm-modal')
 require("packs/product_mapping")
 require("packs/dropdown_search")
 require('packs/info')
-require('packs/vendor/aos/aos.js')
-require('packs/vendor/bootstrap/js/bootstrap.bundle.min.js')
-require('packs/vendor/glightbox/js/glightbox.min.js')
-require('packs/vendor/isotope-layout/isotope.pkgd.min.js')
-require('packs/vendor/php-email-form/validate.js')
-require('packs/vendor/purecounter/purecounter.js')
-require('packs/vendor/swiper/swiper-bundle.min.js')
 
 // Uncomment to copy all static images under ../images to the output folder and reference
 // them with the image_pack_tag helper in views (e.g <%= image_pack_tag 'rails.png' %>)
