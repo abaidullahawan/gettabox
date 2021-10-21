@@ -29,15 +29,28 @@ set :sidekiq_config => 'config/sidekiq.yml'
 # Default value for linked_dirs is []
 # append :linked_dirs, "log", "tmp/pids", "tmp/cache", "tmp/sockets", "public/system"
 append :linked_dirs, 'log', 'tmp/pids', 'tmp/cache', 'tmp/sockets', 'vendor/bundle', '.bundle', 'public/system', 'public/uploads','node_modules'
+set :user, "deploy"
+
+Rake::Task["sidekiq:stop"].clear_actions
+Rake::Task["sidekiq:start"].clear_actions
+Rake::Task["sidekiq:restart"].clear_actions
 namespace :sidekiq do
-
-  task :restart do
-    invoke 'sidekiq:restart'
+  task :stop do
+    on roles(:app) do
+      execute :sudo, :systemctl, :stop, :sidekiq
+    end
   end
-
-  before 'deploy:finished', 'sidekiq:restart'
+  task :start do
+    on roles(:app) do
+      execute :sudo, :systemctl, :start, :sidekiq
+    end
+  end
+  task :restart do
+    on roles(:app) do
+      execute :sudo, :systemctl, :restart, :sidekiq
+    end
+  end
 end
-
 # Default value for default_env is {}
 # set :default_env, { path: "/opt/ruby/bin:$PATH" }
 
