@@ -14,8 +14,8 @@ set :branch, 'main'
 # set :format, :airbrussh
 set :pty,  false
 set :sidekiq_config => 'config/sidekiq.yml'
-SSHKit.config.command_map[:sidekiq] = "bundle exec sidekiq"
-SSHKit.config.command_map[:sidekiqctl] = "bundle exec sidekiqctl"
+# SSHKit.config.command_map[:sidekiq] = "bundle exec sidekiq"
+# SSHKit.config.command_map[:sidekiqctl] = "bundle exec sidekiqctl"
 # You can configure the Airbrussh format using :format_options.
 # These are the defaults.
 # set :format_options, command_output: true, log_file: "log/capistrano.log", color: :auto, truncate: :auto
@@ -29,7 +29,17 @@ SSHKit.config.command_map[:sidekiqctl] = "bundle exec sidekiqctl"
 # Default value for linked_dirs is []
 # append :linked_dirs, "log", "tmp/pids", "tmp/cache", "tmp/sockets", "public/system"
 append :linked_dirs, 'log', 'tmp/pids', 'tmp/cache', 'tmp/sockets', 'vendor/bundle', '.bundle', 'public/system', 'public/uploads','node_modules'
-
+namespace :deploy do
+  task :regenerate_bins do
+    on roles(:web) do
+      within release_path do
+        execute :bundle, 'sudo service sidekiq stop'
+        execute :bundle, 'sudo systemctl enable sidekiq.service'
+        execute :bundle, 'sudo service sidekiq start'
+      end
+    end
+  end
+end
 
 # Default value for default_env is {}
 # set :default_env, { path: "/opt/ruby/bin:$PATH" }
@@ -46,3 +56,4 @@ set :keep_releases, 5
 # Optionally, you can symlink your database.yml and/or secrets.yml file from the shared directory during deploy
 # This is useful if you don't want to use ENV variables
 append :linked_files, 'config/database.yml', 'config/secrets.yml'
+after  :finishing,    :regenerate_bins

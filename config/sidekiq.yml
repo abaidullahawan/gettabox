@@ -4,8 +4,9 @@
 # pick it up automatically.
 ---
 :verbose: false
-:concurrency: 15
+:concurrency: 10
 :timeout: 250
+# :pidfile: tmp/pid/sidekiq.pid
 
 # Sidekiq will run this file through ERB when reading it so you can
 # even put in dynamic logic, like a host-specific queue.
