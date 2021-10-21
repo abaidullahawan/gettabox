@@ -6,7 +6,7 @@ class CreateChannelOrderResponseJob < ApplicationJob
     require 'net/http'
     @refresh_token = RefreshToken.last
 
-    url = ("https://api.ebay.com/sell/fulfillment/v1/order?&limit=1000&offset=0")
+    url = ("https://api.ebay.com/sell/fulfillment/v1/order?&limit=200&offset=0")
 
     @headers = { 'authorization' => "Bearer <#{@refresh_token.access_token}>",
     'content-type' => "application/json",
@@ -30,10 +30,10 @@ class CreateChannelOrderResponseJob < ApplicationJob
         return
       end
     end
-    (1...body['total'].to_i).each_slice(1000) do |count|
+    (1...body['total'].to_i).each_slice(200) do |count|
       offset = count.last
-      break unless (offset%1000).zero?
-      ebay_url = "https://api.ebay.com/sell/fulfillment/v1/order?&limit=1000&offset=#{offset}"
+      break unless (offset%200).zero?
+      ebay_url = "https://api.ebay.com/sell/fulfillment/v1/order?&limit=200&offset=#{offset}"
       chanel_data = ChannelResponseData.find_or_initialize_by(channel: "ebay", api_url: ebay_url, api_call: "getOrders")
       if ((chanel_data.status == "error") || (chanel_data.status.nil?))
         chanel_data.status = "not available"
@@ -47,7 +47,7 @@ class CreateChannelOrderResponseJob < ApplicationJob
     status = 0
     order_urls = ChannelResponseData.all
     order_urls.each do |order_url|
-      if (((order_url.status == "not available") || (order_url.status == "error") || (order_url.response['orders'].count < 1000)) && (order_url.api_call == "getOrders"))
+      if (((order_url.status == "not available") || (order_url.status == "error") || (order_url.response['orders'].count < 200)) && (order_url.api_call == "getOrders"))
         uri = URI(order_url.api_url)
         count = 0
         loop do
