@@ -35,19 +35,24 @@ Rake::Task["sidekiq:stop"].clear_actions
 Rake::Task["sidekiq:start"].clear_actions
 Rake::Task["sidekiq:restart"].clear_actions
 namespace :sidekiq do
+  task :restart do
+    invoke 'sidekiq:stop'
+    invoke 'sidekiq:start'
+  end
+  before 'deploy:finished', 'sidekiq:restart'
   task :stop do
     on roles(:app) do
-      execute :sudo, :systemctl, :stop, :sidekiq
+      within current_path do
+        pid = p capture "ps aux | grep sidekiq | awk '{print $2}' | sed -n 1p"
+        execute("kill -9 #{pid}")
+      end
     end
   end
   task :start do
     on roles(:app) do
-      execute :sudo, :systemctl, :start, :sidekiq
-    end
-  end
-  task :restart do
-    on roles(:app) do
-      execute :sudo, :systemctl, :restart, :sidekiq
+      within current_path do
+        execute :bundle, "exec sidekiq -e #{fetch(:stage)} -C config/sidekiq.yml -d"
+      end
     end
   end
 end
