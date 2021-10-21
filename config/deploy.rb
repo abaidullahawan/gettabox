@@ -32,8 +32,7 @@ append :linked_dirs, 'log', 'tmp/pids', 'tmp/cache', 'tmp/sockets', 'vendor/bund
 namespace :sidekiq do
 
   task :restart do
-    invoke 'sidekiq:stop'
-    invoke 'sidekiq:start'
+    invoke 'sidekiq:restart'
   end
 
   before 'deploy:finished', 'sidekiq:restart'
