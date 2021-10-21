@@ -33,9 +33,9 @@ namespace :deploy do
   task :regenerate_bins do
     on roles(:web) do
       within release_path do
-        execute :bundle, 'sudo service sidekiq stop'
-        execute :bundle, 'sudo systemctl enable sidekiq.service'
-        execute :bundle, 'sudo service sidekiq start'
+        execute :bundle, 'service sidekiq stop'
+        execute :bundle, 'systemctl enable sidekiq.service'
+        execute :bundle, 'service sidekiq start'
       end
     end
   end
