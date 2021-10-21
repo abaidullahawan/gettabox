@@ -31,9 +31,9 @@ set :sidekiq_config => 'config/sidekiq.yml'
 append :linked_dirs, 'log', 'tmp/pids', 'tmp/cache', 'tmp/sockets', 'vendor/bundle', '.bundle', 'public/system', 'public/uploads','node_modules'
 set :user, "deploy"
 
-Rake::Task["sidekiq:stop"].clear_actions
-Rake::Task["sidekiq:start"].clear_actions
-Rake::Task["sidekiq:restart"].clear_actions
+Rake::Task[invoke!("sidekiq:stop")].clear_actions
+Rake::Task[invoke!("sidekiq:start")].clear_actions
+Rake::Task[invoke!("sidekiq:restart")].clear_actions
 namespace :sidekiq do
   task :restart do
     invoke 'sidekiq:stop'
