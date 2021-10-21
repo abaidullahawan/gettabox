@@ -33,7 +33,7 @@ set :user, "deploy"
 
 Rake::Task["sidekiq:stop"].clear_actions
 Rake::Task["sidekiq:start"].clear_actions
-Rake::Task["sidekiq:restart"].clear_actions
+# Rake::Task["sidekiq:restart"].clear_actions
 namespace :sidekiq do
   task :restart do
     invoke!('sidekiq:stop')
