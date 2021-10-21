@@ -13,7 +13,7 @@ set :branch, 'main'
 # Default value for :format is :airbrussh.
 # set :format, :airbrussh
 set :pty,  false
-set :sidekiq_config => 'config/sidekiq.yml'
+# set :sidekiq_config => 'config/sidekiq.yml'
 # SSHKit.config.command_map[:sidekiq]    = 'bundle exec sidekiq'
 # SSHKit.config.command_map[:sidekiqctl] = 'bundle exec sidekiqctl'
 # You can configure the Airbrussh format using :format_options.
@@ -33,13 +33,7 @@ set :user, "deploy"
 
 Rake::Task["sidekiq:stop"].clear_actions
 Rake::Task["sidekiq:start"].clear_actions
-# Rake::Task["sidekiq:restart"].clear_actions
 namespace :sidekiq do
-  task :restart do
-    invoke!('sidekiq:stop')
-    invoke!('sidekiq:start')
-  end
-  before 'deploy:finished', 'sidekiq:restart'
   task :stop do
     on roles(:app) do
       within current_path do
