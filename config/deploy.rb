@@ -32,14 +32,12 @@ append :linked_dirs, 'log', 'tmp/pids', 'tmp/cache', 'tmp/sockets', 'vendor/bund
 namespace :deploy do
   task :regenerate_bins do
     on roles(:web) do
-      within release_path do
-        execute :bundle, 'sudo service sidekiq stop'
-        execute :bundle, 'sudo systemctl enable sidekiq.service'
-        execute :bundle, 'sudo service sidekiq start'
+      within remote_path do
+        execute :bundle, 'systemctl enable sidekiq.service'
       end
     end
   end
-  after :publishing, :regenerate_bins
+  after :deploy, :regenerate_bins
 end
 
 # Default value for default_env is {}
