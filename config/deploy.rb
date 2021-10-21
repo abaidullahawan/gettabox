@@ -29,15 +29,14 @@ set :sidekiq_config => 'config/sidekiq.yml'
 # Default value for linked_dirs is []
 # append :linked_dirs, "log", "tmp/pids", "tmp/cache", "tmp/sockets", "public/system"
 append :linked_dirs, 'log', 'tmp/pids', 'tmp/cache', 'tmp/sockets', 'vendor/bundle', '.bundle', 'public/system', 'public/uploads','node_modules'
-namespace :deploy do
-  task :regenerate_bins do
-    on roles(:web) do
-      within remote_path do
-        execute :bundle, 'systemctl enable sidekiq.service'
-      end
-    end
+namespace :sidekiq do
+
+  task :restart do
+    invoke 'sidekiq:stop'
+    invoke 'sidekiq:start'
   end
-  after :deploy, :regenerate_bins
+
+  before 'deploy:finished', 'sidekiq:restart'
 end
 
 # Default value for default_env is {}
