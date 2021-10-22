@@ -29,7 +29,26 @@ set :sidekiq_config => 'config/sidekiq.yml'
 # append :linked_dirs, "log", "tmp/pids", "tmp/cache", "tmp/sockets", "public/system"
 append :linked_dirs, 'log', 'tmp/pids', 'tmp/cache', 'tmp/sockets', 'vendor/bundle', '.bundle', 'public/system', 'public/uploads','node_modules'
 # set :user, "deploy"
+namespace :sidekiq do
+  after 'deploy:starting', 'sidekiq:stop'
+  after 'deploy:finished', 'sidekiq:start'
 
+  task :stop do
+    on roles(:app) do
+      within current_path do
+        execute('systemctl kill -s TSTP sidekiq')
+        execute('systemctl stop sidekiq')
+      end
+    end
+  end
+
+  task :start do
+    on roles(:app) do |host|
+      execute('systemctl start sidekiq')
+      info "Host #{host} (#{host.roles.to_a.join(', ')}):\t#{capture(:uptime)}"
+    end
+  end
+end
 # Rake::Task["sidekiq:stop"].clear_actions
 # Rake::Task["sidekiq:start"].clear_actions
 # namespace :sidekiq do
