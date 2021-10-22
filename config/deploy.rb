@@ -14,8 +14,8 @@ set :branch, 'main'
 # set :format, :airbrussh
 set :pty,  false
 set :sidekiq_config => 'config/sidekiq.yml'
-# SSHKit.config.command_map[:sidekiq]    = 'bundle exec sidekiq'
-# SSHKit.config.command_map[:sidekiqctl] = 'bundle exec sidekiqctl'
+SSHKit.config.command_map[:sidekiq]    = 'bundle exec sidekiq'
+SSHKit.config.command_map[:sidekiqctl] = 'bundle exec sidekiqctl'
 # You can configure the Airbrussh format using :format_options.
 # These are the defaults.
 # set :format_options, command_output: true, log_file: "log/capistrano.log", color: :auto, truncate: :auto
