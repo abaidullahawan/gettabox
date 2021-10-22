@@ -13,7 +13,7 @@ set :branch, 'main'
 # Default value for :format is :airbrussh.
 # set :format, :airbrussh
 set :pty,  false
-# set :sidekiq_config => 'config/sidekiq.yml'
+set :sidekiq_config => 'config/sidekiq.yml'
 # SSHKit.config.command_map[:sidekiq]    = 'bundle exec sidekiq'
 # SSHKit.config.command_map[:sidekiqctl] = 'bundle exec sidekiqctl'
 # You can configure the Airbrussh format using :format_options.
@@ -25,7 +25,7 @@ set :pty,  false
 
 # Default value for :linked_files is []
 # append :linked_files, "config/database.yml"
-
+pull/190pull/190pull/190
 # Default value for linked_dirs is []
 # append :linked_dirs, "log", "tmp/pids", "tmp/cache", "tmp/sockets", "public/system"
 append :linked_dirs, 'log', 'tmp/pids', 'tmp/cache', 'tmp/sockets', 'vendor/bundle', '.bundle', 'public/system', 'public/uploads','node_modules'
@@ -64,4 +64,4 @@ set :keep_releases, 2
 
 # Optionally, you can symlink your database.yml and/or secrets.yml file from the shared directory during deploy
 # This is useful if you don't want to use ENV variables
-append :linked_files, 'config/database.yml', 'config/secrets.yml'
+append :linked_files, 'config/database.yml', 'config/secrets.yml', 'config/sidekiq.yml'
