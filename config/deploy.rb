@@ -29,27 +29,27 @@ set :pty,  false
 # Default value for linked_dirs is []
 # append :linked_dirs, "log", "tmp/pids", "tmp/cache", "tmp/sockets", "public/system"
 append :linked_dirs, 'log', 'tmp/pids', 'tmp/cache', 'tmp/sockets', 'vendor/bundle', '.bundle', 'public/system', 'public/uploads','node_modules'
-set :user, "deploy"
+# set :user, "deploy"
 
-Rake::Task["sidekiq:stop"].clear_actions
-Rake::Task["sidekiq:start"].clear_actions
-namespace :sidekiq do
-  task :stop do
-    on roles(:app) do
-      within current_path do
-        pid = p capture "ps aux | grep sidekiq | awk '{print $2}' | sed -n 1p"
-        execute("kill -9 #{pid}")
-      end
-    end
-  end
-  task :start do
-    on roles(:app) do
-      within current_path do
-        execute :bundle, "exec sidekiq -e #{fetch(:stage)} -C config/sidekiq.yml -d"
-      end
-    end
-  end
-end
+# Rake::Task["sidekiq:stop"].clear_actions
+# Rake::Task["sidekiq:start"].clear_actions
+# namespace :sidekiq do
+#   task :stop do
+#     on roles(:app) do
+#       within current_path do
+#         pid = p capture "ps aux | grep sidekiq | awk '{print $2}' | sed -n 1p"
+#         execute("kill -9 #{pid}")
+#       end
+#     end
+#   end
+#   task :start do
+#     on roles(:app) do
+#       within current_path do
+#         execute :bundle, "exec sidekiq -e #{fetch(:stage)} -C config/sidekiq.yml -d"
+#       end
+#     end
+#   end
+# end
 # Default value for default_env is {}
 # set :default_env, { path: "/opt/ruby/bin:$PATH" }
 
