@@ -13,9 +13,9 @@ set :branch, 'main'
 # Default value for :format is :airbrussh.
 # set :format, :airbrussh
 set :pty,  false
-set sidekiq_config: 'config/sidekiq.yml'
-SSHKit.config.command_map[:sidekiq]    = 'bundle exec sidekiq'
-SSHKit.config.command_map[:sidekiqctl] = 'bundle exec sidekiqctl'
+# set :sidekiq_config => 'config/sidekiq.yml'
+# SSHKit.config.command_map[:sidekiq]    = 'bundle exec sidekiq'
+# SSHKit.config.command_map[:sidekiqctl] = 'bundle exec sidekiqctl'
 # You can configure the Airbrussh format using :format_options.
 # These are the defaults.
 # set :format_options, command_output: true, log_file: "log/capistrano.log", color: :auto, truncate: :auto
@@ -25,30 +25,31 @@ SSHKit.config.command_map[:sidekiqctl] = 'bundle exec sidekiqctl'
 
 # Default value for :linked_files is []
 # append :linked_files, "config/database.yml"
+
 # Default value for linked_dirs is []
 # append :linked_dirs, "log", "tmp/pids", "tmp/cache", "tmp/sockets", "public/system"
 append :linked_dirs, 'log', 'tmp/pids', 'tmp/cache', 'tmp/sockets', 'vendor/bundle', '.bundle', 'public/system', 'public/uploads','node_modules'
-# set :user, "deploy"
+set :user, "deploy"
 
-# Rake::Task["sidekiq:stop"].clear_actions
-# Rake::Task["sidekiq:start"].clear_actions
-# namespace :sidekiq do
-#   task :stop do
-#     on roles(:app) do
-#       within current_path do
-#         pid = p capture "ps aux | grep sidekiq | awk '{print $2}' | sed -n 1p"
-#         execute("kill -9 #{pid}")
-#       end
-#     end
-#   end
-#   task :start do
-#     on roles(:app) do
-#       within current_path do
-#         execute :bundle, "exec sidekiq -e #{fetch(:stage)} -C config/sidekiq.yml -d"
-#       end
-#     end
-#   end
-# end
+Rake::Task["sidekiq:stop"].clear_actions
+Rake::Task["sidekiq:start"].clear_actions
+namespace :sidekiq do
+  task :stop do
+    on roles(:app) do
+      within current_path do
+        pid = p capture "ps aux | grep sidekiq | awk '{print $2}' | sed -n 1p"
+        execute("kill -9 #{pid}")
+      end
+    end
+  end
+  task :start do
+    on roles(:app) do
+      within current_path do
+        execute :bundle, "exec sidekiq -e #{fetch(:stage)} -C config/sidekiq.yml -d"
+      end
+    end
+  end
+end
 # Default value for default_env is {}
 # set :default_env, { path: "/opt/ruby/bin:$PATH" }
 
@@ -56,7 +57,7 @@ append :linked_dirs, 'log', 'tmp/pids', 'tmp/cache', 'tmp/sockets', 'vendor/bund
 # set :local_user, -> { `git config user.name`.chomp }
 
 # Default value for keep_releases is 5
-set :keep_releases, 2
+set :keep_releases, 5
 
 # Uncomment the following to require manually verifying the host key before first deploy.
 # set :ssh_options, verify_host_key: :secure
