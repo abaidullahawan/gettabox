@@ -1,31 +1,23 @@
-class PagesController < ApplicationController
-  def users_card
-  end
+# frozen_string_literal: true
 
-  def notifications
-  end
+class PagesController < ApplicationController # :nodoc:
+  def users_card; end
 
-  def timeline
-  end
+  def notifications; end
 
-  def invoice_template
-  end
+  def timeline; end
 
-  def gallery
-  end
+  def invoice_template; end
 
-  def faq
-  end
+  def gallery; end
 
-  def pricing
-  end
+  def faq; end
 
-  def profile
-  end
+  def pricing; end
 
-  def profile_settings
-  end
+  def profile; end
 
-  def error
-  end
+  def profile_settings; end
+
+  def error; end
 end

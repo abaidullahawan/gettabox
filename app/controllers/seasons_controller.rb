@@ -1,7 +1,7 @@
 class SeasonsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_season, only: %i[ show update destroy ]
-  before_action :new, only: %i[ index ]
+  before_action :set_season, only: %i[show update destroy]
+  before_action :new, only: %i[index]
 
   def index
     @q = Season.ransack(params[:q])
@@ -10,39 +10,36 @@ class SeasonsController < ApplicationController
     @season = Season.new
   end
 
-  def show
-  end
+  def show; end
 
-  def new
-  end
+  def new; end
 
-  def edit
-  end
+  def edit; end
 
   def create
     @season = Season.new(season_params)
     if @season.save
-      flash[:notice] = "Season created successfully."
+      flash[:notice] = 'Season created successfully.'
       redirect_to season_path(@season)
     else
-      flash.now[:notice] = "Season not created."
+      flash.now[:notice] = 'Season not created.'
       render 'index'
     end
   end
 
   def update
     if @season.update(season_params)
-      flash[:notice] = "Season updated successfully."
+      flash[:notice] = 'Season updated successfully.'
       redirect_to season_path(@season)
     else
-      flash.now[:notice] = "Season not created."
+      flash.now[:notice] = 'Season not created.'
       render 'show'
     end
   end
 
   def destroy
     if @season.destroy
-      flash[:notice] = "Season archived successfully."
+      flash[:notice] = 'Season archived successfully.'
       redirect_to seasons_path
     end
   end
@@ -55,13 +52,13 @@ class SeasonsController < ApplicationController
   end
 
   def import
-    if params[:file].present? && params[:file].path.split(".").last.to_s.downcase == 'csv'
+    if params[:file].present? && params[:file].path.split('.').last.to_s.downcase == 'csv'
       csv_text = File.read(params[:file])
-      csv = CSV.parse(csv_text, :headers => true)
+      csv = CSV.parse(csv_text, headers: true)
       if csv.headers == Season.column_names
         csv.each do |row|
           data = Season.find_or_initialize_by(id: row['id'])
-          if !(data.update(row.to_hash))
+          unless data.update(row.to_hash)
             flash[:alert] = "#{data.errors.first.full_message} at ID: #{data.id} , Try again"
             redirect_to seasons_path and return
           end
@@ -129,18 +126,20 @@ class SeasonsController < ApplicationController
   end
 
   def search_season_by_name
-    @searched_season_by_name = Season.where("lower(name) LIKE ?", "#{ params[:search_value].downcase }%").pluck(:name).uniq
+    @searched_season_by_name = Season.where('lower(name) LIKE ?',
+                                            "#{params[:search_value].downcase}%").pluck(:name).uniq
     respond_to do |format|
       format.json { render json: @searched_season_by_name }
     end
   end
 
   private
-    def set_season
-      @season = Season.find(params[:id])
-    end
 
-    def season_params
-      params.require(:season).permit(:name, :description)
-    end
+  def set_season
+    @season = Season.find(params[:id])
+  end
+
+  def season_params
+    params.require(:season).permit(:name, :description)
+  end
 end

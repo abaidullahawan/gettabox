@@ -1,23 +1,17 @@
-class CategoriesController < ApplicationController
+# frozen_string_literal: true
 
+# Categories
+class CategoriesController < ApplicationController
   before_action :authenticate_user!
-  before_action :find_category, only: [:show, :edit, :update, :destroy]
+  before_action :find_category, only: %i[show edit update destroy]
+  before_action :filter_object_ids, only: %i[bulk_method restore]
 
   def index
     @q = Category.ransack(params[:q])
     @categories = @q.result(distinct: true).order(created_at: :desc).page(params[:page]).per(params[:limit])
-    if params[:export_csv].present?
-    export_csv(@categories) if params[:export_csv].present?
-    else
-    respond_to do |format|
-      format.html
-      format.pdf do
-        render  :pdf => "file.pdf",
-                :viewport_size => '1280x1024',
-                :template => 'categories/index.pdf.erb'
-      end
-    end
-    end
+    return export_csv(@categories) unless params[:export_csv].present?
+
+    generate_pdf
   end
 
   def new
@@ -27,36 +21,34 @@ class CategoriesController < ApplicationController
   def create
     @category = Category.new(category_params)
     if @category.save
-      flash[:notice] = "Category created successfully."
+      flash[:notice] = 'Category created successfully.'
       redirect_to categories_path
     else
-      flash.now[:notice] = "Category not created."
+      flash.now[:notice] = 'Category not created.'
       render 'new'
     end
   end
 
-  def show
-  end
+  def show; end
 
-  def edit
-  end
+  def edit; end
 
   def update
     if @category.update(category_params)
-      flash[:notice] = "Category updated successfully."
+      flash[:notice] = 'Category updated successfully.'
       redirect_to categories_path
     else
-      flash.now[:notice] = "Category not updated."
+      flash.now[:notice] = 'Category not updated.'
       render 'edit'
     end
   end
 
   def destroy
     if @category.destroy
-      flash[:notice] = "Category destroyed successfully."
+      flash[:notice] = 'Category destroyed successfully.'
       redirect_to categories_path
     else
-      flash.now[:notice] = "Category not destroyed."
+      flash.now[:notice] = 'Category not destroyed.'
       render categories_path
     end
   end
@@ -68,19 +60,26 @@ class CategoriesController < ApplicationController
     end
   end
 
+  def generate_pdf
+    respond_to do |format|
+      format.html
+      format.pdf do
+        render pdf: 'file.pdf', viewport_size: '1280x1024', template: 'categories/index.pdf.erb'
+      end
+    end
+  end
+
   def bulk_method
-    params[:object_ids].delete('0') if params[:object_ids].present?
     if params[:object_ids].present?
       params[:object_ids].each do |p|
         category = Category.find(p.to_i)
         category.delete
       end
       flash[:notice] = 'Categories archive successfully'
-      redirect_to categories_path
     else
       flash[:alert] = 'Please select something to perform action.'
-      redirect_to categories_path
     end
+    redirect_to categories_path
   end
 
   def archive
@@ -89,7 +88,6 @@ class CategoriesController < ApplicationController
   end
 
   def restore
-    params[:object_ids].delete('0') if params[:object_ids].present?
     if params[:object_id].present? && Category.restore(params[:object_id])
       flash[:notice] = 'Categories restore successfully'
     elsif params[:commit] == 'Delete' && params[:object_ids].present?
@@ -109,29 +107,33 @@ class CategoriesController < ApplicationController
   end
 
   def permanent_delete
-    if params[:object_id].present? && Category.only_deleted.find(params[:object_id]).really_destroy!
-      flash[:notice] = 'Category deleted successfully'
-      redirect_to archive_categories_path
-    else
-      flash[:notice] = 'Category cannot be deleted/Please select something to delete'
-      redirect_to archive_categories_path
-    end
+    flash[:notice] = if params[:object_id].present? && Category.only_deleted.find(params[:object_id]).really_destroy!
+                       'Category deleted successfully'
+                     else
+                       'Category cannot be deleted/Please select something to delete'
+                     end
+    redirect_to archive_categories_path
   end
 
   def search_category_by_title
-    @searched_category_by_title = Category.where("lower(title) LIKE ?", "#{ params[:search_value].downcase }%").pluck(:title).uniq
+    @searched_category_by_title = Category.where('lower(title) LIKE ?',
+                                                 "#{params[:search_value].downcase}%").pluck(:title).uniq
     respond_to do |format|
-      format.json  { render json: @searched_category_by_title }
+      format.json { render json: @searched_category_by_title }
     end
   end
 
   private
-    def find_category
-      @category = Category.find(params[:id])
-    end
 
-    def category_params
-      params.require(:category).permit(:title, :description)
-    end
+  def find_category
+    @category = Category.find(params[:id])
+  end
 
+  def category_params
+    params.require(:category).permit(:title, :description)
+  end
+
+  def filter_object_ids
+    params[:object_ids].delete('0') if params[:object_ids].present?
+  end
 end

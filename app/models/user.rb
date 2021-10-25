@@ -20,11 +20,12 @@ class User < ApplicationRecord
   validates :email, format: { with: Devise.email_regexp }
 
   attr_accessor :limit
+
   def self.filter_role(current_user)
     if current_user.role_super_admin?
-      return ['admin', 'staff']
+      %w[admin staff]
     else
-      return ['staff']
+      ['staff']
     end
   end
 
@@ -33,7 +34,7 @@ class User < ApplicationRecord
     CSV.generate(headers: true) do |csv|
       csv << attributes
       all.each do |user|
-        csv << attributes.map{ |attr| user.send(attr) }
+        csv << attributes.map { |attr| user.send(attr) }
       end
     end
   end

@@ -11,7 +11,7 @@ class PurchaseDelivery < ApplicationRecord
     CSV.generate(headers: true) do |csv|
       csv << attributes
       all.each do |purchase_delivery|
-        csv << attributes.map{ |attr| purchase_delivery.send(attr) }
+        csv << attributes.map { |attr| purchase_delivery.send(attr) }
       end
     end
   end

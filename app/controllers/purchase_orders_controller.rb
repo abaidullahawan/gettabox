@@ -1,7 +1,6 @@
 class PurchaseOrdersController < ApplicationController
-
   before_action :authenticate_user!
-  before_action :find_purchase_order, only: [:show, :edit, :update, :destroy]
+  before_action :find_purchase_order, only: %i[show edit update destroy]
   after_action :restore_childs, only: :restore
 
   def index
@@ -15,10 +14,13 @@ class PurchaseOrdersController < ApplicationController
     @purchase_order.purchase_order_details.build
     # @purchase_order.addresses.build
     @supplier = params[:supplier]
-    @categories = Product.joins(:product_suppliers,:category).where('product_suppliers.system_user_id': @supplier).pluck('categories.id','categories.title').uniq
-    @products = Hash.new
+    @categories = Product.joins(:product_suppliers, :category).where('product_suppliers.system_user_id': @supplier).pluck(
+      'categories.id', 'categories.title'
+    ).uniq
+    @products = {}
     @categories.each do |category|
-      product = Product.joins(:product_suppliers,:category).where('product_suppliers.system_user_id': @supplier, 'category.id': category)
+      product = Product.joins(:product_suppliers, :category).where('product_suppliers.system_user_id': @supplier,
+                                                                   'category.id': category)
       @products[category.first] = product
     end
   end
@@ -30,10 +32,10 @@ class PurchaseOrdersController < ApplicationController
     # @purchase_order.delivery_address = @supplier.supplier_address
     # @purchase_order.invoice_address = GeneralSetting.first.address
     if @purchase_order.save
-      flash[:notice] = "Purchase Order created successfully."
+      flash[:notice] = 'Purchase Order created successfully.'
       redirect_to purchase_order_path(@purchase_order)
     else
-      flash.now[:notice] = "Purchase Order not created."
+      flash.now[:notice] = 'Purchase Order not created.'
       render 'new'
     end
   end
@@ -50,27 +52,27 @@ class PurchaseOrdersController < ApplicationController
       respond_to do |format|
         format.html
         format.pdf do
-          render pdf: "file.pdf", viewport_size: '1280x1024', template: 'purchase_orders/show.pdf.erb'
+          render pdf: 'file.pdf', viewport_size: '1280x1024', template: 'purchase_orders/show.pdf.erb'
         end
       end
     end
   end
 
   def send_mail_to_supplier
-    @template = EmailTemplate.where(template_name: "PurchaseOrder").first
+    @template = EmailTemplate.where(template_name: 'PurchaseOrder').first
     @purchase_order = PurchaseOrder.find(params[:p])
     @supplier = @purchase_order.supplier_id
     @deliverd = PurchaseOrder.where(id: @purchase_order.id).joins(purchase_deliveries: :purchase_delivery_details).group(:product_id).sum(:quantity)
     @missing = PurchaseOrder.where(id: @purchase_order.id).joins(purchase_deliveries: :purchase_delivery_details).group(:product_id).sum(:missing)
     @demaged = PurchaseOrder.where(id: @purchase_order.id).joins(purchase_deliveries: :purchase_delivery_details).group(:product_id).sum(:demaged)
     @deliveries = @purchase_order.purchase_deliveries
-    @pdf_file = render(pdf: "file.pdf", template: 'purchase_orders/show.pdf.erb', filename: 'Purchase Order')
-    pdf=[[@pdf_file,'Purchase Order']]
+    @pdf_file = render(pdf: 'file.pdf', template: 'purchase_orders/show.pdf.erb', filename: 'Purchase Order')
+    pdf = [[@pdf_file, 'Purchase Order']]
     email = @purchase_order.system_user.email
     name = @purchase_order.system_user.name
     subject = @template.subject
     body = @template.body
-    PurchaseOrderMailer.send_email(pdf,subject,email,name,body).deliver if email.present?
+    PurchaseOrderMailer.send_email(pdf, subject, email, name, body).deliver if email.present?
     @purchase_order.order_status_sent!
   end
 
@@ -83,25 +85,27 @@ class PurchaseOrdersController < ApplicationController
 
   def edit
     @supplier = @purchase_order.supplier_id
-    @categories = Product.joins(:product_suppliers,:category).where('product_suppliers.system_user_id': @supplier).pluck('categories.id','categories.title').uniq
+    @categories = Product.joins(:product_suppliers, :category).where('product_suppliers.system_user_id': @supplier).pluck(
+      'categories.id', 'categories.title'
+    ).uniq
   end
 
   def update
     if @purchase_order.update(purchase_order_params)
-      flash[:notice] = "Purchase Order updated successfully."
+      flash[:notice] = 'Purchase Order updated successfully.'
       redirect_to purchase_order_path(@purchase_order)
     else
-      flash.now[:notice] = "Purchase Order not updated."
+      flash.now[:notice] = 'Purchase Order not updated.'
       render 'show'
     end
   end
 
   def destroy
     if @purchase_order.destroy
-      flash[:notice] = "Purchase Order archive successfully."
+      flash[:notice] = 'Purchase Order archive successfully.'
       redirect_to purchase_orders_path
     else
-      flash.now[:notice] = "Purchase Order not archived."
+      flash.now[:notice] = 'Purchase Order not archived.'
       render purchase_orders_path
     end
   end
@@ -114,13 +118,13 @@ class PurchaseOrdersController < ApplicationController
   end
 
   def import
-    if params[:file].present? && params[:file].path.split(".").last.to_s.downcase == 'csv'
+    if params[:file].present? && params[:file].path.split('.').last.to_s.downcase == 'csv'
       csv_text = File.read(params[:file])
-      csv = CSV.parse(csv_text, :headers => true)
+      csv = CSV.parse(csv_text, headers: true)
       if csv.headers == PurchaseOrder.column_names.excluding('user_type')
         csv.each do |row|
           data = PurchaseOrder.find_or_initialize_by(id: row['id'])
-          if !(data.update(row.to_hash))
+          if !data.update(row.to_hash)
             flash[:alert] = "#{data.errors.first.full_message} at ID: #{data.id} , Try again"
             redirect_to purchase_orderss_path and return
           else
@@ -177,43 +181,43 @@ class PurchaseOrdersController < ApplicationController
   end
 
   private
-    def find_purchase_order
-      @purchase_order = PurchaseOrder.find(params[:id])
-    end
 
-    def restore_childs
-      child_ids =  PurchaseOrderDetail.only_deleted.where(purchase_delivery_id: params[:object_id]).pluck(:id)
-      PurchaseOrderDetail.restore(child_ids)
-    end
+  def find_purchase_order
+    @purchase_order = PurchaseOrder.find(params[:id])
+  end
 
-    def purchase_order_params
-      params.require(:purchase_order).permit(
-        :supplier_id,
-        :total_bill,
-        :payment_method,
-        # :delivery_address,
-        # :invoice_address,
-        purchase_order_details_attributes:[
-          :id,
-          :purchase_order_id,
-          :product_id,
-          :cost_price,
-          :vat,
-          :quantity,
-          :missing,
-          :deleted_at,
-          :demaged
-        ],
-        addresses_attributes:[ 
-              :id,
-              :company,
-              :address,
-              :city,
-              :region,
-              :postcode,
-              :country
-        ]
-      )
-    end
+  def restore_childs
+    child_ids = PurchaseOrderDetail.only_deleted.where(purchase_delivery_id: params[:object_id]).pluck(:id)
+    PurchaseOrderDetail.restore(child_ids)
+  end
 
+  def purchase_order_params
+    params.require(:purchase_order).permit(
+      :supplier_id,
+      :total_bill,
+      :payment_method,
+      # :delivery_address,
+      # :invoice_address,
+      purchase_order_details_attributes: %i[
+        id
+        purchase_order_id
+        product_id
+        cost_price
+        vat
+        quantity
+        missing
+        deleted_at
+        demaged
+      ],
+      addresses_attributes: %i[
+        id
+        company
+        address
+        city
+        region
+        postcode
+        country
+      ]
+    )
+  end
 end

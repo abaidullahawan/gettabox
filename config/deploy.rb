@@ -1,8 +1,8 @@
 # config valid for current version and patch releases of Capistrano
-lock "~> 3.16.0"
+lock '~> 3.16.0'
 
-set :application, "channeldispatch"
-set :repo_url, "git@github.com:abaidullahawan/gettabox.git"
+set :application, 'channeldispatch'
+set :repo_url, 'git@github.com:abaidullahawan/gettabox.git'
 
 # Default branch is :master
 # ask :branch, `git rev-parse --abbrev-ref HEAD`.chomp
@@ -12,8 +12,8 @@ set :deploy_to, "/home/deploy/#{fetch :application}"
 set :branch, 'main'
 # Default value for :format is :airbrussh.
 # set :format, :airbrussh
-set :pty,  false
-set :sidekiq_config => 'config/sidekiq.yml'
+set :pty, false
+set sidekiq_config: 'config/sidekiq.yml'
 # SSHKit.config.command_map[:sidekiq]    = 'bundle exec sidekiq'
 # SSHKit.config.command_map[:sidekiqctl] = 'bundle exec sidekiqctl'
 # You can configure the Airbrussh format using :format_options.

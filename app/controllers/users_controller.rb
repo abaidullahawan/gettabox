@@ -1,8 +1,8 @@
 class UsersController < ApplicationController
   before_action :authenticate_user!
   before_action :user_sub_role
-  before_action :find_user, only: [:edit, :show, :destroy]
-  before_action :load_resources, only: [ :show, :edit ]
+  before_action :find_user, only: %i[edit show destroy]
+  before_action :load_resources, only: %i[show edit]
   # before_filter :default_created_by, only: :create
 
   def index
@@ -23,16 +23,15 @@ class UsersController < ApplicationController
     @user = User.new(user_params)
     @user.update(created_by: current_user.id)
     if @user.save
-      flash[:notice] = "User cerated successfully."
+      flash[:notice] = 'User cerated successfully.'
       redirect_to user_path(@user)
     else
-      flash.now[:alert] = "User cannot be create."
+      flash.now[:alert] = 'User cannot be create.'
       render 'new'
     end
   end
 
-  def edit
-  end
+  def edit; end
 
   def load_resources
     @personal_detail = @user.personal_detail
@@ -52,15 +51,14 @@ class UsersController < ApplicationController
     end
     @user = User.find(params[:id])
     if @user.update(user_params)
-      flash[:notice] = "User updated successfully."
+      flash[:notice] = 'User updated successfully.'
       redirect_to user_path(@user)
     else
       render 'show'
     end
   end
 
-  def show
-  end
+  def show; end
 
   def destroy
     @user.destroy
@@ -69,9 +67,9 @@ class UsersController < ApplicationController
   end
 
   def import
-    if params[:file].present? && params[:file].path.split(".").last.to_s.downcase == 'csv'
+    if params[:file].present? && params[:file].path.split('.').last.to_s.downcase == 'csv'
       csv_text = File.read(params[:file])
-      csv = CSV.parse(csv_text, :headers => true)
+      csv = CSV.parse(csv_text, headers: true)
       if csv.headers == User.column_names
         csv.delete('id')
         csv.delete('encrypted_password')
@@ -80,7 +78,12 @@ class UsersController < ApplicationController
 
         csv.each do |row|
           user = User.find_or_initialize_by(email: row['email'])
-          if !(user.new_record? ? user.update(password: 'Sample', password_confirmation:'Sample') : user.update(row.to_hash))
+          unless if user.new_record?
+                   user.update(password: 'Sample',
+                               password_confirmation: 'Sample')
+                 else
+                   user.update(row.to_hash)
+                 end
             flash[:alert] = "#{user.errors.full_messages} , Please try again . . . "
             redirect_to users_path and return
           end
@@ -134,9 +137,7 @@ class UsersController < ApplicationController
     end
   end
 
-  def profile
-
-  end
+  def profile; end
 
   def export_csv(users)
     request.format = 'csv'
@@ -148,13 +149,11 @@ class UsersController < ApplicationController
   private
 
   def user_sub_role
-    if current_user.role_super_admin?
-      @user_sub_role = 'admin'
-    elsif current_user.role_admin?
-      @user_sub_role = 'staff'
-    else
-      @user_sub_role = nil
-    end
+    @user_sub_role = if current_user.role_super_admin?
+                       'admin'
+                     elsif current_user.role_admin?
+                       'staff'
+                     end
   end
 
   def find_user
@@ -162,55 +161,48 @@ class UsersController < ApplicationController
   end
 
   def user_params
-    params.
-    require(:user).
-    permit( :email,
-            :password,
-            :password_confirmation,
-            :role,
-            :created_by,
-            :profile_image,
-            personal_detail_attributes:
-            [ :id,
-              :first_name,
-              :last_name,
-              :dob,
-              :gender,
-              contact_details_attributes:
-              [ :id,
-                :phone_number,
-                :email,
-                :street_address,
-                :city,
-                :province,
-                :country,
-                :zip,
-                :_destroy
-
-              ],
-              work_details_attributes:
-              [ :id,
-                :company_name,
-                :position,
-                :city,
-                :description,
-                :currently_working,
-                :from,
-                :to,
-                :_destroy
-              ],
-              study_details_attributes:
-              [ :id,
-                :school,
-                :degree,
-                :format,
-                :description,
-                :from,
-                :to,
-                :_destroy
-              ]
-            ]
-    )
+    params
+      .require(:user)
+      .permit(:email,
+              :password,
+              :password_confirmation,
+              :role,
+              :created_by,
+              :profile_image,
+              personal_detail_attributes:
+              [:id,
+               :first_name,
+               :last_name,
+               :dob,
+               :gender,
+               { contact_details_attributes:
+               %i[id
+                  phone_number
+                  email
+                  street_address
+                  city
+                  province
+                  country
+                  zip
+                  _destroy],
+                 work_details_attributes:
+               %i[id
+                  company_name
+                  position
+                  city
+                  description
+                  currently_working
+                  from
+                  to
+                  _destroy],
+                 study_details_attributes:
+               %i[id
+                  school
+                  degree
+                  format
+                  description
+                  from
+                  to
+                  _destroy] }])
   end
-
 end

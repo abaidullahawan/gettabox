@@ -1,10 +1,9 @@
 class SystemUsersController < ApplicationController
-
   before_action :authenticate_user!
-  before_action :find_system_user, only: [:show, :edit, :update, :destroy]
-  before_action :get_field_names, only: [ :new, :create, :show, :index, :update ]
-  before_action :new, only: [ :index ]
-  skip_before_action :verify_authenticity_token, :only => [:create, :update]
+  before_action :find_system_user, only: %i[show edit update destroy]
+  before_action :get_field_names, only: %i[new create show index update]
+  before_action :new, only: [:index]
+  skip_before_action :verify_authenticity_token, only: %i[create update]
   def index
     @q = SystemUser.where(user_type: 'supplier').ransack(params[:q])
     @system_users = @q.result(distinct: true).order(created_at: :desc).page(params[:page]).per(params[:limit])
@@ -15,9 +14,9 @@ class SystemUsersController < ApplicationController
       respond_to do |format|
         format.html
         format.pdf do
-          render  :pdf => "file.pdf", 
-                  :viewport_size => '1280x1024',
-                  :template => 'system_users/index.pdf.erb'
+          render  pdf: 'file.pdf',
+                  viewport_size: '1280x1024',
+                  template: 'system_users/index.pdf.erb'
         end
       end
     end
@@ -34,48 +33,44 @@ class SystemUsersController < ApplicationController
     @system_user.build_extra_field_value
     @system_user.extra_field_value.field_value = {} if @system_user.extra_field_value.field_value.nil?
     @field_names.each do |field_name|
-      @system_user.extra_field_value.field_value["#{field_name}"] = params[:"#{field_name}"]
+      @system_user.extra_field_value.field_value[field_name.to_s] = params[:"#{field_name}"]
     end
     if @system_user.save
       @system_user.update(user_type: 'supplier')
-      flash[:notice] = "Supplier created successfully."
+      flash[:notice] = 'Supplier created successfully.'
       redirect_to system_users_path
     else
-      flash.now[:notice] = "Supplier not created."
+      flash.now[:notice] = 'Supplier not created.'
       render 'new'
     end
   end
 
-  def show
-  end
+  def show; end
 
-  def edit
-  end
+  def edit; end
 
   def update
-    if @system_user.extra_field_value.nil?
-      @system_user.build_extra_field_value
-    end
+    @system_user.build_extra_field_value if @system_user.extra_field_value.nil?
     @system_user.extra_field_value.field_value = {} if @system_user.extra_field_value.field_value.nil?
     @field_names.each do |field_name|
-      @system_user.extra_field_value.field_value["#{field_name}"] = params[:"#{field_name}"]
+      @system_user.extra_field_value.field_value[field_name.to_s] = params[:"#{field_name}"]
     end
     if @system_user.update(system_user_params)
       @system_user.update(user_type: 'supplier')
-      flash[:notice] = "Supplier updated successfully."
+      flash[:notice] = 'Supplier updated successfully.'
       redirect_to system_user_path(@system_user)
     else
-      flash.now[:notice] = "Supplier not updated."
+      flash.now[:notice] = 'Supplier not updated.'
       render 'show'
     end
   end
 
   def destroy
     if @system_user.destroy
-      flash[:notice] = "Supplier archive successfully."
+      flash[:notice] = 'Supplier archive successfully.'
       redirect_to system_users_path
     else
-      flash.now[:notice] = "Supplier not archived."
+      flash.now[:notice] = 'Supplier not archived.'
       render system_users_path
     end
   end
@@ -88,13 +83,13 @@ class SystemUsersController < ApplicationController
   end
 
   def import
-    if params[:file].present? && params[:file].path.split(".").last.to_s.downcase == 'csv'
+    if params[:file].present? && params[:file].path.split('.').last.to_s.downcase == 'csv'
       csv_text = File.read(params[:file])
-      csv = CSV.parse(csv_text, :headers => true)
+      csv = CSV.parse(csv_text, headers: true)
       if csv.headers == SystemUser.column_names.excluding('user_type')
         csv.each do |row|
           data = SystemUser.find_or_initialize_by(id: row['id'])
-          if !(data.update(row.to_hash))
+          if !data.update(row.to_hash)
             flash[:alert] = "#{data.errors.first.full_message} at ID: #{data.id} , Try again"
             redirect_to system_users_path and return
           else
@@ -150,39 +145,39 @@ class SystemUsersController < ApplicationController
   end
 
   def search_system_user_by_name
-    @searched_supplier_by_name = SystemUser.where("lower(name) LIKE ?", "#{ params[:search_value].downcase }%").pluck(:name).uniq
+    @searched_supplier_by_name = SystemUser.where('lower(name) LIKE ?',
+                                                  "#{params[:search_value].downcase}%").pluck(:name).uniq
     respond_to do |format|
-      format.json  { render json: @searched_supplier_by_name }
+      format.json { render json: @searched_supplier_by_name }
     end
   end
 
   private
-    def find_system_user
-      @system_user = SystemUser.find(params[:id])
-    end
 
-    def get_field_names
-      @field_names = []
-      @field_names= ExtraFieldName.where(table_name: "SystemUser").pluck(:field_name)
-    end
+  def find_system_user
+    @system_user = SystemUser.find(params[:id])
+  end
 
-    def system_user_params
-      params.require(:system_user).permit(:user_type, :name, :photo, :payment_method, :days_for_payment, :days_for_order_to_completion, :days_for_completion_to_delivery, :currency_symbol, :exchange_rate, :email, :phone_number,
-        address_attributes:[ 
-        :id,
-        :company,
-        :address,
-        :city,
-        :region,
-        :postcode,
-        :country
-        ],
-        extra_field_value_attributes:
-        [
-          :id,
-          :field_value
-        ]
-      )
-    end
+  def get_field_names
+    @field_names = []
+    @field_names = ExtraFieldName.where(table_name: 'SystemUser').pluck(:field_name)
+  end
 
+  def system_user_params
+    params.require(:system_user).permit(:user_type, :name, :photo, :payment_method, :days_for_payment, :days_for_order_to_completion, :days_for_completion_to_delivery, :currency_symbol, :exchange_rate, :email, :phone_number,
+                                        address_attributes: %i[
+                                          id
+                                          company
+                                          address
+                                          city
+                                          region
+                                          postcode
+                                          country
+                                        ],
+                                        extra_field_value_attributes:
+                                        %i[
+                                          id
+                                          field_value
+                                        ])
+  end
 end

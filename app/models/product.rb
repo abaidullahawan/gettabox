@@ -2,7 +2,7 @@ class Product < ApplicationRecord
   acts_as_paranoid
   has_one :extra_field_value, as: :fieldvalueable
 
-  validates :sku, presence:true, uniqueness: { case_sensitive: false }
+  validates :sku, presence: true, uniqueness: { case_sensitive: false }
   validates :title, presence: true
   has_many :barcodes, dependent: :destroy
   has_many :product_suppliers, dependent: :destroy
@@ -14,7 +14,7 @@ class Product < ApplicationRecord
   belongs_to :category
   belongs_to :season, optional: true
   has_one_attached :photo do |attachable|
-    attachable.variant :thumb, resize: "100x100"
+    attachable.variant :thumb, resize: '100x100'
   end
 
   enum product_type: {
@@ -32,9 +32,8 @@ class Product < ApplicationRecord
     CSV.generate(headers: true) do |csv|
       csv << attributes
       all.each do |product|
-        csv << attributes.map{ |attr| product.send(attr) }
+        csv << attributes.map { |attr| product.send(attr) }
       end
     end
   end
-
 end
