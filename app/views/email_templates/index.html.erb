@@ -11,11 +11,11 @@
             <%= form_for @email_template, method: :post do |f| %>
             <div class="form-group">
                 <%= f.label :template_type %>
-                <%= f.text_field :template_type, autofocus: true, required: true, class: 'form-control', placeholder: 'Enter Template type' %>
+                <%= f.select :template_type , @types, {},step: 0.01, class: 'form-control'%>
             </div>
             <div class="form-group">
                 <%= f.label :template_name%>
-                <%= f.text_field :template_name, class: 'form-control', placeholder: 'Enter Template name'%>
+                <%= f.select :template_name , @names, {},step: 0.01, class: 'form-control'%>
             </div>
             <div class="form-group">
                 <%= f.label :subject%>
