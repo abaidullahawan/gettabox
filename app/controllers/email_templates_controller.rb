@@ -4,8 +4,7 @@ class EmailTemplatesController < ApplicationController
   # GET /email_templates or /email_templates.json
   def index
     @email_templates = EmailTemplate.all
-    @email_template = EmailTemplate.new
-
+    new
   end
 
   # GET /email_templates/1 or /email_templates/1.json
@@ -15,37 +14,37 @@ class EmailTemplatesController < ApplicationController
   # GET /email_templates/new
   def new
     @email_template = EmailTemplate.new
+    @types = ["Default"]
+    @names = ["PurchaseOrder"]
   end
 
   # GET /email_templates/1/edit
   def edit
+    @types = ["Default"]
+    @names = ["PurchaseOrder"]
   end
 
   # POST /email_templates or /email_templates.json
   def create
     @email_template = EmailTemplate.new(email_template_params)
 
-    respond_to do |format|
-      if @email_template.save
-        format.html { redirect_to @email_template, notice: "Email template was successfully created." }
-        format.json { render :show, status: :created, location: @email_template }
-      else
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @email_template.errors, status: :unprocessable_entity }
-      end
+    if @email_template.save
+      flash[:notice] = "Email Template successfully created."
+      redirect_to email_templates_path
+    else
+      flash[:notice] = @email_template.errors.full_messages
+      redirect_to email_templates_path
     end
   end
 
   # PATCH/PUT /email_templates/1 or /email_templates/1.json
   def update
-    respond_to do |format|
-      if @email_template.update(email_template_params)
-        format.html { redirect_to @email_template, notice: "Email template was successfully updated." }
-        format.json { render :show, status: :ok, location: @email_template }
-      else
-        format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @email_template.errors, status: :unprocessable_entity }
-      end
+    if @email_template.update(email_template_params)
+      flash[:notice] = "Email Template successfully created."
+      redirect_to email_templates_path
+    else
+      flash[:notice] = @email_template.errors.full_messages
+      redirect_to email_templates_path
     end
   end
 
