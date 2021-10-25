@@ -70,6 +70,8 @@ gem 'capistrano-rbenv', '~> 2.1', '>= 2.1.4'
 
 gem 'sidekiq-scheduler'
 
+gem 'rubocop', require: false
+
 # Use Active Storage variant
 # gem 'image_processing', '~> 1.2'
 
