@@ -1,3 +1,6 @@
+# frozen_string_literal: true
+
+# seaon differentiate between products
 class Season < ApplicationRecord
   acts_as_paranoid
   has_many :products

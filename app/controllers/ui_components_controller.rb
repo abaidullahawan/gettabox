@@ -1,4 +1,6 @@
-class UiComponentsController < ApplicationController
+# frozen_string_literal: true
+
+class UiComponentsController < ApplicationController # :nodoc:
   def ui_alerts; end
 
   def ui_badges; end

@@ -1,3 +1,6 @@
+# frozen_string_literal: true
+
+# orders from api
 class ChannelOrder < ApplicationRecord
   validates_uniqueness_of :order_data
   validates_uniqueness_of :ebayorder_id

@@ -1,3 +1,6 @@
+# frozen_string_literal: true
+
+# for setting attributes of tables different for all user or default
 class AttributeSetting < ApplicationRecord
   belongs_to :user
 

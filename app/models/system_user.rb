@@ -1,3 +1,6 @@
+# frozen_string_literal: true
+
+# Any user who uses our system
 class SystemUser < ApplicationRecord
   acts_as_paranoid
 

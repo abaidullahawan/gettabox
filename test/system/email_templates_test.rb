@@ -1,5 +1,8 @@
+# frozen_string_literal: true
+
 require 'application_system_test_case'
 
+# templates are user specific
 class EmailTemplatesTest < ApplicationSystemTestCase
   setup do
     @email_template = email_templates(:one)

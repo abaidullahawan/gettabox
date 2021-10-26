@@ -1,6 +1,13 @@
+# frozen_string_literal: true
+
+# getting purchase orders and creating
 class PurchaseOrdersController < ApplicationController
   before_action :authenticate_user!
-  before_action :find_purchase_order, only: %i[show edit update destroy]
+  before_action :find_purchase_order, only: %i[show edit update destroy send_mail_to_supplier]
+  before_action :build_purchase_order, only: %i[new]
+  before_action :find_supplier, only: %i[show edit send_mail_to_supplier]
+  before_action :sum_of_stock, only: %i[show send_mail_to_supplier]
+  before_action :filter_object_ids, only: %i[bulk_method restore]
   after_action :restore_childs, only: :restore
 
   def index
@@ -10,13 +17,9 @@ class PurchaseOrdersController < ApplicationController
   end
 
   def new
-    @purchase_order = PurchaseOrder.new
-    @purchase_order.purchase_order_details.build
-    # @purchase_order.addresses.build
     @supplier = params[:supplier]
-    @categories = Product.joins(:product_suppliers, :category).where('product_suppliers.system_user_id': @supplier).pluck(
-      'categories.id', 'categories.title'
-    ).uniq
+    @categories = Product.joins(:product_suppliers, :category).where('product_suppliers.system_user_id': @supplier)
+                         .pluck('categories.id', 'categories.title').uniq
     @products = {}
     @categories.each do |category|
       product = Product.joins(:product_suppliers, :category).where('product_suppliers.system_user_id': @supplier,
@@ -41,11 +44,6 @@ class PurchaseOrdersController < ApplicationController
   end
 
   def show
-    @supplier = @purchase_order.supplier_id
-    @deliverd = PurchaseOrder.where(id: @purchase_order.id).joins(purchase_deliveries: :purchase_delivery_details).group(:product_id).sum(:quantity)
-    @missing = PurchaseOrder.where(id: @purchase_order.id).joins(purchase_deliveries: :purchase_delivery_details).group(:product_id).sum(:missing)
-    @demaged = PurchaseOrder.where(id: @purchase_order.id).joins(purchase_deliveries: :purchase_delivery_details).group(:product_id).sum(:demaged)
-    @deliveries = @purchase_order.purchase_deliveries
     if params[:single_csv].present?
       single_csv(@purchase_order)
     else
@@ -60,12 +58,6 @@ class PurchaseOrdersController < ApplicationController
 
   def send_mail_to_supplier
     @template = EmailTemplate.where(template_name: 'PurchaseOrder').first
-    @purchase_order = PurchaseOrder.find(params[:p])
-    @supplier = @purchase_order.supplier_id
-    @deliverd = PurchaseOrder.where(id: @purchase_order.id).joins(purchase_deliveries: :purchase_delivery_details).group(:product_id).sum(:quantity)
-    @missing = PurchaseOrder.where(id: @purchase_order.id).joins(purchase_deliveries: :purchase_delivery_details).group(:product_id).sum(:missing)
-    @demaged = PurchaseOrder.where(id: @purchase_order.id).joins(purchase_deliveries: :purchase_delivery_details).group(:product_id).sum(:demaged)
-    @deliveries = @purchase_order.purchase_deliveries
     @pdf_file = render(pdf: 'file.pdf', template: 'purchase_orders/show.pdf.erb', filename: 'Purchase Order')
     pdf = [[@pdf_file, 'Purchase Order']]
     email = @purchase_order.system_user.email
@@ -84,10 +76,10 @@ class PurchaseOrdersController < ApplicationController
   end
 
   def edit
-    @supplier = @purchase_order.supplier_id
-    @categories = Product.joins(:product_suppliers, :category).where('product_suppliers.system_user_id': @supplier).pluck(
-      'categories.id', 'categories.title'
-    ).uniq
+    @categories = Product.joins(:product_suppliers, :category)
+                         .where('product_suppliers.system_user_id': @supplier)
+                         .pluck('categories.id', 'categories.title')
+                         .uniq
   end
 
   def update
@@ -126,36 +118,32 @@ class PurchaseOrdersController < ApplicationController
           data = PurchaseOrder.find_or_initialize_by(id: row['id'])
           if !data.update(row.to_hash)
             flash[:alert] = "#{data.errors.first.full_message} at ID: #{data.id} , Try again"
-            redirect_to purchase_orderss_path and return
+            redirect_to purchase_orderss_path
           else
             data.update(user_type: 'supplier')
           end
         end
         flash[:alert] = 'File Upload Successful!'
-        redirect_to purchase_orderss_path
       else
         flash[:alert] = 'File not matched! Please change file'
-        redirect_to purchase_orderss_path
       end
     else
       flash[:alert] = 'File format no matched! Please change file'
-      redirect_to purchase_orderss_path
     end
+    redirect_to purchase_orderss_path
   end
 
   def bulk_method
-    params[:object_ids].delete('0') if params[:object_ids].present?
     if params[:object_ids].present?
       params[:object_ids].each do |p|
         product = PurchaseOrder.find(p.to_i)
         product.delete
       end
       flash[:notice] = 'Purchase Orders archive successfully'
-      redirect_to purchase_orders_path
     else
       flash[:alert] = 'Please select something to perform action.'
-      redirect_to purchase_orders_path
     end
+    redirect_to purchase_orders_path
   end
 
   def archive
@@ -166,18 +154,15 @@ class PurchaseOrdersController < ApplicationController
   def restore
     if params[:object_id].present? && PurchaseOrder.restore(params[:object_id])
       flash[:notice] = 'Purchase Order restore successful'
-      redirect_to archive_purchase_orderss_path
     elsif params[:object_ids].present?
-      params[:object_ids].delete('0')
       params[:object_ids].each do |p|
         PurchaseOrder.restore(p.to_i)
       end
       flash[:notice] = 'Purchase Orders restore successful'
-      redirect_to archive_purchase_orders_path
     else
       flash[:notice] = 'Purchase Order cannot be restore'
-      redirect_to archive_purchase_orders_path
     end
+    redirect_to archive_purchase_orders_path
   end
 
   private
@@ -193,31 +178,40 @@ class PurchaseOrdersController < ApplicationController
 
   def purchase_order_params
     params.require(:purchase_order).permit(
-      :supplier_id,
-      :total_bill,
-      :payment_method,
+      :supplier_id, :total_bill, :payment_method,
       # :delivery_address,
       # :invoice_address,
       purchase_order_details_attributes: %i[
-        id
-        purchase_order_id
-        product_id
-        cost_price
-        vat
-        quantity
-        missing
-        deleted_at
-        demaged
+        id purchase_order_id product_id
+        cost_price vat quantity missing deleted_at demaged
       ],
       addresses_attributes: %i[
-        id
-        company
-        address
-        city
-        region
-        postcode
-        country
+        id company address city region postcode country
       ]
     )
+  end
+
+  def build_purchase_order
+    @purchase_order = PurchaseOrder.new
+    @purchase_order.purchase_order_details.build
+    # @purchase_order.addresses.build
+  end
+
+  def find_supplier
+    @supplier = @purchase_order.supplier_id
+  end
+
+  def sum_of_stock
+    @deliverd = PurchaseOrder.where(id: @purchase_order.id).joins(purchase_deliveries: :purchase_delivery_details)
+                             .group(:product_id).sum(:quantity)
+    @missing = PurchaseOrder.where(id: @purchase_order.id).joins(purchase_deliveries: :purchase_delivery_details)
+                            .group(:product_id).sum(:missing)
+    @demaged = PurchaseOrder.where(id: @purchase_order.id).joins(purchase_deliveries: :purchase_delivery_details)
+                            .group(:product_id).sum(:demaged)
+    @deliveries = @purchase_order.purchase_deliveries
+  end
+
+  def filter_object_ids
+    params[:object_ids].delete('0') if params[:object_ids].present?
   end
 end

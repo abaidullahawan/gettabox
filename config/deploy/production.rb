@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 server '142.93.32.58', user: 'deploy', roles: %w[app db web]
 
 # server-based syntax

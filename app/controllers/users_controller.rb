@@ -1,8 +1,13 @@
+# frozen_string_literal: true
+
+# Users
 class UsersController < ApplicationController
   before_action :authenticate_user!
   before_action :user_sub_role
   before_action :find_user, only: %i[edit show destroy]
   before_action :load_resources, only: %i[show edit]
+  before_action :update_without_password, only: %i[update]
+  before_action :filter_object_ids, only: %i[bulk_method restore]
   # before_filter :default_created_by, only: :create
 
   def index
@@ -45,10 +50,6 @@ class UsersController < ApplicationController
   end
 
   def update
-    if params[:user][:password].blank? || params[:user][:password_confirmation].blank?
-      params[:user].delete(:password)
-      params[:user].delete(:password_confirmation)
-    end
     @user = User.find(params[:id])
     if @user.update(user_params)
       flash[:notice] = 'User updated successfully.'
@@ -85,34 +86,30 @@ class UsersController < ApplicationController
                    user.update(row.to_hash)
                  end
             flash[:alert] = "#{user.errors.full_messages} , Please try again . . . "
-            redirect_to users_path and return
+            redirect_to users_path
           end
         end
         flash[:alert] = 'File Upload Successful!'
-        redirect_to users_path
       else
         flash[:alert] = 'File not matched! Please change file'
-        redirect_to users_path
       end
     else
       flash[:alert] = 'File format no matched! Please change file'
-      redirect_to users_path
     end
+    redirect_to users_path
   end
 
   def bulk_method
-    params[:object_ids].delete('0') if params[:object_ids].present?
     if params[:object_ids].present?
       params[:object_ids].each do |p|
         user = User.find(p.to_i)
         user.delete
       end
       flash[:notice] = 'Users archive successfully'
-      redirect_to users_path
     else
       flash[:alert] = 'Please select something to perform action.'
-      redirect_to users_path
     end
+    redirect_to users_path
   end
 
   def archive
@@ -123,18 +120,15 @@ class UsersController < ApplicationController
   def restore
     if params[:object_id].present? && User.restore(params[:object_id])
       flash[:notice] = 'User restore successful'
-      redirect_to archive_users_path
     elsif params[:object_ids].present?
-      params[:object_ids].delete('0')
       params[:object_ids].each do |p|
         User.restore(p.to_i)
       end
       flash[:notice] = 'Users restore successful'
-      redirect_to archive_users_path
     else
       flash[:notice] = 'User cannot be restore'
-      redirect_to archive_users_path
     end
+    redirect_to archive_users_path
   end
 
   def profile; end
@@ -161,48 +155,26 @@ class UsersController < ApplicationController
   end
 
   def user_params
-    params
-      .require(:user)
-      .permit(:email,
-              :password,
-              :password_confirmation,
-              :role,
-              :created_by,
-              :profile_image,
-              personal_detail_attributes:
-              [:id,
-               :first_name,
-               :last_name,
-               :dob,
-               :gender,
-               { contact_details_attributes:
-               %i[id
-                  phone_number
-                  email
-                  street_address
-                  city
-                  province
-                  country
-                  zip
-                  _destroy],
-                 work_details_attributes:
-               %i[id
-                  company_name
-                  position
-                  city
-                  description
-                  currently_working
-                  from
-                  to
-                  _destroy],
-                 study_details_attributes:
-               %i[id
-                  school
-                  degree
-                  format
-                  description
-                  from
-                  to
-                  _destroy] }])
+    params.require(:user)
+          .permit(:email, :password, :password_confirmation, :role, :created_by, :profile_image,
+                  personal_detail_attributes:
+                  [:id, :first_name, :last_name, :dob, :gender,
+                   { contact_details_attributes:
+                   %i[id phone_number email street_address city province country zip _destroy],
+                     work_details_attributes:
+                   %i[id company_name position city description currently_working from to _destroy],
+                     study_details_attributes:
+                   %i[id school degree format description from to _destroy] }])
+  end
+
+  def update_without_password
+    return unless params[:user][:password].blank? || params[:user][:password_confirmation].blank?
+
+    params[:user].delete(:password)
+    params[:user].delete(:password_confirmation)
+  end
+
+  def filter_object_ids
+    params[:object_ids].delete('0') if params[:object_ids].present?
   end
 end

@@ -1,5 +1,8 @@
+# frozen_string_literal: true
+
 require 'application_system_test_case'
 
+# seasons differentiate between products
 class SeasonsTest < ApplicationSystemTestCase
   setup do
     @season = seasons(:one)

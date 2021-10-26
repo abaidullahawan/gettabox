@@ -1,3 +1,6 @@
+# frozen_string_literal: true
+
+# products from apo
 class ChannelProduct < ApplicationRecord
   has_one :product_mapping
 

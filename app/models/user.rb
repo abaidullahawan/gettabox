@@ -1,3 +1,6 @@
+# frozen_string_literal: true
+
+# USER
 class User < ApplicationRecord
   acts_as_paranoid
   # Include default devise modules. Others available are:

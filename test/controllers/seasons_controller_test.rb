@@ -1,5 +1,8 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 
+# seasons differentiate products
 class SeasonsControllerTest < ActionDispatch::IntegrationTest
   setup do
     @season = seasons(:one)

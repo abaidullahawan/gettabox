@@ -1,3 +1,6 @@
+# frozen_string_literal: true
+
+# delivery detail of product
 class PurchaseDeliveryDetail < ApplicationRecord
   acts_as_paranoid
 

@@ -1,5 +1,8 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 
+# testing email templates
 class EmailTemplatesControllerTest < ActionDispatch::IntegrationTest
   setup do
     @email_template = email_templates(:one)
@@ -19,7 +22,8 @@ class EmailTemplatesControllerTest < ActionDispatch::IntegrationTest
     assert_difference('EmailTemplate.count') do
       post email_templates_url,
            params: { email_template: { body: @email_template.body, subject: @email_template.subject,
-                                       template_name: @email_template.template_name, template_type: @email_template.template_type } }
+                                       template_name: @email_template.template_name,
+                                       template_type: @email_template.template_type } }
     end
 
     assert_redirected_to email_template_url(EmailTemplate.last)
@@ -38,7 +42,8 @@ class EmailTemplatesControllerTest < ActionDispatch::IntegrationTest
   test 'should update email_template' do
     patch email_template_url(@email_template),
           params: { email_template: { body: @email_template.body, subject: @email_template.subject,
-                                      template_name: @email_template.template_name, template_type: @email_template.template_type } }
+                                      template_name: @email_template.template_name,
+                                      template_type: @email_template.template_type } }
     assert_redirected_to email_template_url(@email_template)
   end
 

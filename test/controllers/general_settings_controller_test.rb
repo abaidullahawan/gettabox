@@ -1,5 +1,8 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 
+# custom user settings
 class GeneralSettingsControllerTest < ActionDispatch::IntegrationTest
   setup do
     @general_setting = general_settings(:one)

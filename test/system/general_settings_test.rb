@@ -1,5 +1,8 @@
+# frozen_string_literal: true
+
 require 'application_system_test_case'
 
+# system user's defined setting
 class GeneralSettingsTest < ApplicationSystemTestCase
   setup do
     @general_setting = general_settings(:one)

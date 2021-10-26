@@ -1,3 +1,6 @@
+# frozen_string_literal: true
+
+# system products
 class Product < ApplicationRecord
   acts_as_paranoid
   has_one :extra_field_value, as: :fieldvalueable

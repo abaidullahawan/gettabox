@@ -1,3 +1,6 @@
+# frozen_string_literal: true
+
+# bulk response from api
 class ChannelResponseData < ApplicationRecord
   enum channel: {
     ebay: 0,

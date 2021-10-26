@@ -1,3 +1,6 @@
+# frozen_string_literal: true
+
+# converting response to products
 class CreateChannelProductResponseJob < ApplicationJob
   queue_as :default
 
@@ -43,7 +46,8 @@ class CreateChannelProductResponseJob < ApplicationJob
                            })
       @xml_response_data = Nokogiri::XML(response.body)
       @data_xml_re = Hash.from_xml(@xml_response_data.to_xml)
-      @total_pages = @data_xml_re['GetMyeBaySellingResponse']['ActiveList']['PaginationResult']['TotalNumberOfPages'].to_i
+      @total_pages = @data_xml_re['GetMyeBaySellingResponse']['ActiveList']['PaginationResult']['TotalNumberOfPages']
+                     .to_i
       ChannelResponseData.create(channel: 'ebay', response: @data_xml_re, api_url: 'https://api.ebay.com/ws/api.dll',
                                  api_call: 'GetMyeBaySelling', status: 'panding')
       @page_no += 1

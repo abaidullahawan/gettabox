@@ -1,3 +1,6 @@
+# frozen_string_literal: true
+
+# differientate between products
 class Category < ApplicationRecord
   acts_as_paranoid
   has_many :products

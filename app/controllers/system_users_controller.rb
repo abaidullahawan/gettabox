@@ -1,22 +1,24 @@
+# frozen_string_literal: true
+
+# System User are currently suppliers
 class SystemUsersController < ApplicationController
   before_action :authenticate_user!
   before_action :find_system_user, only: %i[show edit update destroy]
-  before_action :get_field_names, only: %i[new create show index update]
-  before_action :new, only: [:index]
+  before_action :fetch_field_names, only: %i[new create show index update]
+  before_action :new, :ransack_system_users, :purchase_orders, only: [:index]
+  before_action :build_system_user, :build_extra_field_value, only: %i[create]
+  before_action :build_extra_field_value, only: %i[update]
+  before_action :filter_object_ids, only: %i[bulk_method restore]
   skip_before_action :verify_authenticity_token, only: %i[create update]
+
   def index
-    @q = SystemUser.where(user_type: 'supplier').ransack(params[:q])
-    @system_users = @q.result(distinct: true).order(created_at: :desc).page(params[:page]).per(params[:limit])
-    @purchase_orders = PurchaseOrder.all
     if params[:export_csv].present?
       export_csv(@system_users)
     else
       respond_to do |format|
         format.html
         format.pdf do
-          render  pdf: 'file.pdf',
-                  viewport_size: '1280x1024',
-                  template: 'system_users/index.pdf.erb'
+          render pdf: 'file.pdf', viewport_size: '1280x1024', template: 'system_users/index.pdf.erb'
         end
       end
     end
@@ -29,12 +31,6 @@ class SystemUsersController < ApplicationController
   end
 
   def create
-    @system_user = SystemUser.new(system_user_params)
-    @system_user.build_extra_field_value
-    @system_user.extra_field_value.field_value = {} if @system_user.extra_field_value.field_value.nil?
-    @field_names.each do |field_name|
-      @system_user.extra_field_value.field_value[field_name.to_s] = params[:"#{field_name}"]
-    end
     if @system_user.save
       @system_user.update(user_type: 'supplier')
       flash[:notice] = 'Supplier created successfully.'
@@ -50,11 +46,6 @@ class SystemUsersController < ApplicationController
   def edit; end
 
   def update
-    @system_user.build_extra_field_value if @system_user.extra_field_value.nil?
-    @system_user.extra_field_value.field_value = {} if @system_user.extra_field_value.field_value.nil?
-    @field_names.each do |field_name|
-      @system_user.extra_field_value.field_value[field_name.to_s] = params[:"#{field_name}"]
-    end
     if @system_user.update(system_user_params)
       @system_user.update(user_type: 'supplier')
       flash[:notice] = 'Supplier updated successfully.'
@@ -91,36 +82,32 @@ class SystemUsersController < ApplicationController
           data = SystemUser.find_or_initialize_by(id: row['id'])
           if !data.update(row.to_hash)
             flash[:alert] = "#{data.errors.first.full_message} at ID: #{data.id} , Try again"
-            redirect_to system_users_path and return
+            redirect_to system_users_path
           else
             data.update(user_type: 'supplier')
           end
         end
         flash[:alert] = 'File Upload Successful!'
-        redirect_to system_users_path
       else
         flash[:alert] = 'File not matched! Please change file'
-        redirect_to system_users_path
       end
     else
       flash[:alert] = 'File format no matched! Please change file'
-      redirect_to system_users_path
     end
+    redirect_to system_users_path
   end
 
   def bulk_method
-    params[:object_ids].delete('0') if params[:object_ids].present?
     if params[:object_ids].present?
       params[:object_ids].each do |p|
         product = SystemUser.find(p.to_i)
         product.delete
       end
       flash[:notice] = 'Suppliers archive successfully'
-      redirect_to system_users_path
     else
       flash[:alert] = 'Please select something to perform action.'
-      redirect_to system_users_path
     end
+    redirect_to system_users_path
   end
 
   def archive
@@ -131,17 +118,15 @@ class SystemUsersController < ApplicationController
   def restore
     if params[:object_id].present? && SystemUser.restore(params[:object_id])
       flash[:notice] = 'Supplier restore successful'
-      redirect_to archive_system_users_path
     elsif params[:object_ids].present?
       params[:object_ids].each do |p|
         SystemUser.restore(p.to_i)
       end
       flash[:notice] = 'Suppliers restore successful'
-      redirect_to archive_system_users_path
     else
       flash[:notice] = 'Supplier cannot be restore'
-      redirect_to archive_system_users_path
     end
+    redirect_to archive_system_users_path
   end
 
   def search_system_user_by_name
@@ -158,26 +143,42 @@ class SystemUsersController < ApplicationController
     @system_user = SystemUser.find(params[:id])
   end
 
-  def get_field_names
+  def fetch_field_names
     @field_names = []
     @field_names = ExtraFieldName.where(table_name: 'SystemUser').pluck(:field_name)
   end
 
   def system_user_params
-    params.require(:system_user).permit(:user_type, :name, :photo, :payment_method, :days_for_payment, :days_for_order_to_completion, :days_for_completion_to_delivery, :currency_symbol, :exchange_rate, :email, :phone_number,
-                                        address_attributes: %i[
-                                          id
-                                          company
-                                          address
-                                          city
-                                          region
-                                          postcode
-                                          country
-                                        ],
-                                        extra_field_value_attributes:
-                                        %i[
-                                          id
-                                          field_value
-                                        ])
+    params.require(:system_user)
+          .permit(:user_type, :name, :photo, :payment_method, :days_for_payment, :days_for_order_to_completion,
+                  :days_for_completion_to_delivery, :currency_symbol, :exchange_rate, :email, :phone_number,
+                  address_attributes: %i[id company address city region postcode country],
+                  extra_field_value_attributes:
+                  %i[id field_value])
+  end
+
+  def ransack_system_users
+    @q = SystemUser.where(user_type: 'supplier').ransack(params[:q])
+    @system_users = @q.result(distinct: true).order(created_at: :desc).page(params[:page]).per(params[:limit])
+  end
+
+  def purchase_orders
+    @purchase_orders = PurchaseOrder.all
+  end
+
+  def build_system_user
+    @system_user = SystemUser.new(system_user_params)
+  end
+
+  def build_extra_field_value
+    @system_user.build_extra_field_value if @system_user.extra_field_value.nil?
+    @system_user.extra_field_value.field_value = {} if @system_user.extra_field_value.field_value.nil?
+    @field_names.each do |field_name|
+      @system_user.extra_field_value.field_value[field_name.to_s] = params[:"#{field_name}"]
+    end
+  end
+
+  def filter_object_ids
+    params[:object_ids].delete('0') if params[:object_ids].present?
   end
 end

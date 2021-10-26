@@ -1,3 +1,6 @@
+# frozen_string_literal: true
+
+# personal detail have all relvent infotmation about user
 class PersonalDetail < ApplicationRecord
   belongs_to :bio, polymorphic: true
 

@@ -1,3 +1,6 @@
+# frozen_string_literal: true
+
+# mail for purhcase order reminder
 class PurchaseOrderMailer < ApplicationMailer
   def send_email(pdf, subject, email, name, body)
     @supplier_name = name

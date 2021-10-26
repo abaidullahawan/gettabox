@@ -1,3 +1,6 @@
+# frozen_string_literal: true
+
+# converting response to orders
 class CreateChannelOrderResponseJob < ApplicationJob
   queue_as :default
 

@@ -1,3 +1,6 @@
+# frozen_string_literal: true
+
+# single delivery may be many delivery details
 class PurchaseDelivery < ApplicationRecord
   acts_as_paranoid
 
