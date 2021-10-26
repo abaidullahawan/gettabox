@@ -12,6 +12,7 @@ set :deploy_to, "/home/deploy/#{fetch :application}"
 set :branch, 'main'
 # Default value for :format is :airbrussh.
 # set :format, :airbrussh
+set :init_system, :systemd
 set :pty,  false
 set :sidekiq_config => 'config/sidekiq.yml'
 # SSHKit.config.command_map[:sidekiq]    = 'bundle exec sidekiq'
