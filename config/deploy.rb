@@ -12,7 +12,6 @@ set :deploy_to, "/home/deploy/#{fetch :application}"
 set :branch, 'main'
 # Default value for :format is :airbrussh.
 # set :format, :airbrussh
-set :init_system, :systemd
 set :service_unit_name, "sidekiq.service"
 set :pty,  false
 set :sidekiq_config => 'config/sidekiq.yml'
