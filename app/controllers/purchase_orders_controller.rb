@@ -2,13 +2,16 @@
 
 # getting purchase orders and creating
 class PurchaseOrdersController < ApplicationController
+  include ImportExport
+
   before_action :authenticate_user!
   before_action :find_purchase_order, only: %i[show edit update destroy send_mail_to_supplier]
   before_action :build_purchase_order, only: %i[new]
   before_action :find_supplier, only: %i[show edit send_mail_to_supplier]
   before_action :sum_of_stock, only: %i[show send_mail_to_supplier]
   before_action :filter_object_ids, only: %i[bulk_method restore]
-  after_action :restore_childs, only: :restore
+  before_action :klass_bulk_method, only: %i[bulk_method]
+  before_action :klass_restore, :restore_childs, only: %i[restore]
 
   def index
     @q = PurchaseOrder.ransack(params[:q])
@@ -134,15 +137,6 @@ class PurchaseOrdersController < ApplicationController
   end
 
   def bulk_method
-    if params[:object_ids].present?
-      params[:object_ids].each do |p|
-        product = PurchaseOrder.find(p.to_i)
-        product.delete
-      end
-      flash[:notice] = 'Purchase Orders archive successfully'
-    else
-      flash[:alert] = 'Please select something to perform action.'
-    end
     redirect_to purchase_orders_path
   end
 
@@ -152,16 +146,6 @@ class PurchaseOrdersController < ApplicationController
   end
 
   def restore
-    if params[:object_id].present? && PurchaseOrder.restore(params[:object_id])
-      flash[:notice] = 'Purchase Order restore successful'
-    elsif params[:object_ids].present?
-      params[:object_ids].each do |p|
-        PurchaseOrder.restore(p.to_i)
-      end
-      flash[:notice] = 'Purchase Orders restore successful'
-    else
-      flash[:notice] = 'Purchase Order cannot be restore'
-    end
     redirect_to archive_purchase_orders_path
   end
 
@@ -209,9 +193,5 @@ class PurchaseOrdersController < ApplicationController
     @demaged = PurchaseOrder.where(id: @purchase_order.id).joins(purchase_deliveries: :purchase_delivery_details)
                             .group(:product_id).sum(:demaged)
     @deliveries = @purchase_order.purchase_deliveries
-  end
-
-  def filter_object_ids
-    params[:object_ids].delete('0') if params[:object_ids].present?
   end
 end

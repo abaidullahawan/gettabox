@@ -2,14 +2,18 @@
 
 # Categories
 class CategoriesController < ApplicationController
+  include ImportExport
+
   before_action :authenticate_user!
   before_action :find_category, only: %i[show edit update destroy]
   before_action :filter_object_ids, only: %i[bulk_method restore]
+  before_action :klass_bulk_method, only: %i[bulk_method]
+  before_action :klass_restore, only: %i[restore]
 
   def index
     @q = Category.ransack(params[:q])
     @categories = @q.result(distinct: true).order(created_at: :desc).page(params[:page]).per(params[:limit])
-    return export_csv(@categories) unless params[:export_csv].present?
+    export_csv(@categories) if params[:export_csv].present?
 
     generate_pdf
   end
@@ -45,10 +49,10 @@ class CategoriesController < ApplicationController
 
   def destroy
     if @category.destroy
-      flash[:notice] = 'Category destroyed successfully.'
+      flash[:notice] = 'Category archive successfully.'
       redirect_to categories_path
     else
-      flash.now[:notice] = 'Category not destroyed.'
+      flash.now[:notice] = 'Category not archived.'
       render categories_path
     end
   end
@@ -70,15 +74,6 @@ class CategoriesController < ApplicationController
   end
 
   def bulk_method
-    if params[:object_ids].present?
-      params[:object_ids].each do |p|
-        category = Category.find(p.to_i)
-        category.delete
-      end
-      flash[:notice] = 'Categories archive successfully'
-    else
-      flash[:alert] = 'Please select something to perform action.'
-    end
     redirect_to categories_path
   end
 
@@ -88,21 +83,6 @@ class CategoriesController < ApplicationController
   end
 
   def restore
-    if params[:object_id].present? && Category.restore(params[:object_id])
-      flash[:notice] = 'Categories restore successfully'
-    elsif params[:commit] == 'Delete' && params[:object_ids].present?
-      params[:object_ids].each do |id|
-        Category.only_deleted.find(id).really_destroy!
-      end
-      flash[:notice] = 'Categories deleted successfully'
-    elsif params[:commit] == 'Restore' && params[:object_ids].present?
-      params[:object_ids].each do |p|
-        Category.restore(p.to_i)
-      end
-      flash[:notice] = 'Categories restored successfully'
-    else
-      flash[:notice] = 'Please select something to perform action'
-    end
     redirect_to archive_categories_path
   end
 
@@ -131,9 +111,5 @@ class CategoriesController < ApplicationController
 
   def category_params
     params.require(:category).permit(:title, :description)
-  end
-
-  def filter_object_ids
-    params[:object_ids].delete('0') if params[:object_ids].present?
   end
 end

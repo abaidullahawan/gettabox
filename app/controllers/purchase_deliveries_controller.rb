@@ -2,10 +2,14 @@
 
 # PurchaseDeliveries Crud
 class PurchaseDeliveriesController < ApplicationController
+  include ImportExport
+
   before_action :authenticate_user!
   before_action :find_purchase_delivery, only: %i[show edit update destroy]
   after_action :restore_childs, only: :restore
   before_action :filter_object_ids, only: %i[bulk_method restore]
+  before_action :klass_bulk_method, only: %i[bulk_method]
+  before_action :klass_restore, only: %i[restore]
 
   def index
     @q = PurchaseDelivery.ransack(params[:q])
@@ -100,15 +104,6 @@ class PurchaseDeliveriesController < ApplicationController
   end
 
   def bulk_method
-    if params[:object_ids].present?
-      params[:object_ids].each do |p|
-        product = PurchaseDelivery.find(p.to_i)
-        product.delete
-      end
-      flash[:notice] = 'Purchase Delivery archive successfully'
-    else
-      flash[:alert] = 'Please select something to perform action.'
-    end
     redirect_to purchase_deliveries_path
   end
 
@@ -118,16 +113,6 @@ class PurchaseDeliveriesController < ApplicationController
   end
 
   def restore
-    if params[:object_id].present? && PurchaseDelivery.restore(params[:object_id])
-      flash[:notice] = 'Purchase Delviery restore successful'
-    elsif params[:object_ids].present?
-      params[:object_ids].each do |p|
-        PurchaseDelivery.restore(p.to_i)
-      end
-      flash[:notice] = 'Purchase Delivery restore successful'
-    else
-      flash[:notice] = 'Purchase Delivery cannot be restore'
-    end
     redirect_to archive_purchase_deliveries_path
   end
 
@@ -168,9 +153,5 @@ class PurchaseDeliveriesController < ApplicationController
         deleted_at demaged
       ]
     )
-  end
-
-  def filter_object_ids
-    params[:object_ids].delete('0') if params[:object_ids].present?
   end
 end

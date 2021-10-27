@@ -3,6 +3,7 @@
 # Products Crud
 class ProductsController < ApplicationController
   include NewProduct
+  include ImportExport
 
   before_action :authenticate_user!
   before_action :find_product, only: %i[edit update show destroy]
@@ -13,6 +14,8 @@ class ProductsController < ApplicationController
   before_action :build_product, only: %i[create]
   skip_before_action :verify_authenticity_token, only: %i[create update]
   before_action :filter_object_ids, only: %i[bulk_method restore]
+  before_action :klass_bulk_method, only: %i[bulk_method]
+  before_action :klass_restore, only: %i[restore]
 
   def index
     export_csv(@products) if params[:export_csv].present?
@@ -99,15 +102,6 @@ class ProductsController < ApplicationController
   end
 
   def bulk_method
-    if params[:object_ids].present?
-      params[:object_ids].each do |p|
-        product = Product.find(p.to_i)
-        product.delete
-      end
-      flash[:notice] = 'Products archive successfully'
-    else
-      flash[:alert] = 'Please select something to perform action.'
-    end
     redirect_to products_path
   end
 
@@ -117,21 +111,6 @@ class ProductsController < ApplicationController
   end
 
   def restore
-    if params[:object_id].present? && Product.restore(params[:object_id])
-      flash[:notice] = 'Product restore successful'
-    elsif params[:commit] == 'Delete' && params[:object_ids].present?
-      params[:object_ids].each do |id|
-        Product.only_deleted.find(id).really_destroy!
-      end
-      flash[:notice] = 'Products deleted successfully'
-    elsif params[:commit] == 'Restore' && params[:object_ids].present?
-      params[:object_ids].each do |p|
-        Product.restore(p.to_i)
-      end
-      flash[:notice] = 'Products restored successfully'
-    else
-      flash[:notice] = 'Please select something to perform action'
-    end
     redirect_to archive_products_path
   end
 
@@ -201,9 +180,5 @@ class ProductsController < ApplicationController
     @field_names.each do |field_name|
       @product.extra_field_value.field_value[field_name.to_s] = params[:"#{field_name}"]
     end
-  end
-
-  def filter_object_ids
-    params[:object_ids].delete('0') if params[:object_ids].present?
   end
 end

@@ -2,6 +2,8 @@
 
 # System User are currently suppliers
 class SystemUsersController < ApplicationController
+  include ImportExport
+
   before_action :authenticate_user!
   before_action :find_system_user, only: %i[show edit update destroy]
   before_action :fetch_field_names, only: %i[new create show index update]
@@ -10,6 +12,8 @@ class SystemUsersController < ApplicationController
   before_action :build_extra_field_value, only: %i[update]
   before_action :filter_object_ids, only: %i[bulk_method restore]
   skip_before_action :verify_authenticity_token, only: %i[create update]
+  before_action :klass_bulk_method, only: %i[bulk_method]
+  before_action :klass_restore, only: %i[restore]
 
   def index
     if params[:export_csv].present?
@@ -98,15 +102,6 @@ class SystemUsersController < ApplicationController
   end
 
   def bulk_method
-    if params[:object_ids].present?
-      params[:object_ids].each do |p|
-        product = SystemUser.find(p.to_i)
-        product.delete
-      end
-      flash[:notice] = 'Suppliers archive successfully'
-    else
-      flash[:alert] = 'Please select something to perform action.'
-    end
     redirect_to system_users_path
   end
 
@@ -116,16 +111,6 @@ class SystemUsersController < ApplicationController
   end
 
   def restore
-    if params[:object_id].present? && SystemUser.restore(params[:object_id])
-      flash[:notice] = 'Supplier restore successful'
-    elsif params[:object_ids].present?
-      params[:object_ids].each do |p|
-        SystemUser.restore(p.to_i)
-      end
-      flash[:notice] = 'Suppliers restore successful'
-    else
-      flash[:notice] = 'Supplier cannot be restore'
-    end
     redirect_to archive_system_users_path
   end
 
@@ -176,9 +161,5 @@ class SystemUsersController < ApplicationController
     @field_names.each do |field_name|
       @system_user.extra_field_value.field_value[field_name.to_s] = params[:"#{field_name}"]
     end
-  end
-
-  def filter_object_ids
-    params[:object_ids].delete('0') if params[:object_ids].present?
   end
 end

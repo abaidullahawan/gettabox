@@ -2,12 +2,16 @@
 
 # Users
 class UsersController < ApplicationController
+  include ImportExport
+
   before_action :authenticate_user!
   before_action :user_sub_role
   before_action :find_user, only: %i[edit show destroy]
   before_action :load_resources, only: %i[show edit]
   before_action :update_without_password, only: %i[update]
   before_action :filter_object_ids, only: %i[bulk_method restore]
+  before_action :klass_bulk_method, only: %i[bulk_method]
+  before_action :klass_restore, only: %i[restore]
   # before_filter :default_created_by, only: :create
 
   def index
@@ -100,15 +104,6 @@ class UsersController < ApplicationController
   end
 
   def bulk_method
-    if params[:object_ids].present?
-      params[:object_ids].each do |p|
-        user = User.find(p.to_i)
-        user.delete
-      end
-      flash[:notice] = 'Users archive successfully'
-    else
-      flash[:alert] = 'Please select something to perform action.'
-    end
     redirect_to users_path
   end
 
@@ -118,16 +113,6 @@ class UsersController < ApplicationController
   end
 
   def restore
-    if params[:object_id].present? && User.restore(params[:object_id])
-      flash[:notice] = 'User restore successful'
-    elsif params[:object_ids].present?
-      params[:object_ids].each do |p|
-        User.restore(p.to_i)
-      end
-      flash[:notice] = 'Users restore successful'
-    else
-      flash[:notice] = 'User cannot be restore'
-    end
     redirect_to archive_users_path
   end
 
@@ -172,9 +157,5 @@ class UsersController < ApplicationController
 
     params[:user].delete(:password)
     params[:user].delete(:password_confirmation)
-  end
-
-  def filter_object_ids
-    params[:object_ids].delete('0') if params[:object_ids].present?
   end
 end
