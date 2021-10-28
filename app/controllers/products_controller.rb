@@ -16,6 +16,7 @@ class ProductsController < ApplicationController
   before_action :filter_object_ids, only: %i[bulk_method restore]
   before_action :klass_bulk_method, only: %i[bulk_method]
   before_action :klass_restore, only: %i[restore]
+  before_action :klass_import, only: %i[import]
 
   def index
     export_csv(@products) if params[:export_csv].present?
@@ -79,24 +80,9 @@ class ProductsController < ApplicationController
   end
 
   def import
-    if params[:file].present? && params[:file].path.split('.').last.to_s.downcase == 'csv'
-      csv_text = File.read(params[:file])
-      csv = CSV.parse(csv_text, headers: true)
-      if csv.headers == Product.column_names
-        csv.delete('id')
-        csv.each do |row|
-          product = Product.find_or_initialize_by(sku: row['sku'])
-          unless product.update(row.to_hash)
-            flash[:alert] = "#{product.errors.full_messages} at ID: #{product.id} , Try again."
-            redirect_to products_path
-          end
-        end
-        flash[:alert] = 'File Upload Successful!'
-      else
-        flash[:alert] = 'File not matched! Please change file'
-      end
-    else
-      flash[:alert] = 'File format no matched! Please change file'
+    if @csv.present?
+      @csv.delete('id')
+      csv_create_records(@csv)
     end
     redirect_to products_path
   end
@@ -180,5 +166,16 @@ class ProductsController < ApplicationController
     @field_names.each do |field_name|
       @product.extra_field_value.field_value[field_name.to_s] = params[:"#{field_name}"]
     end
+  end
+
+  def csv_create_records(csv)
+    csv.each do |row|
+      product = Product.with_deleted.find_or_initialize_by(sku: row['sku'])
+      unless product.update(row.to_hash)
+        flash[:alert] = "#{product.errors.full_messages} at ID: #{product.id} , Try again."
+        redirect_to products_path
+      end
+    end
+    flash[:alert] = 'File Upload Successful!'
   end
 end

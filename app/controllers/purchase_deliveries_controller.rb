@@ -10,6 +10,7 @@ class PurchaseDeliveriesController < ApplicationController
   before_action :filter_object_ids, only: %i[bulk_method restore]
   before_action :klass_bulk_method, only: %i[bulk_method]
   before_action :klass_restore, only: %i[restore]
+  before_action :klass_import, only: %i[import]
 
   def index
     @q = PurchaseDelivery.ransack(params[:q])
@@ -80,25 +81,9 @@ class PurchaseDeliveriesController < ApplicationController
   end
 
   def import
-    if params[:file].present? && params[:file].path.split('.').last.to_s.downcase == 'csv'
-      csv_text = File.read(params[:file])
-      csv = CSV.parse(csv_text, headers: true)
-      if csv.headers == PurchaseDelivery.column_names.excluding('user_type')
-        csv.each do |row|
-          data = PurchaseDelivery.find_or_initialize_by(id: row['id'])
-          if !data.update(row.to_hash)
-            flash[:alert] = "#{data.errors.first.full_message} at ID: #{data.id} , Try again"
-            redirect_to purchase_deliveries_path
-          else
-            data.update(user_type: 'supplier')
-          end
-        end
-        flash[:alert] = 'File Upload Successful!'
-      else
-        flash[:alert] = 'File not matched! Please change file'
-      end
-    else
-      flash[:alert] = 'File format no matched! Please change file'
+    if @csv.present?
+      csv_create_records(@csv)
+      flash[:alert] = 'File Upload Successful!'
     end
     redirect_to purchase_deliveries_path
   end
@@ -153,5 +138,17 @@ class PurchaseDeliveriesController < ApplicationController
         deleted_at demaged
       ]
     )
+  end
+
+  def csv_create_records(csv)
+    csv.each do |row|
+      data = PurchaseDelivery.with_deleted.find_or_initialize_by(id: row['id'])
+      if !data.update(row.to_hash)
+        flash[:alert] = "#{data.errors.full_messages} at ID: #{data.id} , Try again"
+        redirect_to purchase_deliveries_path
+      else
+        data.update(user_type: 'supplier')
+      end
+    end
   end
 end

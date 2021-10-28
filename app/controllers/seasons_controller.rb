@@ -10,6 +10,7 @@ class SeasonsController < ApplicationController
   before_action :filter_object_ids, only: %i[bulk_method restore]
   before_action :klass_bulk_method, only: %i[bulk_method]
   before_action :klass_restore, only: %i[restore]
+  before_action :klass_import, only: %i[import]
 
   def index
     @q = Season.ransack(params[:q])
@@ -60,23 +61,10 @@ class SeasonsController < ApplicationController
   end
 
   def import
-    if params[:file].present? && params[:file].path.split('.').last.to_s.downcase == 'csv'
-      csv_text = File.read(params[:file])
-      csv = CSV.parse(csv_text, headers: true)
-      if csv.headers == Season.column_names
-        csv.each do |row|
-          data = Season.find_or_initialize_by(id: row['id'])
-          unless data.update(row.to_hash)
-            flash[:alert] = "#{data.errors.first.full_message} at ID: #{data.id} , Try again"
-            redirect_to seasons_path
-          end
-        end
-        flash[:alert] = 'File Upload Successful!'
-      else
-        flash[:alert] = 'File not matched! Please change file'
-      end
-    else
-      flash[:alert] = 'File format no matched! Please change file'
+    if @csv.present?
+      @csv.delete('id')
+      csv_create_records(@csv)
+      flash[:alert] = 'File Upload Successful!'
     end
     redirect_to seasons_path
   end
@@ -119,5 +107,15 @@ class SeasonsController < ApplicationController
 
   def season_params
     params.require(:season).permit(:name, :description)
+  end
+
+  def csv_create_records(csv)
+    csv.each do |row|
+      data = Season.with_deleted.find_or_initialize_by(name: row['name'])
+      unless data.update(row.to_hash)
+        flash[:alert] = "#{data.errors.full_messages} at ID: #{data.id} , Try again"
+        redirect_to seasons_path
+      end
+    end
   end
 end

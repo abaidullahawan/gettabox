@@ -12,6 +12,7 @@ class UsersController < ApplicationController
   before_action :filter_object_ids, only: %i[bulk_method restore]
   before_action :klass_bulk_method, only: %i[bulk_method]
   before_action :klass_restore, only: %i[restore]
+  before_action :klass_import, only: %i[import]
   # before_filter :default_created_by, only: :create
 
   def index
@@ -72,33 +73,13 @@ class UsersController < ApplicationController
   end
 
   def import
-    if params[:file].present? && params[:file].path.split('.').last.to_s.downcase == 'csv'
-      csv_text = File.read(params[:file])
-      csv = CSV.parse(csv_text, headers: true)
-      if csv.headers == User.column_names
-        csv.delete('id')
-        csv.delete('encrypted_password')
-        csv.delete('created_at')
-        csv.delete('updated_at')
-
-        csv.each do |row|
-          user = User.find_or_initialize_by(email: row['email'])
-          unless if user.new_record?
-                   user.update(password: 'Sample',
-                               password_confirmation: 'Sample')
-                 else
-                   user.update(row.to_hash)
-                 end
-            flash[:alert] = "#{user.errors.full_messages} , Please try again . . . "
-            redirect_to users_path
-          end
-        end
-        flash[:alert] = 'File Upload Successful!'
-      else
-        flash[:alert] = 'File not matched! Please change file'
-      end
-    else
-      flash[:alert] = 'File format no matched! Please change file'
+    if @csv.present?
+      @csv.delete('id')
+      @csv.delete('encrypted_password')
+      @csv.delete('created_at')
+      @csv.delete('updated_at')
+      csv_create_records(@csv)
+      flash[:alert] = 'File Upload Successful!'
     end
     redirect_to users_path
   end
@@ -157,5 +138,21 @@ class UsersController < ApplicationController
 
     params[:user].delete(:password)
     params[:user].delete(:password_confirmation)
+  end
+
+  def csv_create_records(csv)
+    csv.each do |row|
+      user = User.with_deleted.create_with(email: row['email'], password: 'Sample',
+                                           password_confirmation: 'Sample', role: 'staff')
+                 .find_or_create_by(email: row['email'])
+      unless update_user(user, row)
+        flash[:alert] = "#{user.errors.full_messages} at ID: #{user.id} , Try again "
+        redirect_to users_path
+      end
+    end
+  end
+
+  def update_user(user, row)
+    user.update(row.to_hash)
   end
 end

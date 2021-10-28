@@ -65,4 +65,21 @@ module ImportExport
     end
     flash[:notice] = "#{name.pluralize} deleted successfully"
   end
+
+  def klass_import
+    file = params[:file]
+    if file.present? && file.path.split('.').last.to_s.downcase == 'csv'
+      csv_text = File.read(file)
+      csv = CSV.parse(csv_text, headers: true)
+      csv_headers_check(csv)
+    else
+      flash[:alert] = 'File format no matched! Please change file'
+    end
+  end
+
+  def csv_headers_check(csv)
+    return @csv = csv if csv.headers == controller_name.classify.constantize.column_names.excluding('user_type')
+
+    flash[:alert] = 'File not matched! Please change file'
+  end
 end

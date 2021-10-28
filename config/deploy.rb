@@ -16,7 +16,7 @@ set :branch, 'main'
 # set :format, :airbrussh
 
 set :init_system, :systemd
-set :pty,  false
+set :pty, false
 set sidekiq_config: 'config/sidekiq.yml'
 # SSHKit.config.command_map[:sidekiq]    = 'bundle exec sidekiq'
 # SSHKit.config.command_map[:sidekiqctl] = 'bundle exec sidekiqctl'
