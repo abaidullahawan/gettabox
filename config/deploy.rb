@@ -12,9 +12,8 @@ set :deploy_to, "/home/deploy/#{fetch :application}"
 set :branch, 'main'
 # Default value for :format is :airbrussh.
 # set :format, :airbrussh
-set :service_unit_name, "sidekiq.service"
 set :pty,  false
-set :sidekiq_config => 'config/sidekiq.yml'
+# set :sidekiq_config => 'config/sidekiq.yml'
 # SSHKit.config.command_map[:sidekiq]    = 'bundle exec sidekiq'
 # SSHKit.config.command_map[:sidekiqctl] = 'bundle exec sidekiqctl'
 # You can configure the Airbrussh format using :format_options.
@@ -30,29 +29,6 @@ set :sidekiq_config => 'config/sidekiq.yml'
 # Default value for linked_dirs is []
 # append :linked_dirs, "log", "tmp/pids", "tmp/cache", "tmp/sockets", "public/system"
 append :linked_dirs, 'log', 'tmp/pids', 'tmp/cache', 'tmp/sockets', 'vendor/bundle', '.bundle', 'public/system', 'public/uploads','node_modules'
-# set :user, "deploy"
-# Rake::Task["sidekiq:stop"].clear_actions
-# Rake::Task["sidekiq:start"].clear_actions
-# Rake::Task["sidekiq:restart"].clear_actions
-# namespace :sidekiq do
-#   task :stop do
-#     on roles(:app) do
-#       execute :sudo, :systemctl, :stop, :sidekiq
-#     end
-#   end
-#   task :start do
-#     on roles(:app) do
-#       execute :sudo, :systemctl, :start, :sidekiq
-#     end
-#   end
-#   task :restart do
-#     on roles(:app) do
-#       execute :sudo, :systemctl, :restart, :sidekiq
-#     end
-#   end
-# end
-# Default value for default_env is {}
-# set :default_env, { path: "/opt/ruby/bin:$PATH" }
 
 # Default value for local_user is ENV['USER']
 # set :local_user, -> { `git config user.name`.chomp }
