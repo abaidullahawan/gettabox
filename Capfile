@@ -37,6 +37,7 @@ require 'capistrano/rails'
 require 'capistrano/passenger'
 require 'capistrano/rbenv'
 require 'capistrano/sidekiq'
+require 'sshkit/sudo'
 install_plugin Capistrano::Sidekiq
 install_plugin Capistrano::Sidekiq::Upstart
 set :rbenv_type, :user
