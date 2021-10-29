@@ -20,66 +20,65 @@ class ApplicationController < ActionController::Base
 
   def refresh_token
     @refresh_token = RefreshToken.last
-    if @refresh_token.present? && @refresh_token.access_token_expiry.localtime < DateTime.now
-      begin
-        data = { redirect_uri: 'Channel_Dispatc-ChannelD-Channe-flynitdm',
-                 grant_type: 'refresh_token',
-                 refresh_token: @refresh_token.refresh_token }
-        body = URI.encode_www_form(data)
-        @result = HTTParty
-                  .post(
-                    'https://api.ebay.com/identity/v1/oauth2/token'.to_str,
-                    body: body,
-                    headers: {
-                      'Content-Type' => 'application/x-www-form-urlencoded',
-                      'Authorization' => 'Basic Q2hhbm5lbEQtQ2hhbm5lbEQtUFJELWRhMjhlYzY5MC00YTlmMzYzYzpQUkQtYTI4ZWM2OTA4ZWE5LTdjNDMtNGZkOS1iZTQzLTBlN2Q='
-                    }
-                  )
-      rescue StandardError
-        flash[:alert] = 'Please contact your administration for process'
-        redirect_to product_mappings_path
-      end
-      if @result['error'].present? || @result['errors'].present?
-        flash[:alert] = (@result['error_description']).to_s
-        redirect_to product_mappings_path
-      else
-        @result.body.present?
-        @refresh_token.update(access_token: @result['access_token'],
-                              access_token_expiry: DateTime.now + @result['expires_in'].to_i.seconds)
-      end
+    credential = Credential.find_by(grant_type: 'refresh_token')
+    remainaing_time = @refresh_token.access_token_expiry.localtime < DateTime.now
+    return if @refresh_token.present? && remainaing_time
+
+    if credential.present?
+      generate_refresh_token(credential)
+    else
+      flash[:alert] = 'Please contact your administration for process'
     end
-    @refresh_token
+  end
+
+  def generate_refresh_token(credential)
+    result = RefreshTokenService.refresh_token_api(@refresh_token, credential)
+    if result['error'].present? || result['errors'].present?
+      flash[:alert] = (result['error_description']).to_s
+    else
+      update_refresh_token(result)
+    end
+  rescue StandardError
+    flash[:alert] = 'Please contact your administration for process'
+  end
+
+  def update_refresh_token(result)
+    @refresh_token.update(access_token: result['access_token'],
+                          access_token_expiry: DateTime.now + result['expires_in'].to_i.seconds)
   end
 
   def authentication_tokens
-    return unless params['code'].present? && params['expires_in'].present?
+    credential = Credential.find_by(grant_type: 'refresh_token')
+    code = params['code']
+    return unless code.present? && params['expires_in'].present?
 
-    begin
-      data = { redirect_uri: 'Channel_Dispatc-ChannelD-Channe-flynitdm',
-               grant_type: 'authorization_code',
-               code: params['code'] }
-      body = URI.encode_www_form(data)
-      @result = HTTParty.post('https://api.ebay.com/identity/v1/oauth2/token'.to_str,
-                              body: body,
-                              headers: { 'Content-Type' => 'application/x-www-form-urlencoded',
-                                         'Authorization' => 'Basic Q2hhbm5lbEQtQ2hhbm5lbEQtUFJELWRhMjhlYzY5MC00YTlmMzYzYzpQUkQtYTI4ZWM2OTA4ZWE5LTdjNDMtNGZkOS1iZTQzLTBlN2Q=' })
-    rescue StandardError
-      flash[:alert] = 'Please contact your administration for process'
-      redirect_to root_path
-    end
-    if @result['error'].present? || @result['errors'].present?
-      flash[:alert] = (@result['error_description']).to_s
+    if credential.present?
+      generate_authentication_token(code, credential)
     else
-      @result.body.present?
-      @refresh_token = RefreshToken
-                       .create(
-                         access_token: @result['access_token'],
-                         access_token_expiry: DateTime.now + @result['expires_in'].to_i.seconds,
-                         refresh_token: @result['refresh_token'],
-                         refresh_token_expiry: DateTime.now + @result['refresh_token_expires_in'].to_i.seconds
-                       )
-      flash[:alert] = 'Refresh token generated successfully!'
+      flash[:alert] = 'Please contact your administration for process'
     end
-    redirect_to product_mappings_path
+  end
+
+  def generate_authentication_token(code, credential)
+    result = RefreshTokenService.authentication_token_api(code, credential)
+    if result['error'].present? || result['errors'].present?
+      flash[:alert] = (result['error_description']).to_s
+    else
+      create_refresh_token(result)
+    end
+    redirect_to root_path
+  rescue StandardError
+    flash[:alert] = 'Please contact your administration for process'
+  end
+
+  def create_refresh_token(result)
+    @refresh_token = RefreshToken
+                     .create(
+                       access_token: result['access_token'],
+                       access_token_expiry: DateTime.now + result['expires_in'].to_i.seconds,
+                       refresh_token: result['refresh_token'],
+                       refresh_token_expiry: DateTime.now + result['refresh_token_expires_in'].to_i.seconds
+                     )
+    flash[:notice] = 'Refresh token generated successfully!'
   end
 end
