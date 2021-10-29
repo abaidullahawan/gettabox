@@ -15,11 +15,21 @@
           <table class="table table-hover text-vertical-middle mb-0">
             <thead class="bort-none borpt-0">
               <tr>
+                <th scope="col">Date Recieved</th>
                 <th scope="col">Channel</th>
-                <th scope="col">Order Information</th>
-                <th scope="col">Buyer Email</th>
-                <th scope="col">Date Received</th>
+                <th scope="col">Channel Dispatch ID</th>
+                <th scope="col">External ID</th>
+                <th scope="col">Buyer Name</th>
+                <th scope="col">User ID</th>
+                <th scope="col">Address</th>
+                <th scope="col">PostCode</th>
+                <th scope="col">Tel</th>
+                <th scope="col">Product SKU</th>
+                <th scope="col">Product Quantity</th>
                 <th scope="col">Total</th>
+                <th scope="col">Courier</th>
+                <th scope="col">Assigned To</th>
+                <th scope="col">Tracking</th>
                 <th scope="col">Status</th>
                 <th scope="col"></th>
               </tr>
@@ -27,14 +37,21 @@
             <% @orders.each do |order| %>
               <tbody>
                 <tr>
-                  <td><strong><%= order&.channel_type %></strong></td>
-                  <td>
-                    <%= image_tag('user/1.jpg', class: 'wh-30 mr-1 rounded', alt: 'Image') %>
-                    <%= order.order_data["buyer"]["username"] %>
-                  </td>
-                  <td><%= order.order_data["fulfillmentStartInstructions"][0]['shippingStep']["shipTo"]["email"]%></td>
                   <td><%= order.order_data["creationDate"].to_time.strftime("%m/%d/%Y %H:%M") %></td>
-                  <td><%= order.order_data["pricingSummary"]["priceSubtotal"]["value"]%> <%= order.order_data["pricingSummary"]["priceSubtotal"]["currency"]%></td>
+                  <td><strong><%= order&.channel_type %></strong></td>
+                  <td><%= order.id.to_s + " " + order.order_data["sellerId"] %></td>
+                  <td><%= order.ebayorder_id %></td>
+                  <td><%= order.order_data["buyer"]["username"]%></td>
+                  <td><%= order.order_data["buyer"]["username"]%></td>
+                  <td><%= order.order_data["fulfillmentStartInstructions"][0]["shippingStep"]["shipTo"]["contactAddress"]["addressLine1"].to_s + " "+ order.order_data["fulfillmentStartInstructions"][0]["shippingStep"]["shipTo"]["contactAddress"]["stateOrProvince"].to_s + " " + order.order_data["fulfillmentStartInstructions"][0]["shippingStep"]["shipTo"]["contactAddress"]["countryCode"].to_s %></td>
+                  <td><%= order.order_data["fulfillmentStartInstructions"][0]["shippingStep"]["shipTo"]["contactAddress"]["postalCode"] %></td>
+                  <td><%= order.order_data["fulfillmentStartInstructions"][0]["shippingStep"]["shipTo"]["primaryPhone"]["phoneNumber"]%></td>
+                  <td><%= order.order_data["lineItems"][0]["sku"]%></td>
+                  <td><%= order.order_data["lineItems"][0]["quantity"]%></td>
+                  <td><%= order.order_data["lineItems"][0]["total"]["value"]%></td>
+                  <td>Courier</td>
+                  <td>Assigned To</td>
+                  <td>Tracking</td>
                   <td><span class="badge badge_warning py-1"><%= order.order_data["orderFulfillmentStatus"]%></span></td>
                   <td>
                     <button class="btn btn-primary" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
