@@ -6,12 +6,12 @@ class CreateChannelOrderJob < ApplicationJob
 
   def perform(*_args)
     @response_orders = ChannelResponseData.all
-    creat_orders = []
+    @creat_orders = []
     @response_orders.each do |response_order|
       next unless (response_order.api_call == 'getOrders') && (response_order.status == 'panding')
 
       create_or_update_order(response_order)
-      ChannelOrder.import creat_orders, on_duplicate_key_update: [:ebayorder_id]
+      ChannelOrder.import @creat_orders, on_duplicate_key_update: [:ebayorder_id]
       response_order.update(status: 'executed')
     end
   end
@@ -23,7 +23,7 @@ class CreateChannelOrderJob < ApplicationJob
                                                                 channel_type: 'ebay')
       channel_order_record.order_data = order
       channel_order_record.created_at = creationdate
-      creat_orders << channel_order_record
+      @creat_orders << channel_order_record
     end
   end
 end
