@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
@@ -24,48 +26,47 @@ gem 'bcrypt', '~> 3.1.7'
 
 # Using Devise
 gem 'devise'
-gem 'devise-i18n'
 gem 'devise-bootstrap-views'
+gem 'devise-i18n'
 
-gem "font-awesome-rails"
+gem 'font-awesome-rails'
 
 # Use for nested forms
-gem "cocoon"
-gem 'ransack'
-gem 'bootstrap4-kaminari-views'
 gem 'activerecord-import'
-
+gem 'bootstrap4-kaminari-views'
+gem 'cocoon'
+gem 'ransack'
 
 # Use for amazon s3 bucket
+gem 'aws-sdk-s3', require: false
 gem 'image_processing'
-gem "aws-sdk-s3", require: false
-gem "mini_magick"
+gem 'mini_magick'
 # gem for super admin
-gem "administrate"
+gem 'administrate'
 # soft delete handling
-gem "paranoia", "~> 2.2"
+gem 'paranoia', '~> 2.2'
 # Use for dropdown searching
-gem 'jquery-rails'
 gem 'chosen-rails'
+gem 'jquery-rails'
 # Gem for PDF's
 # PDF
 gem 'wicked_pdf', github: 'mileszs/wicked_pdf'
 gem 'wkhtmltopdf-binary'
 
-gem 'rest-client'
+gem 'http'
 gem 'httparty'
-gem "http"
+gem 'rest-client'
 
-gem 'rexml', '~> 3.2.4'
 gem 'builder'
+gem 'rexml', '~> 3.2.4'
 
-gem 'sidekiq'
 gem 'capistrano-sidekiq'
 gem 'redis-namespace', '~> 1.8.1'
+gem 'sidekiq'
 
 gem 'capistrano', '~> 3.11'
-gem 'capistrano-rails', '~> 1.4'
 gem 'capistrano-passenger', '~> 0.2.0'
+gem 'capistrano-rails', '~> 1.4'
 gem 'capistrano-rbenv', '~> 2.1', '>= 2.1.4'
 gem 'sshkit-sudo'
 gem 'sidekiq-scheduler'
@@ -80,7 +81,7 @@ gem 'bootsnap', '>= 1.4.2', require: false
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
-  gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
+  gem 'byebug', platforms: %i[mri mingw x64_mingw]
 end
 
 group :development do
@@ -88,8 +89,8 @@ group :development do
   gem 'web-console', '>= 3.3.0'
   # Display performance information such as SQL time and flame graphs for each request in your browser.
   # Can be configured to work on production as well see: https://github.com/MiniProfiler/rack-mini-profiler/blob/master/README.md
-  gem 'rack-mini-profiler', '~> 2.0'
   gem 'listen', '~> 3.3'
+  gem 'rack-mini-profiler', '~> 2.0'
   # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
   gem 'spring'
   gem 'spring-watcher-listen', '~> 2.0.0'
@@ -104,9 +105,8 @@ group :test do
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
-gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
+gem 'tzinfo-data', platforms: %i[mingw mswin x64_mingw jruby]
 
 # ADD TRANSPILER TO USE ES6
 gem 'sprockets'
 gem 'sprockets-es6'
-

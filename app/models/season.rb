@@ -1,3 +1,6 @@
+# frozen_string_literal: true
+
+# seaon differentiate between products
 class Season < ApplicationRecord
   acts_as_paranoid
   has_many :products
@@ -6,7 +9,7 @@ class Season < ApplicationRecord
     CSV.generate(headers: true) do |csv|
       csv << attributes
       all.each do |season|
-        csv << attributes.map{ |attr| season.send(attr) }
+        csv << attributes.map { |attr| season.send(attr) }
       end
     end
   end

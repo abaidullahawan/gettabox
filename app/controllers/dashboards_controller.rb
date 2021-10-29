@@ -1,19 +1,15 @@
-class DashboardsController < ApplicationController
-    def sales
-    end
+# frozen_string_literal: true
 
-    def ecommerce
-    end
+class DashboardsController < ApplicationController # :nodoc:
+  def sales; end
 
-    def analytics
-    end
+  def ecommerce; end
 
-    def crm
-    end
+  def analytics; end
 
-    def project
-    end
+  def crm; end
 
-    def search
-    end
+  def project; end
+
+  def search; end
 end

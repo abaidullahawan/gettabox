@@ -1,8 +1,10 @@
-# config valid for current version and patch releases of Capistrano
-lock "~> 3.16.0"
+# frozen_string_literal: true
 
-set :application, "channeldispatch"
-set :repo_url, "git@github.com:abaidullahawan/gettabox.git"
+# config valid for current version and patch releases of Capistrano
+lock '~> 3.16.0'
+
+set :application, 'channeldispatch'
+set :repo_url, 'git@github.com:abaidullahawan/gettabox.git'
 
 # Default branch is :master
 # ask :branch, `git rev-parse --abbrev-ref HEAD`.chomp
@@ -12,7 +14,7 @@ set :deploy_to, "/home/deploy/#{fetch :application}"
 set :branch, 'main'
 # Default value for :format is :airbrussh.
 # set :format, :airbrussh
-set :pty,  false
+set :pty, false
 # set :sidekiq_config => 'config/sidekiq.yml'
 # SSHKit.config.command_map[:sidekiq]    = 'bundle exec sidekiq'
 # SSHKit.config.command_map[:sidekiqctl] = 'bundle exec sidekiqctl'
@@ -28,6 +30,7 @@ set :pty,  false
 
 # Default value for linked_dirs is []
 # append :linked_dirs, "log", "tmp/pids", "tmp/cache", "tmp/sockets", "public/system"
+
 append :linked_dirs, 'log', 'tmp/pids', 'tmp/cache', 'tmp/sockets', 'vendor/bundle', '.bundle', 'public/system', 'public/uploads','node_modules'
 
 # Default value for local_user is ENV['USER']

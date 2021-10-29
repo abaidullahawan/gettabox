@@ -1,43 +1,46 @@
-require "application_system_test_case"
+# frozen_string_literal: true
 
+require 'application_system_test_case'
+
+# seasons differentiate between products
 class SeasonsTest < ApplicationSystemTestCase
   setup do
     @season = seasons(:one)
   end
 
-  test "visiting the index" do
+  test 'visiting the index' do
     visit seasons_url
-    assert_selector "h1", text: "Seasons"
+    assert_selector 'h1', text: 'Seasons'
   end
 
-  test "creating a Season" do
+  test 'creating a Season' do
     visit seasons_url
-    click_on "New Season"
+    click_on 'New Season'
 
-    fill_in "Name", with: @season.name
-    click_on "Create Season"
+    fill_in 'Name', with: @season.name
+    click_on 'Create Season'
 
-    assert_text "Season was successfully created"
-    click_on "Back"
+    assert_text 'Season was successfully created'
+    click_on 'Back'
   end
 
-  test "updating a Season" do
+  test 'updating a Season' do
     visit seasons_url
-    click_on "Edit", match: :first
+    click_on 'Edit', match: :first
 
-    fill_in "Name", with: @season.name
-    click_on "Update Season"
+    fill_in 'Name', with: @season.name
+    click_on 'Update Season'
 
-    assert_text "Season was successfully updated"
-    click_on "Back"
+    assert_text 'Season was successfully updated'
+    click_on 'Back'
   end
 
-  test "destroying a Season" do
+  test 'destroying a Season' do
     visit seasons_url
     page.accept_confirm do
-      click_on "Destroy", match: :first
+      click_on 'Destroy', match: :first
     end
 
-    assert_text "Season was successfully destroyed"
+    assert_text 'Season was successfully destroyed'
   end
 end

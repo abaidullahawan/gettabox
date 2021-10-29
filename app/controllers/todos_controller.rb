@@ -1,8 +1,7 @@
-class TodosController < ApplicationController
-    def lists
-    end
+# frozen_string_literal: true
 
-    def notes
-    end
-    
+class TodosController < ApplicationController # :nodoc:
+  def lists; end
+
+  def notes; end
 end

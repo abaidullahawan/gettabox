@@ -1,9 +1,7 @@
-class DiscussionsController < ApplicationController
+# frozen_string_literal: true
 
-    def inbox
-    end
+class DiscussionsController < ApplicationController # :nodoc:
+  def inbox; end
 
-    def chat
-    end
-
+  def chat; end
 end

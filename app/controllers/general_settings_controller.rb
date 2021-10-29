@@ -1,5 +1,8 @@
+# frozen_string_literal: true
+
+# Company Setting
 class GeneralSettingsController < ApplicationController
-  before_action :set_general_setting, only: %i[ show edit update destroy ]
+  before_action :set_general_setting, only: %i[show edit update destroy]
 
   # GET /general_settings or /general_settings.json
   def index
@@ -7,8 +10,7 @@ class GeneralSettingsController < ApplicationController
   end
 
   # GET /general_settings/1 or /general_settings/1.json
-  def show
-  end
+  def show; end
 
   # GET /general_settings/new
   def new
@@ -17,8 +19,7 @@ class GeneralSettingsController < ApplicationController
   end
 
   # GET /general_settings/1/edit
-  def edit
-  end
+  def edit; end
 
   # POST /general_settings or /general_settings.json
   def create
@@ -26,7 +27,7 @@ class GeneralSettingsController < ApplicationController
 
     respond_to do |format|
       if @general_setting.save
-        format.html { redirect_to @general_setting, notice: "General setting was successfully created." }
+        format.html { redirect_to @general_setting, notice: 'General setting was successfully created.' }
         format.json { render :show, status: :created, location: @general_setting }
       else
         format.html { render :new, status: :unprocessable_entity }
@@ -39,7 +40,7 @@ class GeneralSettingsController < ApplicationController
   def update
     respond_to do |format|
       if @general_setting.update(general_setting_params)
-        format.html { redirect_to @general_setting, notice: "General setting was successfully updated." }
+        format.html { redirect_to @general_setting, notice: 'General setting was successfully updated.' }
         format.json { render :show, status: :ok, location: @general_setting }
       else
         format.html { render :edit, status: :unprocessable_entity }
@@ -52,29 +53,29 @@ class GeneralSettingsController < ApplicationController
   def destroy
     @general_setting.destroy
     respond_to do |format|
-      format.html { redirect_to general_settings_url, notice: "General setting was successfully destroyed." }
+      format.html { redirect_to general_settings_url, notice: 'General setting was successfully destroyed.' }
       format.json { head :no_content }
     end
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_general_setting
-      @general_setting = GeneralSetting.find(params[:id])
-    end
 
-    # Only allow a list of trusted parameters through.
-    def general_setting_params
-      params.require(:general_setting).permit(:name, :display_name, :phone,
-        address_attributes:[ 
-          :id,
-          :company,
-          :address,
-          :city,
-          :region,
-          :postcode,
-          :country
-          ]
-      )
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_general_setting
+    @general_setting = GeneralSetting.find(params[:id])
+  end
+
+  # Only allow a list of trusted parameters through.
+  def general_setting_params
+    params.require(:general_setting).permit(:name, :display_name, :phone,
+                                            address_attributes: %i[
+                                              id
+                                              company
+                                              address
+                                              city
+                                              region
+                                              postcode
+                                              country
+                                            ])
+  end
 end

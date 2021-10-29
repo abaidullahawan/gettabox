@@ -1,3 +1,6 @@
+# frozen_string_literal: true
+
+# Any user who uses our system
 class SystemUser < ApplicationRecord
   acts_as_paranoid
 
@@ -34,9 +37,8 @@ class SystemUser < ApplicationRecord
     CSV.generate(headers: true) do |csv|
       csv << attributes
       all.each do |system_user|
-        csv << attributes.map{ |attr| system_user.send(attr) }
+        csv << attributes.map { |attr| system_user.send(attr) }
       end
     end
   end
-
 end

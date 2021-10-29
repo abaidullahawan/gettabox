@@ -2,7 +2,6 @@ class ChangeColumnSytemUserIdNullTrueInProductSupplier < ActiveRecord::Migration
   def up
     change_column :product_suppliers, :system_user_id, :bigint, null: true
     change_column :product_suppliers, :product_id, :bigint, null: true
-
   end
 
   def down

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
@@ -37,13 +39,13 @@ Rails.application.configure do
   config.action_mailer.default_url_options = { host: 'localhost:3000' }
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.smtp_settings = {
-    address: "smtp.gmail.com",
+    address: 'smtp.gmail.com',
     port: 587,
-    authentication: "plain",
+    authentication: 'plain',
     enable_starttls_auto: true,
-    user_name: "channeldispatch.donotreply@gmail.com",
-    password: "devbox@123",
-    domain: "smtp.gmail.com"
+    user_name: 'channeldispatch.donotreply@gmail.com',
+    password: 'devbox@123',
+    domain: 'smtp.gmail.com'
   }
 
   config.action_mailer.perform_caching = false
@@ -74,9 +76,8 @@ Rails.application.configure do
 
   config.hosts.clear
 
-  config.time_zone = "London"
+  config.time_zone = 'London'
   config.active_record.default_timezone = :local
 
   config.active_job.queue_adapter = :sidekiq
-
 end

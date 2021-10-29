@@ -1,7 +1,7 @@
-module DashboardsHelper
-    def active_klass(link_path)
-        class_name = current_page?(link_path) ? 'active' : ''
+# frozen_string_literal: true
 
-        return class_name
-    end
+module DashboardsHelper # :nodoc:
+  def active_klass(link_path)
+    current_page?(link_path) ? 'active' : ''
+  end
 end

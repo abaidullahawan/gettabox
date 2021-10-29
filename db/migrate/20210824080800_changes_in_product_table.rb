@@ -1,7 +1,6 @@
 class ChangesInProductTable < ActiveRecord::Migration[6.1]
   def change
-
-    execute "DROP TABLE #{:products} CASCADE"
+    execute 'DROP TABLE products CASCADE'
 
     create_table :products do |t|
       t.string :sku, unique: true

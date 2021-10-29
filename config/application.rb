@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative 'boot'
 
 require 'csv'
@@ -8,7 +10,7 @@ require 'rails/all'
 Bundler.require(*Rails.groups)
 
 module PlabAdminRor
-  class Application < Rails::Application
+  class Application < Rails::Application # :nodoc:
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 6.0
 

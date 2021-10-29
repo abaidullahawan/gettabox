@@ -1,3 +1,6 @@
+# frozen_string_literal: true
+
+# single order may have many order details, made for  product supplier
 class PurchaseOrder < ApplicationRecord
   acts_as_paranoid
   has_many :addresses, as: :addressable
@@ -24,37 +27,54 @@ class PurchaseOrder < ApplicationRecord
     CSV.generate(headers: true) do |csv|
       csv << attributes
       all.each do |purchase_order|
-        csv << attributes.map{ |attr| purchase_order.send(attr) }
+        csv << attributes.map { |attr| purchase_order.send(attr) }
       end
     end
   end
 
   def self.to_single_csv(purchase_order)
-    attributes = purchase_order.system_user.attributes.keys
-    attributes2 = purchase_order.system_user.products.column_names
-    attributes3 = purchase_order.purchase_deliveries.column_names 
+    supplier_attr = purchase_order.system_user.attributes.keys
+    product_attr = purchase_order.system_user.products.column_names
+    delivery_detail_attr = purchase_order.purchase_deliveries.column_names
     CSV.generate(headers: true) do |csv|
-      csv << ["","Supplier Record"]
-      csv << attributes.map{ nil }
-      csv << attributes
-      csv << attributes.map{ |attr| purchase_order.system_user.send(attr) }
-      csv << attributes.map{ nil }
-      csv << attributes.map{ nil }
-      csv << ["","Products Record"]
-      csv << attributes.map{ nil }
-      csv << attributes2
-      purchase_order.system_user.products.each do |pro|
-      csv << attributes2.map{ |attr| pro.send(attr) }
-      end
-      csv << attributes.map{ nil }
-      csv << attributes.map{ nil }
-      csv << ["","Delivery Details"]
-      csv << attributes.map{ nil }
-      csv << attributes3
-      purchase_order.purchase_deliveries.each do |delivery|
-        csv << attributes3.map{ |attr| delivery.send(attr) }
-        end
+      supplier_records(csv, supplier_attr)
+
+      product_records(csv, product_attr)
+
+      delivery_details(csv, delivery_detail_attr)
     end
   end
 
+  def supplier_records(csv, attributes)
+    csv << ['', 'Supplier Record']
+    put_empty_line(csv, attributes)
+    csv << attributes
+    csv << attributes.map { |attr| purchase_order.system_user.send(attr) }
+    put_empty_line(csv, attributes)
+    put_empty_line(csv, attributes)
+  end
+
+  def product_records(csv, attributes)
+    csv << ['', 'Products Record']
+    put_empty_line(csv, attributes)
+    csv << attributes
+    purchase_order.system_user.products.each do |pro|
+      csv << attributes.map { |attr| pro.send(attr) }
+    end
+    put_empty_line(csv, attributes)
+    put_empty_line(csv, attributes)
+  end
+
+  def delivery_details_records(csv, attributes)
+    csv << ['', 'Delivery Details']
+    put_empty_line(csv, attributes)
+    csv << attributes
+    purchase_order.purchase_deliveries.each do |delivery|
+      csv << attributes.map { |attr| delivery.send(attr) }
+    end
+  end
+
+  def put_empty_line(csv, attributes)
+    csv << attributes.map { nil }
+  end
 end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 Rails.application.routes.draw do
   require 'sidekiq/web'
   mount Sidekiq::Web => '/sidekiq'
@@ -14,7 +16,7 @@ Rails.application.routes.draw do
     end
   end
   devise_for :users
-  resources :users , except: [:create] do
+  resources :users, except: [:create] do
     collection do
       post 'user_create', to: 'users#create'
       post 'import', to: 'users#import'
@@ -149,5 +151,4 @@ Rails.application.routes.draw do
   get 'auth/signup', to: 'auth#signup', as: :auth_signup
   get 'auth/signin', to: 'auth#signin', as: :auth_signin
   get 'auth/forgot_password', to: 'auth#forgot_password', as: :auth_forgot_password
-
 end
