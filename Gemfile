@@ -59,8 +59,8 @@ gem "http"
 gem 'rexml', '~> 3.2.4'
 gem 'builder'
 
-# gem 'sidekiq'
-# gem 'capistrano-sidekiq'
+gem 'sidekiq'
+gem 'capistrano-sidekiq'
 gem 'redis-namespace', '~> 1.8.1'
 
 gem 'capistrano', '~> 3.11'
