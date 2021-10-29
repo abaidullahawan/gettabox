@@ -48,7 +48,7 @@ class CreateChannelOrderResponseJob < ApplicationJob
     status = 0
     order_urls = ChannelResponseData.all
     order_urls.each do |order_url|
-      unless ((order_url.status == 'not available') || (order_url.status == 'error') || (order_url.response['orders'].count < 200)) && (order_url.api_call == 'getOrders')
+      unless (order_url.api_call == 'getOrders') && ((order_url.status == 'not available') || (order_url.status == 'error') || (order_url.response['orders'].count < 200))
         next
       end
 
