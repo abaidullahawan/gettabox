@@ -11,7 +11,6 @@ if defined? Sidekiq
     config.redis = {
       url: redis_url,
       namespace: 'workers',
-      size: 15
     }
   end
 
@@ -19,7 +18,6 @@ if defined? Sidekiq
     config.redis = {
       url: redis_url,
       namespace: 'workers',
-      size: 2
     }
   end
 end
