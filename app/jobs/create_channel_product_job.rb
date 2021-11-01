@@ -7,7 +7,7 @@ class CreateChannelProductJob < ApplicationJob
   def perform(*_args)
     @response_items = ChannelResponseData.all
     @response_items.each do |response_item|
-      next unless (response_item.api_call == 'GetMyeBaySelling') && (response_item.status == 'panding')
+      next unless (response_item.api_call == 'GetMyeBaySelling') && response_item.status_pending?
 
       response_item.response['GetMyeBaySellingResponse']['ActiveList']['ItemArray']['Item'].each do |item|
         create_or_update_product(item)

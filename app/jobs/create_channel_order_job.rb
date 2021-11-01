@@ -5,7 +5,7 @@ class CreateChannelOrderJob < ApplicationJob
   queue_as :default
 
   def perform(*_args)
-    @response_orders = ChannelResponseData.where(api_call: 'getOrders', status: 'panding')
+    @response_orders = ChannelResponseData.where(api_call: 'getOrders', status: 'pending')
     @response_orders.each do |response_order|
       response_order.response['orders'].each do |order|
         creationdate = order['creationDate']
