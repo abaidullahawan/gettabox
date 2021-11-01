@@ -5,10 +5,8 @@ class CreateChannelOrderJob < ApplicationJob
   queue_as :default
 
   def perform(*_args)
-    @response_orders = ChannelResponseData.all
+    @response_orders = ChannelResponseData.where(api_call: 'getOrders', status: 'panding')
     @response_orders.each do |response_order|
-      next unless (response_order.api_call == 'getOrders') && (response_order.status == 'panding')
-
       response_order.response['orders'].each do |order|
         creationdate = order['creationDate']
         channel_order_record = ChannelOrder.find_or_initialize_by(ebayorder_id: order['orderId'],

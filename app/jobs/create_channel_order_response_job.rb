@@ -45,12 +45,9 @@ class CreateChannelOrderResponseJob < ApplicationJob
   end
 
   def fetch_panding_orders
-    status = 0
-    order_urls = ChannelResponseData.all
+    order_urls = ChannelResponseData.where('api_call = ? and status NOT IN (?)', 'getOrders', %w[panding])
     order_urls.each do |order_url|
-      unless (order_url.api_call == 'getOrders') && ((order_url.status == 'not available') || (order_url.status == 'error') || (order_url.response['orders'].count < 200))
-        next
-      end
+      next unless order_url.response.blank? || (order_url.status == 'executed' && order_url.response['orders'].count < 200)
 
       uri = URI(order_url.api_url)
       count = 0
@@ -61,15 +58,13 @@ class CreateChannelOrderResponseJob < ApplicationJob
         body_response_record = ChannelResponseData.find_by(api_url: order_url.api_url)
         if body['errors'].nil?
           body_response_record.update(channel: 'ebay', response: body, status: 'panding')
-          status = 1
           break
         else
           body_response_record.update(channel: 'ebay', response: body, status: 'error')
-          status = 0
           break if count == 3
         end
       end
     end
-    CreateChannelOrderJob.perform_later if status == 1
+    CreateChannelOrderJob.perform_later
   end
 end
