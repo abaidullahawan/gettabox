@@ -19,9 +19,7 @@ class CreateChannelOrderResponseJob < ApplicationJob
     request = Net::HTTP.get_response(uri, @headers)
     body = JSON.parse(request.body)
     chanel_data = ChannelResponseData.find_or_initialize_by(channel: 'ebay', api_url: url, api_call: 'getOrders')
-    if chanel_data.status_executed?
-      chanel_data.save!
-    else
+    unless chanel_data.status_executed?
       chanel_data.response = body
       if body['errors'].nil?
         chanel_data.status_pending!
@@ -60,7 +58,8 @@ class CreateChannelOrderResponseJob < ApplicationJob
           body_response_record.update(channel: 'ebay', response: body, status: 'pending')
           break
         else
-          body_response_record.update(channel: 'ebay', response: body, status: 'error')
+          body_response_record.update(channel: 'ebay', response: body)
+          body_response_record.status_error!
           break if count == 3
         end
       end
