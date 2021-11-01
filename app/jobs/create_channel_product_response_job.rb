@@ -49,7 +49,7 @@ class CreateChannelProductResponseJob < ApplicationJob
       @total_pages = @data_xml_re['GetMyeBaySellingResponse']['ActiveList']['PaginationResult']['TotalNumberOfPages']
                      .to_i
       ChannelResponseData.create(channel: 'ebay', response: @data_xml_re, api_url: 'https://api.ebay.com/ws/api.dll',
-                                 api_call: 'GetMyeBaySelling', status: 'panding')
+                                 api_call: 'GetMyeBaySelling', status: 'pending')
       @page_no += 1
       break if @page_no > @total_pages
     end

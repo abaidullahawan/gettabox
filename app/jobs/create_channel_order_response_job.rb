@@ -41,10 +41,10 @@ class CreateChannelOrderResponseJob < ApplicationJob
       chanel_data.status_not_available! if chanel_data.status.blank?
       chanel_data.save!
     end
-    fetch_panding_orders
+    fetch_pending_orders
   end
 
-  def fetch_panding_orders
+  def fetch_pending_orders
     order_urls = ChannelResponseData.where(api_call: 'getOrders').where.not(status: 'pending')
     order_urls.each do |order_url|
       next unless order_url.status_executed? && order_url.response['orders'].count == 200
@@ -57,7 +57,7 @@ class CreateChannelOrderResponseJob < ApplicationJob
         body = JSON.parse(request.body)
         body_response_record = ChannelResponseData.find_by(api_url: order_url.api_url)
         if body['errors'].nil?
-          body_response_record.update(channel: 'ebay', response: body, status: 'panding')
+          body_response_record.update(channel: 'ebay', response: body, status: 'pending')
           break
         else
           body_response_record.update(channel: 'ebay', response: body, status: 'error')

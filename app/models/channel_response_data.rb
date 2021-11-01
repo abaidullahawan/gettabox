@@ -7,4 +7,10 @@ class ChannelResponseData < ApplicationRecord
     amazon: 1,
     shopify: 3
   }, _prefix: true
+  enum status: {
+    executed: 'executed',
+    not_available: 'not available',
+    error: 'error',
+    pending: 'pending'
+  }, _prefix: true
 end
