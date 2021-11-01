@@ -21,7 +21,7 @@ class ApplicationController < ActionController::Base
   def refresh_token
     @refresh_token = RefreshToken.last
     credential = Credential.find_by(grant_type: 'refresh_token')
-    remainaing_time = @refresh_token.access_token_expiry.localtime < DateTime.now
+    remainaing_time = @refresh_token.access_token_expiry.localtime > DateTime.now
     return if @refresh_token.present? && remainaing_time
 
     if credential.present?
