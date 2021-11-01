@@ -19,15 +19,15 @@ class CreateChannelOrderResponseJob < ApplicationJob
     request = Net::HTTP.get_response(uri, @headers)
     body = JSON.parse(request.body)
     chanel_data = ChannelResponseData.find_or_initialize_by(channel: 'ebay', api_url: url, api_call: 'getOrders')
-    if chanel_data.status == 'executed'
+    if chanel_data.status_executed?
       chanel_data.save!
     else
       chanel_data.response = body
       if body['errors'].nil?
-        chanel_data.status = 'panding'
+        chanel_data.status_pending!
         chanel_data.save!
       else
-        chanel_data.status = 'error'
+        chanel_data.status_error!
         chanel_data.save!
         return
       end
@@ -38,16 +38,16 @@ class CreateChannelOrderResponseJob < ApplicationJob
 
       ebay_url = "https://api.ebay.com/sell/fulfillment/v1/order?&limit=200&offset=#{offset}"
       chanel_data = ChannelResponseData.find_or_initialize_by(channel: 'ebay', api_url: ebay_url, api_call: 'getOrders')
-      chanel_data.status = 'not available' if (chanel_data.status == 'error') || chanel_data.status.nil?
+      chanel_data.status_not_available! if chanel_data.status.blank?
       chanel_data.save!
     end
     fetch_panding_orders
   end
 
   def fetch_panding_orders
-    order_urls = ChannelResponseData.where('api_call = ? and status NOT IN (?)', 'getOrders', %w[panding])
+    order_urls = ChannelResponseData.where(api_call: 'getOrders').where.not(status: 'pending')
     order_urls.each do |order_url|
-      next unless order_url.response.blank? || (order_url.status == 'executed' && order_url.response['orders'].count < 200)
+      next unless order_url.status_executed? && order_url.response['orders'].count == 200
 
       uri = URI(order_url.api_url)
       count = 0
