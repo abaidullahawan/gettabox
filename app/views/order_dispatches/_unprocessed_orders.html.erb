@@ -41,7 +41,7 @@
                   <td><strong><%= order&.channel_type %></strong></td>
                   <td><%= order.id.to_s + " " + order.order_data["sellerId"] %></td>
                   <td><%= order.ebayorder_id %></td>
-                  <td><%= order.order_data["buyer"]["username"]%></td>
+                  <td><%= order.order_data["fulfillmentStartInstructions"][0]["shippingStep"]["shipTo"]["fullName"]%></td>
                   <td><%= order.order_data["buyer"]["username"]%></td>
                   <td><%= order.order_data["fulfillmentStartInstructions"][0]["shippingStep"]["shipTo"]["contactAddress"]["addressLine1"].to_s + " "+ order.order_data["fulfillmentStartInstructions"][0]["shippingStep"]["shipTo"]["contactAddress"]["stateOrProvince"].to_s + " " + order.order_data["fulfillmentStartInstructions"][0]["shippingStep"]["shipTo"]["contactAddress"]["countryCode"].to_s %></td>
                   <td><%= order.order_data["fulfillmentStartInstructions"][0]["shippingStep"]["shipTo"]["contactAddress"]["postalCode"] %></td>
