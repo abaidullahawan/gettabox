@@ -39,8 +39,10 @@ class ApplicationController < ActionController::Base
   end
 
   def update_refresh_token(result)
-    @refresh_token.update(access_token: result['access_token'],
-                          access_token_expiry: DateTime.now + result['expires_in'].to_i.seconds)
+    @refresh_token.update(
+      access_token: result['access_token'],
+      access_token_expiry: DateTime.now + result['expires_in'].to_i.seconds
+    )
   end
 
   def authentication_tokens
@@ -55,7 +57,7 @@ class ApplicationController < ActionController::Base
 
   def generate_authentication_token(code, credential)
     result = RefreshTokenService.authentication_token_api(code, credential)
-    return  create_refresh_token(result[:body]) if result[:status]
+    return create_refresh_token(result[:body]) if result[:status]
 
     flash[:alert] = (result['error_description']).to_s
     redirect_to root_path
@@ -64,13 +66,12 @@ class ApplicationController < ActionController::Base
   end
 
   def create_refresh_token(result)
-    @refresh_token = RefreshToken
-                     .create(
-                       access_token: result['access_token'],
-                       access_token_expiry: DateTime.now + result['expires_in'].to_i.seconds,
-                       refresh_token: result['refresh_token'],
-                       refresh_token_expiry: DateTime.now + result['refresh_token_expires_in'].to_i.seconds
-                     )
+    @refresh_token = RefreshToken.create(
+      access_token: result['access_token'],
+      access_token_expiry: DateTime.now + result['expires_in'].to_i.seconds,
+      refresh_token: result['refresh_token'],
+      refresh_token_expiry: DateTime.now + result['refresh_token_expires_in'].to_i.seconds
+    )
     flash[:notice] = 'Refresh token generated successfully!'
   end
 end
