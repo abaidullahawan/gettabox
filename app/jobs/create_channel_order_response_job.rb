@@ -21,7 +21,6 @@ class CreateChannelOrderResponseJob < ApplicationJob
     request = Net::HTTP.get_response(uri, @headers)
     body = JSON.parse(request.body)
     chanel_data = ChannelResponseData.find_or_initialize_by(channel: 'ebay', api_url: url, api_call: 'getOrders')
-    date = chanel_data.created_at.to_date
     unless chanel_data.status_executed?
       chanel_data.response = body
       if body['errors'].nil?
@@ -33,6 +32,7 @@ class CreateChannelOrderResponseJob < ApplicationJob
         return
       end
     end
+    date = chanel_data.created_at.to_date
     (1...body['total'].to_i).each_slice(200) do |count|
       offset = count.last
       break unless (offset % 200).zero?
@@ -46,7 +46,7 @@ class CreateChannelOrderResponseJob < ApplicationJob
   end
 
   def fetch_pending_orders(date)
-    order_urls = ChannelResponseData.where('api_call = ? and status NOT IN (?) Date(created_at) = ?', 'getOrders',
+    order_urls = ChannelResponseData.where('api_call = ? and status NOT IN (?) and Date(created_at) = ?', 'getOrders',
                                            %w[pending executed], date)
     order_urls.each do |order_url|
       uri = URI(order_url.api_url)
