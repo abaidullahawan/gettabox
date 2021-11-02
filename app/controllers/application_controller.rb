@@ -24,27 +24,25 @@ class ApplicationController < ActionController::Base
     remainaing_time = @refresh_token.access_token_expiry.localtime > DateTime.now
     return if @refresh_token.present? && remainaing_time
 
-    if credential.present?
-      generate_refresh_token(credential)
-    else
-      flash[:alert] = 'Please contact your administration for process'
-    end
+    return generate_refresh_token(credential) if credential.present?
+
+    flash[:alert] = 'Please contact your administration for process'
   end
 
   def generate_refresh_token(credential)
     result = RefreshTokenService.refresh_token_api(@refresh_token, credential)
-    if result['error'].present? || result['errors'].present?
-      flash[:alert] = (result['error_description']).to_s
-    else
-      update_refresh_token(result)
-    end
+    return update_refresh_token(result[:body]) if result[:status]
+
+    flash[:alert] = (result['error_description']).to_s
   rescue StandardError
     flash[:alert] = 'Please contact your administration for process'
   end
 
   def update_refresh_token(result)
-    @refresh_token.update(access_token: result['access_token'],
-                          access_token_expiry: DateTime.now + result['expires_in'].to_i.seconds)
+    @refresh_token.update(
+      access_token: result['access_token'],
+      access_token_expiry: DateTime.now + result['expires_in'].to_i.seconds
+    )
   end
 
   def authentication_tokens
@@ -52,33 +50,28 @@ class ApplicationController < ActionController::Base
     code = params['code']
     return unless code.present? && params['expires_in'].present?
 
-    if credential.present?
-      generate_authentication_token(code, credential)
-    else
-      flash[:alert] = 'Please contact your administration for process'
-    end
+    return generate_authentication_token(code, credential) if credential.present?
+
+    flash[:alert] = 'Please contact your administration for process'
   end
 
   def generate_authentication_token(code, credential)
     result = RefreshTokenService.authentication_token_api(code, credential)
-    if result['error'].present? || result['errors'].present?
-      flash[:alert] = (result['error_description']).to_s
-    else
-      create_refresh_token(result)
-    end
+    return create_refresh_token(result[:body]) if result[:status]
+
+    flash[:alert] = (result['error_description']).to_s
     redirect_to root_path
   rescue StandardError
     flash[:alert] = 'Please contact your administration for process'
   end
 
   def create_refresh_token(result)
-    @refresh_token = RefreshToken
-                     .create(
-                       access_token: result['access_token'],
-                       access_token_expiry: DateTime.now + result['expires_in'].to_i.seconds,
-                       refresh_token: result['refresh_token'],
-                       refresh_token_expiry: DateTime.now + result['refresh_token_expires_in'].to_i.seconds
-                     )
+    @refresh_token = RefreshToken.create(
+      access_token: result['access_token'],
+      access_token_expiry: DateTime.now + result['expires_in'].to_i.seconds,
+      refresh_token: result['refresh_token'],
+      refresh_token_expiry: DateTime.now + result['refresh_token_expires_in'].to_i.seconds
+    )
     flash[:notice] = 'Refresh token generated successfully!'
   end
 end
