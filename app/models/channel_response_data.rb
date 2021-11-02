@@ -11,6 +11,7 @@ class ChannelResponseData < ApplicationRecord
     executed: 'executed',
     not_available: 'not available',
     error: 'error',
-    pending: 'pending'
+    pending: 'pending',
+    partial: 'partial'
   }, _prefix: true
 end

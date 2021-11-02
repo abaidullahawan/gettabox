@@ -8,8 +8,10 @@ class CreateChannelOrderResponseJob < ApplicationJob
     require 'uri'
     require 'net/http'
     @refresh_token = RefreshToken.last
-
-    url = 'https://api.ebay.com/sell/fulfillment/v1/order?&limit=200&offset=0'
+    channel_response_data = ChannelResponseData.where(channel: 'ebay', api_call: 'getOrders')
+    date_format = (Date.today - 2.months).strftime('%FT%T%:z').split('+').first
+    date_format = (Date.today).strftime('%FT%T%:z').split('+').first if channel_response_data.present?
+    url = "https://api.ebay.com/sell/fulfillment/v1/order?filter=creationdate:%5B#{date_format}.000Z..%5D&limit=200&offset=0"
 
     @headers = { 'authorization' => "Bearer <#{@refresh_token.access_token}>",
                  'content-type' => 'application/json',
@@ -19,6 +21,7 @@ class CreateChannelOrderResponseJob < ApplicationJob
     request = Net::HTTP.get_response(uri, @headers)
     body = JSON.parse(request.body)
     chanel_data = ChannelResponseData.find_or_initialize_by(channel: 'ebay', api_url: url, api_call: 'getOrders')
+    date = chanel_data.created_at.to_date
     unless chanel_data.status_executed?
       chanel_data.response = body
       if body['errors'].nil?
@@ -34,19 +37,18 @@ class CreateChannelOrderResponseJob < ApplicationJob
       offset = count.last
       break unless (offset % 200).zero?
 
-      ebay_url = "https://api.ebay.com/sell/fulfillment/v1/order?&limit=200&offset=#{offset}"
+      ebay_url = "https://api.ebay.com/sell/fulfillment/v1/order?filter=creationdate:%5B#{date_format}.000Z..%5D&limit=200&offset=#{offset}"
       chanel_data = ChannelResponseData.find_or_initialize_by(channel: 'ebay', api_url: ebay_url, api_call: 'getOrders')
       chanel_data.status_not_available! if chanel_data.status.blank?
       chanel_data.save!
     end
-    fetch_pending_orders
+    fetch_pending_orders(date)
   end
 
-  def fetch_pending_orders
-    order_urls = ChannelResponseData.where(api_call: 'getOrders').where.not(status: 'pending')
+  def fetch_pending_orders(date)
+    order_urls = ChannelResponseData.where('api_call = ? and status NOT IN (?) Date(created_at) = ?', 'getOrders',
+                                           %w[pending executed], date)
     order_urls.each do |order_url|
-      next unless order_url.status_executed? && order_url.response['orders'].count == 200
-
       uri = URI(order_url.api_url)
       count = 0
       loop do
