@@ -6,14 +6,16 @@ class RefreshTokenService
     data = { redirect_uri: credential.redirect_uri,
              grant_type: credential.grant_type,
              refresh_token: refresh_token.refresh_token }
-    api_post_request(data, credential)
+    result = api_post_request(data, credential)
+    return_response(result)
   end
 
   def self.authentication_token_api(code, credential)
     data = { redirect_uri: credential.redirect_uri,
              grant_type: 'authorization_code',
              code: code }
-    api_post_request(data, credential)
+    result = api_post_request(data, credential)
+    return_response(result)
   end
 
   def self.api_post_request(data, credential)
@@ -24,5 +26,11 @@ class RefreshTokenService
       headers: { 'Content-Type' => 'application/x-www-form-urlencoded',
                  'Authorization' => credential.authorization }
     )
+  end
+
+  def self.return_response(result)
+    return { status: true, body: JSON.parse(result.body) } if result.success?
+
+    { status: false, error: result['error_description'] }
   end
 end
