@@ -19,7 +19,7 @@ class CreateChannelProductJob < ApplicationJob
   def create_or_update_product(item)
     if item['Variations'].present?
       item['Variations']['Variation'].each do |variation|
-        multi_product(variation)
+        multi_product(variation, item)
       end
     else
       ChannelProduct.create_with(channel_type: 'ebay', item_id: item['ItemID'].to_i,
@@ -28,7 +28,7 @@ class CreateChannelProductJob < ApplicationJob
     end
   end
 
-  def multi_product(variation)
+  def multi_product(variation, item)
     ChannelProduct.create_with(channel_type: 'ebay', item_id: item['ItemID'].to_i,
                                product_data: item, item_sku: variation['SKU'])
                   .find_or_create_by(channel_type: 'ebay', item_id: item['ItemID'].to_i, item_sku: variation['SKU'])
