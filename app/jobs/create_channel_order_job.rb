@@ -13,7 +13,12 @@ class CreateChannelOrderJob < ApplicationJob
                                                                   channel_type: 'ebay')
         channel_order_record.order_data = order
         channel_order_record.created_at = creationdate
+        channel_order_record.order_status = order['orderFulfillmentStatus']
+        channel_order_record.payment_status = order["paymentSummary"]["payments"].last["paymentStatus"]
         channel_order_record.save
+        channel_order_record.order_data['lineItems'].each do |order_product|
+          ChannelOrderItem.create(channel_order_id: channel_order_record.id, sku: order_product['sku'], item_data: order_product)
+        end
       end
       response_order.status_executed!
       response_order.status_partial! if response_order.response['orders'].count < 200

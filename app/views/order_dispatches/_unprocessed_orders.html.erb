@@ -2,11 +2,12 @@
   <div class="col-lg-12">
     <div class="card mb-30">
       <div class="card-body">
+      <h5 class="card-title"> Unable to Read SKU's</h5>
         <%= form_tag order_dispatches_path,nav_class: "d-inline-b", class: "mb-3", method: :get do |f| %>
         <div class='col-md-12'>
           <div class='float-right'>
             <label for="inputState">Per Page</label>
-            <%= select_tag :limit, options_for_select([5, 10, 15, 20], selected: params[:limit] || 10), id: 'change_per_page', class: 'form-control' %>
+            <%= select_tag :limit, options_for_select([5, 10, 15, 20], selected: params[:limit] || 5), id: 'change_per_page', class: 'form-control' %>
             <button type="submit" id="per_page_submit" hidden="hidden"></button>
           </div>
         </div>
@@ -34,8 +35,10 @@
                   </td>
                   <td>
                     <%= order.ebayorder_id %><br> 
-                    <b><%= order.order_data["fulfillmentStartInstructions"][0]["shippingStep"]["shipTo"]["fullName"]%></b><br>
-                    <%= order.order_data["fulfillmentStartInstructions"][0]["shippingStep"]["shipTo"]["contactAddress"]["addressLine1"].to_s + " "+ order.order_data["fulfillmentStartInstructions"][0]["shippingStep"]["shipTo"]["contactAddress"]["stateOrProvince"].to_s%>
+                    <strong><b><%= order.order_data["fulfillmentStartInstructions"][0]["shippingStep"]["shipTo"]["fullName"].capitalize%></b></strong><br>
+                    <%= order.order_data["fulfillmentStartInstructions"][0]["shippingStep"]["shipTo"]["contactAddress"]["addressLine1"].to_s%><br>
+                    <%= order.order_data["fulfillmentStartInstructions"][0]["shippingStep"]["shipTo"]["contactAddress"]["city"].to_s%><br>
+                    <%= order.order_data["fulfillmentStartInstructions"][0]["shippingStep"]["shipTo"]["contactAddress"]["postalCode"].to_s%>
                   </td>
                   <td><%= order.order_data["lineItems"][0]["sku"]%></td>
                   <td><%= order.order_data["creationDate"].to_time.strftime("%m/%d/%Y %H:%M") %></td>
@@ -56,10 +59,82 @@
             <% end %>
           </table>
           <div class='float-right'>
-            <%= page_entries_info @orders %>
+             <%= page_entries_info @orders %>
           </div><br>
           <div class="pagination justify-content-center mt-1">
-            <%= paginate @orders,theme: "twitter-bootstrap-4",pagination_class: "pagination-sm",nav_class: "d-inline-b" %>
+            <%= paginate @orders, :param_name => :orders_page,theme: "twitter-bootstrap-4",pagination_class: "pagination-sm",nav_class: "d-inline-b" %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-lg-12">
+    <div class="card mb-30">
+      <div class="card-body">
+      <h5 class="card-title"> Unable to Find SKU's</h5>
+        <%= form_tag order_dispatches_path,nav_class: "d-inline-b", class: "mb-3", method: :get do |f| %>
+        <div class='col-md-12'>
+          <div class='float-right'>
+            <label for="inputState">Per Page</label>
+            <%= select_tag :limit, options_for_select([5, 10, 15, 20], selected: params[:limit] || 5), id: 'change_per_page', class: 'form-control' %>
+            <button type="submit" id="per_page_submit" hidden="hidden"></button>
+          </div>
+        </div>
+        <% end %>
+        <div class="table-responsive">
+          <table class="table table-hover text-vertical-middle mb-0">
+            <thead class="bort-none borpt-0">
+              <tr>
+                <th scope="col">Channel</th>
+                <th scope="col">Order Information</th>
+                <th scope="col">Products</th>
+                <th scope="col">Date Recieved</th>
+                <th scope="col">Total</th>
+                <th scope="col">Status</th>
+                <th scope="col"></th>
+              </tr>
+            </thead>
+            <% @unmatched_sku_sort.each do |order| %>
+              <tbody>
+                <tr>
+                  <td style = "width: 15%">
+                    <img src="/assets/pngegg_80.png" alt="ebay" style="max-width: 25%; margin-left: 27px;"><br>
+                    <img src="/assets/uk.jpeg"alt="ebay" style="max-width: 30%; margin-left: 25px;"><br>
+                    <strong><%= order&.order_data["sellerId"].capitalize + " " + order&.channel_type.to_s.capitalize %></strong>
+                  </td>
+                  <td>
+                    <%= order.ebayorder_id %><br> 
+                    <strong><b><%= order.order_data["fulfillmentStartInstructions"][0]["shippingStep"]["shipTo"]["fullName"].capitalize%></b></strong><br>
+                    <%= order.order_data["fulfillmentStartInstructions"][0]["shippingStep"]["shipTo"]["contactAddress"]["addressLine1"].to_s%><br>
+                    <%= order.order_data["fulfillmentStartInstructions"][0]["shippingStep"]["shipTo"]["contactAddress"]["city"].to_s%><br>
+                    <%= order.order_data["fulfillmentStartInstructions"][0]["shippingStep"]["shipTo"]["contactAddress"]["postalCode"].to_s%>
+                  </td>
+                  <td><%= order.order_data["lineItems"][0]["sku"]%></td>
+                  <td><%= order.order_data["creationDate"].to_time.strftime("%m/%d/%Y %H:%M") %></td>
+                  <td><%= order.order_data["lineItems"][0]["total"]["value"]%></td>
+                  <td><span class="badge badge_warning py-1"><%= order.order_data["orderFulfillmentStatus"]%></span></td>
+                  <td>
+                    <button class="btn btn-primary" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                      <i data-feather='refresh-ccw' class='icon wh-15 mt-minus-3'></i>
+                      Retry
+                    </button>
+                    <button class="btn btn-primary" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                      <i data-feather='x' class='icon wh-15 mt-minus-3'></i>
+                      Hide
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            <% end %>
+          </table>
+          <div class='float-right'>
+             <%= page_entries_info @unmatched_sku_sort %>
+          </div><br>
+          <div class="pagination justify-content-center mt-1">
+            <%= paginate @unmatched_sku_sort, :param_name => :unmatched_page,theme: "twitter-bootstrap-4",pagination_class: "pagination-sm",nav_class: "d-inline-b" %>
           </div>
         </div>
       </div>

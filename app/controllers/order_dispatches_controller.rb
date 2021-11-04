@@ -7,8 +7,27 @@ class OrderDispatchesController < ApplicationController
   before_action :check_status, only: %i[index fetch_response_orders]
 
   def index
+    @no_sku = []
+    @matched_sku = []
+    @unmatched_sku = []
     @all_orders = ChannelOrder.all
-    @orders = @all_orders.order(created_at: :desc).page(params[:page]).per(params[:limit])
+    @not_started = ChannelOrder.where(order_status: 'NOT_STARTED')
+    @not_started_orders = @not_started.order(created_at: :desc).page(params[:not_started_page]).per(params[:limit])
+    @unpaid_orders = ChannelOrder.where(payment_status: 'UNPAID')
+    @unpaid = @unpaid_orders.order(created_at: :desc).page(params[:unpaid_page]).per(params[:limit])
+    @completed = ChannelOrder.where(order_status: 'FULFILLED')
+    @completed_orders = @completed.order(created_at: :desc).page(params[:completed_page]).per(params[:limit])
+    @product_data = ChannelProduct.pluck(:item_sku).compact
+    @no_sku = ChannelOrder.joins(:channel_order_items).where('channel_order_items.sku': nil)
+    @no_sku_count = ChannelOrder.joins(:channel_order_items).where('channel_order_items.sku': nil).count
+    @orders = @no_sku.order(created_at: :desc).page(params[:orders_page]).per(5)
+    @matched_sku = ChannelOrder.joins(:channel_order_items).where('channel_order_items.sku': @product_data)
+    @matched_sku = @matched_sku.uniq
+    @unmatched_sku = @all_orders - @matched_sku - @no_sku
+    @matched_sku = @matched_sku.sort_by(&:"created_at").reverse!
+    @matched_sku = Kaminari.paginate_array(@matched_sku).page(params[:matched_page]).per(5)
+    @unmatched_sku_sort = @unmatched_sku.sort_by(&:"created_at").reverse!
+    @unmatched_sku_sort = Kaminari.paginate_array(@unmatched_sku).page(params[:unmatched_page]).per(5)
     all_order_data if params[:all_product_data].present?
   end
 
