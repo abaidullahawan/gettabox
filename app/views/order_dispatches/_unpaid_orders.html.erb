@@ -24,7 +24,7 @@
                 <th scope="col"></th>
               </tr>
             </thead>
-            <% @matched_sku.each do |order| %>
+            <% @unpaid.each do |order| %>
               <tbody>
                 <tr>
                   <td style = "width: 15%">
@@ -58,10 +58,10 @@
             <% end %>
           </table>
           <div class='float-right'>
-             <%= page_entries_info @matched_sku %>
+             <%= page_entries_info @unpaid %>
           </div><br>
           <div class="pagination justify-content-center mt-1">
-            <%= paginate @matched_sku, :param_name => :matched_page,theme: "twitter-bootstrap-4",pagination_class: "pagination-sm",nav_class: "d-inline-b" %>
+            <%= paginate @unpaid, :param_name => :unpaid_page,theme: "twitter-bootstrap-4",pagination_class: "pagination-sm",nav_class: "d-inline-b" %>
           </div>
         </div>
       </div>

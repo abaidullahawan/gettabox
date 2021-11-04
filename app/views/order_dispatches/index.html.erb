@@ -18,7 +18,7 @@
     <div class="card text-center mb-30">
       <div class="header card-header">Order</div>
       <div class="card-body">
-        <div class="card-title h5 text-success">4</div>
+        <div class="card-title h5 text-success"><%= ChannelOrder.where("Date(created_at) = ?", Date.today).count %></div>
       </div>
     </div>
   </div>
@@ -60,10 +60,22 @@
       <div class="tabs-style-two">
         <ul class="nav nav-tabs">
           <li class="nav-item">
-            <a class="nav-link active" data-toggle="tab" href="#demo_two_home">Unprocessed Orders</a>
+            <a class="nav-link active" data-toggle="tab" href="#demo_two_home"><%= "Unprocessed Orders (#{@no_sku_count + @unmatched_sku.count})" %></a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" data-toggle="tab" href="#demo_two_profile">Issue Orders</a>
+            <a class="nav-link" data-toggle="tab" href="#demo_three_home"><%= "Ready to Dispatch(#{@not_started.count})" %></a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#demo_four_home"><%= "Order for Assignment" %></a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#demo_five_home">Issue Orders</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#demo_six_home"><%= "Unpaid Orders (#{@unpaid_orders.count})"%></a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#demo_seven_home"><%= "Completed Orders (#{@completed.count})"%></a>
           </li>
         </ul>
 
@@ -72,8 +84,17 @@
             <%= render 'unprocessed_orders'%>
           </div>
 
-          <div class="tab-pane fade" id="demo_two_profile" role="tabpanel">
+          <div class="tab-pane fade" id="demo_three_home" role="tabpanel">
+            <%= render 'ready_to_dispatch_orders' %>
+          </div>
+          <div class="tab-pane fade" id="demo_five_home" role="tabpanel">
             <%= render 'issue_orders' %>
+          </div>
+          <div class="tab-pane fade" id="demo_six_home" role="tabpanel">
+            <%= render 'unpaid_orders' %>
+          </div>
+          <div class="tab-pane fade" id="demo_seven_home" role="tabpanel">
+            <%= render 'completed_orders' %>
           </div>
         </div>
       </div>
