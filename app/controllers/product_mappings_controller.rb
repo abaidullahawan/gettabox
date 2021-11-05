@@ -8,8 +8,9 @@ class ProductMappingsController < ApplicationController
   before_action :set_product_mapping, only: %i[show update destroy]
   before_action :refresh_token, only: %i[index xml_file]
   before_action :new_product, :product_load_resources, :load_products, only: %i[index]
-  before_action :unmap_product_id, only: %i[unmap_product]
-  before_action :map_product_id, only: %i[map_product]
+  before_action :fetch_product_id, only: %i[create]
+  skip_before_action :verify_authenticity_token
+
 
   def index
     maped_products(@body) if params[:q].present? && params[:q][:status_eq] == '1'
@@ -43,6 +44,8 @@ class ProductMappingsController < ApplicationController
   def edit; end
 
   def map_product
+    @product_id = params[:anything][:product_id].presence || params[:anything][:mapped_product_id]
+    @product_id = Product.find_by(title: @product_id)&.id if @product_id.to_i.to_s != @product_id
     if @product_id.present?
       @product_mapping = ProductMapping.create!(channel_product_id: params[:anything]['channel_product_id'],
                                                 product_id: @product_id)
@@ -54,6 +57,7 @@ class ProductMappingsController < ApplicationController
   end
 
   def unmap_product
+    @product_id = params[:anything][:mapped_product_id] || params[:mapped_product_id]
     @product_mapping = ProductMapping.find_by(
       channel_product_id: params[:anything][:channel_product_id],
       product_id: @product_id
@@ -67,8 +71,8 @@ class ProductMappingsController < ApplicationController
   end
 
   def attach_photo(product)
-    url = URI.parse(product.product_data['ListingDetails']['ViewItemURL'])
-    filename = File.basename(url.path)
+    url = product.product_data["PictureDetails"]["GalleryURL"]
+    filename = File.basename(url.pathmap)
     begin
       file = URI.parse(url).open
       @product.photo.attach(io: file, filename: filename) if file.present?
@@ -85,9 +89,9 @@ class ProductMappingsController < ApplicationController
     if @product&.save
       ProductMapping.create(channel_product_id: cd.id, product_id: @product.id)
       cd.status_mapped!
-      attach_photo(cd)
+      attach_photo(cd) unless @product.photo.attached?
     else
-      flash[:alert] = 'Product cannot be created!'
+      flash[:alert] = @product.errors.full_messages
     end
   end
 
@@ -175,12 +179,14 @@ class ProductMappingsController < ApplicationController
     end
   end
 
-  def unmap_product_id
-    @product_id = params[:anything][:mapped_product_id] || params[:mapped_product_id]
-  end
-
-  def map_product_id
-    product_id = params[:anything][:product_id].presence || params[:anything][:mapped_product_id]
-    @product_id = Product.find_by(title: product_id).id if product_id.to_i.to_s != product_id
+  def fetch_product_id
+    mapped_product_id = params['anything']['mapped_product_id'] if params['anything'].present?
+    case params[:commit]
+    when 'Map'
+      @product_id = mapped_product_id || params[:mapped_product_id]
+    when 'Un-map'
+      @product_id = params[:anything][:product_id].presence || mapped_product_id
+      @product_id = Product.find_by(title: @product_id).id if @product_id.to_i.to_s != @product_id
+    end
   end
 end
