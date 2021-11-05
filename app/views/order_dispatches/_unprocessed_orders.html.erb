@@ -163,7 +163,12 @@
                     <%= order.order_data["fulfillmentStartInstructions"][0]["shippingStep"]["shipTo"]["contactAddress"]["city"].to_s%><br>
                     <%= order.order_data["fulfillmentStartInstructions"][0]["shippingStep"]["shipTo"]["contactAddress"]["postalCode"].to_s%>
                   </td>
-                  <td><%= order.order_data["lineItems"][0]["sku"]%></td>
+                  <td>
+                    <% order.channel_order_items.each do |product|%>
+                      <%= image_tag(ChannelProduct.where(item_sku: product.sku )&.first&.product_data["PictureDetails"]["GalleryURL"]) %><br>
+                      <%= product&.sku %><br>
+                    <% end %>
+                  </td>
                   <td><%= order.order_data["creationDate"].to_time.strftime("%m/%d/%Y %H:%M") %></td>
                   <td><%= order.order_data["lineItems"][0]["total"]["value"]%></td>
                   <td><span class="badge badge_warning py-1"><%= order.order_data["orderFulfillmentStatus"]%></span></td>
