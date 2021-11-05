@@ -25,9 +25,9 @@ class OrderDispatchesController < ApplicationController
     @unmatched_sku_sort = @unmatched_sku.sort_by(&:"created_at").reverse!
     @unmatched_sku_sort = Kaminari.paginate_array(@unmatched_sku).page(params[:unmatched_page]).per(5)
     @orders = @no_sku.sort_by(&:"created_at").reverse!
-    @orders = Kaminari.paginate_array(@no_sku).page(params[:order_page]).per(5)
+    @orders = Kaminari.paginate_array(@no_sku).page(params[:orders_page]).per(5)
     @not_started = ChannelOrder.where(order_status: 'NOT_STARTED').order(created_at: :desc) - @no_sku - @unmatched_sku
-    # @not_started_orders = @not_started.sort_by(&:"created_at").reverse!
+    # @not_started_orders = @not_started.sort_by(&:"created_at").reverses!
     @not_started_orders = Kaminari.paginate_array(@not_started).page(params[:not_started_page]).per(25)
     all_order_data if params[:all_product_data].present?
   end
