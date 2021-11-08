@@ -11,10 +11,10 @@ class ProductMappingsController < ApplicationController
   before_action :fetch_product_id, only: %i[create]
   skip_before_action :verify_authenticity_token
 
-
   def index
-    maped_products(@body) if params[:q].present? && params[:q][:status_eq] == '1'
-    all_order_data if params[:product_mapping] == 'Ebay Production'
+    amazon_request if params[:commit].eql? 'Amazon Request'
+    maped_products(@body) if params[:q].present? && (params[:q][:status_eq].eql? '1')
+    all_order_data if params[:product_mapping].eql? 'Ebay Production'
     return unless params[:export_csv].present?
 
     @products = ChannelProduct.all
@@ -188,5 +188,49 @@ class ProductMappingsController < ApplicationController
       @product_id = params[:anything][:product_id].presence || mapped_product_id
       @product_id = Product.find_by(title: @product_id).id if @product_id.to_i.to_s != @product_id
     end
+  end
+
+  def amazon_request
+    user_code = session[:user_code]
+    device_code = session[:device_code]
+    remainaing_time = session[:expires_in] < DateTime.now
+    return amazon_refresh_token(user_code, device_code) if user_code.present? && device_code.present? && remainaing_time
+
+    amazon_user_code
+  rescue StandardError
+    flash[:alert] = 'Please contact your administration for process'
+  end
+
+  def store_session(body)
+    session[:user_code] = body['user_code']
+    session[:device_code] = body['device_code']
+    session[:verification_uri] = body['verification_uri']
+    session[:expires_in] = DateTime.now + body['expires_in'].to_i.seconds
+
+    flash[:notice] = "Please verify with this code { #{user_code} in #{body['verification_uri']} } "
+  end
+
+  def amazon_user_code
+    result = AmazonDeviceCodeService.device_code_api
+    return store_session(result[:body]) if result[:status]
+
+    flash[:alert] = (result[:error]).to_s
+  end
+
+  def amazon_refresh_token(user_code, device_code)
+    result = AmazonDeviceCodeService.refresh_token_api(user_code, device_code)
+    return create_refresh_token(result[:body]) if result[:status]
+
+    flash[:alert] = (result[:error]).to_s
+  end
+
+  def create_refresh_token(body)
+    refresh_token = RefreshToken.find_or_initialize_by(channel: 'Amazon')
+    refresh_token.update(
+      refresh_token: body['refresh_token'],
+      access_token: body['access_token'],
+      access_token_expiry: DateTime.now + body['expires_in'].to_i.seconds
+    )
+    flash[:notice] = 'Refresh Token and Access Token created successfully'
   end
 end
