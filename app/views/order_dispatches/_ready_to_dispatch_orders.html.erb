@@ -41,32 +41,42 @@
                   </td>
                   <td>
                     <% order.channel_order_items.each do |product|%>
-                      <%= image_tag(ChannelProduct.where(item_sku: product.sku )&.first&.product_data["PictureDetails"]["GalleryURL"]) %><br>
-                      <%= product&.sku %><br>
-                    <% end %>
-                    <div class="text-center row">
-                      <div class="col-sm card-sm" style="margin-top: 20px; margin-bottom: 20px; width: 18rem;">
-                        Allocated
-                        <hr>
-                        <ul class="list-group list-group-flush">
-                          <li class="list-group-item">0</li>
-                        </ul>
+                      <div class="row">
+                        <div class="col-4">
+                          <%= image_tag(ChannelProduct.where(item_sku: product.sku )&.first&.product_data["PictureDetails"]["GalleryURL"]) %><br>
+                        </div>
+                        <div class="col-6">
+                          <b><%= product.item_data['legacyItemId'] %></b><br>
+                          <%= product&.sku %><br>
+                        </div>
+                        <div class="col-9">
+                          <%= product.item_data['title']%>
+                        </div>
                       </div>
-                      <div class="col-sm card-sm" style="margin-top: 20px; margin-bottom: 20px; width: 18rem;">
-                        Dispatched
-                        <hr>
-                        <ul class="list-group list-group-flush">
-                          <li class="list-group-item">0</li>
-                        </ul>
+                      <div class="text-center row">
+                        <div class="col-sm card-sm" style="margin-top: 20px; margin-bottom: 20px; width: 18rem;">
+                          Allocated
+                          <hr>
+                          <ul class="list-group list-group-flush">
+                            <li class="list-group-item"><%= product.item_data['quantity'] %></li>
+                          </ul>
+                        </div>
+                        <div class="col-sm card-sm" style="margin-top: 20px; margin-bottom: 20px; width: 18rem;">
+                          Dispatched
+                          <hr>
+                          <ul class="list-group list-group-flush">
+                            <li class="list-group-item">0</li>
+                          </ul>
+                        </div>
+                        <div class="col-sm card-sm" style="margin-top: 20px; margin-bottom: 20px; width: 18rem;">
+                          Channel
+                          <hr>
+                          <ul class="list-group list-group-flush">
+                            <li class="list-group-item"><%= ChannelProduct.find_by(item_sku: product&.sku).product_data['Quantity']%></li>
+                          </ul>
+                        </div>
                       </div>
-                      <div class="col-sm card-sm" style="margin-top: 20px; margin-bottom: 20px; width: 18rem;">
-                        Channel
-                        <hr>
-                        <ul class="list-group list-group-flush">
-                          <li class="list-group-item">0</li>
-                        </ul>
-                      </div>
-                    </div>
+                    <% end %>  
                   </td>
                   <td><%= order.order_data["creationDate"].to_time.strftime("%m/%d/%Y %H:%M") %></td>
                   <td><%= order.order_data["lineItems"][0]["total"]["value"]%></td>
