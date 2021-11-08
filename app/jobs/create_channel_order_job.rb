@@ -17,7 +17,11 @@ class CreateChannelOrderJob < ApplicationJob
         channel_order_record.payment_status = order["paymentSummary"]["payments"].last["paymentStatus"]
         channel_order_record.save
         channel_order_record.order_data['lineItems'].each do |order_product|
-          ChannelOrderItem.create(channel_order_id: channel_order_record.id, sku: order_product['sku'], item_data: order_product)
+          channel_order_item = ChannelOrderItem.find_or_initialize_by(line_item_id: order_product['lineItemId'])
+          channel_order_item.channel_order_id = channel_order_record.id
+          channel_order_item.sku = order_product['sku']
+          channel_order_item.item_data = order_product
+          channel_order_item.save
         end
       end
       response_order.status_executed!
