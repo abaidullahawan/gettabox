@@ -7,7 +7,7 @@ class CreateChannelProductResponseJob < ApplicationJob
   def perform(*_args)
     @page_no = 1
     @total_pages = 1
-    refresh_token = RefreshToken.last
+    refresh_token = RefreshToken.where(channel: 'ebay').last
 
     require 'net/http'
     require 'base64'

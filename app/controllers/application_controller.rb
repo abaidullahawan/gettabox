@@ -19,7 +19,7 @@ class ApplicationController < ActionController::Base
   end
 
   def refresh_token
-    @refresh_token = RefreshToken.last
+    @refresh_token = RefreshToken.where(channel: 'ebay').last
     credential = Credential.find_by(grant_type: 'refresh_token')
     remainaing_time = @refresh_token.access_token_expiry.localtime > DateTime.now
     return if @refresh_token.present? && remainaing_time
@@ -33,13 +33,14 @@ class ApplicationController < ActionController::Base
     result = RefreshTokenService.refresh_token_api(@refresh_token, credential)
     return update_refresh_token(result[:body]) if result[:status]
 
-    flash[:alert] = (result['error_description']).to_s
+    flash[:alert] = (result[:error]).to_s
   rescue StandardError
     flash[:alert] = 'Please contact your administration for process'
   end
 
   def update_refresh_token(result)
     @refresh_token.update(
+      channel: 'ebay',
       access_token: result['access_token'],
       access_token_expiry: DateTime.now + result['expires_in'].to_i.seconds
     )
@@ -59,7 +60,7 @@ class ApplicationController < ActionController::Base
     result = RefreshTokenService.authentication_token_api(code, credential)
     return create_refresh_token(result[:body]) if result[:status]
 
-    flash[:alert] = (result['error_description']).to_s
+    flash[:alert] = (result[:error]).to_s
     redirect_to root_path
   rescue StandardError
     flash[:alert] = 'Please contact your administration for process'
@@ -67,6 +68,7 @@ class ApplicationController < ActionController::Base
 
   def create_refresh_token(result)
     @refresh_token = RefreshToken.create(
+      channel: 'ebay',
       access_token: result['access_token'],
       access_token_expiry: DateTime.now + result['expires_in'].to_i.seconds,
       refresh_token: result['refresh_token'],

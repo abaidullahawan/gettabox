@@ -7,7 +7,7 @@ class CreateChannelOrderResponseJob < ApplicationJob
   def perform(*_args)
     require 'uri'
     require 'net/http'
-    @refresh_token = RefreshToken.last
+    @refresh_token = RefreshToken.where(channel: 'ebay').last
     channel_response_data = ChannelResponseData.where(channel: 'ebay', api_call: 'getOrders')
     date_format = (Date.today - 2.months).strftime('%FT%T%:z').split('+').first
     date_format = (Date.today).strftime('%FT%T%:z').split('+').first if channel_response_data.present?
