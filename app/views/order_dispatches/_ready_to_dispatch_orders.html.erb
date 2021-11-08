@@ -44,6 +44,29 @@
                       <%= image_tag(ChannelProduct.where(item_sku: product.sku )&.first&.product_data["PictureDetails"]["GalleryURL"]) %><br>
                       <%= product&.sku %><br>
                     <% end %>
+                    <div class="text-center row">
+                      <div class="col-sm card-sm" style="margin-top: 20px; margin-bottom: 20px; width: 18rem;">
+                        Allocated
+                        <hr>
+                        <ul class="list-group list-group-flush">
+                          <li class="list-group-item">0</li>
+                        </ul>
+                      </div>
+                      <div class="col-sm card-sm" style="margin-top: 20px; margin-bottom: 20px; width: 18rem;">
+                        Dispatched
+                        <hr>
+                        <ul class="list-group list-group-flush">
+                          <li class="list-group-item">0</li>
+                        </ul>
+                      </div>
+                      <div class="col-sm card-sm" style="margin-top: 20px; margin-bottom: 20px; width: 18rem;">
+                        Channel
+                        <hr>
+                        <ul class="list-group list-group-flush">
+                          <li class="list-group-item">0</li>
+                        </ul>
+                      </div>
+                    </div>
                   </td>
                   <td><%= order.order_data["creationDate"].to_time.strftime("%m/%d/%Y %H:%M") %></td>
                   <td><%= order.order_data["lineItems"][0]["total"]["value"]%></td>
