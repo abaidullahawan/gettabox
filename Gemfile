@@ -39,6 +39,7 @@ gem 'ransack'
 
 # Use for amazon s3 bucket
 gem 'aws-sdk-s3', require: false
+gem 'aws-sdk-signer'
 gem 'image_processing'
 gem 'mini_magick'
 # gem for super admin

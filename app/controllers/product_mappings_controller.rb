@@ -225,7 +225,7 @@ class ProductMappingsController < ApplicationController
   end
 
   def create_refresh_token(body)
-    refresh_token = RefreshToken.find_or_initialize_by(channel: 'Amazon')
+    refresh_token = RefreshToken.find_or_initialize_by(channel: 'amazon')
     refresh_token.update(
       refresh_token: body['refresh_token'],
       access_token: body['access_token'],

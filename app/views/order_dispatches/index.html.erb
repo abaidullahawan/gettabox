@@ -49,8 +49,15 @@
       </div>
     </div>
   </div>
-  <div class="card-body p-0 mr-5">
-    <%= link_to "eBay Orders", order_dispatches_path(all_product_data: true) ,class:"btn btn-primary float-right ml-1", type:"button", style: "color: white" %>
+  <div class="card-body p-0">
+    <div class='row mr-3'>
+      <div class='col-12 m-1'>
+        <%= link_to "Amazon Orders", order_dispatches_path(orders_api: true, amazon: true) ,class:"btn btn-info float-right ml-1", type:"button", style: "color: white" %>
+      </div>
+      <div class='col-12 m-1'>
+        <%= link_to "eBay Orders", order_dispatches_path(orders_api: true, ebay: true) ,class:"btn btn-info float-right ml-1", type:"button", style: "color: white" %>
+      </div>
+    </div>
   </div>
 </div>
 
