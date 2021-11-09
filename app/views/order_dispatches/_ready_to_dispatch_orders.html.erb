@@ -18,6 +18,7 @@
                 <th scope="col">Channel</th>
                 <th scope="col">Order Information</th>
                 <th scope="col">Products</th>
+                <th scope="col">Information</th>
                 <th scope="col">Date Recieved</th>
                 <th scope="col">Total</th>
                 <th scope="col">Status</th>
@@ -33,7 +34,7 @@
                     <strong><%= order&.order_data["sellerId"].capitalize + " " + order&.channel_type.to_s.capitalize %></strong>
                   </td>
                   <td>
-                    <%= order.ebayorder_id %><br> 
+                    <%= order.ebayorder_id %><br>
                     <strong><b><%= order.order_data["fulfillmentStartInstructions"][0]["shippingStep"]["shipTo"]["fullName"].capitalize%></b></strong><br>
                     <%= order.order_data["fulfillmentStartInstructions"][0]["shippingStep"]["shipTo"]["contactAddress"]["addressLine1"].to_s%><br>
                     <%= order.order_data["fulfillmentStartInstructions"][0]["shippingStep"]["shipTo"]["contactAddress"]["city"].to_s%><br>
@@ -43,40 +44,42 @@
                     <% order.channel_order_items.each do |product|%>
                       <div class="row">
                         <div class="col-4">
-                          <%= image_tag(ChannelProduct.where(item_sku: product.sku )&.first&.product_data["PictureDetails"]["GalleryURL"]) %><br>
+                          <%= image_tag(ChannelProduct.where(item_sku: product.sku )&.first&.product_data["PictureDetails"]["GalleryURL"]) %>
                         </div>
-                        <div class="col-6">
+                        <div class="col-8">
                           <b><%= product.item_data['legacyItemId'] %></b><br>
                           <%= product&.sku %><br>
                         </div>
-                        <div class="col-9">
+                        <div class="col-12">
                           <%= product.item_data['title']%>
                         </div>
                       </div>
-                      <div class="text-center row">
-                        <div class="col-sm card-sm" style="margin-top: 20px; margin-bottom: 20px; width: 18rem;">
-                          Allocated
-                          <hr>
-                          <ul class="list-group list-group-flush">
-                            <li class="list-group-item"><%= product.item_data['quantity'] %></li>
-                          </ul>
-                        </div>
-                        <div class="col-sm card-sm" style="margin-top: 20px; margin-bottom: 20px; width: 18rem;">
-                          Dispatched
-                          <hr>
-                          <ul class="list-group list-group-flush">
-                            <li class="list-group-item">0</li>
-                          </ul>
-                        </div>
-                        <div class="col-sm card-sm" style="margin-top: 20px; margin-bottom: 20px; width: 18rem;">
-                          Channel
-                          <hr>
-                          <ul class="list-group list-group-flush">
-                            <li class="list-group-item"><%= ChannelProduct.find_by(item_sku: product&.sku).product_data['Quantity']%></li>
-                          </ul>
-                        </div>
-                      </div>
-                    <% end %>  
+                    <% end %>
+                  </td>
+                  <td>
+                    <% order.channel_order_items.each do |product|%>
+                    <%= ChannelProduct.find_by(item_sku: product.sku).product_mapping.product.title %>
+                    <table class="table table-sm table-bordered">
+                      <thead>
+                        <tr>
+                          <th scope="col">Loc</th>
+                          <th scope="col">War</th>
+                          <th scope="col">Ord</th>
+                          <th scope="col">Alo</th>
+                          <th scope="col">Dis</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>1</td>
+                          <td>0</td>
+                          <td>O</td>
+                          <td>0</td>
+                          <td>0</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <% end %>
                   </td>
                   <td><%= order.order_data["creationDate"].to_time.strftime("%m/%d/%Y %H:%M") %></td>
                   <td><%= order.order_data["lineItems"][0]["total"]["value"]%></td>
