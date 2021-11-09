@@ -21,9 +21,9 @@ $(document).on('turbolinks:load', function () {
     // $('#single-product-create-modal .modal-body #product_photo').attr("src", imageUrl)
     // $('#single-product-create-modal .modal-body #product_photo').attr("filename", imageName)
     $('#single-product-create-modal .modal-body #product_total_stock').val(quantity)
-    if(imageUrl  != '' )
+    if(imageUrl  !== '' )
     {
-      $('#single-product-create-modal .modal-body #photo-label').innerText = 'Photo Attached';
+      $('#single-product-create-modal .modal-body #photo-label').text("Photo Attached")
     }
     $('#single-product-create-modal').modal('show')
   })
