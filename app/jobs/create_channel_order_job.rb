@@ -14,7 +14,12 @@ class CreateChannelOrderJob < ApplicationJob
         channel_order_record.order_data = order
         channel_order_record.created_at = creationdate
         channel_order_record.order_status = order['orderFulfillmentStatus']
-        channel_order_record.payment_status = order["paymentSummary"]["payments"].last["paymentStatus"]
+        channel_order_record.payment_status = order['paymentSummary']['payments'].last['paymentStatus']
+        channel_order_record.total_amount = order['lineItems'][0]['total']['value']
+        contact_address = order['fulfillmentStartInstructions'][0]['shippingStep']['shipTo']['contactAddress']
+        address = "#{contact_address['addressLine1']} #{contact_address['city']} #{contact_address['postalCode']}"
+        channel_order_record.address = address
+        channel_order_record.buyer_name = order['fulfillmentStartInstructions'][0]['shippingStep']['shipTo']['fullName'].capitalize
         channel_order_record.save
         channel_order_record.order_data['lineItems'].each do |order_product|
           channel_order_item = ChannelOrderItem.find_or_initialize_by(line_item_id: order_product['lineItemId'])

@@ -29,16 +29,18 @@
               <tbody>
                 <tr>
                   <td style = "width: 15%">
-                    <img src="/assets/pngegg_80.png" alt="ebay" style="max-width: 25%; margin-left: 27px;"><br>
+                    <% if order.channel_type.downcase.eql? 'ebay'%>
+                      <img src="/assets/pngegg_80.png" alt="ebay" style="max-width: 25%; margin-left: 27px;"><br>
+                    <% else %>
+                      <img src="/assets/amazon.png" alt="ebay" style="max-width: 25%; margin-left: 27px;"><br>
+                    <% end %>
                     <img src="/assets/uk.jpeg"alt="ebay" style="max-width: 30%; margin-left: 25px;"><br>
-                    <strong><%= order&.order_data["sellerId"].capitalize + " " + order&.channel_type.to_s.capitalize %></strong>
+                    <strong class='text-center pl-4'><%= order&.channel_type&.to_s&.capitalize %></strong>
                   </td>
                   <td>
                     <%= order.ebayorder_id %><br>
-                    <strong><b><%= order.order_data["fulfillmentStartInstructions"][0]["shippingStep"]["shipTo"]["fullName"].capitalize%></b></strong><br>
-                    <%= order.order_data["fulfillmentStartInstructions"][0]["shippingStep"]["shipTo"]["contactAddress"]["addressLine1"].to_s%><br>
-                    <%= order.order_data["fulfillmentStartInstructions"][0]["shippingStep"]["shipTo"]["contactAddress"]["city"].to_s%><br>
-                    <%= order.order_data["fulfillmentStartInstructions"][0]["shippingStep"]["shipTo"]["contactAddress"]["postalCode"].to_s%>
+                    <strong><b><%= order.buyer_name %></b></strong><br>
+                    <%= order.address%><br>
                   </td>
                   <td>
                     <% order.channel_order_items.each do |product|%>
@@ -81,9 +83,9 @@
                     </table>
                     <% end %>
                   </td>
-                  <td><%= order.order_data["creationDate"].to_time.strftime("%m/%d/%Y %H:%M") %></td>
-                  <td><%= order.order_data["lineItems"][0]["total"]["value"]%></td>
-                  <td><span class="badge badge_warning py-1"><%= order.order_data["orderFulfillmentStatus"]%></span></td>
+                  <td><%= order.created_at.strftime("%m/%d/%Y %H:%M") %></td>
+                  <td><%= order.total_amount%></td>
+                  <td><span class="badge badge_warning py-1"><%= order.order_status%></span></td>
                   <td>
                     <button class="btn btn-primary" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                       <i data-feather='refresh-ccw' class='icon wh-15 mt-minus-3'></i>

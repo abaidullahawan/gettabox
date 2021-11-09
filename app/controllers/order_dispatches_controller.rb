@@ -12,7 +12,7 @@ class OrderDispatchesController < ApplicationController
     @unmatched_sku = []
     @q = ChannelOrder.search(params[:q])
     @all_orders = ChannelOrder.all
-    @completed = ChannelOrder.where(order_status: 'FULFILLED')
+    @completed = ChannelOrder.where('order_status in (?)', %i[FULFILLED Shipped])
     @completed_orders = @completed.order(created_at: :desc).page(params[:completed_page]).per(params[:limit])
     @unmatch_product_data = ChannelProduct.where(status: 'unmapped').pluck(:item_sku).compact
     @un_matched_product_orders = ChannelOrder.joins(:channel_order_items).where('channel_order_items.sku': @unmatch_product_data).order(created_at: :desc)
@@ -33,7 +33,7 @@ class OrderDispatchesController < ApplicationController
     @orders = Kaminari.paginate_array(@no_sku).page(params[:orders_page]).per(5)
     @not_started = ChannelOrder.where(order_status: 'NOT_STARTED').order(created_at: :desc) - @no_sku - @unmatched_sku -@un_matched_product_orders
     @not_started_orders = Kaminari.paginate_array(@not_started).page(params[:not_started_page]).per(25)
-    all_order_data if params[:all_product_data].present?
+    all_order_data if params[:orders_api].present?
   end
 
   def show; end
@@ -41,9 +41,14 @@ class OrderDispatchesController < ApplicationController
   def create; end
 
   def all_order_data
-    CreateChannelOrderResponseJob.perform_later
-    flash[:notice] = 'CALL sent to eBay API'
-    redirect_to order_dispatches_path
+    if params[:amazon]
+      OrdersAmzService.orders_amz
+      create_amazon_orders
+    else
+      CreateChannelOrderResponseJob.perform_later
+      flash[:notice] = 'CALL sent to eBay API'
+      redirect_to order_dispatches_path
+    end
   end
 
   def fetch_response_orders
@@ -67,5 +72,25 @@ class OrderDispatchesController < ApplicationController
       @status = 0 if (response_status == 'error') || (response_status == 'not available')
     end
     @status = 3 if @response_status == []
+  end
+
+  def create_amazon_orders
+    amazon_orders = ChannelResponseData.where(channel: 'amazon', api_call: 'getOrders', status: 'pending')
+    amazon_orders.each do |amazon_order|
+      amazon_order.response['payload']['Orders'].each do |order|
+        channel_order_record = ChannelOrder.find_or_initialize_by(ebayorder_id: order['AmazonOrderId'],
+                                                                  channel_type: 'amazon')
+
+        channel_order_record.order_data = order
+        channel_order_record.created_at = order['PurchaseDate']
+        channel_order_record.order_status = order['OrderStatus']
+        amount = order['OrderTotal'].nil? ? nil : order['OrderTotal']['Amount']
+        channel_order_record.total_amount = amount
+        address = "#{order['ShippingAddress']['PostalCode']} #{order['ShippingAddress']['City']} #{order['ShippingAddress']['CountryCode']}" if order['ShippingAddress'].present?
+        channel_order_record.address = address
+        channel_order_record.save
+      end
+      amazon_order.update(status: 'executed')
+    end
   end
 end
