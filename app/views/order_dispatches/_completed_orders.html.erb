@@ -41,7 +41,7 @@
                     <strong><b><%= order.buyer_name %></b></strong><br>
                     <%= order.address%>
                   </td>
-                  <td><%= order.order_data["lineItems"][0]["sku"] if order.order_data['lineItems'].present?%></td>
+                  <td><%= order.channel_order_items&.first&.sku%></td>
                   <td><%= order.created_at.strftime("%m/%d/%Y %H:%M") %></td>
                   <td><%= order.total_amount%></td>
                   <td><span class="badge badge_warning py-1"><%= order.order_status%></span></td>

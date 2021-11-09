@@ -42,7 +42,7 @@ class OrderDispatchesController < ApplicationController
 
   def all_order_data
     if params[:amazon]
-      OrdersAmzService.orders_amz
+      AmazonService.amazon_order_api
       create_amazon_orders
     else
       CreateChannelOrderResponseJob.perform_later
@@ -78,19 +78,30 @@ class OrderDispatchesController < ApplicationController
     amazon_orders = ChannelResponseData.where(channel: 'amazon', api_call: 'getOrders', status: 'pending')
     amazon_orders.each do |amazon_order|
       amazon_order.response['payload']['Orders'].each do |order|
-        channel_order_record = ChannelOrder.find_or_initialize_by(ebayorder_id: order['AmazonOrderId'],
-                                                                  channel_type: 'amazon')
+        channel_order = ChannelOrder.find_or_initialize_by(ebayorder_id: order['AmazonOrderId'],
+                                                           channel_type: 'amazon')
 
-        channel_order_record.order_data = order
-        channel_order_record.created_at = order['PurchaseDate']
-        channel_order_record.order_status = order['OrderStatus']
+        channel_order.order_data = order
+        channel_order.created_at = order['PurchaseDate']
+        channel_order.order_status = order['OrderStatus']
         amount = order['OrderTotal'].nil? ? nil : order['OrderTotal']['Amount']
-        channel_order_record.total_amount = amount
+        channel_order.total_amount = amount
         address = "#{order['ShippingAddress']['PostalCode']} #{order['ShippingAddress']['City']} #{order['ShippingAddress']['CountryCode']}" if order['ShippingAddress'].present?
-        channel_order_record.address = address
-        channel_order_record.save
+        channel_order.address = address
+        channel_order.save
+        result = AmazonService.amazon_product_api(channel_order.ebayorder_id)
+        update_channel_order(result[:body], channel_order.id) if result[:status]
       end
       amazon_order.update(status: 'executed')
+    end
+  end
+
+  def update_channel_order(result, channel_order_id)
+    result['payload']['OrderItems'].each do |item|
+      channel_item = ChannelOrderItem.find_or_initialize_by(channel_order_id: channel_order_id, line_item_id: item['OrderItemId'])
+      channel_item.sku = item['SellerSKU']
+      channel_item.item_data = item
+      channel_item.save
     end
   end
 end
