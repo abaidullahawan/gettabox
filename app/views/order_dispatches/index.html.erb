@@ -13,6 +13,17 @@
   </ol>
 </div>
 <!-- End Main Content Header -->
+<%= search_form_for @q, url: order_dispatches_path, method: :get do |f| %>
+  <div class='row mb-4'>
+    <div class="col-md-3">
+      <%= select_tag :product_mapping, options_for_select([ "Amazon Orders", "Ebay Orders"]), class:"form-control chosen-select product-mapping-select", title: 'Select Mapping Category', prompt: "Please select" %>
+    </div>
+    <div class="card-body p-0 mr-5">
+      <%= link_to "eBay Orders", order_dispatches_path(all_product_data: true) ,class:"btn btn-primary ml-1", type:"button", style: "color: white" %>
+    </div>
+  </div>
+<% end %>
+
 <div class="row" style="margin-left: 0px;">
   <div class="col-lg-2">
     <div class="card text-center mb-30">
@@ -49,9 +60,6 @@
       </div>
     </div>
   </div>
-  <div class="card-body p-0 mr-5">
-    <%= link_to "eBay Orders", order_dispatches_path(all_product_data: true) ,class:"btn btn-primary float-right ml-1", type:"button", style: "color: white" %>
-  </div>
 </div>
 
 <div class="col-lg-12">
@@ -83,9 +91,14 @@
           <div class="tab-pane fade show active" id="demo_two_home" role="tabpanel">
             <%= render 'unprocessed_orders'%>
           </div>
-
           <div class="tab-pane fade" id="demo_three_home" role="tabpanel">
             <%= render 'ready_to_dispatch_orders' %>
+          </div>
+          <div class="tab-pane fade" id="demo_four_home" role="tabpanel">
+            <%= render 'issue_orders'%>
+          </div>
+          <div class="tab-pane fade" id="demo_five_home" role="tabpanel">
+            <%= render 'order_for_assignment'%>
           </div>
           <div class="tab-pane fade" id="demo_six_home" role="tabpanel">
             <%= render 'unpaid_orders' %>
