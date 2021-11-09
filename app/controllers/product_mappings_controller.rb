@@ -14,9 +14,8 @@ class ProductMappingsController < ApplicationController
   def index
     amazon_request if params[:commit].eql? 'Amazon Request'
     maped_products(@body) if params[:q].present? && (params[:q][:status_eq].eql? '1')
-    all_order_data if params[:product_mapping].eql? 'Ebay Production'
+    all_order_data if params[:all_product_data].present?
     return unless params[:export_csv].present?
-
     @products = ChannelProduct.all
     export_csv(@products)
   end

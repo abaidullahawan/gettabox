@@ -10,6 +10,7 @@ class OrderDispatchesController < ApplicationController
     @no_sku = []
     @matched_sku = []
     @unmatched_sku = []
+    @q = ChannelOrder.search(params[:q])
     @all_orders = ChannelOrder.all
     @completed = ChannelOrder.where('order_status in (?)', %i[FULFILLED Shipped])
     @completed_orders = @completed.order(created_at: :desc).page(params[:completed_page]).per(params[:limit])

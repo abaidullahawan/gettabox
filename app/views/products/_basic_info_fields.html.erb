@@ -1,5 +1,5 @@
     <div class="form-group">
-      <%= f.label :photo %>
+      <%= f.label :photo, id: "photo-label" %>
       <% if  f.object.photo.attached? %>
         <%= image_tag f.object.photo&.service_url, style:'width:50px; height:50px;' %>
       <% end %>

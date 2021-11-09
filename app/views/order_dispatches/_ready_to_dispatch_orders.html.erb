@@ -18,6 +18,7 @@
                 <th scope="col">Channel</th>
                 <th scope="col">Order Information</th>
                 <th scope="col">Products</th>
+                <th scope="col">Information</th>
                 <th scope="col">Date Recieved</th>
                 <th scope="col">Total</th>
                 <th scope="col">Status</th>
@@ -28,7 +29,11 @@
               <tbody>
                 <tr>
                   <td style = "width: 15%">
-                    <img src="/assets/pngegg_80.png" alt="ebay" style="max-width: 25%; margin-left: 27px;"><br>
+                    <% if order.channel_type.downcase.eql? 'ebay'%>
+                      <img src="/assets/pngegg_80.png" alt="ebay" style="max-width: 25%; margin-left: 27px;"><br>
+                    <% else %>
+                      <img src="/assets/amazon.png" alt="ebay" style="max-width: 25%; margin-left: 27px;"><br>
+                    <% end %>
                     <img src="/assets/uk.jpeg"alt="ebay" style="max-width: 30%; margin-left: 25px;"><br>
                     <strong class='text-center pl-4'><%= order&.channel_type&.to_s&.capitalize %></strong>
                   </td>
@@ -38,9 +43,44 @@
                     <%= order.address%><br>
                   </td>
                   <td>
-                    <% order.channel_order_items&.each do |product|%>
-                      <%= image_tag(ChannelProduct.where(item_sku: product.sku )&.first&.product_data["PictureDetails"]["GalleryURL"]) %><br>
-                      <%= product&.sku %><br>
+                    <% order.channel_order_items.each do |product|%>
+                      <div class="row">
+                        <div class="col-4">
+                          <%= image_tag(ChannelProduct.where(item_sku: product.sku )&.first&.product_data["PictureDetails"]["GalleryURL"]) %>
+                        </div>
+                        <div class="col-8">
+                          <b><%= product.item_data['legacyItemId'] %></b><br>
+                          <%= product&.sku %><br>
+                        </div>
+                        <div class="col-12">
+                          <%= product.item_data['title']%>
+                        </div>
+                      </div>
+                    <% end %>
+                  </td>
+                  <td>
+                    <% order.channel_order_items.each do |product|%>
+                    <%= ChannelProduct.find_by(item_sku: product.sku).product_mapping.product.title %>
+                    <table class="table table-sm table-bordered">
+                      <thead>
+                        <tr>
+                          <th scope="col">Loc</th>
+                          <th scope="col">War</th>
+                          <th scope="col">Ord</th>
+                          <th scope="col">Alo</th>
+                          <th scope="col">Dis</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>1</td>
+                          <td>0</td>
+                          <td>O</td>
+                          <td>0</td>
+                          <td>0</td>
+                        </tr>
+                      </tbody>
+                    </table>
                     <% end %>
                   </td>
                   <td><%= order.created_at.strftime("%m/%d/%Y %H:%M") %></td>

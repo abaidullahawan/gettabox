@@ -9,7 +9,7 @@ $(document).on('turbolinks:load', function () {
     var sku = data.item_sku
     var title = data.product_data.Title
     var description = data.product_data.description
-    // var imageUrl = data.product_data.product.imageUrls[0]
+    var imageUrl = data.product_data.PictureDetails.GalleryURL
     // var urlSplit = imageUrl.split('/')
     // var imageName = urlSplit[urlSplit.length - 1]
     var quantity = data.product_data.Quantity
@@ -21,6 +21,10 @@ $(document).on('turbolinks:load', function () {
     // $('#single-product-create-modal .modal-body #product_photo').attr("src", imageUrl)
     // $('#single-product-create-modal .modal-body #product_photo').attr("filename", imageName)
     $('#single-product-create-modal .modal-body #product_total_stock').val(quantity)
+    if(imageUrl  !== '' )
+    {
+      $('#single-product-create-modal .modal-body #photo-label').text("Photo Attached")
+    }
     $('#single-product-create-modal').modal('show')
   })
 
