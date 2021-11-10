@@ -165,7 +165,13 @@ class ProductMappingsController < ApplicationController
   # end
 
   def load_products
-    @q = ChannelProduct.ransack(params[:q])
+    if params[:product_mapping].eql? 'Amazon Products'
+      @q = ChannelProduct.where(channel_type: 'amazon').ransack(params[:q])
+    elsif params[:product_mapping].eql? 'Ebay Products'
+      @q = ChannelProduct.where(channel_type: 'ebay').ransack(params[:q])
+    else
+      @q = ChannelProduct.ransack(params[:q])
+    end
     @body = @q.result(distinct: true).order(created_at: :desc).page(params[:page]).per(params[:limit])
     fetch_products
   end
