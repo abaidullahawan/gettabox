@@ -14,7 +14,7 @@ class AmazonService
     access_token = RefreshToken.where(channel: 'amazon').last.access_token
     access_key = 'AKIA6RGM5COAWQNAAHWJ'
     secret_key = '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'
-    url = 'https://sellingpartnerapi-eu.amazon.com/orders/v0/orders?MarketplaceIds=A1F83G8C2ARO7P&CreatedAfter=2021-11-08T17%3A00%3A00'
+    url = "https://sellingpartnerapi-eu.amazon.com/orders/v0/orders?MarketplaceIds=A1F83G8C2ARO7P&CreatedAfter=#{Date.yesterday.strftime('%Y-%m-%d')}T17%3A00%3A00"
 
     signature = signature_generator(access_key, secret_key, access_token, url)
     response = api_call(signature, access_token, url)
@@ -125,8 +125,19 @@ class AmazonService
     secret_key = 't8NtXqsOsDlniAlAbx2k/t9/ai226UEBPGMxPFeA'
     url = "https://sellingpartnerapi-eu.amazon.com/orders/v0/orders/#{amazon_order_id}/orderItems"
 
+    @limit = 0 if @limit.blank?
     signature = signature_generator(access_key, secret_key, access_token, url)
     response = api_call(signature, access_token, url)
-    return_response(response)
+    result = return_response(response)
+    return return_response(response) if result[:status]
+
+    limited_tries(amazon_order_id, result)
+  end
+
+  def self.limited_tries(amazon_order_id, result)
+    @limit += 1
+    return amazon_product_api(amazon_order_id) if @limit < 3
+
+    result
   end
 end
