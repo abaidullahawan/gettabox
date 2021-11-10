@@ -24,8 +24,8 @@ class OrderDispatchesController < ApplicationController
     else
       CreateChannelOrderResponseJob.perform_later
       flash[:notice] = 'CALL sent to eBay API'
-      redirect_to order_dispatches_path
     end
+    redirect_to order_dispatches_path
   end
 
   def fetch_response_orders
@@ -57,8 +57,7 @@ class OrderDispatchesController < ApplicationController
       amazon_order.response['payload']['Orders'].each do |order|
         channel_order = ChannelOrder.find_or_initialize_by(ebayorder_id: order['AmazonOrderId'],
                                                            channel_type: 'amazon')
-
-                                                           channel_order.order_data = order
+        channel_order.order_data = order
         channel_order.created_at = order['PurchaseDate']
         channel_order.order_status = order['OrderStatus']
         amount = order['OrderTotal'].nil? ? nil : order['OrderTotal']['Amount']
@@ -79,7 +78,7 @@ class OrderDispatchesController < ApplicationController
     elsif params[:product_mapping].eql? 'Ebay Orders'
       @order_type = ['ebay']
     else
-      @order_type = ['ebay', 'amazon']
+      @order_type = %w[ebay amazon]
     end
   end
 
@@ -92,7 +91,7 @@ class OrderDispatchesController < ApplicationController
     @unmatched_sku = []
     @all_orders = @q.where(channel_type: @order_type)
     @unmatched_sku = @all_orders - @matched_sku - @no_sku - @completed - @un_matched_product_orders
-    @unmatched_sku_sort = @unmatched_sku.sort_by(&:"created_at").reverse!
+    @unmatched_sku_sort = @unmatched_sku.sort_by(&:created_at).reverse!
     @unmatched_sku_sort = Kaminari.paginate_array(@unmatched_sku).page(params[:unmatched_page]).per(5)
   end
 
@@ -106,14 +105,14 @@ class OrderDispatchesController < ApplicationController
     @product_data = ChannelProduct.where(status: 'mapped').pluck(:item_sku).compact
     @matched_sku = @q.joins(:channel_order_items).where('channel_order_items.sku': @product_data).where(channel_type: @order_type)
     @matched_sku = @matched_sku.uniq
-    @matched_sku = @matched_sku.sort_by(&:"created_at").reverse!
+    @matched_sku = @matched_sku.sort_by(&:created_at).reverse!
     @matched_sku = Kaminari.paginate_array(@matched_sku).page(params[:matched_page]).per(5)
   end
 
   def no_sku
     @no_sku = []
     @no_sku = @q.joins(:channel_order_items).where('channel_order_items.sku': nil).where(channel_type: @order_type) -@completed
-    @orders = @no_sku.sort_by(&:"created_at").reverse!
+    @orders = @no_sku.sort_by(&:created_at).reverse!
     @orders = Kaminari.paginate_array(@no_sku).page(params[:orders_page]).per(5)
   end
 
@@ -135,8 +134,19 @@ class OrderDispatchesController < ApplicationController
   end
 
   def update_channel_order(result, channel_order_id)
+    # result['payload']['OrderItems'].each do |item|
+    #   ChannelOrderItem.create(
+    #     channel_order_id: channel_order_id,
+    #     line_item_id: item['OrderItemId'],
+    #     sku: item['SellerSKU'],
+    #     item_data: item
+    #   )
+    # end
     result['payload']['OrderItems'].each do |item|
-      channel_item = ChannelOrderItem.find_or_initialize_by(channel_order_id: channel_order_id, line_item_id: item['OrderItemId'])
+      channel_item = ChannelOrderItem.find_or_initialize_by(
+        channel_order_id: channel_order_id,
+        line_item_id: item['OrderItemId']
+      )
       channel_item.sku = item['SellerSKU']
       channel_item.item_data = item
       channel_item.save

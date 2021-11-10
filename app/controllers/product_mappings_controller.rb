@@ -6,7 +6,7 @@ class ProductMappingsController < ApplicationController
 
   before_action :authenticate_user!
   before_action :set_product_mapping, only: %i[show update destroy]
-  before_action :refresh_token, only: %i[index xml_file]
+  before_action :refresh_token, :refresh_token_amazon, only: %i[index xml_file]
   before_action :new_product, :product_load_resources, :load_products, only: %i[index]
   before_action :fetch_product_id, only: %i[create]
   skip_before_action :verify_authenticity_token

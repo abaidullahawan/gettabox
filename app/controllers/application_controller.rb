@@ -31,16 +31,15 @@ class ApplicationController < ActionController::Base
 
   def generate_refresh_token(credential)
     result = RefreshTokenService.refresh_token_api(@refresh_token, credential)
-    return update_refresh_token(result[:body]) if result[:status]
+    return update_refresh_token(result[:body], @refresh_token) if result[:status]
 
     flash[:alert] = (result[:error]).to_s
   rescue StandardError
     flash[:alert] = 'Please contact your administration for process'
   end
 
-  def update_refresh_token(result)
-    @refresh_token.update(
-      channel: 'ebay',
+  def update_refresh_token(result, refresh_token)
+    refresh_token.update(
       access_token: result['access_token'],
       access_token_expiry: DateTime.now + result['expires_in'].to_i.seconds
     )
@@ -75,5 +74,22 @@ class ApplicationController < ActionController::Base
       refresh_token_expiry: DateTime.now + result['refresh_token_expires_in'].to_i.seconds
     )
     flash[:notice] = 'Refresh token generated successfully!'
+  end
+
+  def refresh_token_amazon
+    @refresh_token_amazon = RefreshToken.where(channel: 'amazon').last
+    remainaing_time = @refresh_token.access_token_expiry.localtime < DateTime.now
+    return if @refresh_token_amazon.present? && remainaing_time
+
+    generate_refresh_token_amazon
+  end
+
+  def generate_refresh_token_amazon
+    result = RefreshTokenService.amazon_refresh_token(@refresh_token_amazon)
+    return update_refresh_token(result[:body], @refresh_token_amazon) if result[:status]
+
+    flash[:alert] = (result[:error]).to_s
+  rescue StandardError
+    flash[:alert] = 'Please contact your administration for process'
   end
 end
