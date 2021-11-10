@@ -73,10 +73,10 @@
                       </thead>
                       <tbody>
                         <tr>
-                          <td>1</td>
-                          <td>0</td>
-                          <td>O</td>
-                          <td>0</td>
+                          <td><%= ChannelOrder.find_product(product) %></td>
+                          <td><%= product.warehouse %></td>
+                          <td><%= product.ordered%></td>
+                          <td><%= product.allocated%></td>
                           <td>0</td>
                         </tr>
                       </tbody>

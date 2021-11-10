@@ -10,4 +10,8 @@ class ChannelOrder < ApplicationRecord
     amazon: 1,
     shopify: 3
   }, _prefix: true
+
+  def self.find_product(product)
+    ChannelProduct.find_by(item_sku: product.sku).product_mapping.product.location
+  end
 end
