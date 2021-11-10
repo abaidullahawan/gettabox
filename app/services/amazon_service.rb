@@ -9,8 +9,8 @@ module Net::HTTPHeader
 end
 
 # Api calls for amazon orders
-class OrdersAmzService
-  def self.orders_amz
+class AmazonService
+  def self.amazon_order_api
     access_token = RefreshToken.where(channel: 'amazon').last.access_token
     access_key = 'AKIA6RGM5COAWQNAAHWJ'
     secret_key = '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'
@@ -79,8 +79,7 @@ class OrdersAmzService
       headers: {
         'host' => 'sellingpartnerapi-eu.amazon.com',
         'user-agent' => 'ChannelDispatch (Language=Ruby)',
-        'x-amz-access-token' => access_token,
-        'next-token' => next_token
+        'x-amz-access-token' => access_token, 'next-token' => next_token
       }
     )
   end
@@ -93,8 +92,7 @@ class OrdersAmzService
         'x-amz-access-token' => access_token,
         'x-amz-content-sha256' => signature.headers['x-amz-content-sha256'],
         'x-amz-date' => signature.headers['x-amz-date'],
-        'authorization' => signature.headers['authorization'],
-        'next-token' => next_token
+        'authorization' => signature.headers['authorization'], 'next-token' => next_token
       }
     )
   end
@@ -120,4 +118,15 @@ class OrdersAmzService
   #     channel_order_record.save
   #   end
   # end
+
+  def self.amazon_product_api(amazon_order_id)
+    access_token = RefreshToken.where(channel: 'amazon').last.access_token
+    access_key = 'AKIA6RGM5COAWQNAAHWJ'
+    secret_key = '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'
+    url = "https://sellingpartnerapi-eu.amazon.com/orders/v0/orders/#{amazon_order_id}/orderItems"
+
+    signature = signature_generator(access_key, secret_key, access_token, url)
+    response = api_call(signature, access_token, url)
+    return_response(response)
+  end
 end
