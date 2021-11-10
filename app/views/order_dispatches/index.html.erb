@@ -13,21 +13,21 @@
   </ol>
 </div>
 <!-- End Main Content Header -->
-<%= search_form_for @q, url: order_dispatches_path, method: :get do |f| %>
-  <div class='row mb-4'>
-    <div class="col-md-3">
-      <%= select_tag :product_mapping, options_for_select([ "Amazon Orders", "Ebay Orders"]), class:"form-control chosen-select product-mapping-select", title: 'Select Mapping Category', prompt: "Please select" %>
-    </div>
-    <div class="col-md-2">
-      <%= f.search_field :ebayorder_id_or_order_status_or_buyer_name_cont, class:"form-control bg-white text-black", title: 'Search item sku', placeholder: 'Search Buyer Name or Order Id or Status' %>
-      <%= f.submit 'Mapping', class: 'btn btn-primary product-mapping-request d-none' %>
-    </div>
-    <div class="col-md-3 d-flex">
-      <%= link_to "eBay Orders", order_dispatches_path(all_product_data: true) ,class:"btn btn-primary", type:"button", style: "color: white;" %>
-      <%= link_to "Amazon Orders", order_dispatches_path(orders_api: true, amazon: true) ,class:"btn btn-primary ml-3", type:"button", style: "color: white;" %>
-    </div>
+<div class='row mb-4'>
+  <div class="col-md-3">
+  <%= search_form_for @q, url: order_dispatches_path, method: :get do |f| %>
+    <%= select_tag :product_mapping, options_for_select([ "Amazon Orders", "Ebay Orders"]), class:"form-control chosen-select product-mapping-select", title: 'Select Mapping Category', prompt: "Please select" %>
   </div>
-<% end %>
+  <div class="col-md-2">
+    <%= f.search_field :ebayorder_id_or_order_status_or_buyer_name_cont, class:"form-control bg-white text-black", title: 'Search item sku', placeholder: 'Search Buyer Name or Order Id or Status' %>
+    <%= f.submit 'Mapping', class: 'btn btn-primary product-mapping-request d-none' %>
+  </div>
+  <% end %>
+  <div class="col-md-3 d-flex">
+    <%= link_to "eBay Orders", order_dispatches_path(orders_api: true, ebay: true) ,class:"btn btn-primary", type:"button", style: "color: white;" %>
+    <%= link_to "Amazon Orders", order_dispatches_path(orders_api: true, amazon: true) ,class:"btn btn-primary ml-3", type:"button", style: "color: white;" %>
+  </div>
+</div>
 <div class="row" style="margin-left: 0px;">
   <div class="col-lg-2">
     <div class="card text-center mb-30">
