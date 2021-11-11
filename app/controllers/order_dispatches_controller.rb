@@ -3,7 +3,7 @@
 # Getting new orders and creating
 class OrderDispatchesController < ApplicationController
   before_action :authenticate_user!
-  before_action :refresh_token, only: %i[index all_order_data]
+  before_action :refresh_token, :refresh_token_amazon, only: %i[index all_order_data]
   before_action :check_status, only: %i[index fetch_response_orders]
   before_action :ransack_params, :params_check, :completed_orders, :matched_sku, :no_sku, :unpaid_orders, :unmatched_product_orders,
                 :unmatched_sku, :not_started_orders, only: %i[index]
@@ -19,8 +19,8 @@ class OrderDispatchesController < ApplicationController
 
   def all_order_data
     if params[:amazon]
-      AmazonService.amazon_order_api
-      create_amazon_orders
+      AmazonOrderJob.perform_later(refresh_token: @refresh_token_amazon)
+      flash[:notice] = 'Amazon order job updated!'
     else
       CreateChannelOrderResponseJob.perform_later
       flash[:notice] = 'CALL sent to eBay API'
@@ -49,27 +49,6 @@ class OrderDispatchesController < ApplicationController
       @status = 0 if (response_status == 'error') || (response_status == 'not available')
     end
     @status = 3 if @response_status == []
-  end
-
-  def create_amazon_orders
-    amazon_orders = ChannelResponseData.where(channel: 'amazon', api_call: 'getOrders', status: 'pending')
-    amazon_orders.each do |amazon_order|
-      amazon_order.response['payload']['Orders'].each do |order|
-        channel_order = ChannelOrder.find_or_initialize_by(ebayorder_id: order['AmazonOrderId'],
-                                                           channel_type: 'amazon')
-        channel_order.order_data = order
-        channel_order.created_at = order['PurchaseDate']
-        channel_order.order_status = order['OrderStatus']
-        amount = order['OrderTotal'].nil? ? nil : order['OrderTotal']['Amount']
-        channel_order.total_amount = amount
-        address = "#{order['ShippingAddress']['PostalCode']} #{order['ShippingAddress']['City']} #{order['ShippingAddress']['CountryCode']}" if order['ShippingAddress'].present?
-        channel_order.address = address
-        channel_order.save
-        result = AmazonService.amazon_product_api(channel_order.ebayorder_id)
-        update_channel_order(result[:body], channel_order.id) if result[:status]
-      end
-      amazon_order.update(status: 'executed')
-    end
   end
 
   def params_check
@@ -131,25 +110,5 @@ class OrderDispatchesController < ApplicationController
     @un_matched_product_orders = @q.joins(:channel_order_items).where('channel_order_items.sku': @unmatch_product_data).where(channel_type: @order_type).order(created_at: :desc)
     @un_matched_product_orders = @un_matched_product_orders.uniq - @completed
     @un_matched_product_order = Kaminari.paginate_array(@un_matched_product_orders).page(params[:unmatched_product_page]).per(5)
-  end
-
-  def update_channel_order(result, channel_order_id)
-    # result['payload']['OrderItems'].each do |item|
-    #   ChannelOrderItem.create(
-    #     channel_order_id: channel_order_id,
-    #     line_item_id: item['OrderItemId'],
-    #     sku: item['SellerSKU'],
-    #     item_data: item
-    #   )
-    # end
-    result['payload']['OrderItems'].each do |item|
-      channel_item = ChannelOrderItem.find_or_initialize_by(
-        channel_order_id: channel_order_id,
-        line_item_id: item['OrderItemId']
-      )
-      channel_item.sku = item['SellerSKU']
-      channel_item.item_data = item
-      channel_item.save
-    end
   end
 end
