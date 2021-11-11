@@ -72,6 +72,7 @@ gem 'capistrano-rbenv', '~> 2.1', '>= 2.1.4'
 gem 'sidekiq-scheduler'
 gem 'sshkit-sudo'
 
+gem 'figaro'
 gem 'rubocop', require: false
 
 # Use Active Storage variant

@@ -78,7 +78,7 @@ class ApplicationController < ActionController::Base
 
   def refresh_token_amazon
     @refresh_token_amazon = RefreshToken.where(channel: 'amazon').last
-    remainaing_time = @refresh_token.access_token_expiry.localtime < DateTime.now
+    remainaing_time = @refresh_token.access_token_expiry.localtime > DateTime.now
     return if @refresh_token_amazon.present? && remainaing_time
 
     generate_refresh_token_amazon

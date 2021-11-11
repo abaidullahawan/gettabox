@@ -10,20 +10,10 @@ end
 
 # Api calls for amazon orders
 class AmazonService
-  def self.amazon_order_api
-    access_token = RefreshToken.where(channel: 'amazon').last.access_token
-    access_key = 'AKIA6RGM5COAWQNAAHWJ'
-    secret_key = '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'
-    url = "https://sellingpartnerapi-eu.amazon.com/orders/v0/orders?MarketplaceIds=A1F83G8C2ARO7P&CreatedAfter=#{Date.yesterday.strftime('%Y-%m-%d')}T17%3A00%3A00"
-
-    signature = signature_generator(access_key, secret_key, access_token, url)
+  def self.amazon_order_api(access_token, url)
+    signature = signature_generator(access_token, url)
     response = api_call(signature, access_token, url)
-    result = return_response(response)
-    return result unless result[:status]
-
-    create_order_response(result, url)
-    # next_token = result[:body]['payload']['NextToken']
-    # next_orders_amz(next_token, access_token, access_key, secret_key, url) if next_token.present?
+    return_response(response)
   end
 
   def self.api_call(signature, access_token, url)
@@ -39,9 +29,9 @@ class AmazonService
     )
   end
 
-  def self.signature_generator(access_key, secret_key, access_token, url)
-    signer = Aws::Sigv4::Signer.new(access_key_id: access_key, region: 'eu-west-1', secret_access_key: secret_key,
-                                    service: 'execute-api')
+  def self.signature_generator(access_token, url)
+    signer = Aws::Sigv4::Signer.new(access_key_id: ENV['amazon_access_key'], region: 'eu-west-1',
+                                    secret_access_key: ENV['amazon_secret_key'], service: 'execute-api')
 
     signer.sign_request(
       http_method: 'GET', url: url,
@@ -59,20 +49,20 @@ class AmazonService
     { status: false, error: response['errors'][0]['details'] }
   end
 
-  def self.next_orders_amz(next_token, access_token, access_key, secret_key, url)
-    signature = next_signature_generator(access_key, secret_key, access_token, url, next_token)
+  def self.next_orders_amz(next_token, access_token, url)
+    signature = next_signature_generator(access_token, url, next_token)
     response = next_api_call(signature, access_token, url, next_token)
     result = return_response(response)
     return result unless result[:status]
 
     create_order_response(result, url)
     new_next_token = result[:body]['payload']['NextToken']
-    next_orders_amz(new_next_token, access_token, access_key, secret_key, url) if new_next_token.present?
+    next_orders_amz(new_next_token, access_token, url) if new_next_token.present?
   end
 
-  def self.next_signature_generator(access_key, secret_key, access_token, url, next_token)
-    signer = Aws::Sigv4::Signer.new(access_key_id: access_key, region: 'eu-west-1',
-                                    secret_access_key: secret_key, service: 'execute-api')
+  def self.next_signature_generator(access_token, url, next_token)
+    signer = Aws::Sigv4::Signer.new(access_key_id: ENV['amazon_access_key'], region: 'eu-west-1',
+                                    secret_access_key: ENV['amazon_secret_key'], service: 'execute-api')
 
     signer.sign_request(
       http_method: 'GET', url: url,
@@ -97,13 +87,6 @@ class AmazonService
     )
   end
 
-  def self.create_order_response(result, url)
-    ChannelResponseData.create(
-      channel: 'amazon', response: result[:body],
-      api_call: 'getOrders', api_url: url, status: 'pending'
-    )
-  end
-
   # def self.create_orders(result)
   #   result[:body]['payload']['Orders'].each do |order|
   #     channel_order_record = ChannelOrder.find_or_initialize_by(ebayorder_id: order['AmazonOrderId'],
@@ -119,24 +102,18 @@ class AmazonService
   #   end
   # end
 
-  def self.amazon_product_api(amazon_order_id)
-    access_token = RefreshToken.where(channel: 'amazon').last.access_token
-    access_key = 'AKIA6RGM5COAWQNAAHWJ'
-    secret_key = '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'
-    url = "https://sellingpartnerapi-eu.amazon.com/orders/v0/orders/#{amazon_order_id}/orderItems"
-
-    @limit = 0 if @limit.blank?
-    signature = signature_generator(access_key, secret_key, access_token, url)
+  def self.amazon_product_api(url, access_token)
+    signature = signature_generator(access_token, url)
     response = api_call(signature, access_token, url)
     result = return_response(response)
-    return return_response(response) if result[:status]
+    return return_response(response) unless result[:error].nil?
 
-    limited_tries(amazon_order_id, result)
+    limited_tries(result, url, access_token)
   end
 
-  def self.limited_tries(amazon_order_id, result)
-    @limit += 1
-    return amazon_product_api(amazon_order_id) if @limit < 3
+  def self.limited_tries(result, url, access_token)
+    @limit = @limit.blank? ? 0 : @limit + 1
+    return amazon_product_api(url, access_token) if @limit < 3
 
     result
   end
