@@ -22,7 +22,7 @@
   </div>
   <div class="col-md-2">
     <%= search_form_for @q, url: order_dispatches_path, method: :get do |f| %>
-      <%= f.search_field :ebayorder_id_or_order_status_or_buyer_name_cont, class:"form-control bg-white text-black", title: 'Search item sku', placeholder: 'Search Buyer Name or Order Id or Status' %>
+      <%= f.search_field :ebayorder_id_or_order_status_or_buyer_name_cont, class:"form-control bg-white text-black", title: 'Search Buyer Name or Order Id or Status', placeholder: 'Search Buyer Name or Order Id or Status' %>
     <% end %>
   </div>
   <div class="col-md-3 d-flex">

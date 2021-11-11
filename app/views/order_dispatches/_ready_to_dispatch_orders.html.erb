@@ -60,27 +60,53 @@
                   </td>
                   <td>
                     <% order.channel_order_items.each do |product|%>
-                    <%= ChannelProduct.find_by(item_sku: product.sku).product_mapping.product.title %>
-                    <table class="table table-sm table-bordered">
-                      <thead>
-                        <tr>
-                          <th scope="col">Loc</th>
-                          <th scope="col">War</th>
-                          <th scope="col">Ord</th>
-                          <th scope="col">Alo</th>
-                          <th scope="col">Dis</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr>
-                          <td><%= ChannelOrder.find_product(product) %></td>
-                          <td><%= product.warehouse %></td>
-                          <td><%= product.ordered%></td>
-                          <td><%= product.allocated%></td>
-                          <td>0</td>
-                        </tr>
-                      </tbody>
-                    </table>
+                      <% if ChannelProduct.find_by(item_sku: product.sku).product_mapping.product.product_type == 'single'%>
+                        <%= ChannelProduct.find_by(item_sku: product.sku).product_mapping.product.title %>
+                        <table class="table table-sm table-bordered">
+                          <thead>
+                            <tr>
+                              <th scope="col">Loc</th>
+                              <th scope="col">War</th>
+                              <th scope="col">Ord</th>
+                              <th scope="col">Alo</th>
+                              <th scope="col">Dis</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr>
+                              <td><%= ChannelOrder.find_product(product).presence || 'N/A' %></td>
+                              <td><%= ChannelProduct.find_by(item_sku: product.sku).product_mapping.product.total_stock.to_i %></td>
+                              <td><%= product.ordered%></td>
+                              <td><%= '0' %></td>
+                              <td>0</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      <% else %>
+                        <% ChannelProduct.find_by(item_sku: product.sku).product_mapping.product.multipack_products.each do |record| %>
+                          <%= record.child.title %>
+                            <table class="table table-sm table-bordered">
+                              <thead>
+                                <tr>
+                                  <th scope="col">Loc</th>
+                                  <th scope="col">War</th>
+                                  <th scope="col">Ord</th>
+                                  <th scope="col">Alo</th>
+                                  <th scope="col">Dis</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <tr>
+                                  <td><%= ChannelOrder.find_product(product).presence || 'N/A' %></td>
+                                  <td><%= record.child.total_stock.to_i %></td>
+                                  <td><%= product.ordered * record.quantity.to_i%></td>
+                                  <td><%= '0' %></td>
+                                  <td>0</td>
+                                </tr>
+                              </tbody>
+                            </table>
+                        <% end %>
+                      <% end %>
                     <% end %>
                   </td>
                   <td><%= order.created_at.strftime("%m/%d/%Y %H:%M") %></td>
