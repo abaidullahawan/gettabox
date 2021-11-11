@@ -7,7 +7,7 @@ class AmazonOrderJob < ApplicationJob
     access_token = @arguments.first[:refresh_token].access_token
     url = "https://sellingpartnerapi-eu.amazon.com/orders/v0/orders?MarketplaceIds=A1F83G8C2ARO7P&CreatedAfter=#{Date.yesterday.strftime('%Y-%m-%d')}T17%3A00%3A00"
     result = AmazonService.amazon_order_api(access_token, url)
-    return result unless result[:status]
+    return puts result unless result[:status]
 
     create_order_response(result, url)
     # next_token = result[:body]['payload']['NextToken']
@@ -45,7 +45,6 @@ class AmazonOrderJob < ApplicationJob
   def add_product(amazon_order_id, access_token, channel_order_id)
     url = "https://sellingpartnerapi-eu.amazon.com/orders/v0/orders/#{amazon_order_id}/orderItems"
     result = AmazonService.amazon_product_api(url, access_token)
-    byebug
     update_channel_order(result, channel_order_id) if result[:status]
   end
 

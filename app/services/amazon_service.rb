@@ -105,14 +105,17 @@ class AmazonService
   def self.amazon_product_api(url, access_token)
     signature = signature_generator(access_token, url)
     response = api_call(signature, access_token, url)
+    sleep 1
     result = return_response(response)
-    return return_response(response) unless result[:error].nil?
+    return return_response(response) if result[:status]
 
     limited_tries(result, url, access_token)
   end
 
   def self.limited_tries(result, url, access_token)
-    @limit = @limit.blank? ? 0 : @limit + 1
+    @limit = 0 if @limit.blank? || @limit >= 3
+    @limit += 1
+    sleep 1
     return amazon_product_api(url, access_token) if @limit < 3
 
     result
