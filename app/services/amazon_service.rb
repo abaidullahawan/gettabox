@@ -30,7 +30,6 @@ class AmazonService
   end
 
   def self.signature_generator(access_token, url)
-    byebug
     signer = Aws::Sigv4::Signer.new(access_key_id: Settings.amazon_access_key, region: 'eu-west-1',
                                     secret_access_key: Settings.amazon_secret_key, service: 'execute-api')
 
