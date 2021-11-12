@@ -1,6 +1,6 @@
 <div class="form-group">
   <%= f.label :season_id %>
-  <%= f.select :season_id, @seasons&.map{|u| [u['name'], u['id']]}, {include_blank: 'Select the season'}, class: 'form-control chosen-select', required: true %>
+  <%= f.select :season_id, @seasons&.map{|u| [u['name'], u['id']]}, {include_blank: 'Select the season'}, class: 'form-control chosen-select'%>
 </div>
 
 <div class="form-group">
