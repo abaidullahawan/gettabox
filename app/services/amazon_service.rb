@@ -30,8 +30,9 @@ class AmazonService
   end
 
   def self.signature_generator(access_token, url)
-    signer = Aws::Sigv4::Signer.new(access_key_id: ENV['amazon_access_key'], region: 'eu-west-1',
-                                    secret_access_key: ENV['amazon_secret_key'], service: 'execute-api')
+    byebug
+    signer = Aws::Sigv4::Signer.new(access_key_id: Settings.amazon_access_key, region: 'eu-west-1',
+                                    secret_access_key: Settings.amazon_secret_key, service: 'execute-api')
 
     signer.sign_request(
       http_method: 'GET', url: url,
@@ -61,8 +62,8 @@ class AmazonService
   end
 
   def self.next_signature_generator(access_token, url, next_token)
-    signer = Aws::Sigv4::Signer.new(access_key_id: ENV['amazon_access_key'], region: 'eu-west-1',
-                                    secret_access_key: ENV['amazon_secret_key'], service: 'execute-api')
+    signer = Aws::Sigv4::Signer.new(access_key_id: Settings.amazon_access_key, region: 'eu-west-1',
+                                    secret_access_key: Settings.amazon_secret_key, service: 'execute-api')
 
     signer.sign_request(
       http_method: 'GET', url: url,
