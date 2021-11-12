@@ -8,7 +8,7 @@
     <%= f.label :product_type %>
     <%= f.select :product_type, ['multiple'], {}, class: 'form-control product_type_field', readonly: true %>
   </div>
-  <%= render 'products/basic_info_fields', f: f %>
+  <%= render 'products/basic_info_fields_multiple', f: f %>
   <hr>
   <button type='button' class='multi_basic_info_button btn btn-sm btn-outline-info float-right'>Next</button><br>
 </div>
