@@ -22,7 +22,7 @@ production:
 staging:
   :concurrency: 15
 
-:schedule:
-  get_eBay_orders_from_API:
-    cron: '0 0 * * * *' # Runs every hour
-    class: CreateChannelOrderResponseJob
+# :schedule:
+#   get_eBay_orders_from_API:
+#     cron: '0 0 * * * *' # Runs every hour
+#     class: CreateChannelOrderResponseJob
