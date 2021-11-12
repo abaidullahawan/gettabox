@@ -30,21 +30,21 @@
           <h5 class="card-title"> Data</h5>
         </div>
           <%= search_form_for @q, url: product_mappings_path, method: :get do |f| %>
-          <div class='row'>
-            <div class="col-md-3">
-              <%= select_tag :product_mapping, options_for_select([ "Amazon Products", "Ebay Products"]), class:"form-control chosen-select product-mapping-select", title: 'Select Mapping Category', prompt: "Please select" %>
-            </div>
-            <div class="col-md-2">
-              <%= f.select :status_eq, ChannelProduct.statuses.map { |key, value| [key.humanize, value] }, {include_blank: 'Select an option'}, class:"form-control", title: 'Select Mapping Status' %>
-            </div>
-            <div class="col-md-2">
-              <%= f.search_field :item_sku_or_item_id_cont, class:"form-control", title: 'Search item sku', placeholder: 'Search Item Sku or Item Id' %>
-            </div>
-            <%= f.submit 'Mapping', class: 'btn btn-primary product-mapping-request d-none' %>
-            <%= link_to 'Ebay Request', 'https://auth.ebay.com/oauth2/authorize?client_id=ChannelD-ChannelD-PRD-da28ec690-4a9f363c&response_type=code&redirect_uri=Channel_Dispatc-ChannelD-Channe-flynitdm&scope=https://api.ebay.com/oauth/api_scope https://api.ebay.com/oauth/api_scope/sell.marketing.readonly https://api.ebay.com/oauth/api_scope/sell.marketing https://api.ebay.com/oauth/api_scope/sell.inventory.readonly https://api.ebay.com/oauth/api_scope/sell.inventory https://api.ebay.com/oauth/api_scope/sell.account.readonly https://api.ebay.com/oauth/api_scope/sell.account https://api.ebay.com/oauth/api_scope/sell.fulfillment.readonly https://api.ebay.com/oauth/api_scope/sell.fulfillment https://api.ebay.com/oauth/api_scope/sell.analytics.readonly https://api.ebay.com/oauth/api_scope/sell.finances https://api.ebay.com/oauth/api_scope/sell.payment.dispute https://api.ebay.com/oauth/api_scope/commerce.identity.readonly https://api.ebay.com/oauth/api_scope/commerce.notification.subscription https://api.ebay.com/oauth/api_scope/commerce.notification.subscription.readonly' , target: 'blank', class: 'btn btn-info text-center ml-2 d-none' %>
-            <%= f.submit 'Amazon Request', class: 'btn btn-info text-center ml-2' %>
-            <%= link_to "eBay Products", product_mappings_path(all_product_data: true) ,class:"btn btn-primary float-right ml-1", type:"button", style: "color: white" %>
-          </div><br>
+            <div class='row'>
+              <div class="col-md-3">
+                <%= select_tag :product_mapping, options_for_select([ "Amazon Products", "Ebay Products"], params[:product_mapping]), class:"form-control chosen-select product-mapping-select", title: 'Select Mapping Category', prompt: "Please select" %>
+              </div>
+              <div class="col-md-2">
+                <%= f.select :status_eq, ChannelProduct.statuses.map { |key, value| [key.humanize, value] }, {include_blank: 'Select an option'}, class:"form-control", title: 'Select Mapping Status' %>
+              </div>
+              <div class="col-md-2">
+                <%= f.search_field :item_sku_or_item_id_cont, class:"form-control", title: 'Search item sku', placeholder: 'Search Item Sku or Item Id' %>
+              </div>
+              <%= f.submit 'Mapping', class: 'btn btn-primary product-mapping-request d-none' %>
+              <%= link_to 'Ebay Request', 'https://auth.ebay.com/oauth2/authorize?client_id=ChannelD-ChannelD-PRD-da28ec690-4a9f363c&response_type=code&redirect_uri=Channel_Dispatc-ChannelD-Channe-flynitdm&scope=https://api.ebay.com/oauth/api_scope https://api.ebay.com/oauth/api_scope/sell.marketing.readonly https://api.ebay.com/oauth/api_scope/sell.marketing https://api.ebay.com/oauth/api_scope/sell.inventory.readonly https://api.ebay.com/oauth/api_scope/sell.inventory https://api.ebay.com/oauth/api_scope/sell.account.readonly https://api.ebay.com/oauth/api_scope/sell.account https://api.ebay.com/oauth/api_scope/sell.fulfillment.readonly https://api.ebay.com/oauth/api_scope/sell.fulfillment https://api.ebay.com/oauth/api_scope/sell.analytics.readonly https://api.ebay.com/oauth/api_scope/sell.finances https://api.ebay.com/oauth/api_scope/sell.payment.dispute https://api.ebay.com/oauth/api_scope/commerce.identity.readonly https://api.ebay.com/oauth/api_scope/commerce.notification.subscription https://api.ebay.com/oauth/api_scope/commerce.notification.subscription.readonly' , target: 'blank', class: 'btn btn-info text-center ml-2 d-none' %>
+              <%= f.submit 'Amazon Request', class: 'btn btn-info text-center ml-2' %>
+              <%= link_to "eBay Products", product_mappings_path(all_product_data: true) ,class:"btn btn-primary float-right ml-1", type:"button", style: "color: white" %>
+            </div><br>
           <% end %>
       </div>
         <div class="row">

@@ -13,10 +13,10 @@
   </ol>
 </div>
 <!-- End Main Content Header -->
-<div class='row mb-4'>
+<div class='row mb-4' style="margin-left: 0px;">
   <div class="col-md-3">
     <%= search_form_for @q, url: order_dispatches_path, method: :get do |f| %>
-      <%= select_tag :product_mapping, options_for_select([ "Amazon Orders", "Ebay Orders"]), class:"form-control chosen-select product-mapping-select", title: 'Select Mapping Category', prompt: "Please select" %>
+      <%= select_tag :product_mapping, options_for_select([ "Amazon Orders", "Ebay Orders"], params[:product_mapping]), class:"form-control chosen-select product-mapping-select", title: 'Select Mapping Category', prompt: "Please select" %>
       <%= f.submit 'Mapping', class: 'btn btn-primary product-mapping-request d-none' %>
     <% end %>
   </div>
@@ -50,21 +50,26 @@
   </div>
 
   <div class="col-lg-2">
-    <div class="card text-center mb-30">
-      <div class="header card-header">Product</div>
-      <div class="card-body">
-        <div class="card-title h5 text-success"><%= ChannelProduct.count%></div>
+    <%= link_to product_mappings_path do %>
+      <div class="card text-center mb-30">
+        <div class="header card-header">Product</div>
+        <div class="card-body">
+          <div class="card-title h5 text-success"><%= ChannelProduct.count%></div>
+        </div>
       </div>
-    </div>
+    <% end %>
   </div>
 
   <div class="col-lg-2">
+  <%= link_to product_mappings_path(issue_product: true) do %>
     <div class="card text-center mb-30">
       <div class="header card-header">Product Issues</div>
       <div class="card-body">
+        <input name='product_issue' type='hidden'>
         <div class="card-title h5 text-danger"><%= ChannelProduct.where(item_sku: nil).count%></div>
       </div>
     </div>
+  <% end %>
   </div>
 </div>
 

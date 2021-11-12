@@ -169,6 +169,8 @@ class ProductMappingsController < ApplicationController
       @q = ChannelProduct.where(channel_type: 'amazon').ransack(params[:q])
     elsif params[:product_mapping].eql? 'Ebay Products'
       @q = ChannelProduct.where(channel_type: 'ebay').ransack(params[:q])
+    elsif params[:issue_product].present?
+      @q = ChannelProduct.where(item_sku: nil).ransack(params[:q])
     else
       @q = ChannelProduct.ransack(params[:q])
     end
