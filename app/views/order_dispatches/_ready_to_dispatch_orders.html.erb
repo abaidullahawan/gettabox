@@ -47,14 +47,14 @@
                     <% order.channel_order_items.each do |product|%>
                       <div class="row">
                         <div class="col-4">
-                          <%= image_tag(ChannelProduct.where(item_sku: product.sku )&.first&.product_data["PictureDetails"]["GalleryURL"]) %>
+                          <%= image_tag(ChannelProduct.where(item_sku: product.sku ).first.product_data["PictureDetails"]["GalleryURL"] )if ChannelProduct.where(item_sku: product.sku ).first.product_data["PictureDetails"]["GalleryURL"].present? %>
                         </div>
                         <div class="col-8">
-                          <b><%= product.item_data['legacyItemId'] %></b><br>
-                          <%= product&.sku %><br>
+                          <b><%= product.item_data['legacyItemId'] if product.item_data['legacyItemId'].present? %></b><br>
+                          <%= product&.sku if product&.sku.present? %><br>
                         </div>
                         <div class="col-12">
-                          <%= product.item_data['title']%>
+                          <%= product.item_data['title'] if product.item_data['title'].present?%>
                         </div>
                       </div>
                     <% end %>
