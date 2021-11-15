@@ -20,6 +20,7 @@ class CreateChannelOrderJob < ApplicationJob
         address = "#{contact_address['addressLine1']} #{contact_address['city']} #{contact_address['postalCode']}"
         channel_order_record.address = address
         channel_order_record.buyer_name = order['fulfillmentStartInstructions'][0]['shippingStep']['shipTo']['fullName']&.capitalize
+        channel_order_record.buyer_username = order['buyer']['username']
         channel_order_record.save
         channel_order_record.order_data['lineItems'].each do |order_product|
           channel_order_item = ChannelOrderItem.find_or_initialize_by(line_item_id: order_product['lineItemId'])
