@@ -68,10 +68,10 @@ Unmapped Product SKU's
         <th scope="col">Channel</th>
         <th scope="col">Order Information</th>
         <th scope="col">Products</th>
+        <th scope="col">Mapping</th>
         <th scope="col">Date Recieved</th>
         <th scope="col">Total</th>
         <th scope="col">Status</th>
-        <th scope="col"></th>
       </tr>
     </thead>
     <% @un_matched_product_order.each do |order| %>
@@ -97,22 +97,35 @@ Unmapped Product SKU's
               <%= product&.sku %><br>
             <% end %>
           </td>
+          <td>
+            <% order.channel_order_items.each do |product|%>
+              <%= form_for :anything, url: product_mappings_path do |f| %>
+                <%= f.hidden_field :channel_product_id, value: ChannelProduct.where(item_sku: product.sku).first.id %>
+                <div class="d-flex">
+                  <div class="dropdown form-group" style="min-width: 250px;">
+                    <%= f.search_field :product_id, class: 'form-control dropdown-toggle', id: 'product-title-search', data: {toggle: 'dropdown', option: {array: {index: 0} } }, autocomplete: 'off', placeholder:"Search in Title", onkeyup: "dropdown_search( '/products/products_by_title', 'product-dropdown-list', 'product-list-item', event)", onclick: "dropdown_search( '/products/products_by_title', 'product-dropdown-list', 'product-list-item', event)" %>
+                    <span class="searchclear">@@</span>
+                    <ul class="dropdown-menu product-dropdown-list search-list" aria-labelledby="product-title-search">
+                      <li><label class="dropdown-item product-list-item">Select the Product</label></li>
+                    </ul>
+                  </div>
+                  <div class="dropdown dropleft">
+                    <button class="btn btn-primary" type="button" class="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                      Actions
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                      <%= f.submit 'Map', class: "dropdown-item" %>
+                      <a type="button" class="dropdown-item create-single-product-mapping" data-id="<%= ChannelProduct.find_by(item_sku: product.sku).id %>" data-item = '<%= order.channel_order_items.to_json.html_safe %>' >Create Single Pack</a>
+                      <a type="button" class="dropdown-item create-multi-product-mapping" data-id="<%= ChannelProduct.find_by(item_sku: product.sku).id %>" data-item = '<%= order.channel_order_items.to_json.html_safe %>' >Create Multi Pack</a>
+                    </div>
+                  </div>
+                </div>
+                <% end %>
+            <% end %>
+          </td>
           <td><%= order.created_at.strftime("%m/%d/%Y %H:%M") %></td>
           <td><%= order.total_amount%></td>
           <td><span class="badge badge_warning py-1"><%= order.order_status%></span></td>
-          <td class="text-center">
-            <%= form_for :anything, data_no_turbolink: true, url: product_mappings_path do |f| %>
-              <div class="dropdown dropleft">
-                <button class="btn btn-primary" type="button" class="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                  Actions
-                </button>
-                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                    <a type="button" class="dropdown-item create-single-product-mapping" data-id="<%= order.ebayorder_id %>" data-item = '<%= order.channel_order_items.to_json.html_safe %>' >Create Single Pack</a>
-                    <a type="button" class="dropdown-item create-multi-product-mapping" data-id="<%= order.ebayorder_id %>" data-item = '<%= order.to_json.html_safe %>' >Create Multi Pack</a>
-                </div>
-              </div>
-            <% end %>
-          </td>
         </tr>
       </tbody>
     <% end %>
@@ -142,6 +155,29 @@ Unmapped Product SKU's
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary mr-auto" data-dismiss="modal">Close</button>
             <%= f.submit(@product.new_record? ? "Create" : "Save changes", class: 'btn btn-outline-primary create_product_button d-none') %>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>
+
+<%= form_for(@product, url: product_mappings_path) do |f| %>
+  <div class="modal fade" id="multi-product-create-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Create Multi Pack Product</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <%= hidden_field_tag :channel_product_id, value: ''%>
+          <%= render 'products/multi_product_form', f: f %>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary mr-auto" data-dismiss="modal">Close</button>
+            <%= f.submit(@product.new_record? ? "Create" : "Save changes", class: 'btn btn-outline-primary create_product_button') %>
         </div>
       </div>
     </div>
