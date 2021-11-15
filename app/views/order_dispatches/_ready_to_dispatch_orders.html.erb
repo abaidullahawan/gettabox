@@ -44,7 +44,7 @@
                     <%= order.address%><br>
                   </td>
                   <td>
-                    <% order.channel_order_items.each do |product|%>
+                    <% order&.channel_order_items&.each do |product|%>
                       <div class="row">
                         <div class="col-4">
                           <%= image_tag(ChannelProduct.where(item_sku: product.sku ).first.product_data["PictureDetails"]["GalleryURL"] )if ChannelProduct.where(item_sku: product.sku ).first.product_data["PictureDetails"]["GalleryURL"].present? %>
