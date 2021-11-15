@@ -71,6 +71,21 @@ $(document).on('turbolinks:load', function () {
     $('#multi-product-create-modal').modal('show')
   })
 
+  $('.create-multi-product-mapping').on('click', function () {
+    var json = this.dataset.item
+    var cd_id = this.dataset.id
+    var data = JSON.parse(json)
+    var sku = data[0].sku
+    var title = data[0].item_data.title
+    // var description = data.product_data.description
+
+    $('#multi-product-create-modal .modal-body #channel_product_id').val(cd_id)
+    $('#multi-product-create-modal .modal-body #product_title').val(title)
+    $('#multi-product-create-modal .modal-body #product_sku').val(sku)
+    // $('#multi-product-create-modal .modal-body #product_description').val(description)
+    $('#multi-product-create-modal').modal('show')
+  })
+
   $('.productSearchBtn').on('click', function () {
     $(this).closest('td').find('.productSearchContainer').toggleClass('d-none', 3000);
     $(this).closest('td').find('.productSearch').toggleClass('d-none', 3000);

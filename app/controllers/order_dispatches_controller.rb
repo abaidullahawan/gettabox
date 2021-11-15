@@ -104,7 +104,7 @@ class OrderDispatchesController < ApplicationController
   end
 
   def not_started_orders
-    @not_started = @q.where(order_status: 'NOT_STARTED').where(channel_type: @order_type).order(created_at: :desc) - @no_sku - @unmatched_sku -@un_matched_product_orders
+    @not_started = @q.where(order_status: 'NOT_STARTED').where(channel_type: @order_type).order(created_at: :desc) - @no_sku -@un_matched_product_orders
     @not_started_orders = Kaminari.paginate_array(@not_started).page(params[:not_started_page]).per(25)
   end
 

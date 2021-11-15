@@ -103,7 +103,11 @@ class ProductMappingsController < ApplicationController
     when 'Create'
       create_product
     end
-    redirect_to product_mappings_path
+    if request.referrer == "http://localhost:3000/order_dispatches"
+      redirect_to order_dispatches_path
+    else
+      redirect_to product_mappings_path
+    end
   end
 
   def export_csv(products)
