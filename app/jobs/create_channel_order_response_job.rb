@@ -8,6 +8,10 @@ class CreateChannelOrderResponseJob < ApplicationJob
     require 'uri'
     require 'net/http'
     @refresh_token = RefreshToken.where(channel: 'ebay').last
+    credential = Credential.find_by(grant_type: 'refresh_token')
+    remainaing_time = @refresh_token.access_token_expiry.localtime > DateTime.now
+    generate_refresh_token(credential) if credential.present? && remainaing_time == false
+
     channel_response_data = ChannelResponseData.where(channel: 'ebay', api_call: 'getOrders')
     date_format = (Date.today - 2.months).strftime('%FT%T%:z').split('+').first
     date_format = (Date.today).strftime('%FT%T%:z').split('+').first if channel_response_data.present?
@@ -43,6 +47,22 @@ class CreateChannelOrderResponseJob < ApplicationJob
       chanel_data.save!
     end
     fetch_pending_orders(date)
+  end
+
+  def generate_refresh_token(credential)
+    result = RefreshTokenService.refresh_token_api(@refresh_token, credential)
+    return update_refresh_token(result[:body], @refresh_token) if result[:status]
+
+    flash[:alert] = (result[:error]).to_s
+  rescue StandardError
+    flash[:alert] = 'Please contact your administration for process'
+  end
+
+  def update_refresh_token(result, refresh_token)
+    refresh_token.update(
+      access_token: result['access_token'],
+      access_token_expiry: DateTime.now + result['expires_in'].to_i.seconds
+    )
   end
 
   def fetch_pending_orders(date)
