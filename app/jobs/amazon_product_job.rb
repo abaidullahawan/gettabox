@@ -13,7 +13,7 @@ class AmazonProductJob < ApplicationJob
     result = AmazonService.amazon_api(@refresh_token_amazon.access_token, url)
     create_channel_products(result) if result[:status]
     channel_products = ChannelProduct.where(channel_type: 'amazon', item_image: nil)
-    channel_product_images(channel_products, access_token) if channel_products.present?
+    channel_product_images(channel_products, @refresh_token_amazon.access_token) if channel_products.present?
   end
 
   def generate_refresh_token_amazon
@@ -54,6 +54,7 @@ class AmazonProductJob < ApplicationJob
     hash['item-name'] = hash['item-name']&.encode('UTF-8', invalid: :replace, undef: :replace, replace: '')
     hash['seller-sku'] = hash['seller-sku']&.encode('UTF-8', invalid: :replace, undef: :replace, replace: ' ')
     hash['item-description'] = hash['item-description']&.encode('UTF-8', invalid: :replace, undef: :replace, replace: '')
+    hash
   end
 
   def channel_product_images(channel_products, access_token)
