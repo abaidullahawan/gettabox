@@ -10,9 +10,10 @@ end
 
 # Api calls for amazon orders
 class AmazonService
-  def self.amazon_order_api(access_token, url)
+  def self.amazon_api(access_token, url)
     signature = signature_generator(access_token, url)
     response = api_call(signature, access_token, url)
+    sleep 1
     return_response(response)
   end
 
@@ -52,6 +53,7 @@ class AmazonService
   def self.next_orders_amz(next_token, access_token, url)
     signature = next_signature_generator(access_token, url, next_token)
     response = next_api_call(signature, access_token, url, next_token)
+    sleep 1
     result = return_response(response)
     return result unless result[:status]
 

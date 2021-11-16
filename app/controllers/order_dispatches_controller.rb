@@ -22,8 +22,8 @@ class OrderDispatchesController < ApplicationController
 
   def all_order_data
     if params[:amazon]
-      AmazonOrderJob.perform_later(refresh_token: @refresh_token_amazon)
-      flash[:notice] = 'Amazon order job updated!'
+      AmazonOrderJob.perform_later
+      flash[:notice] = 'Amazon order job created!'
     else
       CreateChannelOrderResponseJob.perform_later
       flash[:notice] = 'CALL sent to eBay API'
