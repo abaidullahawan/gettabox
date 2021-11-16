@@ -45,7 +45,7 @@ class AmazonProductJob < ApplicationJob
         item_sku: hash['seller-sku']
       )
       channel_product.update(product_data: hash, created_at: hash['open-date'].to_time, status: 0,
-                             item_name: hash['item-name'], item_image: hash['image-url'])
+                             item_name: hash['item-name'])
     end
   end
 
