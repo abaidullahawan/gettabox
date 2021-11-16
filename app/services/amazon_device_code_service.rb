@@ -16,7 +16,7 @@ class AmazonDeviceCodeService
       'https://api.amazon.com/auth/o2/create/codepair'.to_str,
       body: body,
       headers: { 'Content-Type' => 'application/x-www-form-urlencoded',
-                 'charset' => 'UTF-8'}
+                 'charset' => 'UTF-8' }
     )
   end
 

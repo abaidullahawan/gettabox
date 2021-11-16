@@ -1,12 +1,13 @@
 # frozen_string_literal: true
 
+# orders for amazon
 class AmazonOrderJob < ApplicationJob
   queue_as :default
 
   def perform(*_args)
-    access_token = @arguments.first[:refresh_token].access_token
+    access_token = RefreshToken.where(channel: 'amazon').last.access_token
     url = "https://sellingpartnerapi-eu.amazon.com/orders/v0/orders?MarketplaceIds=A1F83G8C2ARO7P&CreatedAfter=#{Date.yesterday.strftime('%Y-%m-%d')}T17%3A00%3A00"
-    result = AmazonService.amazon_order_api(access_token, url)
+    result = AmazonService.amazon_api(access_token, url)
     return puts result unless result[:status]
 
     create_order_response(result, url)
