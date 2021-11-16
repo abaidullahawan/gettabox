@@ -14,6 +14,7 @@ class AmazonService
     signature = signature_generator(access_token, url)
     response = api_call(signature, access_token, url)
     sleep 1
+    # byebug unless response.success?
     return_response(response)
   end
 
@@ -47,7 +48,7 @@ class AmazonService
   def self.return_response(response)
     return { status: true, body: JSON.parse(response.body) } if response.success?
 
-    { status: false, error: response['errors'][0]['details'] }
+    { status: false, error: response['errors'][0]['message'] }
   end
 
   def self.next_orders_amz(next_token, access_token, url)

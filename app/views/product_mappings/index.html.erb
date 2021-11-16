@@ -70,8 +70,8 @@
                   <%= form_for :anything, data_no_turbolink: true, url: product_mappings_path do |f| %>
                     <tr class=''>
                       <td>
-                        <% if item.product_data["PictureDetails"].present? %>
-                          <%= image_tag(item.product_data["PictureDetails"]["GalleryURL"], width: "50", height: "50", class: 'mr-3 img-thumbnail') %>
+                        <% if item.item_image.present? %>
+                          <%= image_tag(item.item_image, width: "50", height: "50", class: 'mr-3 img-thumbnail') %>
                         <% else %>
                           <%= image_tag('user/1.jpg', width: "50", height: "50", class: 'mr-3 img-thumbnail', alt: 'User Image') %>
                         <% end %>
