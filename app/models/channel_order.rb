@@ -14,4 +14,16 @@ class ChannelOrder < ApplicationRecord
   def self.find_product(product)
     ChannelProduct.find_by(item_sku: product.sku).product_mapping.product.location
   end
+
+  def self.check_mapping(product)
+    ChannelProduct.find_by(item_sku: product.sku).status
+  end
+
+  def self.check_type(product)
+    ChannelProduct.find_by(item_sku: product.sku)&.product_mapping&.product&.product_type
+  end
+
+  def self.product_title(product)
+    ChannelProduct.find_by(item_sku: product.sku)&.product_mapping&.product&.title
+  end
 end
