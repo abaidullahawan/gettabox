@@ -5,12 +5,26 @@ class AmazonProductJob < ApplicationJob
   queue_as :default
 
   def perform(*_args)
-    access_token = RefreshToken.where(channel: 'amazon').last.access_token
+    @refresh_token_amazon = RefreshToken.where(channel: 'amazon').last
+    remainaing_time = @refresh_token_amazon.access_token_expiry.localtime > DateTime.now
+    generate_refresh_token_amazon if @refresh_token_amazon.present? && remainaing_time == false
     url = 'https://sellingpartnerapi-eu.amazon.com/reports/2021-06-30/documents/amzn1.spdoc.1.3.bb1456cc-7382-40db-9a6a-6a27d4b9fe61.T1ZC9CBIMPWKA.300'
-    result = AmazonService.amazon_api(access_token, url)
+    result = AmazonService.amazon_api(@refresh_token_amazon.access_token, url)
     return puts result unless result[:status]
 
     create_channel_products(result)
+  end
+
+  def generate_refresh_token_amazon
+    result = RefreshTokenService.amazon_refresh_token(@refresh_token_amazon)
+    return update_refresh_token(result[:body], @refresh_token_amazon) if result[:status]
+  end
+
+  def update_refresh_token(result, refresh_token)
+    refresh_token.update(
+      access_token: result['access_token'],
+      access_token_expiry: DateTime.now + result['expires_in'].to_i.seconds
+    )
   end
 
   def create_channel_products(result)

@@ -26,3 +26,11 @@ staging:
   get_eBay_orders_from_API:
     cron: '0 0 * * * *' # Runs every hour
     class: CreateChannelOrderResponseJob
+
+  get_eBay_products_from_API:
+    every: 2 hours # Runs every hour
+    class: CreateChannelProductResponseJob
+
+  get_Amazon_orders_from_API:
+    cron: '0 0 * * * *' # Runs every hour
+    class: AmazonProductJob
