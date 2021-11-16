@@ -54,6 +54,7 @@ class AmazonProductJob < ApplicationJob
     hash['item-name'] = hash['item-name']&.encode('UTF-8', invalid: :replace, undef: :replace, replace: '')
     hash['seller-sku'] = hash['seller-sku']&.encode('UTF-8', invalid: :replace, undef: :replace, replace: ' ')
     hash['item-description'] = hash['item-description']&.encode('UTF-8', invalid: :replace, undef: :replace, replace: '')
+    hash
   end
 
   def channel_product_images(channel_products, access_token)
