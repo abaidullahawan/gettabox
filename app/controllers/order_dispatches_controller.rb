@@ -14,6 +14,11 @@ class OrderDispatchesController < ApplicationController
     @q = ChannelOrder.ransack(params[:q])
     all_order_data if params[:orders_api].present?
     @product = Product.new
+    @matching_products = {}
+    ChannelProduct.all.each do |item|
+      matching = Product.find_by('sku LIKE ?', "%#{item.item_sku}%")
+      @matching_products[item.id] = matching if matching.present?
+    end
   end
 
   def show; end

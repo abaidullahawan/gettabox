@@ -75,6 +75,7 @@ $(document).on('turbolinks:load', function () {
   $('.detail_button_previous').on('click', function () {
     $('.detail-form').addClass('d-none')
     $('.basic-info-form').removeClass('d-none')
+
   })
 
   $('.detail_button').on('click', function () {
@@ -85,7 +86,7 @@ $(document).on('turbolinks:load', function () {
     if ((length != "") && (width != "") && (height != "") && (weight != "")) {
       $('.detail-form').addClass('d-none')
       $('.stock-form').removeClass('d-none')
-      $('.create_product_button').addClass('d-none')
+      $('.create_product_button').removeClass('d-none')
     }
     else {
       if (length == "") {
@@ -141,7 +142,6 @@ $(document).on('turbolinks:load', function () {
   $('.extra_button_previous').on('click', function () {
     $('.extra-form').addClass('d-none')
     $('.stock-form').removeClass('d-none')
-    $('.create_product_button').addClass('d-none')
   })
 
   $('.extra_feild').on('click', function(){
@@ -159,6 +159,7 @@ $(document).on('turbolinks:load', function () {
       $('.stock-form').removeClass('d-none')
       $('.extra-field-form').addClass('d-none')
       $('.create_product_button').addClass('d-none')
+      $('.create_product_button').removeClass('d-none')
     }
     else {
       if (total_stock == "") {

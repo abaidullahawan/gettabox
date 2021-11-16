@@ -93,32 +93,59 @@ Unmapped Product SKU's
           </td>
           <td>
             <% order.channel_order_items.each do |product|%>
-              <%= image_tag(ChannelProduct.where(item_sku: product.sku )&.first&.product_data["PictureDetails"]["GalleryURL"]) if ChannelProduct.where(item_sku: product.sku )&.first&.product_data["PictureDetails"].present? %><br>
+              <%= image_tag(ChannelProduct.find_by(item_sku: product.sku )&.product_data["PictureDetails"]["GalleryURL"]) if ChannelProduct.where(item_sku: product.sku )&.first&.product_data["PictureDetails"].present? %><br>
               <%= product&.sku %><br>
             <% end %>
           </td>
           <td>
             <% order.channel_order_items.each do |product|%>
+              <% item = ChannelProduct.find_by(item_sku: product.sku) %>
               <%= form_for :anything, url: product_mappings_path do |f| %>
-                <%= f.hidden_field :channel_product_id, value: ChannelProduct.where(item_sku: product.sku).first.id %>
+                <%= f.hidden_field :channel_product_id, value: item.id %>
                 <div class="d-flex">
-                  <div class="dropdown form-group" style="min-width: 250px;">
-                    <%= f.search_field :product_id, class: 'form-control dropdown-toggle', id: 'product-title-search', data: {toggle: 'dropdown', option: {array: {index: 0} } }, autocomplete: 'off', placeholder:"Search in Title", onkeyup: "dropdown_search( '/products/products_by_title', 'product-dropdown-list', 'product-list-item', event)", onclick: "dropdown_search( '/products/products_by_title', 'product-dropdown-list', 'product-list-item', event)" %>
-                    <span class="searchclear">@@</span>
-                    <ul class="dropdown-menu product-dropdown-list search-list" aria-labelledby="product-title-search">
-                      <li><label class="dropdown-item product-list-item">Select the Product</label></li>
-                    </ul>
-                  </div>
-                  <div class="dropdown dropleft">
-                    <button class="btn btn-primary" type="button" class="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                      Actions
-                    </button>
-                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                      <%= f.submit 'Map', class: "dropdown-item" %>
-                      <a type="button" class="dropdown-item create-single-product-mapping" data-id="<%= ChannelProduct.find_by(item_sku: product.sku).id %>" data-item = '<%= order.channel_order_items.to_json.html_safe %>' >Create Single Pack</a>
-                      <a type="button" class="dropdown-item create-multi-product-mapping" data-id="<%= ChannelProduct.find_by(item_sku: product.sku).id %>" data-item = '<%= order.channel_order_items.to_json.html_safe %>' >Create Multi Pack</a>
+                  <% if @matching_products[item.id].present?%>
+                    <%= f.hidden_field :mapped_product_id, value: @matching_products[item.id].id %>
+                    <div class="text-left d-flex ">
+                      <div class="productSearchContainer">
+                        <% if item.status_unmapped? %>
+                          <span class='text-warning'>(Suggestion)-</span>
+                        <% end %>
+                        <%= @matching_products[item.id]&.title %>
+                      </div>
+                      <div class="dropdown form-group">
+                        <%= f.search_field :product_id, class: 'form-control dropdown-toggle d-none productSearch', id: 'product-title-search', data: {toggle: 'dropdown', option: {array: {index: 0} } }, autocomplete: 'off', placeholder:"Search in Title", onkeyup: "dropdown_search( '/products/products_by_title', 'product-dropdown-list', 'product-list-item', event)", onclick: "dropdown_search( '/products/products_by_title', 'product-dropdown-list', 'product-list-item', event)" %>
+                        <span class="searchclear">@@</span>
+                        <ul class="dropdown-menu product-dropdown-list search-list" aria-labelledby="product-title-search">
+                          <li><label class="dropdown-item product-list-item">Select the Product</label></li>
+                        </ul>
+                      </div>
+                      <% if item.status_unmapped? %>
+                        <div class="productSearchContainer">
+                          <button type="button" class="productSearchBtn btn btn-primary mt-2">
+                            <i data-feather='search' class='icon wh-15 mt-minus-3'></i>
+                          </button>
+                        </div>
+                      <% end %>
                     </div>
-                  </div>
+                  <% else %>
+                    <div class="dropdown form-group" style="min-width: 250px;">
+                      <%= f.search_field :product_id, class: 'form-control dropdown-toggle', id: 'product-title-search', data: {toggle: 'dropdown', option: {array: {index: 0} } }, autocomplete: 'off', placeholder:"Search in Title", onkeyup: "dropdown_search( '/products/products_by_title', 'product-dropdown-list', 'product-list-item', event)", onclick: "dropdown_search( '/products/products_by_title', 'product-dropdown-list', 'product-list-item', event)" %>
+                      <span class="searchclear">@@</span>
+                      <ul class="dropdown-menu product-dropdown-list search-list" aria-labelledby="product-title-search">
+                        <li><label class="dropdown-item product-list-item">Select the Product</label></li>
+                      </ul>
+                    </div>
+                  <% end %>
+                    <div class="dropdown dropleft">
+                      <button class="btn btn-primary" type="button" class="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Actions
+                      </button>
+                      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <%= f.submit 'Map', class: "dropdown-item" %>
+                        <a type="button" class="dropdown-item create-single-product-mapping" data-id="<%= item.id %>" data-item = '<%= order.channel_order_items.to_json.html_safe %>' >Create Single Pack</a>
+                        <a type="button" class="dropdown-item create-multi-product-mapping" data-id="<%= item.id %>" data-item = '<%= order.channel_order_items.to_json.html_safe %>' >Create Multi Pack</a>
+                      </div>
+                    </div>
                 </div>
                 <% end %>
             <% end %>
