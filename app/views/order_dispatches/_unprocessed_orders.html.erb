@@ -16,13 +16,7 @@ Unable to Find SKU's
       <tbody>
         <tr>
           <td style = "width: 15%">
-            <% if order.channel_type.downcase.eql? 'ebay'%>
-              <img src="/assets/pngegg_80.png" alt="ebay" style="max-width: 25%; margin-left: 27px;"><br>
-            <% else %>
-              <img src="/assets/amazon.png" alt="ebay" style="max-width: 25%; margin-left: 27px;"><br>
-            <% end %>
-            <img src="/assets/uk.jpeg"alt="ebay" style="max-width: 30%; margin-left: 25px;"><br>
-            <strong class='text-center pl-4'><%= order&.channel_type&.to_s&.capitalize %></strong>
+            <%= render  'image_partial', order: order %>
           </td>
           <td>
             <%= order.ebayorder_id %><br>
@@ -82,8 +76,8 @@ Unmapped Product SKU's
               <img src="/assets/pngegg_80.png" alt="ebay" style="max-width: 25%; margin-left: 27px;"><br>
             <% else %>
               <img src="/assets/amazon.png" alt="ebay" style="max-width: 25%; margin-left: 27px;"><br>
-            <% end %>                    <img src="/assets/uk.jpeg"alt="ebay" style="max-width: 30%; margin-left: 25px;"><br>
-            <strong class='text-center pl-4'><%= order&.channel_type&.to_s&.capitalize %></strong>
+            <% end %>
+            <img src="/assets/uk.jpeg"alt="ebay" style="max-width: 30%; margin-left: 25px;"><br>
           </td>
           <td>
             <%= order.ebayorder_id %><br>
@@ -103,14 +97,14 @@ Unmapped Product SKU's
               <%= form_for :anything, url: product_mappings_path do |f| %>
                 <%= f.hidden_field :channel_product_id, value: item.id %>
                 <div class="d-flex">
-                  <% if @matching_products[item.id].present?%>
-                    <%= f.hidden_field :mapped_product_id, value: @matching_products[item.id].id %>
+                  <% if @matching_products[product.id].present?%>
+                    <%= f.hidden_field :mapped_product_id, value: @matching_products[product.id].id %>
                     <div class="text-left d-flex ">
                       <div class="productSearchContainer">
                         <% if item.status_unmapped? %>
                           <span class='text-warning'>(Suggestion)-</span>
                         <% end %>
-                        <%= @matching_products[item.id]&.title %>
+                        <%= @matching_products[product.id]&.title %>
                       </div>
                       <div class="dropdown form-group">
                         <%= f.search_field :product_id, class: 'form-control dropdown-toggle d-none productSearch', id: 'product-title-search', data: {toggle: 'dropdown', option: {array: {index: 0} } }, autocomplete: 'off', placeholder:"Search in Title", onkeyup: "dropdown_search( '/products/products_by_title', 'product-dropdown-list', 'product-list-item', event)", onclick: "dropdown_search( '/products/products_by_title', 'product-dropdown-list', 'product-list-item', event)" %>
