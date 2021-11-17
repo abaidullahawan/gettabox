@@ -81,7 +81,6 @@ class ProductsController < ApplicationController
 
   def import
     if @csv.present?
-      @csv.delete('lora')
       @csv.delete('id')
       @csv.delete('created_at')
       @csv.delete('updated_at')
