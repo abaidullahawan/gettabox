@@ -42,9 +42,6 @@
               <%= f.select :payment_method_eq, SystemUser.payment_methods.map { |key, value| [key.humanize, value] }, {include_blank: 'Select Type'}, class:"form-control payment-method-field chosen-select", title: 'Select Payment Type' %>
             </div>
             <div class="col-md-2"><br>
-              <%= f.search_field :days_for_order_to_completion_eq, class:"form-control", placeholder:"Search in Order to Completion", title: 'Search in Order to Completion' %>
-            </div>
-            <div class="col-md-2"><br>
               <%= f.search_field :days_for_completion_to_delivery_eq, class:"form-control", placeholder:"Search in Completion to Delivery",title: 'Search in Completion to Delivery' %>
             </div>
             <div class="d-none">
@@ -65,7 +62,6 @@
                 <th><input type="checkbox" id="" name="" value="" class='select-all-checkbox'></th>
                 <th class="text-center">Name</th>
                 <th class="text-center">Payment_method</th>
-                <th class="text-center">Days_for_order_to_completion</th>
                 <th class="text-center">Days_for_completion_to_delivery</th>
                 <th colspan="3" class="text-center">Actions</th>
               </tr>
@@ -74,7 +70,6 @@
                   <td><%= f.check_box 'object_ids[]', {}, system_user.id %></td>
                   <td class="text-center"><%= system_user.name %></td>
                   <td class="text-center"><%= system_user.payment_method %></td>
-                  <td class="text-center"><%= system_user.days_for_order_to_completion %></td>
                   <td class="text-center"><%= system_user.days_for_completion_to_delivery %></td>
 
                   <td class="text-center">
