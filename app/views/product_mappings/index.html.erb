@@ -52,11 +52,12 @@
           <div class='col-lg-12'>
             <table class="table m-0 text-center table-bordered table-hover">
               <tr>
-                <th colspan='4' class='text-center text-muted'>Ebay Products</th>
+                <th colspan='5' class='text-center text-muted'>Ebay Products</th>
                 <th colspan='3' class='text-center text-muted'>Local Products</th>
                 <th colspan='2' class='text-center text-muted'>Actions</th>
               </tr>
               <tr>
+                <th>Channel</th>
                 <th>Image</th>
                 <th colspan='2' class="text-center">Sku / <span class="badge bg-info text-white">Item ID</span></th>
                 <th class="text-center">Name</th>
@@ -69,6 +70,14 @@
                 <% @body.each do |item| %>
                   <%= form_for :anything, data_no_turbolink: true, url: product_mappings_path do |f| %>
                     <tr class=''>
+                      <td style = "width: 5%">
+                        <% if item.channel_type.downcase.eql? 'ebay'%>
+                          <img src="/assets/pngegg_80.png" alt="ebay" style="max-width: 70%;"><br>
+                        <% else %>
+                          <img src="/assets/amazon.png" alt="ebay" style=""><br>
+                        <% end %>
+                        <img src="/assets/uk.jpeg"alt="ebay"><br>
+                      </td>
                       <td>
                         <% if item.item_image.present? %>
                           <%= image_tag(item.item_image, width: "50", height: "50", class: 'mr-3 img-thumbnail') %>

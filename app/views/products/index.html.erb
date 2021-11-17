@@ -70,29 +70,16 @@
             </div>
             <div class="col-md-3"><br>
               <div class="dropdown form-group">
-                <%= f.search_field :title_cont, class: 'form-control dropdown-toggle', id: 'product-title-search', data: {toggle: 'dropdown', option: {array: {index: 0} } }, autocomplete: 'off', placeholder:"Search in Title", onkeyup: "dropdown_search( '/products/products_by_title', 'product-dropdown-list', 'product-list-item', event)", onclick: "dropdown_search( '/products/products_by_title', 'product-dropdown-list', 'product-list-item', event)" %>
-                <span class="searchclear">@@</span>
-                <ul class="dropdown-menu product-dropdown-list search-list" aria-labelledby="product-title-search">
-                  <li><label class="dropdown-item product-list-item">Select the Product</label></li>
-                </ul>
-              </div>
-            </div>
-            <div class="col-md-3"><br>
-              <div class="dropdown">
-                <%= f.search_field :sku_cont, class: 'form-control dropdown-toggle', id: 'product-sku-search', data: {toggle: 'dropdown', option: {array: {index: 0} } }, area: {haspopup: true, expanded: 'false'}, autocomplete: 'off', placeholder:"Search in Sku", onkeyup: "dropdown_search( '/products/products_by_sku', 'product-sku-dropdown-list', 'product-sku-list-item', event)", onclick: "dropdown_search( '/products/products_by_sku', 'product-sku-dropdown-list', 'product-sku-list-item', event)" %>
-                <span class="searchclear">@@</span>
-                <ul class="dropdown-menu product-sku-dropdown-list search-list" aria-labelledby="product-sku-search">
-                  <li><a href="#" class="dropdown-item product-sku-list-item">Select Product SKU</a></li>
-                </ul>
+                <%= f.search_field :title_or_sku_cont, class: 'form-control dropdown-toggle', placeholder:"Search in title or sku" %>
               </div>
             </div>
             <div class="col-md-3"><br>
               <%= f.select :product_type_eq, Product.product_types.map { |key, value| [key.humanize, value] }, {include_blank: 'Select an option'}, class:"form-control product-type-field chosen-select", title: 'Select Product Type' %>
             </div>
             <div class=' col-md-1'>
-              <button type='submit' class='product_type_submit btn btn-primary mt-4'>Search</button>
+              <button type='submit' class='product_type_submit btn btn-primary mt-4 d-none'>Search</button>
             </div>
-            <div class='col-md-1'>
+            <div class='col-md-1 offset-3'>
               <div class='float-right'>
                 <label for="inputState">Per Page</label>
                 <%= select_tag :limit, options_for_select([5, 10, 15, 20], selected: params[:limit] || 10), id: 'change_per_page', class: 'form-control' %>

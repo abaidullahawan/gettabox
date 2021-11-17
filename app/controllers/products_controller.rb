@@ -82,7 +82,10 @@ class ProductsController < ApplicationController
   def import
     if @csv.present?
       @csv.delete('id')
+      @csv.delete('created_at')
+      @csv.delete('updated_at')
       csv_create_records(@csv)
+      flash[:alert] = 'File Upload Successful!'
     end
     redirect_to products_path
   end
@@ -171,11 +174,11 @@ class ProductsController < ApplicationController
   def csv_create_records(csv)
     csv.each do |row|
       product = Product.with_deleted.find_or_initialize_by(sku: row['sku'])
-      unless product.update(row.to_hash)
-        flash[:alert] = "#{product.errors.full_messages} at ID: #{product.id} , Try again."
-        redirect_to products_path
-      end
+      return product.update(row.to_hash) unless row['category_id'].scan(/\D/).empty?
+
+      row['category_id'] = Category.where('title ILIKE ?', row['category_id'])
+                                   .first_or_create(title: row['category_id']).id
+      product.update(row.to_hash)
     end
-    flash[:alert] = 'File Upload Successful!'
   end
 end

@@ -63,6 +63,8 @@ class SeasonsController < ApplicationController
   def import
     if @csv.present?
       @csv.delete('id')
+      @csv.delete('created_at')
+      @csv.delete('updated_at')
       csv_create_records(@csv)
       flash[:alert] = 'File Upload Successful!'
     end
