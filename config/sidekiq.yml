@@ -31,9 +31,9 @@ staging:
     every: 2 hours # Runs after every 2 hour
     class: CreateChannelProductResponseJob
 
-  get_Amazon_products_from_API:
-    every: 2 hours # Runs after every 2 hour
-    class: AmazonProductJob
+  # get_Amazon_products_from_API:
+  #   every: 2 hours # Runs after every 2 hour
+  #   class: AmazonProductJob
 
   get_Amazon_orders_from_API:
     cron: '0 0 * * * *' # Runs every hour
