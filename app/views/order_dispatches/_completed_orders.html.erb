@@ -28,13 +28,7 @@
               <tbody>
                 <tr>
                   <td style = "width: 15%">
-                    <% if order.channel_type.downcase.eql? 'ebay'%>
-                      <img src="/assets/pngegg_80.png" alt="ebay" style="max-width: 25%; margin-left: 27px;"><br>
-                    <% else %>
-                      <img src="/assets/amazon.png" alt="ebay" style="max-width: 25%; margin-left: 27px;"><br>
-                    <% end %>
-                    <img src="/assets/uk.jpeg"alt="ebay" style="max-width: 30%; margin-left: 25px;"><br>
-                    <strong class='text-center pl-4'><%= order&.channel_type&.to_s&.capitalize %></strong>
+                    <%= render  'image_partial', order: order %>
                   </td>
                   <td>
                     <%= order.ebayorder_id %><br>
