@@ -15,9 +15,11 @@ class OrderDispatchesController < ApplicationController
     all_order_data if params[:orders_api].present?
     @product = Product.new
     @matching_products = {}
-    ChannelProduct.all.each do |item|
-      matching = Product.find_by('sku LIKE ?', "%#{item.item_sku}%")
-      @matching_products[item.id] = matching if matching.present?
+    @un_matched_product_order.each do |order|
+      order.channel_order_items.each do |item|
+        matching = Product.find_by('sku LIKE ?', "%#{item.sku}%")
+        @matching_products[item.id] = matching if matching.present?
+      end
     end
   end
 
