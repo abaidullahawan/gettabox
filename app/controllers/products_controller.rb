@@ -174,7 +174,7 @@ class ProductsController < ApplicationController
   def csv_create_records(csv)
     csv.each do |row|
       product = Product.with_deleted.find_or_initialize_by(sku: row['sku'])
-      return product.update(row.to_hash) unless row['category_id'].scan(/\D/).empty?
+      next product.update(row.to_hash) if row['category_id'].to_i.positive?
 
       row['category_id'] = Category.where('title ILIKE ?', row['category_id'])
                                    .first_or_create(title: row['category_id']).id
