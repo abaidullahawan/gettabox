@@ -22,14 +22,16 @@ class ImportMappingsController < ApplicationController
 
   # POST /import_mappings or /import_mappings.json
   def create
-    mapping = { "#{[params[:header_fields]]}": "#{params[:table_fields]}" }
-    @import_mapping = ImportMapping.new(table_name: params[:table_name], mapping_data: mapping)
+    mapping = {}
+    Product.column_names.each do |col_name|
+      mapping["#{col_name}"] = params[:"#{col_name}"]
+    end
+    @import_mapping = ImportMapping.new(table_name: params[:table_name], mapping_data: mapping, description: params[:description])
     respond_to do |format|
       if @import_mapping.save
-        format.html { redirect_to @import_mapping, notice: "Import mapping was successfully created." }
-        format.json { render :show, status: :created, location: @import_mapping }
+        format.html { redirect_to import_mappings_path, notice: "Import mapping was successfully created." }
+        format.json { render :index, status: :created, location: @import_mapping }
       else
-        format.html { render :new, status: :unprocessable_entity }
         format.json { render json: @import_mapping.errors, status: :unprocessable_entity }
       end
     end
