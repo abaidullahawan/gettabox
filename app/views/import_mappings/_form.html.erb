@@ -10,8 +10,8 @@
       <%= text_field_tag(col_name,  value = col_name,:readonly => true, class: 'form-control')%>
     </div>
     <div class="form-group">
-      <%= label_tag :table_fields %>
-     <%= select_tag :table_fields,  options_for_select(db_columns), class: 'form-control'%>
+      <%= label_tag :header_fields %>
+     <%= select_tag :header_fields,  options_for_select(header), class: 'form-control'%>
     </div>
   </div>
   <% end %>
