@@ -17,7 +17,7 @@ class CreateChannelProductJob < ApplicationJob
   end
 
   def create_or_update_product(item)
-    return multi_product(item, item['Variations']['Variation']) if item['Variations'].present
+    return multi_product(item, item['Variations']['Variation']) if item['Variations'].present?
 
     ChannelProduct.create_with(channel_type: 'ebay', item_id: item['ItemID'].to_i,
                                product_data: item, item_sku: item['SKU'], item_quantity: item['Quantity'],
