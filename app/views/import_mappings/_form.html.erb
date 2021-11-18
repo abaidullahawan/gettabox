@@ -3,20 +3,20 @@
     <%= f.label :table_name %>
     <%= f.select :table_name,  @table_names, {}, class: 'form-control'%>
   </div>
+  <div class="form-group">
+    <%= f.label :description %>
+    <%= f.text_field :description, class: 'form-control'%>
+  </div>
   <% db_columns.each do |col_name| %>
   <div class="d-flex">
     <div class="form-group">
       <%= label_tag :"#{col_name}" %>
-      <%= text_field_tag(col_name,  value = col_name,:readonly => true, class: 'form-control')%>
-    </div>
-    <div class="form-group">
-      <%= label_tag :header_fields %>
-     <%= select_tag :header_fields,  options_for_select(header), class: 'form-control'%>
+     <%= select_tag :"#{col_name}",  options_for_select(header), class: 'form-control', prompt: "Select Header"%>
     </div>
   </div>
   <% end %>
 
   <div class="form-group">
-    <%= f.submit %>
+    <%= f.submit "Create" %>
   </div>
 <% end %>

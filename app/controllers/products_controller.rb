@@ -217,7 +217,9 @@ class ProductsController < ApplicationController
 
       row['category_id'] = Category.where('title ILIKE ?', row['category_id'])
                                    .first_or_create(title: row['category_id']).id
-      product.update(row.to_hash)
+      row = row.to_hash
+      row.delete(nil)
+      product.update(row)
     end
   end
 end
