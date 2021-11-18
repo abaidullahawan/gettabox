@@ -7,12 +7,12 @@ $(document).on('turbolinks:load', function () {
     var cd_id = this.dataset.id
     var data = JSON.parse(json)
     var sku = data.item_sku
-    var title = data.product_data.Title
+    var title = data.item_name
     var description = data.product_data.description
-    var imageUrl = data.product_data.PictureDetails.GalleryURL
+    var imageUrl = data.item_image || ''
     var urlSplit = imageUrl.split('/')
     var imageName = urlSplit[urlSplit.length - 1]
-    var quantity = data.product_data.Quantity
+    var quantity = data.item_quantity
 
     $('#single-product-create-modal .modal-body #channel_product_id').val(cd_id)
     $('#single-product-create-modal .modal-body #product_title').val(title)
@@ -32,7 +32,6 @@ $(document).on('turbolinks:load', function () {
     var json = this.dataset.item
     var cd_id = this.dataset.id
     var data = JSON.parse(json)
-    debugger
     var sku = data[0].sku
     var title = data[0].item_data.title
     // var description = data.product_data.description
@@ -61,7 +60,7 @@ $(document).on('turbolinks:load', function () {
     var cd_id = this.dataset.id
     var data = JSON.parse(json)
     var sku = data.item_sku
-    var title = data.product_data.Title
+    var title = data.item_name
     var description = data.product_data.description
 
     $('#multi-product-create-modal .modal-body #channel_product_id').val(cd_id)
