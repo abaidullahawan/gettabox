@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 Rails.application.routes.draw do
+  resources :import_mappings
   require 'sidekiq/web'
   mount Sidekiq::Web => '/sidekiq'
   resources :email_templates
@@ -86,6 +87,7 @@ Rails.application.routes.draw do
   resources :product_mappings
   resources :extra_field_names
   resources :order_dispatches
+  post 'product_file', to: 'products#import_product_file'
 
   # Order Dispatch Routes
   get 'all_order_data', to: 'order_dispatches#all_order_data'

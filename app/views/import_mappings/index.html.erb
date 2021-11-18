@@ -1,0 +1,29 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Import Mappings</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Table name</th>
+      <th>Mapping data</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @import_mappings.each do |import_mapping| %>
+      <tr>
+        <td><%= import_mapping.table_name %></td>
+        <td><%= import_mapping.mapping_data %></td>
+        <td><%= link_to 'Show', import_mapping %></td>
+        <td><%= link_to 'Edit', edit_import_mapping_path(import_mapping) %></td>
+        <td><%= link_to 'Destroy', import_mapping, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New Import Mapping', new_import_mapping_path %>

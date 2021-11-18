@@ -30,7 +30,7 @@ gem 'devise-bootstrap-views'
 gem 'devise-i18n'
 
 gem 'font-awesome-rails'
-
+gem 'roo', '~> 2.8'
 # Use for nested forms
 gem 'activerecord-import'
 gem 'bootstrap4-kaminari-views'

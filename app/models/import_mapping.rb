@@ -1,0 +1,2 @@
+class ImportMapping < ApplicationRecord
+end
