@@ -14,17 +14,17 @@ class ProductMappingsController < ApplicationController
   def index
     amazon_request if params[:commit].eql? 'Amazon Request'
     maped_products(@body) if params[:q].present? && (params[:q][:status_eq].eql? '1')
-    all_order_data if params[:all_product_data].present?
+    all_product_data if params[:all_product_data].present?
     return unless params[:export_csv].present?
 
     @products = ChannelProduct.all
     export_csv(@products)
   end
 
-  def all_order_data
+  def all_product_data
     if params[:amazon]
       AmazonProductJob.perform_later
-      flash[:notice] = 'Amazon product job product created!'
+      flash[:notice] = 'Amazon product job created!'
     else
       CreateChannelProductResponseJob.perform_later
       flash[:notice] = 'Call sent to eBay API'

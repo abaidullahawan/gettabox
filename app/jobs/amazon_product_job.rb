@@ -7,13 +7,17 @@ class AmazonProductJob < ApplicationJob
 
   def perform(*_args)
     @refresh_token_amazon = RefreshToken.where(channel: 'amazon').last
-    remainaing_time = @refresh_token_amazon.access_token_expiry.localtime > DateTime.now
-    generate_refresh_token_amazon if @refresh_token_amazon.present? && remainaing_time == false
-    url = 'https://sellingpartnerapi-eu.amazon.com/reports/2021-06-30/documents/amzn1.spdoc.1.3.bb1456cc-7382-40db-9a6a-6a27d4b9fe61.T1ZC9CBIMPWKA.300'
-    result = AmazonService.amazon_api(@refresh_token_amazon.access_token, url)
-    create_channel_products(result) if result[:status]
-    channel_products = ChannelProduct.where(channel_type: 'amazon', item_image: nil)
-    channel_product_images(channel_products, @refresh_token_amazon.access_token) if channel_products.present?
+    remainaing_time = @refresh_token_amazon.access_token_expiry.localtime < DateTime.now
+    generate_refresh_token_amazon if @refresh_token_amazon.present? && remainaing_time
+    url = 'https://sellingpartnerapi-eu.amazon.com/reports/2021-06-30/reports'
+    document = {
+      reportType: 'GET_MERCHANT_LISTINGS_DATA', marketplaceIds: ['A1F83G8C2ARO7P']
+    }
+    result = AmazonCreateReportService.create_report(@refresh_token_amazon.access_token, url, document)
+
+    return result[:error] unless result[:status]
+
+    get_report(@refresh_token_amazon.access_token, url, result[:body])
   end
 
   def generate_refresh_token_amazon
@@ -72,5 +76,20 @@ class AmazonProductJob < ApplicationJob
     return product.update(error_message: result[:error]) unless result[:status]
 
     product.update(item_image: result[:body]['images'].first['images'].last['link'])
+  end
+
+  def get_report(access_token, url, body)
+    url += "/#{body['reportId']}"
+    result = AmazonService.amazon_api(access_token, url)
+    return result[:error] unless result[:status]
+
+    document_id = result[:body]['reportDocumentId']
+    url = "https://sellingpartnerapi-eu.amazon.com/reports/2021-06-30/documents/#{document_id}"
+    result = AmazonService.amazon_api(access_token, url)
+    return result[:error] unless result[:status]
+
+    create_channel_products(result)
+    channel_products = ChannelProduct.where(channel_type: 'amazon', item_image: nil)
+    channel_product_images(channel_products, @refresh_token_amazon.access_token) if channel_products.present?
   end
 end
