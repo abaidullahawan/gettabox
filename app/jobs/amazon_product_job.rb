@@ -14,10 +14,9 @@ class AmazonProductJob < ApplicationJob
       reportType: 'GET_MERCHANT_LISTINGS_DATA', marketplaceIds: ['A1F83G8C2ARO7P']
     }
     result = AmazonCreateReportService.create_report(@refresh_token_amazon.access_token, url, document)
-
     return result[:error] unless result[:status]
 
-    get_report(@refresh_token_amazon.access_token, url, result[:body])
+    get_report(@refresh_token_amazon.access_token, url)
   end
 
   def generate_refresh_token_amazon
@@ -48,7 +47,7 @@ class AmazonProductJob < ApplicationJob
         channel_type: 'amazon', item_id: hash['listing-id'],
         item_sku: hash['seller-sku']
       )
-      channel_product.update(product_data: hash, created_at: hash['open-date'].to_time, status: 0,
+      channel_product.update(product_data: hash, created_at: hash['open-date'].to_time,
                              item_name: hash['item-name'])
     end
   end
@@ -66,8 +65,6 @@ class AmazonProductJob < ApplicationJob
       asin = u(product.product_data['asin1'] || product.product_data['asin2'] || product.product_data['asin3'])
       url = "https://sellingpartnerapi-eu.amazon.com/catalog/2020-12-01/items/#{asin}?includedData=images&marketplaceIds=A1F83G8C2ARO7P"
       result = AmazonService.amazon_api(access_token, url)
-      # next update_channel_product_error(result) unless result[:status]
-
       update_channel_product(product, result)
     end
   end
@@ -78,12 +75,12 @@ class AmazonProductJob < ApplicationJob
     product.update(item_image: result[:body]['images'].first['images'].last['link'])
   end
 
-  def get_report(access_token, url, body)
-    url += "/#{body['reportId']}"
+  def get_report(access_token, url)
+    url += '?reportTypes=GET_MERCHANT_LISTINGS_DATA&processingStatuses=DONE'
     result = AmazonService.amazon_api(access_token, url)
     return result[:error] unless result[:status]
 
-    document_id = result[:body]['reportDocumentId']
+    document_id = result[:body]['reports'][0]['reportDocumentId']
     url = "https://sellingpartnerapi-eu.amazon.com/reports/2021-06-30/documents/#{document_id}"
     result = AmazonService.amazon_api(access_token, url)
     return result[:error] unless result[:status]
