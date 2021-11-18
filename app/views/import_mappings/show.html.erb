@@ -1,0 +1,14 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Table name:</strong>
+  <%= @import_mapping.table_name %>
+</p>
+
+<p>
+  <strong>Mapping data:</strong>
+  <%= @import_mapping.mapping_data %>
+</p>
+
+<%= link_to 'Edit', edit_import_mapping_path(@import_mapping) %> |
+<%= link_to 'Back', import_mappings_path %>

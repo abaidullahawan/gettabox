@@ -133,7 +133,46 @@ class ProductsController < ApplicationController
     end
   end
 
+  def import_product_file
+    if params[:product][:file].present?
+      file = params[:product][:file]
+      file_type = file.present? ? file.path.split('.').last.to_s.downcase : ''
+      if file.present? && (file_type == 'csv' or file_type == 'xlsx')
+        spreadsheet = open_spreadsheet(file)
+        @header = []
+        @data = []
+        spreadsheet.first.to_a.each do |row|
+          @header.push(row[0].to_s)
+        end
+        spreadsheet.each do |row|
+          @line = {}
+          row.to_a.each_with_index do |val|
+            @line[val[0].to_s] = val[1].to_s
+          end
+          @data.push(@line)
+        end
+        @import_mapping = ImportMapping.new
+        @table_names = ['Order', 'Product']
+        @db_names = Product.column_names
+        @unmatched_columns = @db_names - @header
+        redirect_to new_import_mapping_path(db_columns: @db_names, header: @header, import_mapping: @import_mapping)
+      else
+        flash[:alert] = 'Try again file not match'
+        redirect_to product_mappings_path
+      end
+    end
+  end
+
   private
+
+  def open_spreadsheet(file)
+    case File.extname(file.original_filename)
+    when ".csv" then CSV.parse(File.read(file.path), :headers => true)
+    when '.xls' then  Roo::Excel.new(file.path, packed: nil, file_warning: :ignore)
+    when '.xlsx' then Roo::Excelx.new(file.path, packed: nil, file_warning: :ignore)
+    else raise "Unknown file type: #{file.original_filename}"
+    end
+  end
 
   def find_product
     @product = Product.find(params[:id])
