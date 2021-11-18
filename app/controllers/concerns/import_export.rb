@@ -78,7 +78,8 @@ module ImportExport
   end
 
   def csv_headers_check(csv)
-    return @csv = csv if csv.headers.excluding(nil) == controller_name.classify.constantize.column_names.excluding('user_type','gst')
+    is_valid = csv.headers.excluding(nil) == controller_name.classify.constantize.column_names.excluding('user_type')
+    return @csv = csv if is_valid
 
     flash[:alert] = 'File not matched! Please change file'
   end
