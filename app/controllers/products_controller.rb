@@ -144,13 +144,6 @@ class ProductsController < ApplicationController
         spreadsheet.first.to_a.each do |row|
           @header.push(row[0].to_s)
         end
-        spreadsheet.each do |row|
-          @line = {}
-          row.to_a.each_with_index do |val|
-            @line[val[0].to_s] = val[1].to_s
-          end
-          @data.push(@line)
-        end
         @import_mapping = ImportMapping.new
         @table_names = ['Order', 'Product']
         @db_names = Product.column_names
