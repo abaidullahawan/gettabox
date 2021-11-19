@@ -167,7 +167,7 @@ class ProductsController < ApplicationController
 
   def open_spreadsheet(file)
     case File.extname(file.original_filename)
-    when ".csv" then CSV.parse(File.read(file.path), :headers => true)
+    when ".csv" then CSV.parse(File.read(file.path).force_encoding("ISO-8859-1").encode("utf-8", replace: nil), :headers => true)
     when '.xls' then  Roo::Excel.new(file.path, packed: nil, file_warning: :ignore)
     when '.xlsx' then Roo::Excelx.new(file.path, packed: nil, file_warning: :ignore)
     else raise "Unknown file type: #{file.original_filename}"
@@ -219,7 +219,7 @@ class ProductsController < ApplicationController
                                    .first_or_create(title: row['category_id']).id
       row = row.to_hash
       row.delete(nil)
-      product.update(row)
+      product.update!(row)
     end
   end
 end
