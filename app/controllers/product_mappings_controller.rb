@@ -131,7 +131,7 @@ class ProductMappingsController < ApplicationController
     file = params[:file]
     if file.present? && file.path.split('.').last.to_s.downcase == 'csv'
       csv_text = File.read(file)
-      csv = CSV.parse(csv_text, headers: true)
+      csv = CSV.parse(csv_text, headers: true).force_encoding("ISO-8859-1").encode("utf-8", replace: nil)
       import_csv(csv)
     else
       flash[:alert] = 'File format no matched! Please change file (Supporting only csv)'

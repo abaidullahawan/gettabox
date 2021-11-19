@@ -39,7 +39,7 @@
           <%= search_form_for @q, url: product_mappings_path, method: :get do |f| %>
             <div class='row'>
               <div class="col-md-3">
-                <%= f.select :channel_type_eq, options_for_select(ChannelProduct.channel_types.map { |key, value| [key.humanize, value] }, params[:channel_type_eq]), {include_blank: "Select Status", hide_label:true, required: true }, class:"form-control chosen-select product-mapping-select", title: 'Select Mapping Category', prompt: "Please select" %>
+                <%= f.select :channel_type_eq, options_for_select(ChannelProduct.channel_types.map { |key, value| [key.humanize, value]}, f.object.channel_type_eq), {include_blank: "Select Status", hide_label:true, required: true }, class:"form-control chosen-select product-mapping-select", title: 'Select Mapping Category', prompt: "Please select" %>
               </div>
               <div class="col-md-2">
                 <%= f.select :status_eq, ChannelProduct.statuses.map { |key, value| [key.humanize, value] }, {include_blank: 'Select an option'}, class:"form-control", title: 'Select Mapping Status' %>
