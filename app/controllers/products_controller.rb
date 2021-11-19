@@ -116,7 +116,7 @@ class ProductsController < ApplicationController
   end
 
   def search_products_by_title
-    @searched_products = Product.where('lower(title) LIKE ?', "#{params[:search_value].downcase}%").limit(20).pluck(:title)
+    @searched_products = Product.ransack('sku_or_title_cont': params[:search_value].downcase.to_s).result.limit(20).pluck(:title)
     respond_to do |format|
       format.json  { render json: @searched_products }
     end

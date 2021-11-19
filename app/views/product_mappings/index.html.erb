@@ -157,9 +157,9 @@
                             Actions
                           </button>
                           <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                            <%= f.submit 'Un-map', data: { disable_with: false }, class: "dropdown-item" if item.status_mapped? %>
+                            <%= f.submit 'Un-map', class: "dropdown-item" if item.status_mapped? %>
                             <% if item.status_unmapped? %>
-                              <%= f.submit 'Map', data: { disable_with: false }, class: "dropdown-item" %>
+                              <%= f.submit 'Map', class: "dropdown-item" %>
                               <a type="button" class="dropdown-item create-single-product" data-id="<%= item.id %>" data-item = '<%= item.to_json.html_safe %>' >Create Single Pack</a>
                               <a type="button" class="dropdown-item create-multi-product" data-id="<%= item.id %>" data-item = '<%= item.to_json.html_safe %>' >Create Multi Pack</a>
                             <% end %>
