@@ -84,7 +84,11 @@ Rails.application.routes.draw do
   get '/home', to: 'home#dashboard'
   get '/settings', to: 'settings#index'
 
-  resources :product_mappings
+  resources :product_mappings do
+    collection do
+      post 'import', to: 'product_mappings#import'
+    end
+  end
   resources :extra_field_names
   resources :order_dispatches
   post 'product_file', to: 'products#import_product_file'
