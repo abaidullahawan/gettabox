@@ -52,6 +52,9 @@
           <div class='mr-1 float-right'>
             <%= link_to 'Archives', archive_products_path, class: 'btn btn-outline-info' %>
           </div>
+          <div class='mr-1 float-right'>
+            <%= link_to 'Fake Stock', products_path(fake_stock: true), class: 'btn btn-outline-info' %>
+          </div>
           <h5 class="card-title"> Data</h5>
         </div>
         <%= form_for @product, url: product_file_path, method: :post do |f| %>
@@ -70,7 +73,7 @@
             </div>
             <div class="col-md-3"><br>
               <div class="dropdown form-group">
-                <%= f.search_field :title_or_sku_cont, class: 'form-control dropdown-toggle', placeholder:"Search in title or sku" %>
+                <%= f.search_field :title_or_sku_or_description_cont, class: 'form-control dropdown-toggle', placeholder:"Search in title or sku or description" %>
               </div>
             </div>
             <div class="col-md-3"><br>

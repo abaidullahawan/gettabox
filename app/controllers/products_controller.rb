@@ -19,13 +19,16 @@ class ProductsController < ApplicationController
   before_action :klass_import, only: %i[import]
 
   def index
-    export_csv(@products) if params[:export_csv].present?
+    export_csv(@q.result) if params[:export_csv].present?
     respond_to do |format|
       format.html
       format.csv
       format.pdf do
         render pdf: 'file.pdf', viewport_size: '1280x1024', template: 'products/index.pdf.erb'
       end
+    end
+    if params[:fake_stock].present?
+      @q.result.update_all(fake_stock: 0)
     end
   end
 
