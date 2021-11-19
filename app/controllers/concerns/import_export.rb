@@ -69,8 +69,9 @@ module ImportExport
   def klass_import
     file = params[:file]
     if file.present? && file.path.split('.').last.to_s.downcase == 'csv'
-      csv_text = File.read(file)
-      csv = CSV.parse(csv_text, headers: true)
+      csv_text = File.read(file).force_encoding("ISO-8859-1").encode("utf-8", replace: nil)
+      convert = ImportMapping.where(table_name: 'Product').last.mapping_data.invert
+      csv = CSV.parse(csv_text, headers: true, skip_blanks: true, header_converters: lambda { |name| convert[name] })
       csv_headers_check(csv)
     else
       flash[:alert] = 'File format no matched! Please change file'
@@ -78,7 +79,7 @@ module ImportExport
   end
 
   def csv_headers_check(csv)
-    is_valid = csv.headers.excluding(nil) == controller_name.classify.constantize.column_names.excluding('user_type')
+    is_valid = (csv.headers.compact | controller_name.classify.constantize.column_names).sort==controller_name.classify.constantize.column_names.sort
     return @csv = csv if is_valid
 
     flash[:alert] = 'File not matched! Please change file'
