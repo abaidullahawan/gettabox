@@ -15,8 +15,9 @@
     </div>
   </div>
   <% end %>
-
+  <%= f.hidden_field :header_data, value: header %>
+  <%= f.hidden_field :table_data, value: db_columns %>
   <div class="form-group">
-    <%= f.submit "Create" %>
+    <%= f.button :submit %>
   </div>
 <% end %>
