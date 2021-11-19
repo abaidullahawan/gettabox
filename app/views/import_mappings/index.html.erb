@@ -1,66 +1,86 @@
-<p id="notice"><%= notice %></p>
-<div class="row">
-  <div class="col-xl-12">
-    <div class="card mb-30">
-      <div class="card-body">
-        <div class="card-header">
-        <h1 class="card-title"> Import Mappings</h1>
-          <div class="table-responsive">
-            <table class="table m-0 table-hover width-inherit">
-              <thead>
-                <tr>
-                  <th>Table name</th>
-                  <th>Description</th>
-                  <th>Mapping data</th>
-                  <th colspan="3"></th>
-                </tr>
-              </thead>
-              <tbody>
-                <% @import_mappings.each do |import_mapping| %>
-                  <tr>
-                    <td><%= import_mapping.table_name %></td>
-                    <td><%= import_mapping.sub_type %></td>
-                    <td>
-                      <div class="table-responsive">
-                        <table class="width-inherit">
-                          <thead>
-                            <tr>
-                              <th>Table Field</th>
-                              <th></th>
-                              <th>Header Field</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            <% import_mapping.mapping_data.each do |mapping| %>
-                              <tr>
-                                <td><%= mapping[0] %></td>
-                                <td> => </td>
-                                <td><%= mapping[1] %></td>
-                              </tr>
-                            <% end %>
-                          </tbody>
-                        </table>
-                      </div>
-                    </td>
-                    <td>
+<!-- Basic Table -->
+  <div class="row">
+      <div class="col-xl-12">
+          <div class="card mb-30">
+              <div class="card-body">
+                  <div class="card-header">
+                      <h5 class="card-title">Import Mappings</h5>
+                  </div>
+                  <% if @import_mapping.present?%>
+                    <div class='col-12 mb-2 float-right'>
                       <div class= 'd-flex'>
-                        <%= link_to 'Destroy', import_mapping, method: :delete, data: { confirm: 'Are you sure?' }, class: "btn-danger" %>
-                        <%= link_to 'Edit', edit_import_mapping_path(import_mapping), class: "btn-info ml-3" %>
+                        <%= link_to 'Destroy', @import_mapping, method: :delete, data: { confirm: 'Are you sure?' }, class: "btn btn-danger" %>
+                        <%= link_to 'Edit', edit_import_mapping_path(@import_mapping), class: "btn btn-info ml-3 mr-3" %>
                         <%= form_tag import_products_path, multipart: true, method: :post do %>
-                          <%= text_field_tag :mapping_type, import_mapping.sub_type, class: 'd-none form-control'%>
+                          <%= text_field_tag :mapping_type, @import_mapping.sub_type, class: 'd-none form-control'%>
                           <%= file_field_tag :file, :required => true %>
-                          <%= submit_tag("Import", :id=>"button", :class=>"btn btn-primary", :name=>"submit") %>
+                          <%= submit_tag("Import", id: "button", class: "btn btn-primary", name: "submit") %>
                         <% end %>
                       </div>
-                    </td>
-                  </tr>
-                <% end %>
-              </tbody>
-            </table>
+                      <h1 class="fs-18 mb-2"><strong>Description: </strong><%= @import_mapping.sub_type %></h1>
+                    </div>
+                    <div class="row justify-content-center">
+                      <div class="col-lg-12">
+                        <div class="card text-center mb-30">
+                          <div class="header card-header">Mapped</div>
+                          <table class="table m-0 table-hover">
+                            <thead>
+                              <tr>
+                                <th>Table Field</th>
+                                <th class='border-right'>Header Field</th>
+                                <th>Table Field</th>
+                                <th class='border-right'>Header Field</th>
+                                <th>Table Field</th>
+                                <th class='border-right'>Header Field</th>
+                                <th>Table Field</th>
+                                <th class='border-right'>Header Field</th>
+                              </tr>
+                            </thead>
+                              <tbody>
+                                <%@full.each_slice(4) do |map|%>
+                                <tr>
+                                  <%map.each do |maps|%>
+                                    <td><%= maps[0] %></td>
+                                    <td class='border-right'><%= maps[1] %></td>
+                                  <% end %>
+                                </tr>
+                                <% end %>
+                              </tbody>
+                          </table>
+                        </div>
+                      </div>
+
+                      <div class="col-lg-12">
+                        <div class="card text-center mb-30">
+                          <div class="header card-header">Unmapped</div>
+                          <table class="table m-0 table-hover">
+                            <thead>
+                              <tr>
+                                <th class='border-right'>Header Field</th>
+                                <th class='border-right'>Header Field</th>
+                                <th class='border-right'>Header Field</th>
+                                <th class='border-right'>Header Field</th>
+                                <th class='border-right'>Header Field</th>
+                              </tr>
+                            </thead>
+                              <tbody>
+                                <%@blank.each_slice(5) do |map|%>
+                                <tr>
+                                  <%map.each do |maps|%>
+                                    <td class='border-right'><%= maps[0] %></td>
+                                  <% end %>
+                                </tr>
+                                <% end %>
+                              </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+                  <% end %>
+              </div>
           </div>
-        </div>
       </div>
-    </div>
   </div>
-</div>
+<!-- End Basic Table -->
+
 
