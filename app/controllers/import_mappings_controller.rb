@@ -26,7 +26,7 @@ class ImportMappingsController < ApplicationController
     Product.column_names.each do |col_name|
       mapping["#{col_name}"] = params[:"#{col_name}"]
     end
-    @import_mapping = ImportMapping.new(table_name: params[:table_name], mapping_data: mapping, description: params[:description])
+    @import_mapping = ImportMapping.new(table_name: params[:table_name], mapping_data: mapping, sub_type: params[:sub_type])
     respond_to do |format|
       if @import_mapping.save
         format.html { redirect_to import_mappings_path, notice: "Import mapping was successfully created." }
@@ -67,6 +67,6 @@ class ImportMappingsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def import_mapping_params
-      params.require(:import_mapping).permit(:table_name, :mapping_data)
+      params.require(:import_mapping).permit(:table_name, :mapping_data, :sub_type)
     end
 end
