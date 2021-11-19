@@ -127,6 +127,30 @@ class ProductMappingsController < ApplicationController
 
   def destroy; end
 
+  def import
+    file = params[:file]
+    if file.present? && file.path.split('.').last.to_s.downcase == 'csv'
+      csv_text = File.read(file)
+      csv = CSV.parse(csv_text, headers: true)
+      import_csv(csv)
+    else
+      flash[:alert] = 'File format no matched! Please change file (Supporting only csv)'
+    end
+    redirect_to product_mappings_path
+  end
+
+  def import_csv(csv)
+    csv.each do |row|
+      channel_product = ChannelProduct.find_or_initialize_by(
+        channel_type: 'cloud_commerce', item_id: row['Product_ID'], item_sku: row['VAR_SKU']
+      )
+      channel_product.update(
+        product_range_id: row['Product_Range_ID'], range_sku: row['RNG_SKU'], product_data: row.to_hash
+      )
+    end
+    flash[:notice] = 'File Upload Successful!'
+  end
+
   private
 
   def csv_export(_products)

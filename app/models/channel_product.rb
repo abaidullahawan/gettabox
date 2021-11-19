@@ -7,7 +7,7 @@ class ChannelProduct < ApplicationRecord
   enum channel_type: {
     ebay: 0,
     amazon: 1,
-    shopify: 3
+    cloud_commerce: 4
   }, _prefix: true
 
   enum status: {
