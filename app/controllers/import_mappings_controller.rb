@@ -18,7 +18,9 @@ class ImportMappingsController < ApplicationController
 
   # GET /import_mappings/1/edit
   def edit
+    @table_names = ['Product']
   end
+
 
   # POST /import_mappings or /import_mappings.json
   def create
@@ -26,7 +28,7 @@ class ImportMappingsController < ApplicationController
     Product.column_names.each do |col_name|
       mapping["#{col_name}"] = params[:"#{col_name}"]
     end
-    @import_mapping = ImportMapping.new(table_name: params[:table_name], mapping_data: mapping, sub_type: params[:sub_type])
+    @import_mapping = ImportMapping.new(table_name: params[:table_name], mapping_data: mapping, sub_type: params[:sub_type], table_data: params[:header_data].split(' '), header_data: params[:header_data].split(' '))
     respond_to do |format|
       if @import_mapping.save
         format.html { redirect_to import_mappings_path, notice: "Import mapping was successfully created." }
@@ -39,14 +41,14 @@ class ImportMappingsController < ApplicationController
 
   # PATCH/PUT /import_mappings/1 or /import_mappings/1.json
   def update
+    mapping = {}
+    Product.column_names.each do |col_name|
+      mapping["#{col_name}"] = params[:"#{col_name}"]
+    end
+    @import_mapping = ImportMapping.update(table_name: params[:table_name], mapping_data: mapping, sub_type: params[:sub_type])
     respond_to do |format|
-      if @import_mapping.update(import_mapping_params)
-        format.html { redirect_to @import_mapping, notice: "Import mapping was successfully updated." }
-        format.json { render :show, status: :ok, location: @import_mapping }
-      else
-        format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @import_mapping.errors, status: :unprocessable_entity }
-      end
+      format.html { redirect_to import_mappings_path, notice: "Import mapping was successfully updated." }
+      format.json { render :show, status: :ok, location: @import_mapping }
     end
   end
 

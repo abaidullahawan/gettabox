@@ -1,6 +1,22 @@
-<h1>Editing Import Mapping</h1>
+<%= form_for @import_mapping do |f| %>
+  <div class="form-group">
+    <%= f.label :table_name %>
+    <%= f.select :table_name,  @table_names, {}, class: 'form-control'%>
+  </div>
+  <div class="form-group">
+    <%= f.label :sub_type %>
+    <%= f.text_field :sub_type, class: 'form-control'%>
+  </div>
+  <% @import_mapping.table_data.each do |col_name| %>
+  <div class="d-flex">
+    <div class="form-group">
+      <%= label_tag :"#{col_name}" %>
+     <%= select_tag :"#{col_name}",  options_for_select(@import_mapping.header_data), class: 'form-control', prompt: "Select Header"%>
+    </div>
+  </div>
+  <% end %>
 
-<%= render 'form', import_mapping: @import_mapping %>
-
-<%= link_to 'Show', @import_mapping %> |
-<%= link_to 'Back', import_mappings_path %>
+  <div class="form-group">
+    <%= f.button  :submit%>
+  </div>
+<% end %>
