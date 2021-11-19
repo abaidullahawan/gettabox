@@ -3,7 +3,8 @@ class ImportMappingsController < ApplicationController
 
   # GET /import_mappings or /import_mappings.json
   def index
-    @import_mappings = ImportMapping.all
+    @import_mapping = ImportMapping.find_by(table_name: 'Product')
+    @blank, @full = @import_mapping&.mapping_data&.partition { |_, v| v.blank? }&.map { |alist| Hash[alist] }
   end
 
   # GET /import_mappings/1 or /import_mappings/1.json
@@ -45,7 +46,7 @@ class ImportMappingsController < ApplicationController
     Product.column_names.each do |col_name|
       mapping["#{col_name}"] = params[:"#{col_name}"]
     end
-    @import_mapping = ImportMapping.update(table_name: params[:table_name], mapping_data: mapping, sub_type: params[:sub_type])
+    @import_mapping = ImportMapping.update(mapping_data: mapping, sub_type: params[:sub_type])
     respond_to do |format|
       format.html { redirect_to import_mappings_path, notice: "Import mapping was successfully updated." }
       format.json { render :show, status: :ok, location: @import_mapping }
