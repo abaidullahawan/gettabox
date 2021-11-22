@@ -72,7 +72,7 @@ class AmazonProductJob < ApplicationJob
   def update_channel_product(product, result)
     return product.update(error_message: result[:error]) unless result[:status]
 
-    product.update(item_image: result[:body]['images'].first['images'].last['link'])
+    product.update(item_image: result[:body]['images'].first['images'].last['link'], error_message: nil)
   end
 
   def get_report(access_token, url)
