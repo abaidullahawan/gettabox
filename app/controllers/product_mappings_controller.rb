@@ -154,13 +154,24 @@ class ProductMappingsController < ApplicationController
   private
 
   def csv_export(_products)
-    attributes = ChannelProduct.column_names.excluding('created_at', 'updated_at')
+    attributes = ChannelProduct.column_names.excluding('created_at', 'updated_at').including('available_stock')
     CSV.generate(headers: true) do |csv|
       csv << attributes
-      ChannelProduct.all.each do |products|
-        csv << attributes.map { |attr| products.send(attr) }
+      ChannelProduct.all.each do |channel_product|
+        row = channel_product.attributes.values_at(*attributes)
+        value = add_avaialable_stock(channel_product) if channel_product.status_mapped?
+        row[-1] = value if value.present?
+        csv << row
       end
     end
+  end
+
+  def add_avaialable_stock(channel_product)
+    product = channel_product.product_mapping.product
+    pack_quantity = product.pack_quantity&.to_i
+    quantity = pack_quantity&.zero? || product.pack_quantity.nil? ? 1 : pack_quantity
+    stock = ((product.available_stock.to_i + product.fake_stock.to_i - 10) / 2) / quantity
+    stock > 2 ? 2 : stock
   end
 
   def product_mapping_params
