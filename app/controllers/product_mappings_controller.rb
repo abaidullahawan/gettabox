@@ -167,15 +167,30 @@ class ProductMappingsController < ApplicationController
 
   def add_avaialable_stock(channel_product)
     product = channel_product.product_mapping.product
+    return multipack_products_stock(product) if product.product_type_multiple?
+
+    calculate_available_stock(product)
+  end
+
+  def multipack_products_stock(product)
+    stocks = []
+    product.multipack_products.each do |multipack|
+      single_product = multipack.child
+      stocks << calculate_available_stock(single_product) unless single_product.nil?
+    end
+    stocks.min
+  end
+
+  def calculate_available_stock(product)
     pack_quantity = product.pack_quantity&.to_i
-    quantity = pack_quantity&.zero? || product.pack_quantity.nil? ? 1 : pack_quantity
+    quantity = pack_quantity.nil? || pack_quantity&.zero? ? 1 : pack_quantity
     stock = ((product.total_stock.to_i + product.fake_stock.to_i - 10) / 2) / quantity
     if stock > 2
       stock = 2
     elsif stock.negative?
       stock = 0
     end
-    return stock
+    stock
   end
 
   def product_mapping_params
@@ -195,8 +210,8 @@ class ProductMappingsController < ApplicationController
   #   require 'uri'
   #   require 'net/http'
 
-    #   url = 'https://api.sandbox.ebay.com/sell/inventory/v1/inventory_item?offset=0'
-#   headers = { 'authorization' => "Bearer <#{refresh_token.access_token}>",
+  #   url = 'https://api.sandbox.ebay.com/sell/inventory/v1/inventory_item?offset=0'
+  #   headers = { 'authorization' => "Bearer <#{refresh_token.access_token}>",
   #               'accept-language' => 'en-US' }
   #   uri = URI(url)
   #   request = Net::HTTP.get_response(uri, headers)
