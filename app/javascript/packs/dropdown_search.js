@@ -26,7 +26,7 @@ $(document).on('turbolinks:load', function () {
         else {
           $.each(response, function () {
             index += 1;
-            $(dropdown_class).append('<li><a href="#" class="dropdown-item ' + listClass + '" data-option-array-index=' + index + '>' + this + '</a></li>')
+            $(dropdown_class).append('<li><a href="#" data-id=' + this[0] + ' class="dropdown-item ' + listClass + '" data-option-array-index=' + index + '>' + this.slice(1) + '</a></li>')
           });
         }
       }
@@ -50,14 +50,16 @@ $(document).on('turbolinks:load', function () {
   $('.product-dropdown-list').on('click', '.product-list-item', function () {
     var parent_div = $(this.closest('div'))
     $(parent_div).find('ul').hide()
-    $(parent_div).find('input').focus()
-    $(parent_div).find('input').val(this.outerText)
+    $(parent_div).find('input')[1].focus()
+    $($(parent_div).find('input')[0]).val(this.dataset.id)
+    $($(parent_div).find('input')[1]).val(this.outerText)
     return false
   })
 
   $('.product-dropdown-list').on('focus', '.product-list-item', function () {
     var parent_div = this.closest('div')
-    $(parent_div).find('input').val(this.outerText)
+    $($(parent_div).find('input')[0]).val(this.dataset.id)
+    $($(parent_div).find('input')[1]).val(this.outerText)
   })
 
   $('.product-sku-dropdown-list').on('click', '.product-sku-list-item', function () {

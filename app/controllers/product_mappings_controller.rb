@@ -48,7 +48,7 @@ class ProductMappingsController < ApplicationController
   def edit; end
 
   def map_product
-    @product_id = params[:anything][:product_id].presence || params[:anything][:mapped_product_id]
+    @product_id = params[:anything][:searched_product_id].presence || params[:anything][:mapped_product_id]
     @product_id = Product.find_by(title: @product_id)&.id if @product_id.to_i.to_s != @product_id
     if @product_id.present?
       @product_mapping = ProductMapping.create!(channel_product_id: params[:anything]['channel_product_id'],
