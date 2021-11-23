@@ -10,7 +10,7 @@ class Product < ApplicationRecord
   has_many :barcodes, dependent: :destroy
   has_many :product_suppliers, dependent: :destroy
   has_many :system_users, through: :product_suppliers
-  has_many :multipack_products
+  has_many :multipack_products, dependent: :destroy
   has_many :products, through: :multipack_products
   has_one :product_mapping
 
