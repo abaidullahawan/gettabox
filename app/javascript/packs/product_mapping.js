@@ -102,7 +102,7 @@ $(document).on('turbolinks:load', function () {
   //     $(this).closest('td').find('.productSearch').toggleClass('d-none', 3000);
   //   }
   // })
-  $('#q_channel_type_eq, #product_mapping').on('change', function () {
+  $('#q_channel_type_eq, #q_status_eq, #product_mapping').on('change', function () {
     $('.product-mapping-request').trigger('click')
   })
 
