@@ -14,7 +14,8 @@ module NewProduct
   end
 
   def product_load_resources
-    @single_products = Product.where(product_type: 'single').map { |v| v.serializable_hash(only: %i[id title]) }
+    @single_products = Product.where('product_type = ? OR product_type is NULL', 0)
+                              .map { |v| v.serializable_hash(only: %i[id title]) }
     @system_users = SystemUser.all.map { |v| v.serializable_hash(only: %i[id name]) }
     @categories = Category.all.map { |v| v.serializable_hash(only: %i[id title]) }
     @seasons = Season.all.map { |v| v.serializable_hash(only: %i[id name]) }
