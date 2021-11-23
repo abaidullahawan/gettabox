@@ -35,7 +35,7 @@
     <div class="card text-center mb-30">
       <div class="header card-header">Order</div>
       <div class="card-body">
-        <div class="card-title h5 text-success"><%= ChannelOrder.where("Date(created_at) = ?", Date.today).count %></div>
+        <div class="card-title h5 text-success"><%= ChannelOrder.where("Date(created_at) = ?", Date.today).where(channel_type: @order_type).count %></div>
       </div>
     </div>
   </div>
