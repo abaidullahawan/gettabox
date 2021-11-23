@@ -172,9 +172,10 @@ class ProductMappingsController < ApplicationController
     stock = ((product.total_stock.to_i + product.fake_stock.to_i - 10) / 2) / quantity
     if stock > 2
       stock = 2
-    elsif stock < 0
+    elsif stock.negative?
       stock = 0
     end
+    return stock
   end
 
   def product_mapping_params
