@@ -113,7 +113,7 @@
                         <% else %>
                           <td><%= image_tag('user/1.jpg', width: "50", height: "50", class: 'mr-3 img-thumbnail', alt: 'User Image') %></td>
                         <% end %>
-                        <td><%= @matching_products[item.id].sku%></td>
+                        <td><%= link_to @matching_products[item.id].sku, product_path(@matching_products[item.id]) %></td>
                         <%= f.hidden_field :mapped_product_id, value: @matching_products[item.id].id %>
                         <td>
                           <div class="text-left d-flex ">
@@ -121,7 +121,7 @@
                               <% if item.status_unmapped? %>
                                 <span class='text-warning'>(Suggestion)-</span>
                               <% end %>
-                              <%= @matching_products[item.id].title %>
+                              <%= link_to @matching_products[item.id].title, product_path(@matching_products[item.id]) %>
                             </div>
                             <% if item.status_unmapped? %>
                               <div class="productSearchContainer">
