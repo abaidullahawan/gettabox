@@ -171,7 +171,7 @@ class ProductMappingsController < ApplicationController
     quantity = pack_quantity&.zero? || product.pack_quantity.nil? ? 1 : pack_quantity
     stock = ((product.total_stock.to_i + product.fake_stock.to_i - 10) / 2) / quantity
     stock > 2 ? 2 : stock
-    stock.negative ? 0 : stock
+    stock < 0 ? 0 : stock
   end
 
   def product_mapping_params
