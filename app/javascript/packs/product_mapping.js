@@ -93,7 +93,7 @@ $(document).on('turbolinks:load', function () {
 
   $('.product-mapping-export').on('click', function () {
     $('.product-export-request').trigger( "click" )
-    setTimeout(location.reload.bind(location), 2000);
+    setTimeout(location.reload.bind(location), 5000);
   })
 
   // $('.productSearch').on('focusout', function () {
