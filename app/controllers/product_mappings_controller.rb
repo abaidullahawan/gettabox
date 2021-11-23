@@ -12,13 +12,12 @@ class ProductMappingsController < ApplicationController
   skip_before_action :verify_authenticity_token
 
   def index
-    amazon_request if params[:commit].eql? 'Amazon Request'
+    amazon_request if params[:coresultmmit].eql? 'Amazon Request'
     maped_products(@body) if params[:q].present? && (params[:q][:status_eq].eql? '1')
     all_product_data if params[:all_product_data].present?
-    return unless params[:export_csv].present?
-
-    @products = ChannelProduct.all
-    export_csv(@products)
+    if params[:commit].eql? 'Export'
+      export_csv(@products)
+    end
   end
 
   def all_product_data
@@ -153,11 +152,11 @@ class ProductMappingsController < ApplicationController
 
   private
 
-  def csv_export(_products)
+  def csv_export(product)
     attributes = ChannelProduct.column_names.excluding('created_at', 'updated_at').including('available_stock')
     CSV.generate(headers: true) do |csv|
       csv << attributes
-      ChannelProduct.all.each do |channel_product|
+      product.each do |channel_product|
         row = channel_product.attributes.values_at(*attributes)
         value = add_avaialable_stock(channel_product) if channel_product.status_mapped?
         row[-1] = value if value.present?
@@ -191,8 +190,8 @@ class ProductMappingsController < ApplicationController
   #   require 'uri'
   #   require 'net/http'
 
-  #   url = 'https://api.sandbox.ebay.com/sell/inventory/v1/inventory_item?offset=0'
-  #   headers = { 'authorization' => "Bearer <#{refresh_token.access_token}>",
+    #   url = 'https://api.sandbox.ebay.com/sell/inventory/v1/inventory_item?offset=0'
+#   headers = { 'authorization' => "Bearer <#{refresh_token.access_token}>",
   #               'accept-language' => 'en-US' }
   #   uri = URI(url)
   #   request = Net::HTTP.get_response(uri, headers)
@@ -210,16 +209,10 @@ class ProductMappingsController < ApplicationController
   # end
 
   def load_products
-    if params[:product_mapping].eql? 'Amazon Products'
-      @q = ChannelProduct.where(channel_type: 'amazon').ransack(params[:q])
-    elsif params[:product_mapping].eql? 'Ebay Products'
-      @q = ChannelProduct.where(channel_type: 'ebay').ransack(params[:q])
-    elsif params[:issue_product].present?
-      @q = ChannelProduct.where(item_sku: nil).ransack(params[:q])
-    else
-      @q = ChannelProduct.ransack(params[:q])
-    end
-    @body = @q.result(distinct: true).order(created_at: :desc).page(params[:page]).per(params[:limit])
+    @q = ChannelProduct.ransack(params[:q])
+    @products = @q.result(distinct: true).order(created_at: :desc)
+    @body = @products.page(params[:page]).per(params[:limit])
+
     fetch_products
   end
 

@@ -1,21 +1,35 @@
-<%= form_for @import_mapping do |f| %>
-  <div class="form-group">
-  <%= f.text_field :table_name, class: 'form-control'%>
-  </div>
-  <div class="form-group">
-    <%= f.label :sub_type %>
-    <%= f.text_field :sub_type, class: 'form-control'%>
-  </div>
-  <% @import_mapping.table_data&.each do |col_name| %>
-  <div class="d-flex">
-    <div class="form-group">
-      <%= label_tag :"#{col_name}" %>
-     <%= select_tag :"#{col_name}",  options_for_select(@import_mapping&.header_data, @import_mapping.mapping_data[col_name]), class: 'form-control', prompt: "Select Header"%>
+<div class="row">
+  <div class="col-xl-12">
+    <div class="card mb-30">
+      <div class="card-body">
+        <div class="card-header">
+          <h5 class="card-title">Edit Import Mappings</h5>
+        </div>
+        <%= form_for @import_mapping do |f| %>
+          <div class="form-group">
+           <div class="form-group">
+            <%= f.label :table_name %>
+            <%= f.select :table_name,  options_for_select(@table_names, @import_mapping.table_name), {}, class: 'form-control'%>
+          </div>
+          </div>
+          <div class="form-group">
+            <%= f.label :sub_type %>
+            <%= f.text_field :sub_type, class: 'form-control'%>
+          </div>
+          <% @import_mapping.table_data&.each do |col_name| %>
+          <div class="d-flex">
+            <div class="form-group">
+              <%= label_tag :"#{col_name}" %>
+            <%= select_tag :"#{col_name}",  options_for_select(@import_mapping&.header_data, @import_mapping.mapping_data[col_name]), class: 'form-control', prompt: "Select Header"%>
+            </div>
+          </div>
+          <% end %>
+
+          <div class="form-group">
+            <%= f.button  :submit%>
+          </div>
+        <% end %>
+      </div>
     </div>
   </div>
-  <% end %>
-
-  <div class="form-group">
-    <%= f.button  :submit%>
-  </div>
-<% end %>
+</div>

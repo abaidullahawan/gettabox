@@ -91,6 +91,10 @@ $(document).on('turbolinks:load', function () {
     $(this).closest('td').find('.productSearch').trigger( "focus" )
   })
 
+  $('.product-mapping-export').on('click', function () {
+    $('.product-export-request').trigger( "click" )
+  })
+
   // $('.productSearch').on('focusout', function () {
   //   if ($('.productSearch').value === ''){
   //     debugger
