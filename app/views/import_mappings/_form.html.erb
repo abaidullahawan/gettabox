@@ -1,23 +1,34 @@
-<%= form_with url: '/import_mappings', remote: true do |f| %>
-  <div class="form-group">
-    <%= f.label :table_name %>
-    <%= f.select :table_name,  @table_names, {}, class: 'form-control'%>
-  </div>
-  <div class="form-group">
-    <%= f.label :sub_type %>
-    <%= f.text_field :sub_type, class: 'form-control'%>
-  </div>
-  <% db_columns.each do |col_name| %>
-  <div class="d-flex">
-    <div class="form-group">
-      <%= label_tag :"#{col_name}" %>
-     <%= select_tag :"#{col_name}",  options_for_select(header), class: 'form-control', prompt: "Select Header"%>
+<div class="row">
+  <div class="col-xl-12">
+    <div class="card mb-30">
+      <div class="card-body">
+        <div class="card-header">
+            <h5 class="card-title">Create Import Mappings</h5>
+        </div>
+        <%= form_with url: '/import_mappings', remote: true do |f| %>
+          <div class="form-group">
+            <%= f.label :table_name %>
+            <%= f.select :table_name,  @table_names, {}, class: 'form-control'%>
+          </div>
+          <div class="form-group">
+            <%= f.label :sub_type %>
+            <%= f.text_field :sub_type, class: 'form-control'%>
+          </div>
+          <% db_columns.each do |col_name| %>
+          <div class="d-flex">
+            <div class="form-group">
+              <%= label_tag :"#{col_name}" %>
+            <%= select_tag :"#{col_name}",  options_for_select(header), class: 'form-control', prompt: "Select Header"%>
+            </div>
+          </div>
+          <% end %>
+          <%= f.hidden_field :header_data, value: header %>
+          <%= f.hidden_field :table_data, value: db_columns %>
+          <div class="form-group">
+            <%= f.button :Create, class: 'btn btn-outline-primary' %>
+          </div>
+        <% end %>
+      </div>
     </div>
   </div>
-  <% end %>
-  <%= f.hidden_field :header_data, value: header %>
-  <%= f.hidden_field :table_data, value: db_columns %>
-  <div class="form-group">
-    <%= f.button :submit %>
-  </div>
-<% end %>
+</div>
