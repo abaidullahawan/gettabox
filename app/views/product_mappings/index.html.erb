@@ -67,10 +67,10 @@
               <tr>
                 <th>Channel</th>
                 <th>Image</th>
-                <th colspan='2' class="text-center">Sku / <span class="badge bg-info text-white">Item ID</span></th>
-                <th class="text-center">Name</th>
-                <th class="text-center">RNG SKU</th>
-                <th class="text-center">Product range id</th>
+                <th colspan='2' class="text-center"><%= sort_link(@q, :item_sku, 'Sku', {}, {class: 'text-dark'}) %> / <span class="badge bg-info text-white"><%= sort_link(@q, :item_id, 'Item ID', {}, {class: 'text-white'}) %></span></th>
+                <th class="text-center"><%= sort_link(@q, :item_name, 'Name', {}, {class: 'text-dark'}) %></th>
+                <th class="text-center"><%= sort_link(@q, :range_sku, 'RNG SKU', {}, {class: 'text-dark'}) %></th>
+                <th class="text-center"><%= sort_link(@q, :product_range_id, 'Product range id', {}, {class: 'text-dark'}) %></th>
                 <th>Image</th>
                 <th class="text-center">Sku</th>
                 <th class="text-center">Name</th>
