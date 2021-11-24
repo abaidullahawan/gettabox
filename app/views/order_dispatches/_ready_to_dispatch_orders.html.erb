@@ -59,54 +59,54 @@
                   <td style="width: 250px;">
                     <% order.channel_order_items.each do |product|%>
                       <% if ChannelOrder.check_mapping(product) == 'mapped' %>
-                        <% if ChannelOrder.find_product(product)&.product_type == 'single'%>
-                        <div class="card-style2">
-                          <%= link_to ChannelOrder.find_product(product)&.sku, product_path(ChannelOrder.find_product(product)&.id) %>
-                          <p style="color: white;">
-                            <b>Location:</b> <span><%= ChannelOrder.find_product(product)&.location %></span>
-                          </p>
-                          <table class="table table-sm table-bordered">
-                            <thead>
-                              <tr>
-                                <th scope="col">Avail</th>
-                                <th scope="col">Alloc</th>
-                                <th scope="col">Disp</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              <tr style="color: black;">
-                                <td><%= ChannelProduct.find_by(item_sku: product.sku).product_mapping.product.total_stock.to_i %></td>
-                                <td><%= product.ordered%></td>
-                                <td>0</td>
-                              </tr>
-                            </tbody>
-                          </table>
-                        </div>
-                        <% else %>
+                        <% if ChannelOrder.find_product(product)&.product_type == 'multiple'%>
                           <% ChannelProduct.find_by(item_sku: product.sku)&.product_mapping&.product&.multipack_products&.each do |record| %>
-                            <div class="card-style2">
-                              <%= link_to record.child.sku, product_path(record.child.id) %>
-                              <p style="color: white;">
-                                <b>Location:</b> <span><%= record.child.location %></span>
-                              </p>
-                                <table class="table table-sm table-bordered">
-                                  <thead>
-                                    <tr>
-                                      <th scope="col">Avail</th>
-                                      <th scope="col">Alloc</th>
-                                      <th scope="col">Disp</th>
-                                    </tr>
-                                  </thead>
-                                  <tbody>
-                                    <tr style="color: black;">
-                                      <td><%= record.child.total_stock.to_i %></td>
-                                      <td><%= product.ordered * record.quantity.to_i%></td>
-                                      <td>0</td>
-                                    </tr>
-                                  </tbody>
-                                </table>
-                            </div>
+                          <div class="card-style2">
+                            <%= link_to record.child.sku, product_path(record.child.id) %>
+                            <p style="color: white;">
+                              <b>Location:</b> <span><%= record.child.location %></span>
+                            </p>
+                              <table class="table table-sm table-bordered">
+                                <thead>
+                                  <tr>
+                                    <th scope="col">Avail</th>
+                                    <th scope="col">Alloc</th>
+                                    <th scope="col">Disp</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  <tr style="color: black;">
+                                    <td><%= record.child.total_stock.to_i %></td>
+                                    <td><%= product.ordered * record.quantity.to_i%></td>
+                                    <td>0</td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                          </div>
                           <% end %>
+                        <% else %>
+                          <div class="card-style2">
+                            <%= link_to ChannelOrder.find_product(product)&.sku, product_path(ChannelOrder.find_product(product)&.id) %>
+                            <p style="color: white;">
+                              <b>Location:</b> <span><%= ChannelOrder.find_product(product)&.location %></span>
+                            </p>
+                            <table class="table table-sm table-bordered">
+                              <thead>
+                                <tr>
+                                  <th scope="col">Avail</th>
+                                  <th scope="col">Alloc</th>
+                                  <th scope="col">Disp</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <tr style="color: black;">
+                                  <td><%= ChannelProduct.find_by(item_sku: product.sku).product_mapping.product.total_stock.to_i %></td>
+                                  <td><%= product.ordered%></td>
+                                  <td>0</td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </div>
                         <% end %>
                       <% end %>
                     <% end %>
