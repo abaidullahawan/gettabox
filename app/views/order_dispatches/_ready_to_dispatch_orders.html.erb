@@ -19,7 +19,7 @@
                 <th scope="col">Order Information</th>
                 <th scope="col">Products</th>
                 <th scope="col">Information</th>
-                <th scope="col">Date Recieved</th>
+                <th scope="col">Date</th>
                 <th scope="col">Total</th>
                 <th scope="col">Status</th>
                 <th scope="col"></th>
@@ -28,87 +28,92 @@
             <% @not_started_orders.each do |order| %>
               <tbody>
                 <tr>
-                  <td style = "width: 15%">
+                  <td style = "width: 180px">
                     <%= render  'image_partial', order: order %>
                   </td>
-                  <td>
+                  <td style="width: 170px;">
                     <%= order.ebayorder_id %><br>
                     <%= order.buyer_username %><br>
                     <strong><b><%= order.buyer_name %></b></strong><br>
-                    <%= order.address%><br>
+                    <span class="sku-width"><%= order.address%><br></span>
                   </td>
-                  <td>
+                  <td style="width: 320px">
                     <% order&.channel_order_items&.each do |product|%>
-                      <div class="row">
-                        <div class="col-4">
-                          <% if (ChannelProduct.where(item_sku: product.sku )&.first&.product_data.present?)%>
+                      <div class="card-style">
+                        <div class="col-12 d-flex">
+                          <span class="order-listing">1</span>
+                          <div class="d-flex">
+                          <% if (ChannelProduct.where(item_sku: product.sku )&.first&.product_data.present?  && ChannelProduct.where(item_sku: product.sku )&.first&.product_data["PictureDetails"] != nil)%>
                             <%= image_tag(ChannelProduct.where(item_sku: product.sku )&.first&.product_data["PictureDetails"]["GalleryURL"])%>
+                          <% else %>
+                            <%= image_tag('user/1.jpg', width: "50px", height: "50px", class: 'mr-3 img-thumbnail img-height', alt: 'User Image') %>
                           <% end %>
-                        </div>
-                        <div class="col-8">
+                        <div>
+                          <span class="truncate" title="<%= product.item_data['title'] %>"><%= product.item_data['title'] if product.item_data['title'].present?%></span>
                           <b><%= product.item_data['legacyItemId'] if product.item_data['legacyItemId'].present? %></b><br>
-                          <%= product&.sku if product&.sku.present? %><br>
+                          <div class="sku-width"><%= product&.sku if product&.sku.present? %></div>
                         </div>
-                        <div class="col-12">
-                          <%= product.item_data['title'] if product.item_data['title'].present?%>
+                        </div>
                         </div>
                       </div>
                     <% end %>
                   </td>
-                  <td>
+                  <td style="width: 250px;">
                     <% order.channel_order_items.each do |product|%>
                       <% if ChannelOrder.check_mapping(product) == 'mapped' %>
                         <% if ChannelOrder.check_type(product) == 'single'%>
-                          <%= ChannelOrder.product_title(product) %>
+                        <div class="card-style2">
+                          <%= ChannelOrder.product_sku(product) %>
+                          <p style="color: white;">
+                            <b>Location:</b> <span><%= ChannelOrder.product_location(product) %></span>
+                          </p>
                           <table class="table table-sm table-bordered">
                             <thead>
                               <tr>
-                                <th scope="col">Loc</th>
-                                <th scope="col">War</th>
-                                <th scope="col">Ord</th>
-                                <th scope="col">Alo</th>
-                                <th scope="col">Dis</th>
+                                <th scope="col">Avail</th>
+                                <th scope="col">Alloc</th>
+                                <th scope="col">Disp</th>
                               </tr>
                             </thead>
                             <tbody>
-                              <tr>
-                                <td><%= ChannelOrder.find_product(product).presence || 'N/A' %></td>
+                              <tr style="color: black;">
                                 <td><%= ChannelProduct.find_by(item_sku: product.sku).product_mapping.product.total_stock.to_i %></td>
                                 <td><%= product.ordered%></td>
-                                <td><%= '0' %></td>
                                 <td>0</td>
                               </tr>
                             </tbody>
                           </table>
+                        </div>
                         <% else %>
                           <% ChannelProduct.find_by(item_sku: product.sku)&.product_mapping&.product&.multipack_products&.each do |record| %>
-                            <%= record.child.title %>
-                              <table class="table table-sm table-bordered">
-                                <thead>
-                                  <tr>
-                                    <th scope="col">Loc</th>
-                                    <th scope="col">War</th>
-                                    <th scope="col">Ord</th>
-                                    <th scope="col">Alo</th>
-                                    <th scope="col">Dis</th>
-                                  </tr>
-                                </thead>
-                                <tbody>
-                                  <tr>
-                                    <td><%= ChannelOrder.find_product(product).presence || 'N/A' %></td>
-                                    <td><%= record.child.total_stock.to_i %></td>
-                                    <td><%= product.ordered * record.quantity.to_i%></td>
-                                    <td><%= '0' %></td>
-                                    <td>0</td>
-                                  </tr>
-                                </tbody>
-                              </table>
+                            <div class="card-style2">
+                              <%= record.child.sku %>
+                              <p style="color: white;">
+                                <b>Location:</b> <span><%= record.child.location %></span>
+                              </p>
+                                <table class="table table-sm table-bordered">
+                                  <thead>
+                                    <tr>
+                                      <th scope="col">Avail</th>
+                                      <th scope="col">Alloc</th>
+                                      <th scope="col">Disp</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    <tr style="color: black;">
+                                      <td><%= record.child.total_stock.to_i %></td>
+                                      <td><%= product.ordered * record.quantity.to_i%></td>
+                                      <td>0</td>
+                                    </tr>
+                                  </tbody>
+                                </table>
+                            </div>
                           <% end %>
                         <% end %>
                       <% end %>
                     <% end %>
                   </td>
-                  <td><%= order.created_at.strftime("%m/%d/%Y %H:%M") %></td>
+                  <td style="width: 100px;"><%= order.created_at.strftime("%m/%d/%Y %H:%M") %></td>
                   <td><%= order.total_amount%></td>
                   <td><span class="badge badge_warning py-1"><%= order.order_status%></span></td>
                   <td>
