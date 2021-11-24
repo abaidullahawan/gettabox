@@ -97,10 +97,10 @@
                 <tr>
                   <th><input type="checkbox" id="" name="" value="" class='select-all-checkbox'></th>
                   <th>Image</th>
-                  <th>Title</th>
-                  <th class="text-center">SKU</th>
-                  <th class="text-center">Quantity (Total)</th>
-                  <th class="text-center">Product type</th>
+                  <th><%= sort_link(@q, :title, {}, { class: "text-dark" }) %></th>
+                  <th class="text-center"><%= sort_link(@q, :sku, {}, { class: "text-dark" }) %></th>
+                  <th class="text-center" style="width: 140px"><%= sort_link(@q, :total_stock, 'Quantity (Total)', {}, { class: "text-dark" }) %></th>
+                  <th class="text-center" style="width: 115px"><%= sort_link @q, :product_type, {}, { class: "text-dark" } %></th>
                   <th>
                     <%#= select_tag "users[]", options_for_select(@users.collect{|x| [x.name,x.id]}), {:multiple => :multiple, :size => 10} %>
                   </th>
