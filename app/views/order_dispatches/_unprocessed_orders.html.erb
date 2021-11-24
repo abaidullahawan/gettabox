@@ -107,7 +107,7 @@ Unmapped Product SKU's
                         <ul class="dropdown-menu product-dropdown-list search-list" aria-labelledby="product-title-search">
                           <li><label class="dropdown-item product-list-item">Select the Product</label></li>
                         </ul>
-                        <%= f.hidden_field :product_id %>
+                        <%= f.hidden_field :searched_product_id %>
                       </div>
                       <% if item.status_unmapped? %>
                         <div class="productSearchContainer">
@@ -124,7 +124,7 @@ Unmapped Product SKU's
                       <ul class="dropdown-menu product-dropdown-list search-list" aria-labelledby="product-title-search">
                         <li><label class="dropdown-item product-list-item">Select the Product</label></li>
                       </ul>
-                      <%= f.hidden_field :product_id %>
+                      <%= f.hidden_field :searched_product_id %>
                     </div>
                   <% end %>
                     <div class="dropdown dropleft">
