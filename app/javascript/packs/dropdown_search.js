@@ -50,16 +50,16 @@ $(document).on('turbolinks:load', function () {
   $('.product-dropdown-list').on('click', '.product-list-item', function () {
     var parent_div = $(this.closest('div'))
     $(parent_div).find('ul').hide()
-    $(parent_div).find('input')[1].focus()
-    $($(parent_div).find('input')[0]).val(this.dataset.id)
-    $($(parent_div).find('input')[1]).val(this.outerText)
+    $(parent_div).find('input')[0].focus()
+    $($(parent_div).find('input')[1]).val(this.dataset.id)
+    $($(parent_div).find('input')[0]).val(this.outerText)
     return false
   })
 
   $('.product-dropdown-list').on('focus', '.product-list-item', function () {
     var parent_div = this.closest('div')
-    $($(parent_div).find('input')[0]).val(this.dataset.id)
-    $($(parent_div).find('input')[1]).val(this.outerText)
+    $($(parent_div).find('input')[1]).val(this.dataset.id)
+    $($(parent_div).find('input')[0]).val(this.outerText)
   })
 
   $('.product-sku-dropdown-list').on('click', '.product-sku-list-item', function () {

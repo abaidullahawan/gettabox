@@ -132,12 +132,12 @@
                             <% end %>
                           </div>
                           <div class="dropdown form-group">
-                            <%= f.hidden_field :searched_product_id %>
                             <%= f.search_field :searched_product_title, class: 'form-control dropdown-toggle d-none productSearch', id: 'product-title-search', data: {toggle: 'dropdown', option: {array: {index: 0} } }, autocomplete: 'off', placeholder:"Search in Title", onkeyup: "dropdown_search( '/products/products_by_title', 'product-dropdown-list', 'product-list-item', event)", onclick: "dropdown_search( '/products/products_by_title', 'product-dropdown-list', 'product-list-item', event)" %>
                             <span class="searchclear">@@</span>
                             <ul class="dropdown-menu product-dropdown-list search-list" aria-labelledby="product-title-search">
                               <li><label class="dropdown-item product-list-item">Select the Product</label></li>
                             </ul>
+                            <%= f.hidden_field :searched_product_id %>
                           </div>
                         </td>
                       <% else %>
@@ -145,12 +145,12 @@
                         <td>N/A</td>
                         <td>
                           <div class="dropdown form-group" style="min-width: 250px;">
-                            <%= f.hidden_field :searched_product_id %>
                             <%= f.search_field :searched_product_title, class: 'form-control dropdown-toggle', id: 'product-title-search', data: {toggle: 'dropdown', option: {array: {index: 0} } }, autocomplete: 'off', placeholder:"Search in Title", onkeyup: "dropdown_search( '/products/products_by_title', 'product-dropdown-list', 'product-list-item', event)", onclick: "dropdown_search( '/products/products_by_title', 'product-dropdown-list', 'product-list-item', event)" %>
                             <span class="searchclear">@@</span>
                             <ul class="dropdown-menu product-dropdown-list search-list" aria-labelledby="product-title-search">
                               <li><label class="dropdown-item product-list-item">Select the Product</label></li>
                             </ul>
+                            <%= f.hidden_field :searched_product_id %>
                           </div>
                         </td>
                       <% end %>
@@ -160,9 +160,9 @@
                             Actions
                           </button>
                           <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                            <%= f.submit 'Un-map', class: "dropdown-item" if item.status_mapped? %>
+                            <%= f.submit 'Un-map', class: "dropdown-item", data_disable_with: false if item.status_mapped? %>
                             <% if item.status_unmapped? %>
-                              <%= f.submit 'Map', class: "dropdown-item" %>
+                              <%= f.submit 'Map', class: "dropdown-item" , data_disable_with: false %>
                               <a type="button" class="dropdown-item create-single-product" data-id="<%= item.id %>" data-item = '<%= item.to_json.html_safe %>' >Create Single Pack</a>
                               <a type="button" class="dropdown-item create-multi-product" data-id="<%= item.id %>" data-item = '<%= item.to_json.html_safe %>' >Create Multi Pack</a>
                             <% end %>
