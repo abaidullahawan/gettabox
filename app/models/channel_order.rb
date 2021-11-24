@@ -12,7 +12,7 @@ class ChannelOrder < ApplicationRecord
   }, _prefix: true
 
   def self.find_product(product)
-    ChannelProduct.find_by(item_sku: product.sku)&.product_mapping&.product&.location
+    ChannelProduct.find_by(item_sku: product.sku)&.product_mapping&.product
   end
 
   def self.check_mapping(product)
