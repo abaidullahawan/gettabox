@@ -100,3 +100,46 @@ input:checked + .slider:before {
 .width-inherit{
   width: inherit;
 }
+
+.order-listing{
+  float: left;
+  height: 34px;
+  display: block;
+  text-align: center;
+  background-color: #fff;
+  border-radius: 4em;
+  font-size: 24px;
+  color: #000;
+  padding: 0 0.5em;
+  margin: 10px 5px 0px 0px;
+}
+
+.truncate{
+  width: 150px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sku-width{
+  width: 140px;
+}
+
+.img-height{
+  height: 60px !important;
+  width: 50px !important;
+}
+
+.card-style{
+  background: #2962ff;
+  padding: 15px 0px;
+  color: white;
+}
+
+.card-style2{
+  background: #8cb225;
+  color: white !important;
+  font-size: 15px;
+  padding: 10px;
+  margin-top: 5px;
+}
