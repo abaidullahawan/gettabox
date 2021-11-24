@@ -106,7 +106,7 @@ class OrderDispatchesController < ApplicationController
   end
 
   def unpaid_orders
-    @unpaid_orders = @q.where(payment_status: 'UNPAID').where(channel_type: @order_type)
+    @unpaid_orders = @q.where('payment_status = ? OR order_status = ?', 'UNPAID', 'Pending').where(channel_type: @order_type)
     @unpaid = @unpaid_orders.order(created_at: :desc).page(params[:unpaid_page]).per(params[:limit])
   end
 

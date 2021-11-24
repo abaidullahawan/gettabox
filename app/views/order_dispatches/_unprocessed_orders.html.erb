@@ -5,7 +5,7 @@ Unable to Find SKU's
       <tr>
         <th scope="col">Channel</th>
         <th scope="col">Order Information</th>
-        <th scope="col">Products</th>
+        <th scope="col">Listings</th>
         <th scope="col">Date Recieved</th>
         <th scope="col">Total</th>
         <th scope="col">Status</th>
@@ -61,7 +61,7 @@ Unmapped Product SKU's
       <tr>
         <th scope="col">Channel</th>
         <th scope="col">Order Information</th>
-        <th scope="col">Products</th>
+        <th scope="col">Listings</th>
         <th scope="col">Mapping</th>
         <th scope="col">Date Recieved</th>
         <th scope="col">Total</th>
@@ -107,6 +107,7 @@ Unmapped Product SKU's
                         <ul class="dropdown-menu product-dropdown-list search-list" aria-labelledby="product-title-search">
                           <li><label class="dropdown-item product-list-item">Select the Product</label></li>
                         </ul>
+                        <%= f.hidden_field :product_id %>
                       </div>
                       <% if item.status_unmapped? %>
                         <div class="productSearchContainer">
@@ -123,6 +124,7 @@ Unmapped Product SKU's
                       <ul class="dropdown-menu product-dropdown-list search-list" aria-labelledby="product-title-search">
                         <li><label class="dropdown-item product-list-item">Select the Product</label></li>
                       </ul>
+                      <%= f.hidden_field :product_id %>
                     </div>
                   <% end %>
                     <div class="dropdown dropleft">
