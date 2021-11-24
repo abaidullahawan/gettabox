@@ -39,21 +39,23 @@
                   </td>
                   <td style="width: 320px">
                     <% order&.channel_order_items&.each do |product|%>
-                      <div class="card-style">
-                        <div class="col-12 d-flex">
-                          <span class="order-listing">1</span>
-                          <div class="d-flex">
-                            <% if (ChannelProduct.where(item_sku: product.sku )&.first&.product_data.present?  && ChannelProduct.where(item_sku: product.sku )&.first&.product_data["PictureDetails"] != nil)%>
-                              <%= image_tag(ChannelProduct.where(item_sku: product.sku )&.first&.product_data["PictureDetails"]["GalleryURL"])%>
-                            <% else %>
-                              <%= image_tag('user/1.jpg', width: "50px", height: "50px", class: 'mr-3 img-thumbnail img-height', alt: 'User Image') %>
-                            <% end %>
-                          <div>
-                          <span class="truncate" title="<%= product.item_data['title'] %>"><%= product.item_data['title'] if product.item_data['title'].present?%></span>
-                          <b><%= product.item_data['legacyItemId'] if product.item_data['legacyItemId'].present? %></b><br>
-                          <div class="sku-width"><%= product&.sku if product&.sku.present? %></div>
+                      <%= link_to product_mappings_path(q:{item_sku_or_item_id_cont: product.item_data['legacyItemId']}) do %>
+                        <div class="card-style">
+                          <div class="col-12 d-flex">
+                            <span class="order-listing">1</span>
+                            <div class="d-flex">
+                              <% if (ChannelProduct.where(item_sku: product.sku )&.first&.product_data.present?  && ChannelProduct.where(item_sku: product.sku )&.first&.product_data["PictureDetails"] != nil)%>
+                                <%= image_tag(ChannelProduct.where(item_sku: product.sku )&.first&.product_data["PictureDetails"]["GalleryURL"])%>
+                              <% else %>
+                                <%= image_tag('user/1.jpg', width: "50px", height: "50px", class: 'mr-3 img-thumbnail img-height', alt: 'User Image') %>
+                              <% end %>
+                            <div>
+                            <span class="truncate text-white" title="<%= product.item_data['title'] %>"><%= product.item_data['title'] if product.item_data['title'].present?%></span>
+                            <b class = "text-white"><%= product.item_data['legacyItemId'] if product.item_data['legacyItemId'].present? %></b><br>
+                            <div class="sku-width text-white"><%= product&.sku if product&.sku.present? %></div>
+                          </div>
                         </div>
-                      </div>
+                      <% end %>
                     <% end %>
                   </td>
                   <td style="width: 250px;">
