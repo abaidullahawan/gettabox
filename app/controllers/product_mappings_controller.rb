@@ -75,7 +75,7 @@ class ProductMappingsController < ApplicationController
   end
 
   def attach_photo(product)
-    url = product.product_data["PictureDetails"]["GalleryURL"]
+    url = product.product_data['PictureDetails']['GalleryURL']
     filename = File.basename(url.pathmap)
     begin
       file = URI.parse(url).open
@@ -93,7 +93,7 @@ class ProductMappingsController < ApplicationController
     if @product&.save
       ProductMapping.create(channel_product_id: cd.id, product_id: @product.id)
       cd.status_mapped!
-      attach_photo(cd) unless @product.photo.attached?
+      attach_photo(cd) unless @product.photo.attached? || cd.product_data['PictureDetails'].nil?
     else
       flash[:alert] = @product.errors.full_messages
     end
