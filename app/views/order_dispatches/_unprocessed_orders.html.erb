@@ -81,8 +81,8 @@ Unmapped Product SKU's
             <%= order.address%>
           </td>
           <td>
-            <% order.channel_order_items.each do |product|%>
-              <%= image_tag(ChannelProduct.find_by(item_sku: product.sku )&.product_data["PictureDetails"]["GalleryURL"]) if ChannelProduct.where(item_sku: product.sku )&.first&.product_data["PictureDetails"].present? %><br>
+            <% order.channel_order_items&.each do |product|%>
+              <%= image_tag(ChannelProduct.find_by(item_sku: product.sku )&.product_data["PictureDetails"]["GalleryURL"]) if ChannelProduct.find_by(item_sku: product.sku )&.product_data["PictureDetails"].present? %><br>
               <%= product&.sku %><br>
             <% end %>
           </td>
