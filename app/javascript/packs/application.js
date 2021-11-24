@@ -28,7 +28,7 @@ require("packs/season")
 require("packs/purchase_delivery")
 require("packs/chosen-jquery")
 require("packs/chosen")
-require('data-confirm-modal')
+// require('data-confirm-modal')
 require("packs/product_mapping")
 require("packs/dropdown_search")
 

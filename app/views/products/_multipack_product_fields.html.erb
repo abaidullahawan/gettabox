@@ -3,7 +3,14 @@
   <div class="form-group row">
     <div class="col-8">
       <%= f.label 'Add Product' %>
-      <%= f.select :child_id, @single_products&.map{|u| [u['title'], u['id']]}, {include_blank: 'Select a Product'}, class: 'form-control chosen-select', required: true %>
+      <div class="dropdown form-group" style="min-width: 250px;">
+        <%= f.search_field :child_id, class: 'form-control dropdown-toggle', id: 'product-title-search-1', data: {toggle: 'dropdown', option: {array: {index: 0} } }, autocomplete: 'off', placeholder:"Search in Title", onkeyup: "dropdown_search( '/products/products_by_title', 'product-dropdown-list', 'product-list-item', event)", onclick: "dropdown_search( '/products/products_by_title', 'product-dropdown-list', 'product-list-item', event)" %>
+        <span class="searchclear">@@</span>
+        <ul class="dropdown-menu product-dropdown-list search-list" aria-labelledby="product-title-search-1">
+          <li><label class="dropdown-item product-list-item">Select the Product</label></li>
+        </ul>
+        <%= f.hidden_field :child_id %>
+      </div>
     </div>
     <div class="col-3">
       <%= f.label 'Quantity' %>
@@ -15,3 +22,25 @@
     </div>
   </div>
 </div>
+<script>
+  $('.searchclear').on('click', function () {
+    $(this).prev('input').val('');
+    return false;
+  })
+  $(".nested_fields_btn").data("association-insertion-method", 'after')
+
+  $('.product-dropdown-list').on('click', '.product-list-item', function () {
+    var parent_div = $(this.closest('div'))
+    $(parent_div).find('ul').hide()
+    $(parent_div).find('input')[0].focus()
+    $($(parent_div).find('input')[1]).val(this.dataset.id)
+    $($(parent_div).find('input')[0]).val(this.outerText)
+    return false
+  })
+
+  $('.product-dropdown-list').on('focus', '.product-list-item', function () {
+    var parent_div = this.closest('div')
+    $($(parent_div).find('input')[1]).val(this.dataset.id)
+    $($(parent_div).find('input')[0]).val(this.outerText)
+  })
+</script>
