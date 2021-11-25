@@ -68,46 +68,42 @@
                             <p style="color: white;">
                               <b>Location:</b> <span><%= record.child.location %></span>
                             </p>
-                              <table class="table table-sm table-bordered">
-                                <thead>
-                                  <tr>
-                                    <th scope="col">Avail</th>
-                                    <th scope="col">Alloc</th>
-                                    <th scope="col">Disp</th>
-                                  </tr>
-                                </thead>
-                                <tbody>
-                                  <tr style="color: black;">
-                                    <td><%= record.child.total_stock.to_i %></td>
-                                    <td><%= product.ordered * record.quantity.to_i%></td>
-                                    <td>0</td>
-                                  </tr>
-                                </tbody>
-                              </table>
+                            <div class="d-flex">
+                              <div class="col-4 col-padding">
+                                <p class="heading-table">Avail</p>
+                                <p class="table-value"><%= record.child.total_stock.to_i %></p>
+                              </div>
+                              <div class="col-4 col-padding">
+                                <p class="heading-table">Alloc</p>
+                                <p class="table-value"><%= product.ordered * record.quantity.to_i%></p>
+                              </div>
+                              <div class="col-4 col-padding">
+                                <p class="heading-table">Disp</p>
+                                <p class="table-value">0</p>
+                              </div>
+                            </div>
                           </div>
                           <% end %>
                         <% else %>
                           <div class="card-style2">
-                            <%= link_to ChannelOrder.find_product(product)&.sku, product_path(ChannelOrder.find_product(product)&.id) %>
+                            <%= link_to ChannelOrder.find_product(product)&.sku, product_path(ChannelOrder.find_product(product)&.id), style: "color: white" %>
                             <p style="color: white;">
                               <b>Location:</b> <span><%= ChannelOrder.find_product(product)&.location %></span>
                             </p>
-                            <table class="table table-sm table-bordered">
-                              <thead>
-                                <tr>
-                                  <th scope="col">Avail</th>
-                                  <th scope="col">Alloc</th>
-                                  <th scope="col">Disp</th>
-                                </tr>
-                              </thead>
-                              <tbody>
-                                <tr style="color: black;">
-                                  <td><%= ChannelProduct.find_by(item_sku: product.sku).product_mapping.product.total_stock.to_i %></td>
-                                  <td><%= product.ordered%></td>
-                                  <td>0</td>
-                                </tr>
-                              </tbody>
-                            </table>
+                            <div class="d-flex">
+                              <div class="col-4 col-padding">
+                                <p class="heading-table">Avail</p>
+                                <p class="table-value"><%= ChannelProduct.find_by(item_sku: product.sku).product_mapping.product.total_stock.to_i %></p>
+                              </div>
+                              <div class="col-4 col-padding">
+                                <p class="heading-table">Alloc</p>
+                                <p class="table-value"><%= product.ordered%></p>
+                              </div>
+                              <div class="col-4 col-padding">
+                                <p class="heading-table">Disp</p>
+                              <p class="table-value">0</p>
+                            </div>
+                            </div>
                           </div>
                         <% end %>
                       <% end %>
