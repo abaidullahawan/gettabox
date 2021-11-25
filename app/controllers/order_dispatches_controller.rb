@@ -4,7 +4,7 @@
 class OrderDispatchesController < ApplicationController
   include NewProduct
   before_action :authenticate_user!
-  before_action :refresh_token, :refresh_token_amazon, only: %i[index all_order_data]
+  # before_action :refresh_token, :refresh_token_amazon, only: %i[index all_order_data]
   before_action :check_status, only: %i[index fetch_response_orders]
   before_action :ransack_params, :params_check, :completed_orders, :matched_sku, :no_sku, :unpaid_orders, :unmatched_product_orders,
                 :unmatched_sku, :not_started_orders, only: %i[index]
