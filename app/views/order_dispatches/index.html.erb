@@ -19,7 +19,7 @@
 <div class='row mb-4' style="margin-left: 0px;">
   <div class="col-md-3">
     <%= search_form_for @q, url: order_dispatches_path, method: :get do |f| %>
-      <%= select_tag :product_mapping, options_for_select([ "Amazon Orders", "Ebay Orders"], params[:product_mapping]), class:"form-control chosen-select product-mapping-select", title: 'Select Mapping Category', prompt: "Please select" %>
+      <%= select_tag :product_mapping, options_for_select([ "Amazon Orders", "Ebay Orders"], params[:product_mapping]), class:"bg-white form-control order-mapping-select", title: 'Select Mapping Category', prompt: "Please select" %>
       <%= f.submit 'Mapping', class: 'btn btn-primary product-mapping-request d-none' %>
     <% end %>
   </div>
