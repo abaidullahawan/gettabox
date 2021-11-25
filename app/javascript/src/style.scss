@@ -131,9 +131,10 @@ input:checked + .slider:before {
 }
 
 .card-style{
-  background: #2962ff;
+  background: #5CACDF;
   padding: 15px 0px;
   color: white;
+  border-radius: 10px;
 }
 
 .card-style2{
@@ -142,4 +143,28 @@ input:checked + .slider:before {
   font-size: 15px;
   padding: 10px;
   margin-top: 5px;
+  border-radius: 10px;
+}
+
+.col-padding{
+  padding: 2px !important;
+}
+
+.heading-table{
+  background: #354700;
+  color: white;
+  text-align: center;
+  margin-bottom: 4px !important;
+  border-top-right-radius: 6px;
+  border-top-left-radius: 6px;
+  font-size: 17px;
+  font-weight: bold;
+}
+
+.table-value{
+  text-align: center;
+  background: #547200;
+  color: white;
+  border-bottom-right-radius: 6px;
+  border-bottom-left-radius: 6px;
 }
