@@ -54,5 +54,6 @@ class CreateChannelProductResponseJob < ApplicationJob
       break if @page_no > @total_pages
     end
     CreateChannelProductJob.perform_later
+    EbaySellingListJob.perform_later
   end
 end
