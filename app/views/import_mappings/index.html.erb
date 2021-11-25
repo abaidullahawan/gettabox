@@ -6,18 +6,25 @@
                   <div class="card-header">
                       <h5 class="card-title">Import Mappings</h5>
                   </div>
-                  <% if @import_mapping.present?%>
+                  <div class= "mb-4">
+                    <%= form_for @product, url: product_file_path, method: :post do |f| %>
+                      <%= f.file_field :file, style:"width:240px;", class: 'btn', accept: ".csv",required: true %>
+                      <%= f.submit 'Create Mapping', class:"btn btn-primary"%>
+                    <% end %>
+                  </div>
+                  <% @import_mappings.each do |import_mapping| %>
                     <div class='col-12 mb-2 float-right'>
+                      <h1 class="fs-18 mb-2 mt-2"><strong>Description: </strong><%= import_mapping.sub_type %></h1>
                       <div class= 'd-flex'>
-                        <%= link_to 'Destroy', @import_mapping, method: :delete, data: { confirm: 'Are you sure?' }, class: "btn btn-danger" %>
-                        <%= link_to 'Edit', edit_import_mapping_path(@import_mapping), class: "btn btn-info ml-3 mr-3" %>
+                        <%= link_to 'Destroy', import_mapping, method: :delete, data: { confirm: 'Are you sure?' }, class: "btn btn-danger" %>
+                        <%= link_to 'Edit', edit_import_mapping_path(import_mapping), class: "btn btn-info ml-3 mr-3" %>
                         <%= form_tag import_products_path, multipart: true, method: :post do %>
-                          <%= text_field_tag :mapping_type, @import_mapping.sub_type, class: 'd-none form-control'%>
+                          <%= text_field_tag :mapping_type, import_mapping.sub_type, class: 'd-none form-control'%>
                           <%= file_field_tag :file, :required => true %>
                           <%= submit_tag("Import", id: "button", class: "btn btn-primary", name: "submit") %>
                         <% end %>
                       </div>
-                      <h1 class="fs-18 mb-2"><strong>Description: </strong><%= @import_mapping.sub_type %></h1>
+                      <% @blank, @full = import_mapping&.mapping_data&.partition { |_, v| v.blank? }&.map { |alist| Hash[alist] }%>
                     </div>
                     <div class="row justify-content-center">
                       <div class="col-lg-12">

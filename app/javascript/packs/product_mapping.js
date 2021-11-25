@@ -98,7 +98,6 @@ $(document).on('turbolinks:load', function () {
 
   // $('.productSearch').on('focusout', function () {
   //   if ($('.productSearch').value === ''){
-  //     debugger
   //     $(this).closest('td').find('.productSearchContainer').toggleClass('d-none', 3000);
   //     $(this).closest('td').find('.productSearch').toggleClass('d-none', 3000);
   //   }

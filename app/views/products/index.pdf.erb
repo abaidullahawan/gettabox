@@ -9,7 +9,7 @@
         <th class="text-center">Quantity (Total)</th>
         <th class="text-center">Product type</th>
       </tr>
-      <% @products&.each&.with_index(1) do |product, index| %>
+      <% @q.result&.each&.with_index(1) do |product, index| %>
         <tr class='<%= (product.minimum.to_i > product.total_stock.to_i ) ? 'table-danger' : '' %>'>
           <td>
             <% if  product.photo.attached? %>

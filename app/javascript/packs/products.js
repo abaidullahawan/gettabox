@@ -16,7 +16,6 @@ $(document).on('turbolinks:load', function () {
   })
 
   $('.chosen-container-single').on('click', function (param) {
-    debugger;
     this.css('border', '1px solid red')
   })
 
