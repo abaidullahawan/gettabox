@@ -30,4 +30,12 @@ class ChannelOrder < ApplicationRecord
   def self.product_location(product)
     ChannelProduct.find_by(item_sku: product.sku)&.product_mapping&.product&.location
   end
+
+  def self.picture_check(product)
+    ChannelProduct.find_by(item_sku: product.sku )&.product_data.present?  && ChannelProduct.find_by(item_sku: product.sku )&.product_data["PictureDetails"] != nil
+  end
+
+  def self.picture_data(product)
+    ChannelProduct.find_by(item_sku: product.sku )&.product_data["PictureDetails"]["GalleryURL"]
+  end
 end

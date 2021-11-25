@@ -143,15 +143,11 @@ class ProductsController < ApplicationController
       file_type = file.present? ? file.path.split('.').last.to_s.downcase : ''
       if file.present? && (file_type == 'csv' or file_type == 'xlsx')
         spreadsheet = open_spreadsheet(file)
-        @header = []
+        @header = spreadsheet.headers
         @data = []
-        spreadsheet.first.to_a.each do |row|
-          @header.push(row[0].to_s)
-        end
         @import_mapping = ImportMapping.new
         @table_names = ['Order', 'Product']
         @db_names = Product.column_names
-        @unmatched_columns = @db_names - @header
         redirect_to new_import_mapping_path(db_columns: @db_names, header: @header, import_mapping: @import_mapping)
       else
         flash[:alert] = 'Try again file not match'
