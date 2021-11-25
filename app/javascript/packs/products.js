@@ -14,11 +14,6 @@ $(document).on('turbolinks:load', function () {
       $(this).removeClass('border-danger');
     }
   })
-
-  $('.chosen-container-single').on('click', function (param) {
-    this.css('border', '1px solid red')
-  })
-
   // Product Create Form JQuery start
   $('.multi_basic_info_button').on('click', function () {
     // var photo = $('#multi-product-create-modal input[name="product[photo]"]').val()
