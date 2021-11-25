@@ -12,7 +12,7 @@ class Product < ApplicationRecord
   has_many :system_users, through: :product_suppliers
   has_many :multipack_products, dependent: :destroy
   has_many :products, through: :multipack_products
-  has_one :product_mapping
+  has_many :product_mappings
 
   belongs_to :category
   belongs_to :season, optional: true

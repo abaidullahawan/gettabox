@@ -32,7 +32,6 @@
   $(".nested_fields_btn").data("association-insertion-method", 'after')
 
   $('.product-dropdown-list').on('click', '.product-list-item', function () {
-    debugger;
     var parent_div = $(this.closest('div'))
     $(parent_div).find('ul').hide()
     $(parent_div).find('input')[0].focus()
@@ -42,7 +41,6 @@
   })
 
   $('.product-dropdown-list').on('focus', '.product-list-item', function () {
-    debugger;
     var parent_div = this.closest('div')
     $($(parent_div).find('input')[1]).val(this.dataset.id)
     $($(parent_div).find('input')[0]).val(this.outerText)

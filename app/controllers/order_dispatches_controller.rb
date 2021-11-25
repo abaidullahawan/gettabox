@@ -12,6 +12,11 @@ class OrderDispatchesController < ApplicationController
 
   def index
     @q = ChannelOrder.ransack(params[:q])
+    export_csv(@q.result) if params[:export_csv].present?
+    respond_to do |format|
+      format.html
+      format.csv
+    end
     all_order_data if params[:orders_api].present?
     @product = Product.new
     @matching_products = {}
@@ -36,6 +41,13 @@ class OrderDispatchesController < ApplicationController
       flash[:notice] = 'CALL sent to eBay API'
     end
     redirect_to order_dispatches_path
+  end
+
+  def export_csv(orders)
+    request.format = 'csv'
+    respond_to do |format|
+      format.csv { send_data csv_export(orders), filename: "products-#{Date.today}.csv" }
+    end
   end
 
   def fetch_response_orders
@@ -120,5 +132,16 @@ class OrderDispatchesController < ApplicationController
     @un_matched_product_orders = @q.joins(:channel_order_items).where('channel_order_items.sku': @unmatch_product_data).where(channel_type: @order_type).order(created_at: :desc)
     @un_matched_product_orders = @un_matched_product_orders.uniq - @completed
     @un_matched_product_order = Kaminari.paginate_array(@un_matched_product_orders).page(params[:unmatched_product_page]).per(5)
+  end
+
+  def csv_export(orders)
+    attributes = ChannelOrder.column_names.excluding('created_at', 'updated_at')
+    CSV.generate(headers: true) do |csv|
+      csv << attributes
+      orders.each do |channel_order|
+        row = channel_order.attributes.values_at(*attributes)
+        csv << row
+      end
+    end
   end
 end

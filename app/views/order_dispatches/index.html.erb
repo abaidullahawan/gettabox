@@ -1,7 +1,7 @@
 
 
 <!-- Main Content Header -->
-<div class="main-content-header">
+<div class="main-content-header mt-3">
   <h1>Order Dispatch</h1>
   <ol class="breadcrumb">
     <li class="breadcrumb-item">
@@ -11,6 +11,9 @@
       <span class="active">Order Dispatch</span>
     </li>
   </ol>
+    <div class= 'mb-3 float-right'>
+      <%= link_to 'Export', order_dispatches_path(format: :csv, export_csv: true), class: 'btn btn-sm btn-primary' %>
+    </div>
 </div>
 <!-- End Main Content Header -->
 <div class='row mb-4' style="margin-left: 0px;">
@@ -97,7 +100,6 @@
             <a class="nav-link" data-toggle="tab" href="#demo_seven_home"><%= "Unpaid Orders (#{@unpaid_orders.count})"%></a>
           </li>
         </ul>
-
         <div class="tab-content">
           <div class="tab-pane fade show active" id="demo_two_home" role="tabpanel">
             <%= render 'unprocessed_orders'%>

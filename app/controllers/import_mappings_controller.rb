@@ -3,8 +3,8 @@ class ImportMappingsController < ApplicationController
 
   # GET /import_mappings or /import_mappings.json
   def index
-    @import_mapping = ImportMapping.find_by(table_name: 'Product')
-    @blank, @full = @import_mapping&.mapping_data&.partition { |_, v| v.blank? }&.map { |alist| Hash[alist] }
+    @product = Product.new
+    @import_mappings = ImportMapping.where(table_name: 'Product')
   end
 
   # GET /import_mappings/1 or /import_mappings/1.json

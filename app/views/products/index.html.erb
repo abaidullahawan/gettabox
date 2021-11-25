@@ -57,10 +57,6 @@
           </div>
           <h5 class="card-title"> Data</h5>
         </div>
-        <%= form_for @product, url: product_file_path, method: :post do |f| %>
-          <%= f.file_field :file, style:"width:240px;", class: 'btn', accept: ".csv",required: true %>
-          <%= f.submit 'Create Mapping', class:"btn btn-primary"%>
-        <% end %>
         <%= search_form_for @q, url: products_path, method: :get do |f| %>
           <div class='row'>
             <div class="col-md-1"><br>
