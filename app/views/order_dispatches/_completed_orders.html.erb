@@ -5,8 +5,8 @@
         <%= form_tag order_dispatches_path,nav_class: "d-inline-b", class: "mb-3", method: :get do |f| %>
         <div class='col-md-12'>
           <div class='float-right'>
-            <label for="inputState">Per Page</label>
-            <%= select_tag :limit, options_for_select([5, 10, 15, 20], selected: params[:limit] || 5), id: 'change_per_page', class: 'form-control' %>
+            <%# <label for="inputState">Per Page</label> %>
+            <%#= select_tag :limit, options_for_select([5, 10, 15, 20], selected: params[:limit] || 5), id: 'change_per_page', class: 'form-control' %>
             <button type="submit" id="per_page_submit" hidden="hidden"></button>
           </div>
         </div>

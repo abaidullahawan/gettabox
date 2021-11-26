@@ -79,7 +79,7 @@
 
                 <a
                     class="nav-link <%= active_klass(order_dispatches_path) %>"
-                    href="<%= order_dispatches_path %>"
+                    href="<%= order_dispatches_path(order_filter: 'unprocessed') %>"
                 >
                     <i data-feather="shopping-bag" class="icon"></i>
                     <span class="title">Order Dispatch</span>

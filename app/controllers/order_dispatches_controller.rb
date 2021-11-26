@@ -6,26 +6,17 @@ class OrderDispatchesController < ApplicationController
   before_action :authenticate_user!
   # before_action :refresh_token, :refresh_token_amazon, only: %i[index all_order_data]
   before_action :check_status, only: %i[index fetch_response_orders]
-  before_action :ransack_params, :params_check, :completed_orders, :matched_sku, :no_sku, :unpaid_orders, :unmatched_product_orders,
+  before_action :ransack_params, :load_counts, :completed_orders, :matched_sku, :no_sku, :unpaid_orders, :unmatched_product_orders,
                 :unmatched_sku, :not_started_orders, only: %i[index]
   before_action :new_product, :product_load_resources, :first_or_create_category, only: %i[index]
 
   def index
-    @q = ChannelOrder.ransack(params[:q])
-    export_csv(@q.result) if params[:export_csv].present?
+    export_csv(@channel_orders) if params[:export_csv].present?
     respond_to do |format|
       format.html
       format.csv
     end
     all_order_data if params[:orders_api].present?
-    @product = Product.new
-    @matching_products = {}
-    @un_matched_product_order.each do |order|
-      order.channel_order_items.each do |item|
-        matching = Product.find_by('sku LIKE ?', "%#{item.sku}%")
-        @matching_products[item.id] = matching if matching.present?
-      end
-    end
     @mail_service_rule = MailServiceRule.new
   end
 
@@ -41,7 +32,7 @@ class OrderDispatchesController < ApplicationController
       CreateChannelOrderResponseJob.perform_later
       flash[:notice] = 'CALL sent to eBay API'
     end
-    redirect_to order_dispatches_path
+    redirect_to order_dispatches_path(order_filter: 'unprocessed')
   end
 
   def export_csv(orders)
@@ -58,7 +49,7 @@ class OrderDispatchesController < ApplicationController
       CreateChannelOrderJob.perform_later
       flash[:notice] = 'eBay Orders are saving . . .'
     end
-    redirect_to order_dispatches_path
+    redirect_to order_dispatches_path(order_filter: 'unprocessed')
   end
 
   private
@@ -74,65 +65,88 @@ class OrderDispatchesController < ApplicationController
     @status = 3 if @response_status == []
   end
 
-  def params_check
-    if params[:product_mapping].eql? 'Amazon Orders'
-      @order_type = 'amazon'
-    elsif params[:product_mapping].eql? 'Ebay Orders'
-      @order_type = ['ebay']
-    else
-      @order_type = %w[ebay amazon]
-    end
-  end
+  # def params_check
+  #   if params[:product_mapping].eql? 'Amazon Orders'
+  #     @order_type = 'amazon'
+  #   elsif params[:product_mapping].eql? 'Ebay Orders'
+  #     @order_type = ['ebay']
+  #   else
+  #     @order_type = %w[ebay amazon]
+  #   end
+  # end
 
   def ransack_params
     @q = ChannelOrder.ransack(params[:q])
-    @q = @q.result
+    @channel_orders = @q.result
+    @channel_types = ChannelOrder.channel_types
   end
 
   def unmatched_sku
-    @unmatched_sku = []
-    @all_orders = @q.where(channel_type: @order_type)
-    @unmatched_sku = @all_orders - @matched_sku - @no_sku - @completed - @un_matched_product_orders
-    @unmatched_sku_sort = @unmatched_sku.sort_by(&:created_at).reverse!
-    @unmatched_sku_sort = Kaminari.paginate_array(@unmatched_sku).page(params[:unmatched_page]).per(5)
+    return unless params[:order_filter].eql? 'unprocessed'
+
+    # @unmatched_sku = []
+    @unmatched_sku = @channel_orders.joins(:channel_order_items)
+                                    .where.not('channel_order_items.sku': [nil, @data])
+                                    .where.not(order_status: %w[FULFILLED Shipped Pending])
+                                    .order(created_at: :desc)
+                                    .page(params[:unmatched_page]).per(5)
+    @matching_products = {}
+    @un_matched_product_order.each do |order|
+      order.channel_order_items.each do |item|
+        matching = Product.find_by('sku LIKE ?', "%#{item.sku}%")
+        @matching_products[item.id] = matching if matching.present?
+      end
+    end
   end
 
   def completed_orders
-    @completed = @q.where('order_status in (?)', %i[FULFILLED Shipped]).where(channel_type: @order_type)
+    return unless params[:order_filter].eql? 'completed'
+
+    @completed = @channel_orders.where('order_status in (?)', %w[FULFILLED Shipped])
     @completed_orders = @completed.order(created_at: :desc).page(params[:completed_page]).per(params[:limit])
   end
 
   def matched_sku
-    @matched_sku = []
-    @product_data = ChannelProduct.where(status: 'mapped').pluck(:item_sku).compact
-    @matched_sku = @q.joins(:channel_order_items).where('channel_order_items.sku': @product_data).where(channel_type: @order_type)
-    @matched_sku = @matched_sku.uniq
+    return unless params[:order_filter].eql? 'unprocessed'
+
+    # @matched_sku = []
+    @matched_sku = @channel_orders.joins(:channel_order_items).where('channel_order_items.sku': @product_data).uniq
     @matched_sku = @matched_sku.sort_by(&:created_at).reverse!
     @matched_sku = Kaminari.paginate_array(@matched_sku).page(params[:matched_page]).per(5)
   end
 
   def no_sku
-    @no_sku = []
-    @no_sku = @q.joins(:channel_order_items).where('channel_order_items.sku': nil).where(channel_type: @order_type) -@completed
-    @orders = @no_sku.sort_by(&:created_at).reverse!
-    @orders = Kaminari.paginate_array(@no_sku).page(params[:orders_page]).per(5)
+    return unless params[:order_filter].eql? 'issue'
+
+    @issue_orders = @channel_orders.joins(:channel_order_items).where('channel_order_items.sku': nil)
+                                   .where.not(order_status: %w[FULFILLED Shipped Pending])
+                                   .order(created_at: :desc)
+                                   .page(params[:orders_page]).per(5)
   end
 
   def unpaid_orders
-    @unpaid_orders = @q.where('payment_status = ? OR order_status = ?', 'UNPAID', 'Pending').where(channel_type: @order_type)
+    return unless params[:order_filter].eql? 'unpaid'
+
+    @unpaid_orders = @channel_orders.where(payment_status: 'UNPAID').or(@channel_orders.where(order_status: 'Pending'))
     @unpaid = @unpaid_orders.order(created_at: :desc).page(params[:unpaid_page]).per(params[:limit])
   end
 
   def not_started_orders
-    @not_started = @q.where(order_status: 'NOT_STARTED').where(channel_type: @order_type).order(created_at: :desc) - @no_sku -@un_matched_product_orders
-    @not_started_orders = Kaminari.paginate_array(@not_started).page(params[:not_started_page]).per(25)
+    return unless params[:order_filter].eql? 'ready'
+
+    @not_started_orders = @channel_orders.joins(:channel_order_items).where(order_status: 'NOT_STARTED')
+                                         .where.not('channel_order_items.sku': [nil, @unmatch_product_data])
+                                         .order(created_at: :desc).page(params[:not_started_page]).per(25)
   end
 
   def unmatched_product_orders
-    @unmatch_product_data = ChannelProduct.where(status: 'unmapped').pluck(:item_sku).compact
-    @un_matched_product_orders = @q.joins(:channel_order_items).where('channel_order_items.sku': @unmatch_product_data).where(channel_type: @order_type).order(created_at: :desc)
-    @un_matched_product_orders = @un_matched_product_orders.uniq - @completed
-    @un_matched_product_order = Kaminari.paginate_array(@un_matched_product_orders).page(params[:unmatched_product_page]).per(5)
+    return unless params[:order_filter].eql? 'unprocessed'
+
+    @un_matched_product_order = @channel_orders.joins(:channel_order_items)
+                                               .where('channel_order_items.sku': @unmatch_product_data)
+                                               .where.not(order_status: %w[FULFILLED Shipped Pending])
+                                               .order(created_at: :desc)
+                                               .page(params[:unmatched_product_page]).per(5)
   end
 
   def csv_export(orders)
@@ -144,5 +158,27 @@ class OrderDispatchesController < ApplicationController
         csv << row
       end
     end
+  end
+
+  def load_counts
+    @unmatch_product_data = ChannelProduct.where(status: 'unmapped').pluck(:item_sku).compact
+    @product_data = ChannelProduct.where(status: 'mapped').pluck(:item_sku).compact
+    @data = @product_data + @unmatch_product_data
+    @today_orders = ChannelOrder.where('Date(created_at) = ?', Date.today).where(channel_type: @order_type).count
+    @issue_orders_count = @channel_orders.joins(:channel_order_items).where('channel_order_items.sku': nil)
+                                         .where.not(order_status: %w[FULFILLED Shipped]).count
+    @total_products_count = ChannelProduct.count
+    @unpaid_orders_count = @channel_orders.where(payment_status: 'UNPAID')
+                                          .or(@channel_orders.where(order_status: 'Pending')).count
+    @issue_products_count = ChannelProduct.where(item_sku: nil).count
+    @not_started_count = @channel_orders.joins(:channel_order_items).where(order_status: 'NOT_STARTED')
+                                        .where.not('channel_order_items.sku': [nil, @unmatch_product_data]).count
+    @completed_count = @channel_orders.where('order_status in (?)', %i[FULFILLED Shipped]).count
+    @un_matched_orders_count = @channel_orders.joins(:channel_order_items)
+                                              .where('channel_order_items.sku': @unmatch_product_data)
+                                              .where.not(order_status: %w[FULFILLED Shipped Pending]).count
+    @unmatched_sku_count = @channel_orders.joins(:channel_order_items)
+                                          .where.not('channel_order_items.sku': [nil, @data])
+                                          .where.not(order_status: %w[FULFILLED Shipped Pending]).count
   end
 end
