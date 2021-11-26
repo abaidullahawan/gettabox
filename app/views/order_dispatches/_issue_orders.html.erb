@@ -5,8 +5,8 @@
         <%= form_tag order_dispatches_path,nav_class: "d-inline-b", class: "mb-3", method: :get do |f| %>
         <div class='col-md-12'>
           <div class='float-right'>
-            <label for="inputState">Per Page</label>
-            <%= select_tag :limit, options_for_select([5, 10, 15, 20], selected: params[:limit] || 5), id: 'change_per_page', class: 'form-control' %>
+            <%# <label for="inputState">Per Page</label> %>
+            <%#= select_tag :limit, options_for_select([5, 10, 15, 20], selected: params[:limit] || 5), id: 'change_per_page', class: 'form-control' %>
             <button type="submit" id="per_page_submit" hidden="hidden"></button>
           </div>
         </div>
@@ -24,7 +24,7 @@
                 <th scope="col"></th>
               </tr>
             </thead>
-            <% @orders.each do |order| %>
+            <% @issue_orders.each do |order| %>
               <tbody>
                 <tr>
                   <td style = "width: 15%">
@@ -59,10 +59,10 @@
             <% end %>
           </table>
           <div class='float-right'>
-             <%= page_entries_info @orders %>
+             <%= page_entries_info @issue_orders %>
           </div><br>
           <div class="pagination justify-content-center mt-1">
-            <%= paginate @orders, :param_name => :orders_page,theme: "twitter-bootstrap-4",pagination_class: "pagination-sm",nav_class: "d-inline-b" %>
+            <%= paginate @issue_orders, :param_name => :orders_page,theme: "twitter-bootstrap-4",pagination_class: "pagination-sm",nav_class: "d-inline-b" %>
           </div>
         </div>
       </div>

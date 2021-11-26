@@ -48,15 +48,15 @@ class EbaySellingListJob < ApplicationJob
 
   def api_call(xml_data)
     HTTP.post('https://api.ebay.com/ws/api.dll',
-               body: xml_data.to_xml.split('<inspect/>').first,
-               headers: {
-                 'X-EBAY-API-SITEID' => '3',
-                 'X-EBAY-API-COMPATIBILITY-LEVEL' => '967',
-                 'X-EBAY-API-CALL-NAME' => 'GetItem',
-                 'X-EBAY-API-APP-NAME' => 'ChannelD-ChannelD-PRD-da28ec690-4a9f363c',
-                 'X-EBAY-API-DEV-NAME' => '8a3c7cee-7507-45ca-bb47-22ffe194a94b',
-                 'X-EBAY-API-CERT-NAME' => 'PRD-a28ec6908ea9-7c43-4fd9-be43-0e7d',
-                 'X-EBAY-API-DETAIL-LEVEL' => '0'
-               })
+              body: xml_data.to_xml.split('<inspect/>').first,
+              headers: {
+                'X-EBAY-API-SITEID' => '3',
+                'X-EBAY-API-COMPATIBILITY-LEVEL' => '967',
+                'X-EBAY-API-CALL-NAME' => 'GetItem',
+                'X-EBAY-API-APP-NAME' => 'ChannelD-ChannelD-PRD-da28ec690-4a9f363c',
+                'X-EBAY-API-DEV-NAME' => '8a3c7cee-7507-45ca-bb47-22ffe194a94b',
+                'X-EBAY-API-CERT-NAME' => 'PRD-a28ec6908ea9-7c43-4fd9-be43-0e7d',
+                'X-EBAY-API-DETAIL-LEVEL' => '0'
+              })
   end
 end

@@ -12,7 +12,7 @@ Unable to Find SKU's
         <th scope="col"></th>
       </tr>
     </thead>
-    <% @unmatched_sku_sort.each do |order| %>
+    <% @unmatched_sku.each do |order| %>
       <tbody>
         <tr>
           <td style = "width: 15%">
@@ -47,10 +47,10 @@ Unable to Find SKU's
     <% end %>
   </table>
   <div class='float-right'>
-    <%= page_entries_info @unmatched_sku_sort %>
+    <%= page_entries_info @unmatched_sku %>
   </div><br>
   <div class="pagination justify-content-center mt-1">
-    <%= paginate @unmatched_sku_sort, :param_name => :unmatched_page,theme: "twitter-bootstrap-4",pagination_class: "pagination-sm",nav_class: "d-inline-b" %>
+    <%= paginate @unmatched_sku, :param_name => :unmatched_page,theme: "twitter-bootstrap-4",pagination_class: "pagination-sm",nav_class: "d-inline-b" %>
   </div>
 </div>
 
