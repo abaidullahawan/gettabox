@@ -3,6 +3,7 @@
 # orders from api
 class ChannelOrder < ApplicationRecord
   has_many :channel_order_items, dependent: :destroy
+  has_many :fulfillment_instructions, dependent: :destroy
   validates_uniqueness_of :order_data
   validates_uniqueness_of :ebayorder_id
   enum channel_type: {

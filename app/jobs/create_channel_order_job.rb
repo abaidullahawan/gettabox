@@ -30,6 +30,11 @@ class CreateChannelOrderJob < ApplicationJob
           channel_order_item.ordered = order_product['quantity']
           channel_order_item.save
         end
+        channel_order_record.order_data['fulfillmentStartInstructions'].each do |fulfillment_instruction|
+          fulfillment_instruction_record = channel_order_record.fulfillment_instructions.find_or_initialize_by(shipping_service_code: fulfillment_instruction['shippingStep']['shippingServiceCode'])
+          fulfillment_instruction_record.fulfillment_data = fulfillment_instruction
+          fulfillment_instruction_record.save
+        end
       end
       response_order.status_executed!
       response_order.status_partial! if response_order.response['orders'].count < 200

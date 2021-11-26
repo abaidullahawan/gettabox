@@ -1,0 +1,21 @@
+<div class="row">
+  <div class="col-xl-12">
+    <div class="card mb-30">
+      <div class="card-body">
+        <%= form_for @mail_service_rule do |f| %>
+          <div class="form-group">
+            <%= f.label :description%>
+            <%= f.text_field :description %>
+          </div>
+          <div class="form-group">
+            <%= f.label :service_name%>
+            <%= f.text_field :service_name %>
+          </div>
+          <div class="form-group">
+            <%= f.submit "Create", class: "btn btn-primary float-right d-none" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

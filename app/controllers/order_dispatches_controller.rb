@@ -26,6 +26,7 @@ class OrderDispatchesController < ApplicationController
         @matching_products[item.id] = matching if matching.present?
       end
     end
+    @mail_service_rule = MailServiceRule.new
   end
 
   def show; end

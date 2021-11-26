@@ -11,6 +11,7 @@ class SettingsController < ApplicationController
                       seasons_count: Season.count,
                       extra_field_count: ExtraFieldName.count,
                       email_count: EmailTemplate.count,
-                      import_mapping: ImportMapping.count }
+                      import_mapping: ImportMapping.count,
+                      courier: Courier.count }
   end
 end

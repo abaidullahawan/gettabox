@@ -1,0 +1,14 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Description:</strong>
+  <%= @mail_service_rule.description %>
+</p>
+
+<p>
+  <strong>Service name:</strong>
+  <%= @mail_service_rule.service_name %>
+</p>
+
+<%= link_to 'Edit', edit_mail_service_rule_path(@mail_service_rule) %> |
+<%= link_to 'Back', mail_service_rules_path %>

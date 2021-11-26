@@ -54,6 +54,10 @@ $(document).on('turbolinks:load', function () {
     $('#single-product-create-modal').modal('show')
   })
 
+  $('.shippment_modal').on('click', function () {
+    $('#mail-service-roles-modal').modal('show')
+  })
+
 
   $('.create-multi-product').on('click', function () {
     var json = this.dataset.item
