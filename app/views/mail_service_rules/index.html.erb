@@ -1,0 +1,29 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Mail Service Rules</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Description</th>
+      <th>Service name</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @mail_service_rules.each do |mail_service_rule| %>
+      <tr>
+        <td><%= mail_service_rule.description %></td>
+        <td><%= mail_service_rule.service_name %></td>
+        <td><%= link_to 'Show', mail_service_rule %></td>
+        <td><%= link_to 'Edit', edit_mail_service_rule_path(mail_service_rule) %></td>
+        <td><%= link_to 'Destroy', mail_service_rule, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New Mail Service Rule', new_mail_service_rule_path %>

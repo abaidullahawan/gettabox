@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 Rails.application.routes.draw do
+  resources :mail_service_rules
+  resources :couriers
   resources :import_mappings
   require 'sidekiq/web'
   mount Sidekiq::Web => '/sidekiq'
