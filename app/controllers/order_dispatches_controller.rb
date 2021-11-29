@@ -6,7 +6,7 @@ class OrderDispatchesController < ApplicationController
   before_action :authenticate_user!
   # before_action :refresh_token, :refresh_token_amazon, only: %i[index all_order_data]
   before_action :check_status, only: %i[index fetch_response_orders]
-  before_action :ransack_params, :load_counts, :completed_orders, :matched_sku, :no_sku, :unpaid_orders, :unmatched_product_orders,
+  before_action :ransack_params, :load_counts, :completed_orders, :no_sku, :unpaid_orders, :unmatched_product_orders,
                 :unmatched_sku, :not_started_orders, only: %i[index]
   before_action :new_product, :product_load_resources, :first_or_create_category, only: %i[index]
 
@@ -88,7 +88,7 @@ class OrderDispatchesController < ApplicationController
     @unmatched_sku = @channel_orders.joins(:channel_order_items)
                                     .where.not('channel_order_items.sku': [nil, @data])
                                     .where.not(order_status: %w[FULFILLED Shipped Pending])
-                                    .order(created_at: :desc)
+                                    .order(created_at: :desc).distinct
                                     .page(params[:unmatched_page]).per(5)
     @matching_products = {}
     @un_matched_product_order.each do |order|
@@ -102,17 +102,8 @@ class OrderDispatchesController < ApplicationController
   def completed_orders
     return unless params[:order_filter].eql? 'completed'
 
-    @completed = @channel_orders.where('order_status in (?)', %w[FULFILLED Shipped])
+    @completed = @channel_orders.where('order_status in (?)', %w[FULFILLED Shipped]).distinct
     @completed_orders = @completed.order(created_at: :desc).page(params[:completed_page]).per(params[:limit])
-  end
-
-  def matched_sku
-    return unless params[:order_filter].eql? 'unprocessed'
-
-    # @matched_sku = []
-    @matched_sku = @channel_orders.joins(:channel_order_items).where('channel_order_items.sku': @product_data).uniq
-    @matched_sku = @matched_sku.sort_by(&:created_at).reverse!
-    @matched_sku = Kaminari.paginate_array(@matched_sku).page(params[:matched_page]).per(5)
   end
 
   def no_sku
@@ -120,14 +111,14 @@ class OrderDispatchesController < ApplicationController
 
     @issue_orders = @channel_orders.joins(:channel_order_items).where('channel_order_items.sku': nil)
                                    .where.not(order_status: %w[FULFILLED Shipped Pending])
-                                   .order(created_at: :desc)
+                                   .order(created_at: :desc).distinct
                                    .page(params[:orders_page]).per(5)
   end
 
   def unpaid_orders
     return unless params[:order_filter].eql? 'unpaid'
 
-    @unpaid_orders = @channel_orders.where(payment_status: 'UNPAID').or(@channel_orders.where(order_status: 'Pending'))
+    @unpaid_orders = @channel_orders.where(payment_status: 'UNPAID').or(@channel_orders.where(order_status: 'Pending')).distinct
     @unpaid = @unpaid_orders.order(created_at: :desc).page(params[:unpaid_page]).per(params[:limit])
   end
 
@@ -135,7 +126,7 @@ class OrderDispatchesController < ApplicationController
     return unless params[:order_filter].eql? 'ready'
 
     @not_started_orders = @channel_orders.joins(:channel_order_items).where(order_status: 'NOT_STARTED')
-                                         .where.not('channel_order_items.sku': [nil, @unmatch_product_data])
+                                         .where.not('channel_order_items.sku': [nil, @unmatch_product_data]).distinct
                                          .order(created_at: :desc).page(params[:not_started_page]).per(25)
   end
 
@@ -145,7 +136,7 @@ class OrderDispatchesController < ApplicationController
     @un_matched_product_order = @channel_orders.joins(:channel_order_items)
                                                .where('channel_order_items.sku': @unmatch_product_data)
                                                .where.not(order_status: %w[FULFILLED Shipped Pending])
-                                               .order(created_at: :desc)
+                                               .order(created_at: :desc).distinct
                                                .page(params[:unmatched_product_page]).per(5)
   end
 
@@ -161,24 +152,24 @@ class OrderDispatchesController < ApplicationController
   end
 
   def load_counts
+    @total_products_count = ChannelProduct.count
+    @issue_products_count = ChannelProduct.where(item_sku: nil).count
     @unmatch_product_data = ChannelProduct.where(status: 'unmapped').pluck(:item_sku).compact
     @product_data = ChannelProduct.where(status: 'mapped').pluck(:item_sku).compact
-    @data = @product_data + @unmatch_product_data
-    @today_orders = ChannelOrder.where('Date(created_at) = ?', Date.today).where(channel_type: @order_type).count
+    @data = ChannelProduct.pluck(:item_sku).compact
+    @today_orders = ChannelOrder.where('Date(created_at) = ?', Date.today).where(channel_type: @order_type).distinct.count
     @issue_orders_count = @channel_orders.joins(:channel_order_items).where('channel_order_items.sku': nil)
-                                         .where.not(order_status: %w[FULFILLED Shipped]).count
-    @total_products_count = ChannelProduct.count
+                                         .where.not(order_status: %w[FULFILLED Shipped]).distinct.count
     @unpaid_orders_count = @channel_orders.where(payment_status: 'UNPAID')
-                                          .or(@channel_orders.where(order_status: 'Pending')).count
-    @issue_products_count = ChannelProduct.where(item_sku: nil).count
+                                          .or(@channel_orders.where(order_status: 'Pending')).distinct.count
     @not_started_count = @channel_orders.joins(:channel_order_items).where(order_status: 'NOT_STARTED')
-                                        .where.not('channel_order_items.sku': [nil, @unmatch_product_data]).count
-    @completed_count = @channel_orders.where('order_status in (?)', %i[FULFILLED Shipped]).count
+                                        .where.not('channel_order_items.sku': [nil, @unmatch_product_data]).distinct.count
+    @completed_count = @channel_orders.where('order_status in (?)', %i[FULFILLED Shipped]).distinct.count
     @un_matched_orders_count = @channel_orders.joins(:channel_order_items)
                                               .where('channel_order_items.sku': @unmatch_product_data)
-                                              .where.not(order_status: %w[FULFILLED Shipped Pending]).count
+                                              .where.not(order_status: %w[FULFILLED Shipped Pending]).distinct.count
     @unmatched_sku_count = @channel_orders.joins(:channel_order_items)
-                                          .where.not('channel_order_items.sku': [nil, @data])
-                                          .where.not(order_status: %w[FULFILLED Shipped Pending]).count
+                                          .where.not('channel_order_items.sku': @data)
+                                          .where.not(order_status: %w[FULFILLED Shipped Pending]).distinct.count
   end
 end
