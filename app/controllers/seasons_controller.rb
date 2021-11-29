@@ -94,8 +94,8 @@ class SeasonsController < ApplicationController
   end
 
   def search_season_by_name
-    @searched_season_by_name = Season.where('lower(name) LIKE ?',
-                                            "#{params[:search_value].downcase}%").pluck(:name).uniq
+    @searched_season_by_name = Season.ransack('name_cont': params[:search_value].downcase.to_s)
+                                     .result.limit(20).pluck(:id, :name)
     respond_to do |format|
       format.json { render json: @searched_season_by_name }
     end

@@ -96,8 +96,8 @@ class CategoriesController < ApplicationController
   end
 
   def search_category_by_title
-    @searched_category_by_title = Category.where('lower(title) LIKE ?',
-                                                 "#{params[:search_value].downcase}%").pluck(:title).uniq
+    @searched_category_by_title = Category.ransack('title_cont': params[:search_value].downcase.to_s)
+                                          .result.limit(20).pluck(:id, :title)
     respond_to do |format|
       format.json { render json: @searched_category_by_title }
     end
