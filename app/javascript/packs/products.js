@@ -9,17 +9,14 @@ $(document).ready(function () {
 $(document).on('turbolinks:load', function () {
 
   $('input, select').on('click', function () {
-    var name = this.name
-    if (name.includes('product')) {
       $(this).removeClass('border-danger');
-    }
   })
   // Product Create Form JQuery start
   $('.multi_basic_info_button').on('click', function () {
     // var photo = $('#multi-product-create-modal input[name="product[photo]"]').val()
     var title = $('#multi-product-create-modal input[name="product[title]"]').val()
     var sku = $('#multi-product-create-modal input[name="product[sku]"]').val()
-    var category = $('#multi-product-create-modal select[name="product[category_id]"]').val()
+    var category = $('#multi-product-create-modal input[name="category_name"]').val()
     // var product_type = $('#multi-product-create-modal select[name="product[product_type]"').val()
     if ((title != "") && (sku != "") && (category != "")) {
       $('.multi-basic-info-form').addClass('d-none')
@@ -33,7 +30,7 @@ $(document).on('turbolinks:load', function () {
         $('#multi-product-create-modal input[name="product[sku]"]').addClass('border border-danger');
       }
       if (category == "") {
-        $('#multi-product-create-modal #product_category_id_chosen').css({ 'border': '1px solid red', 'border-radius': '6px' });
+        $('#multi-product-create-modal input[name="category_name"]').addClass('border border-danger');
       }
     }
   })
@@ -47,7 +44,7 @@ $(document).on('turbolinks:load', function () {
     // var photo = $('input[name="product[photo]"]').val()
     var title = $('input[name="product[title]"]').val()
     var sku = $('input[name="product[sku]"]').val()
-    var category = $('select[name="product[category_id]"]').val()
+    var category = $('input[name="category_name"]').val()
     // var product_type = $('select[name="product[product_type]"]').val()
     if ((title != "") && (sku != "") && (category != "")) {
       $('.basic-info-form').addClass('d-none')
@@ -61,7 +58,7 @@ $(document).on('turbolinks:load', function () {
         $('#single-product-create-modal input[name="product[sku]"]').addClass('border border-danger');
       }
       if (category == "") {
-        $('#single-product-create-modal #product_category_id_chosen').css({ 'border': '1px solid red', 'border-radius': '6px' });
+        $('#single-product-create-modal input[name="category_name"]').addClass('border border-danger');
       }
     }
   })

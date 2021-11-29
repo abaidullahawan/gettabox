@@ -73,7 +73,7 @@
               </div>
             </div>
             <div class="col-md-3"><br>
-              <%= f.select :product_type_eq, Product.product_types.map { |key, value| [key.humanize, value] }, {include_blank: 'Select an option'}, class:"form-control product-type-field chosen-select", title: 'Select Product Type' %>
+              <%= f.select :product_type_eq, Product.product_types.map { |key, value| [key.humanize, value] }, {include_blank: 'Select an option'}, class:"form-control product-type-field", title: 'Select Product Type' %>
             </div>
             <div class=' col-md-1'>
               <button type='submit' class='product_type_submit btn btn-primary mt-4 d-none'>Search</button>

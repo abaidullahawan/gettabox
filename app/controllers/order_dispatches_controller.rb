@@ -157,7 +157,7 @@ class OrderDispatchesController < ApplicationController
     @unmatch_product_data = ChannelProduct.where(status: 'unmapped').pluck(:item_sku).compact
     @product_data = ChannelProduct.where(status: 'mapped').pluck(:item_sku).compact
     @data = ChannelProduct.pluck(:item_sku).compact
-    @today_orders = ChannelOrder.where('Date(created_at) = ?', Date.today).where(channel_type: @order_type).distinct.count
+    @today_orders = @channel_orders.where('Date(created_at) = ?', Date.today).distinct.count
     @issue_orders_count = @channel_orders.joins(:channel_order_items).where('channel_order_items.sku': nil)
                                          .where.not(order_status: %w[FULFILLED Shipped]).distinct.count
     @unpaid_orders_count = @channel_orders.where(payment_status: 'UNPAID')
