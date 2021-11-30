@@ -112,10 +112,11 @@
                   </td>
                   <td>
                     <% if order.mail_service_rule.present? %>
-                      <div class= "service-rule">
+                      <div class= "service-rule" id="service_rule_<%=index%>">
                         <br><%= order.mail_service_rule.description %>
                         <br><%= order.mail_service_rule.service_name %>
                       </div>
+                      <%= render 'order_label_model', order: order, index: index %>
                     <% else %>
                       <% order&.fulfillment_instructions&.each do |fulfillment_data| %>
                         <div class="shipment_modal" id="shipment_modal_<%=index%>">

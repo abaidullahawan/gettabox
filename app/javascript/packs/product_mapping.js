@@ -60,6 +60,12 @@ $(document).on('turbolinks:load', function () {
     $('#mail-service-roles-modal-'+this.id.split("_")[2]).modal('show')
   })
 
+  $('.service-rule').on('click', function () {
+    var value = this.innerText
+    $('#mail-service-label-modal-'+this.id.split("_")[2]).modal('show')
+  })
+
+
 
   $('.create-multi-product').on('click', function () {
     var json = this.dataset.item
