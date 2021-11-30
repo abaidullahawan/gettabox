@@ -22,15 +22,11 @@ class MailServiceRulesController < ApplicationController
   # POST /mail_service_rules or /mail_service_rules.json
   def create
     @mail_service_rule = MailServiceRule.new(mail_service_rule_params)
-
-    respond_to do |format|
-      if @mail_service_rule.save
-        format.html { redirect_to @mail_service_rule, notice: "Mail service rule was successfully created." }
-        format.json { render :show, status: :created, location: @mail_service_rule }
-      else
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @mail_service_rule.errors, status: :unprocessable_entity }
-      end
+    if @mail_service_rule.save
+      redirect_to order_dispatches_path
+      flash[:notice] = "Mail service rule was successfully created."
+    else
+      format.json { render json: @mail_service_rule.errors, status: :unprocessable_entity }
     end
   end
 
@@ -64,6 +60,9 @@ class MailServiceRulesController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def mail_service_rule_params
-      params.require(:mail_service_rule).permit(:description, :service_name)
+      params.require(:mail_service_rule).permit(:description, :service_name, :channel_order_id,
+                                                mail_service_labels_attributes: %i[
+                                                  id length width height weight product_ids courier_id _destroy
+                                                ])
     end
 end

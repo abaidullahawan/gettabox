@@ -26,7 +26,7 @@
                 <th scope="col"></th>
               </tr>
             </thead>
-            <% @not_started_orders.each do |order| %>
+            <% @not_started_orders.each_with_index do |order, index| %>
               <tbody>
                 <tr>
                   <td style = "width: 180px">
@@ -111,10 +111,20 @@
                     <% end %>
                   </td>
                   <td>
-                    <% order&.fulfillment_instructions&.each do |fulfillment_data| %>
-                      <div class="shippment_modal">
-                        <%= fulfillment_data&.shipping_service_code %><br>
+                    <% if order.mail_service_rule.present? %>
+                      <div class= "service-rule">
+                        <br><%= order.mail_service_rule.description %>
+                        <br><%= order.mail_service_rule.service_name %>
                       </div>
+                    <% else %>
+                      <% order&.fulfillment_instructions&.each do |fulfillment_data| %>
+                        <div class="shipment_modal" id="shipment_modal_<%=index%>">
+                          <%= fulfillment_data&.shipping_service_code %>
+                        </div>
+                      <% end %>
+                    <% end %>
+                    <%= form_for(@mail_service_rule, url: mail_service_rules_path(order.id)) do |f| %>
+                      <%= render 'mail_service_rules/label_model', f: f , order_id: order.id, index: index %>
                     <% end %>
                   </td>
                   <td style="width: 100px;"><%= order.created_at.strftime("%m/%d/%Y %H:%M") %></td>
@@ -145,27 +155,3 @@
     </div>
   </div>
 </div>
-
-
-<%= form_for(@mail_service_rule, url: mail_service_rules_path) do |f| %>
-  <div class="modal fade" id="mail-service-roles-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-scrollable" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Create Mail Service Rule</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <%= hidden_field_tag :channel_product_id, value: ''%>
-          <%= render partial: 'mail_service_rules/form', locals: { f: f }  %>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary mr-auto" data-dismiss="modal">Close</button>
-            <%= f.submit(@mail_service_rule.new_record? ? "Create" : "Save changes", class: 'btn btn-outline-primary') %>
-        </div>
-      </div>
-    </div>
-  </div>
-<% end %>

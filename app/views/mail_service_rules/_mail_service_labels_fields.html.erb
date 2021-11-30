@@ -1,0 +1,29 @@
+<div class="nested-fields">
+  <br>
+  <div class="form-group row">
+    <div class="col-11">
+      <%= f.label 'Add weight' %>
+      <%= f.text_field :weight, class: 'form-control', placeholder: 'Please enter the weight' %>
+    </div>
+    <div class="col-11">
+      <%= f.label 'Add height' %>
+      <%= f.text_field :height, class: 'form-control', placeholder: 'Please enter the height' %>
+    </div>
+    <div class="col-11">
+      <%= f.label 'Add length' %>
+      <%= f.text_field :length, class: 'form-control', placeholder: 'Please enter the length' %>
+    </div>
+    <div class="col-11">
+      <%= f.label 'Add width' %>
+      <%= f.text_field :width, class: 'form-control', placeholder: 'Please enter the width' %>
+    </div>
+    <div class="col-11">
+      <%= f.label 'Add Courier' %>
+      <%= f.select :courier_id, options_for_select(Courier.pluck(:name)),{}, class: 'form-control', placeholder: 'Please enter the Courier' %>
+    </div>
+    <div class='col-1 pt-3'>
+      <br>
+      <%= link_to_remove_association 'X', f, class: 'text-danger' %>
+    </div>
+  </div>
+</div>
