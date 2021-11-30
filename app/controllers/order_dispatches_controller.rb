@@ -18,6 +18,7 @@ class OrderDispatchesController < ApplicationController
     end
     all_order_data if params[:orders_api].present?
     @mail_service_rule = MailServiceRule.new
+    @mail_service_rule.mail_service_labels.build
   end
 
   def show; end

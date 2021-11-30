@@ -54,8 +54,10 @@ $(document).on('turbolinks:load', function () {
     $('#single-product-create-modal').modal('show')
   })
 
-  $('.shippment_modal').on('click', function () {
-    $('#mail-service-roles-modal').modal('show')
+  $('.shipment_modal').on('click', function () {
+    var value = this.innerText
+    $('#mail_service_rule_service_name').val(value)
+    $('#mail-service-roles-modal-'+this.id.split("_")[2]).modal('show')
   })
 
 

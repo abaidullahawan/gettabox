@@ -4,6 +4,7 @@
 class ChannelOrder < ApplicationRecord
   has_many :channel_order_items, dependent: :destroy
   has_many :fulfillment_instructions, dependent: :destroy
+  has_one :mail_service_rule, dependent: :destroy
   validates_uniqueness_of :order_data
   validates_uniqueness_of :ebayorder_id
   enum channel_type: {
