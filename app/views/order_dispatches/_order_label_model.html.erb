@@ -16,7 +16,7 @@
             Length: <%= label.length %><br>
             Width:  <%= label.width %><br>
             Height: <%= label.height %><br>
-            Courier:<%= Courier.find(label.courier_id).name %><br>
+            Courier:<%= Courier&.find(label.courier_id)&.name %><br>
             <% end %>
         </div>
         <div class="modal-footer">
