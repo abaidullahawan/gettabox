@@ -19,7 +19,7 @@
     </div>
     <div class="col-11">
       <%= f.label 'Add Courier' %>
-      <%= f.select :courier_id, options_for_select(Courier.pluck(:name)),{}, class: 'form-control', placeholder: 'Please enter the Courier' %>
+      <%= f.select :courier_id, options_for_select(Courier.all.collect { | user | [user.name, user.id] }),{}, class: 'form-control', placeholder: 'Please enter the Courier' %>
     </div>
     <div class='col-1 pt-3'>
       <br>
