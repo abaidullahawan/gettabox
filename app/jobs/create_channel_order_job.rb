@@ -21,6 +21,7 @@ class CreateChannelOrderJob < ApplicationJob
         channel_order_record.address = address
         channel_order_record.buyer_name = order['fulfillmentStartInstructions'][0]['shippingStep']['shipTo']['fullName']&.capitalize
         channel_order_record.buyer_username = order['buyer']['username']
+        channel_order_record.fulfillment_instruction = order['fulfillmentStartInstructions'][0]['shippingStep']['shippingServiceCode']
         channel_order_record.save
         channel_order_record.order_data['lineItems'].each do |order_product|
           channel_order_item = ChannelOrderItem.find_or_initialize_by(line_item_id: order_product['lineItemId'])
@@ -29,11 +30,6 @@ class CreateChannelOrderJob < ApplicationJob
           channel_order_item.item_data = order_product
           channel_order_item.ordered = order_product['quantity']
           channel_order_item.save
-        end
-        channel_order_record.order_data['fulfillmentStartInstructions'].each do |fulfillment_instruction|
-          fulfillment_instruction_record = channel_order_record.fulfillment_instructions.find_or_initialize_by(shipping_service_code: fulfillment_instruction['shippingStep']['shippingServiceCode'])
-          fulfillment_instruction_record.fulfillment_data = fulfillment_instruction
-          fulfillment_instruction_record.save
         end
       end
       response_order.status_executed!

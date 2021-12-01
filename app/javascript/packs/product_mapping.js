@@ -55,13 +55,12 @@ $(document).on('turbolinks:load', function () {
   })
 
   $('.shipment_modal').on('click', function () {
-    var value = this.innerText
-    $('#mail_service_rule_service_name').val(value)
-    $('#mail-service-roles-modal-'+this.id.split("_")[2]).modal('show')
+    var indexVal = this.id.split("_")[2]
+    $('.service_name_field_'+indexVal).val(this.innerText)
+    $('#mail-service-roles-modal-'+indexVal).modal('show')
   })
 
   $('.service-rule').on('click', function () {
-    var value = this.innerText
     $('#mail-service-label-modal-'+this.id.split("_")[2]).modal('show')
   })
 
