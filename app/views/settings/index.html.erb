@@ -155,4 +155,20 @@
     <% end %>
   </div>
 
+  <div class="col-lg-4 col-sm-6">
+    <%= link_to mail_service_rules_path do %>
+    <div class="stats-card-two hover-card mb-30">
+      <div class="media align-items-center justify-content-between">
+        <div class="ml-0">
+          <p class="mb-10 line-height-1">Mail Service Rule</p>
+          <h3 class="mb-0 fs-25"><%= @total_counts[:mail_service_rule] %></h3>
+        </div>
+        <div class="avatar avatar-cyan ">
+          <i data-feather="link"></i>
+        </div>
+      </div>
+    </div>
+    <% end %>
+  </div>
+
 </div>

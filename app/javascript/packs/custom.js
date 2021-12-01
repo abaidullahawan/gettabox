@@ -155,6 +155,10 @@ $(document).on('turbolinks:load', function () {
     $('.bulk-method-delete-objects').trigger('click')
   })
 
+  $('.courier-value').on('change', function () {
+    debugger
+  })
+
 });
 
 // Preloader JS
