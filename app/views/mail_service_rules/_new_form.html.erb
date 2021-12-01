@@ -1,0 +1,116 @@
+
+<div class='form-row'>
+  <div class="form-group col-md-2">
+    <%= f.label :courier_id %>
+    <%= f.select :courier_id, options_for_select(Courier.all.collect { | service | [service.name, service.id] }), {include_blank: 'Select Courier'}, class: "form-control" %>
+  </div>
+
+  <div class="form-group col-md-2">
+    <%= f.label :service_id %>
+    <%= f.select :service_id, options_for_select(Service.all.collect { | service | [service.name, service.id] }), {include_blank: 'Select Service'}, class: "form-control" %>
+  </div>
+</div>
+
+<div class="form-row">
+  <div class="form-group required col-md-3">
+    <%= f.label :service_name %>
+    <%= f.text_field :service_name, class: 'form-control', placeholder: 'Enter Service Name' %>
+  </div>
+  <div class="form-group col-md-2">
+    <%= f.label :public_cost %>
+    <%= f.number_field :public_cost, class: 'form-control', placeholder: '0.0 kg' %>
+  </div>
+
+  <div class="form-group col-md-2">
+    <%= f.label :initial_weight %>
+    <%= f.number_field :initial_weight, class: 'form-control', placeholder: '0.0 kg' %>
+  </div>
+
+  <div class="form-group col-md-2">
+    <%= f.label :additonal_cost_per_kg %>
+    <%= f.number_field :additonal_cost_per_kg, class: 'form-control', placeholder: '0.0 $' %>
+  </div>
+
+  <div class="form-group col-md-2">
+    <%= f.label :vat_percentage %>
+    <%= f.number_field :vat_percentage, class: 'form-control', placeholder: '0.00' %>
+  </div>
+</div>
+
+<div class='form-row'>
+  <div class="form-group col-md-2">
+    <%= f.label :pickup_address %>
+    <%= f.select :pickup_address, MailServiceRule.pickup_addresses.map { |key, value| [key.humanize, key] }, {}, class: "form-control" %>
+  </div>
+
+  <div class="form-group col-md-2">
+    <%= f.label :bonus_score %>
+    <%= f.number_field :bonus_score, class: 'form-control', placeholder: '0' %>
+  </div>
+
+  <div class="form-group col-md-2">
+    <%= f.label :base_weight %>
+    <%= f.number_field :base_weight, class: 'form-control', placeholder: '0.0 kg' %>
+  </div>
+
+  <div class="form-group col-md-2">
+    <%= f.label :base_weight_max %>
+    <%= f.number_field :base_weight_max, class: 'form-control', placeholder: '0.0 kg' %>
+  </div>
+</div>
+
+<div class="form-row">
+  <div class="form-group required col-md-3">
+    <%= f.label :label_type %>
+     <%= f.select :label_type, MailServiceRule.label_types.map { |key, value| [key.humanize, key] }, {}, class: "form-control" %>
+  </div>
+  <div class="form-group col-md-2">
+    <%= f.label :csv_file %>
+    <%= f.select :csv_file, MailServiceRule.csv_files.map { |key, value| [key.humanize, key] }, {}, class: "form-control" %>
+  </div>
+
+  <div class="form-group col-md-2">
+    <%= f.label :courier_account %>
+    <%= f.select :courier_account, MailServiceRule.courier_accounts.map { |key, value| [key.humanize, key] }, {}, class: "form-control" %>
+  </div>
+
+  <div class="form-group col-md-2">
+    <%= f.label :rule_naming_type %>
+    <%= f.select :rule_naming_type, MailServiceRule.rule_naming_types.map { |key, value| [key.humanize, key] }, {}, class: "form-control" %>
+  </div>
+</div>
+
+<div class='form-row'>
+   <div class="form-group col-md-3">
+    <%= f.label :manual_dispatch_label_template %>
+    <%= f.select :manual_dispatch_label_template, MailServiceRule.manual_dispatch_label_templates.map { |key, value| [key.humanize, key] }, {}, class: "form-control" %>
+  </div>
+
+  <div class="form-group col-md-2">
+    <%= f.label :priority_delivery_days %>
+    <%= f.text_field :priority_delivery_days, class: 'form-control', placeholder: '0' %>
+  </div>
+
+  <div class="form-group col-md-1">
+    <%= f.label :is_priority %>
+    <%= f.check_box :is_priority, class: 'form-control' %>
+  </div>
+
+  <div class="form-group col-md-2">
+    <%= f.label :estimated_delivery_days %>
+    <%= f.number_field :estimated_delivery_days, class: 'form-control', placeholder: '0' %>
+  </div>
+</div>
+
+<div class='form-row'>
+  <div class="form-group col-md-2">
+    <%= f.label :print_queue_type %>
+    <%= f.select :print_queue_type, MailServiceRule.print_queue_types.map { |key, value| [key.humanize, key] }, {}, class: "form-control" %>
+  </div>
+
+  <div class="form-group col-md-2">
+    <%= f.label :additional_label %>
+    <%= f.text_field :additional_label, class: 'form-control', placeholder: '0' %>
+  </div>
+</div>
+
