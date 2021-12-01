@@ -113,8 +113,8 @@
                   <td>
                     <% if order.mail_service_rule.present? %>
                       <div class= "service-rule" id="service_rule_<%=index%>">
-                        <br><%= order.mail_service_rule.description %>
-                        <br><%= order.mail_service_rule.service_name %>
+                        <br><%= order.mail_service_rule.rule_name %>
+                        <br><%= order.mail_service_rule.courier.name %>
                       </div>
                       <%= render 'order_label_model', order: order, index: index %>
                     <% else %>
