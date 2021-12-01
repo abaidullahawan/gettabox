@@ -3,7 +3,9 @@ class MailServiceRulesController < ApplicationController
 
   # GET /mail_service_rules or /mail_service_rules.json
   def index
-    @mail_service_rules = MailServiceRule.all
+    @q = MailServiceRule.ransack(params[:q])
+    @mail_service_rules = @q.result.page(params[:page]).per(params[:limit])
+    @mail_service_rule = MailServiceRule.new
   end
 
   # GET /mail_service_rules/1 or /mail_service_rules/1.json
@@ -23,10 +25,11 @@ class MailServiceRulesController < ApplicationController
   def create
     @mail_service_rule = MailServiceRule.new(mail_service_rule_params)
     if @mail_service_rule.save
-      redirect_to order_dispatches_path(order_filter: 'ready') 
+      redirect_to order_dispatches_path(order_filter: 'ready')
       flash[:notice] = "Mail service rule was successfully created."
     else
-      format.json { render json: @mail_service_rule.errors, status: :unprocessable_entity }
+      flash[:alert] = "#{@mail_service_rule.errors.full_messages} Cannot create rule"
+      redirect_to mail_service_rules_path
     end
   end
 
@@ -47,22 +50,32 @@ class MailServiceRulesController < ApplicationController
   def destroy
     @mail_service_rule.destroy
     respond_to do |format|
-      format.html { redirect_to mail_service_rules_url, notice: "Mail service rule was successfully destroyed." }
+      format.html { redirect_to mail_service_rules_url, notice: 'Mail service rule was successfully destroyed.' }
       format.json { head :no_content }
     end
   end
 
-  private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_mail_service_rule
-      @mail_service_rule = MailServiceRule.find(params[:id])
-    end
+  def new_rule
+    @new_rule = MailServiceRule.new
+  end
 
-    # Only allow a list of trusted parameters through.
-    def mail_service_rule_params
-      params.require(:mail_service_rule).permit(:description, :service_name, :channel_order_id,
-                                                mail_service_labels_attributes: %i[
-                                                  id length width height weight product_ids courier_id _destroy
-                                                ])
-    end
+  private
+
+  # Use callbacks to share common setup or constraints between actions.
+  def set_mail_service_rule
+    @mail_service_rule = MailServiceRule.find(params[:id])
+  end
+
+  # Only allow a list of trusted parameters through.
+  def mail_service_rule_params
+    params.require(:mail_service_rule).permit(
+      :service_name, :rule_name, :channel_order_id, :public_cost, :initial_weight, :additonal_cost_per_kg,
+      :vat_percentage, :label_type, :csv_file, :courier_account, :rule_naming_type, :manual_dispatch_label_template,
+      :priority_delivery_days, :is_priority, :estimated_delivery_days, :courier_id, :service_id, :print_queue_type,
+      :additional_label, :pickup_address, :bonus_score, :base_weight, :base_weight_max,
+      mail_service_labels_attributes: %i[
+        id length width height weight product_ids courier_id _destroy
+      ]
+    )
+  end
 end
