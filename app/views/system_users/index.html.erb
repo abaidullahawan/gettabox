@@ -58,7 +58,7 @@
               </div>
             </div>
             <div class="col-md-2"><br>
-              <%= f.select :payment_method_eq, SystemUser.payment_methods.map { |key, value| [key.humanize, value] }, {include_blank: 'Select an option'}, class:"form-control payment-method-field chosen-select d-none", title: 'Select Payment Type' %>
+              <%= f.select :payment_method_eq, SystemUser.payment_methods.map { |key, value| [key.humanize, value] }, {include_blank: 'Select an option'}, class:"form-control payment-method-field", title: 'Select Payment Type' %>
             </div>
             <!--div class="col-md-2"><br>
               <%= f.search_field :days_for_order_to_completion_eq, class:"form-control", placeholder:"Search in Order to Completion", title: 'Search in Order to Completion' %>
