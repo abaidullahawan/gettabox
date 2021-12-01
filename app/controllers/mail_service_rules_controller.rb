@@ -24,7 +24,6 @@ class MailServiceRulesController < ApplicationController
   # POST /mail_service_rules or /mail_service_rules.json
   def create
     @mail_service_rule = MailServiceRule.new(mail_service_rule_params)
-    byebug
     if @mail_service_rule.save
       redirect_to order_dispatches_path(order_filter: 'ready')
       flash[:notice] = "Mail service rule was successfully created."
