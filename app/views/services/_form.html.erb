@@ -1,4 +1,12 @@
 <%= form_for @service do |f| %>
-  <%= f.text_field :name %>
-  <%= f.submit %>
-  <% end %>
+  <div class="form-group">
+    <%= f.text_field :name %>
+  </div>
+  <div class="form-group">
+    <%= f.label 'Add Courier' %>
+    <%= f.select :courier_id, options_for_select(Courier.all.collect { | courier | [courier.name, courier.id] }),{}, class: 'form-control courier-value', placeholder: 'Please enter the Courier' %>
+  </div>
+  <div class="form-group">
+    <%= f.submit %>
+  </div>
+<% end %>

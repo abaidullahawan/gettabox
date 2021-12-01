@@ -17,10 +17,6 @@
       <%= f.label 'Add width' %>
       <%= f.number_field :width, class: 'form-control', placeholder: 'Please enter the width' %>
     </div>
-    <div class="col-11">
-      <%= f.label 'Add Courier' %>
-      <%= f.select :courier_id, options_for_select(Courier.all.collect { | user | [user.name, user.id] }),{}, class: 'form-control', placeholder: 'Please enter the Courier' %>
-    </div>
     <div class='col-1 pt-3'>
       <br>
       <%= link_to_remove_association 'X', f, class: 'text-danger' %>
