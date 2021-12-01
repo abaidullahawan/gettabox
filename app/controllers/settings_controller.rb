@@ -12,6 +12,7 @@ class SettingsController < ApplicationController
                       extra_field_count: ExtraFieldName.count,
                       email_count: EmailTemplate.count,
                       import_mapping: ImportMapping.count,
-                      courier: Courier.count }
+                      courier: Courier.count,
+                      service: Service.count }
   end
 end
