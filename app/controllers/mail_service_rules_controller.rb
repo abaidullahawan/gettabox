@@ -23,7 +23,7 @@ class MailServiceRulesController < ApplicationController
   def create
     @mail_service_rule = MailServiceRule.new(mail_service_rule_params)
     if @mail_service_rule.save
-      redirect_to order_dispatches_path
+      redirect_to order_dispatches_path(order_filter: 'ready') 
       flash[:notice] = "Mail service rule was successfully created."
     else
       format.json { render json: @mail_service_rule.errors, status: :unprocessable_entity }

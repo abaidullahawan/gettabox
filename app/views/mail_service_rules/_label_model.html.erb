@@ -9,7 +9,7 @@
         </div>
         <div class="modal-body">
             <%= f.hidden_field :channel_order_id, value: order_id %>
-            <%= render partial: 'mail_service_rules/form', locals: { f: f }  %>
+            <%= render partial: 'mail_service_rules/form', locals: { f: f, index: index }  %>
         </div>
         <div class="modal-footer">
             <button type="button" class="btn btn-secondary mr-auto" data-dismiss="modal">Close</button>

@@ -118,11 +118,9 @@
                       </div>
                       <%= render 'order_label_model', order: order, index: index %>
                     <% else %>
-                      <% order&.fulfillment_instructions&.each do |fulfillment_data| %>
-                        <div class="shipment_modal" id="shipment_modal_<%=index%>">
-                          <%= fulfillment_data&.shipping_service_code %>
-                        </div>
-                      <% end %>
+                      <div class="shipment_modal" id="shipment_modal_<%=index%>">
+                        <%= order.fulfillment_instruction %>
+                      </div>
                     <% end %>
                     <%= form_for(@mail_service_rule, url: mail_service_rules_path(order.id)) do |f| %>
                       <%= render 'mail_service_rules/label_model', f: f , order_id: order.id, index: index %>
