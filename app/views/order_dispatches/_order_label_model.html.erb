@@ -10,13 +10,13 @@
         <div class="modal-body">
             <% order_rule = order.mail_service_rule %>
             Service Name:  <%= order_rule.service_name %><br>
-            Service Description:  <%= order_rule.description %><br><br>
+            Service Description:  <%= order_rule.rule_name %><br>
+            Service Courier:  <%= order_rule.courier.name %><br><br>
             <% order_rule.mail_service_labels.each do |label| %>
             Weight: <%= label.weight %><br>
             Length: <%= label.length %><br>
             Width:  <%= label.width %><br>
             Height: <%= label.height %><br>
-            Courier:<%= Courier&.find(label.courier_id)&.name %><br>
             <% end %>
         </div>
         <div class="modal-footer">
