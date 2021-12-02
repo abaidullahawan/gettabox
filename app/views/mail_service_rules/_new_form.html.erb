@@ -1,5 +1,10 @@
 
 <div class='form-row'>
+  <div class="form-group required col-md-3">
+    <%= f.label :service_name, 'Rule Name' %>
+    <%= f.text_field :service_name, class: 'form-control', placeholder: 'Enter Service Name' %>
+  </div>
+
   <div class="form-group col-md-2">
     <%= f.label :courier_id %>
     <%= f.select :courier_id, options_for_select(Courier.all.collect { | service | [service.name, service.id] }), {include_blank: 'Select Courier'}, class: "form-control" %>
@@ -12,12 +17,8 @@
 </div>
 
 <div class="form-row">
-  <div class="form-group required col-md-3">
-    <%= f.label :service_name %>
-    <%= f.text_field :service_name, class: 'form-control', placeholder: 'Enter Service Name' %>
-  </div>
   <div class="form-group col-md-2">
-    <%= f.label :public_cost %>
+    <%= f.label :public_cost, 'Service Cost' %>
     <%= f.number_field :public_cost, class: 'form-control', placeholder: '0.0 kg' %>
   </div>
 
@@ -73,11 +74,6 @@
     <%= f.label :courier_account %>
     <%= f.select :courier_account, MailServiceRule.courier_accounts.map { |key, value| [key.humanize, key] }, {}, class: "form-control" %>
   </div>
-
-  <div class="form-group col-md-2">
-    <%= f.label :rule_naming_type %>
-    <%= f.select :rule_naming_type, MailServiceRule.rule_naming_types.map { |key, value| [key.humanize, key] }, {}, class: "form-control" %>
-  </div>
 </div>
 
 <div class='form-row'>
@@ -102,7 +98,7 @@
   </div>
 </div>
 
-<div class='form-row'>
+<div class='form-row mb-5'>
   <div class="form-group col-md-2">
     <%= f.label :print_queue_type %>
     <%= f.select :print_queue_type, MailServiceRule.print_queue_types.map { |key, value| [key.humanize, key] }, {}, class: "form-control" %>
@@ -114,3 +110,19 @@
   </div>
 </div>
 
+<div class="form-row">
+  <div class='form-group col-md-12'>
+    <h3 class='fs-20'>Add New Rule</h3>
+  </div>
+  <div class="form-group col-md-12">
+  <div class='links text-right'>
+    <%= link_to_add_association '+', f, :rules, partial: 'mail_service_rules/rules_fields', class: 'nested_fields_btn btn btn-outline-primary rounded'%>
+  </div>
+    <%= f.fields_for :rules do |rule|%>
+      <%= render 'mail_service_rules/rules_fields', f: rule %>
+    <% end %>
+  </div>
+</div>
+<script>
+  $(".nested_fields_btn").data("association-insertion-method", 'after')
+</script>

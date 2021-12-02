@@ -75,6 +75,9 @@ class MailServiceRulesController < ApplicationController
       :additional_label, :pickup_address, :bonus_score, :base_weight, :base_weight_max,
       mail_service_labels_attributes: %i[
         id length width height weight product_ids courier_id _destroy
+      ],
+      rules: %i[
+        id rule_field rule_operator rule_value is_optional mail_service_rule_id _destroy
       ]
     )
   end
