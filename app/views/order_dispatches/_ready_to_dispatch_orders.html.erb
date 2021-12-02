@@ -118,13 +118,20 @@
                       </div>
                       <%= render 'order_label_model', order: order, index: index %>
                     <% else %>
-                      <div class="shipment_modal" id="shipment_modal_<%=index%>">
+                      <div class="shipment_modal" data-id="<%= order.id %>" id="shipment_modal_<%=index%>">
                         <%= order.fulfillment_instruction %>
+                        <% order.channel_order_items.each do |product|%>
+                          <% if ChannelOrder.check_mapping(product) == 'mapped' %>
+                            <% if ChannelOrder.find_product(product)&.product_type == 'single'%>
+                              <%= hidden_field_tag 'length',  ChannelOrder.find_product(product).length, class: "length-value" %>
+                              <%= hidden_field_tag 'width',  ChannelOrder.find_product(product).width, class: "width-value" %>
+                              <%= hidden_field_tag 'height',  ChannelOrder.find_product(product).height, class: "height-value"%>
+                              <%= hidden_field_tag 'weight',  ChannelOrder.find_product(product).weight, class: "weight-value"%>
+                            <% end %>
+                          <% end %>
+                        <% end %>
+                      <% end %>
                       </div>
-                    <% end %>
-                    <%= form_for(@mail_service_rule, url: mail_service_rules_path(order.id)) do |f| %>
-                      <%= render 'mail_service_rules/label_model', f: f , order_id: order.id, index: index %>
-                    <% end %>
                   </td>
                   <td style="width: 100px;"><%= order.created_at.strftime("%m/%d/%Y %H:%M") %></td>
                   <td><%= order.total_amount%></td>
@@ -154,3 +161,25 @@
     </div>
   </div>
 </div>
+<%= form_for(@mail_service_rule, url: mail_service_rules_path) do |f| %>
+  <div class="modal fade" id="mail-service-roles-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Mail Service Rule</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <%= hidden_field_tag :channel_product_id, value: ''%>
+          <%= render partial: 'mail_service_rules/form', locals: { f: f }  %>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary mr-auto" data-dismiss="modal">Close</button>
+            <%= f.submit(@product.new_record? ? "Create" : "Save changes", class: 'btn btn-outline-primary create_product_button') %>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>

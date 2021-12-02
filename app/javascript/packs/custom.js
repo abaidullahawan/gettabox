@@ -156,7 +156,6 @@ $(document).on('turbolinks:load', function () {
   })
 
   $('.courier-value').on('change', function () {
-    debugger
   })
 
 });

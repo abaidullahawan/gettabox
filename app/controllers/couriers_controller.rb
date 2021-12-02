@@ -22,15 +22,12 @@ class CouriersController < ApplicationController
   # POST /couriers or /couriers.json
   def create
     @courier = Courier.new(courier_params)
-
-    respond_to do |format|
-      if @courier.save
-        format.html { redirect_to @courier, notice: "Courier was successfully created." }
-        format.json { render :show, status: :created, location: @courier }
-      else
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @courier.errors, status: :unprocessable_entity }
-      end
+    if @courier.save
+      redirect_to couriers_path
+      flash[:notice] = "Courier was successfully created."
+    else
+      redirect_to couriers_path
+      flash[:notice] = "Unable to create Courier."
     end
   end
 
