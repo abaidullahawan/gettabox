@@ -62,16 +62,14 @@
           <div class="table-responsive">
             <table class="table m-0 table-hover">
               <tr>
-                <th><input type="checkbox" id="" name="" value="" class='select-all-checkbox'></th>
-                <th class="text-center">Name</th>
-                <th class="text-center">Descriptions</th>
+                <th class="text-center">Rule Name</th>
+                <th class="text-center">Courier</th>
                 <th colspan="3" class="text-center">Actions</th>
               </tr>
               <% @mail_service_rules&.each&.with_index(1) do |rule, index| %>
                 <tr class=''>
-                  <td><%= f.check_box 'object_ids[]', {}, rule.id %></td>
-                  <td class="text-center"><%= rule.service_name %></td>
-                  <td class="text-center"><%= rule.description %></td>
+                  <td class="text-center"><%= rule.rule_name %></td>
+                  <td class="text-center"><%= rule.courier&.name %></td>
 
                   <td class="text-center">
                     <div class="dropdown dropleft">
