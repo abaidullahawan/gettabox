@@ -164,7 +164,7 @@ class OrderDispatchesController < ApplicationController
     @unpaid_orders_count = @channel_orders.where(payment_status: 'UNPAID')
                                           .or(@channel_orders.where(order_status: 'Pending')).distinct.count
     @not_started_count = @channel_orders.joins(:channel_order_items).where(order_status: 'NOT_STARTED')
-                                        .where.not('channel_order_items.sku': [nil, @unmatch_product_data]).distinct.count
+                                        .where('channel_order_items.sku': @product_data).distinct.count
     @completed_count = @channel_orders.where('order_status in (?)', %i[FULFILLED Shipped]).distinct.count
     @un_matched_orders_count = @channel_orders.joins(:channel_order_items)
                                               .where('channel_order_items.sku': @unmatch_product_data)

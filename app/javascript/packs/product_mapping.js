@@ -53,11 +53,17 @@ $(document).on('turbolinks:load', function () {
     // }
     $('#single-product-create-modal').modal('show')
   })
-
   $('.shipment_modal').on('click', function () {
-    var indexVal = this.id.split("_")[2]
-    $('.service_name_field_'+indexVal).val(this.innerText)
-    $('#mail-service-roles-modal-'+indexVal).modal('show')
+    var parent = $(this).parent()
+    var length = $(parent).find('.length-value').val()
+    var width = $(parent).find('.width-value').val()
+    var height = $(parent).find('.height-value').val()
+    var weight = $(parent).find('.weight-value').val()
+    $('.mail_service_rule_mail_service_labels_attributes_0_weight').val(weight)
+    $('.mail_service_rule_mail_service_labels_attributes_0_height').val(height)
+    $('.mail_service_rule_mail_service_labels_attributes_0_length').val(length)
+    $('.mail_service_rule_mail_service_labels_attributes_0_width').val(width)
+    $('#mail-service-roles-modal').modal('show')
   })
 
   $('.service-rule').on('click', function () {
