@@ -122,7 +122,8 @@
                         <%= order.fulfillment_instruction %>
                         <% order.channel_order_items.each do |product|%>
                           <% if ChannelOrder.check_mapping(product) == 'mapped' %>
-                            <% if ChannelOrder.find_product(product)&.product_type == 'single'%>
+                            <% if ChannelOrder.find_product(product)&.product_type == 'muliple'%>
+                            <% else %>
                               <%= hidden_field_tag 'length',  ChannelOrder.find_product(product).length, class: "length-value" %>
                               <%= hidden_field_tag 'width',  ChannelOrder.find_product(product).width, class: "width-value" %>
                               <%= hidden_field_tag 'height',  ChannelOrder.find_product(product).height, class: "height-value"%>
