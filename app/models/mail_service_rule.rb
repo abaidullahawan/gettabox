@@ -1,5 +1,5 @@
 class MailServiceRule < ApplicationRecord
-  belongs_to :channel_order
+  belongs_to :channel_order, optional: true
   belongs_to :courier
   belongs_to :service
   has_many :mail_service_labels
