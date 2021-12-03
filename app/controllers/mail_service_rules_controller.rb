@@ -87,6 +87,14 @@ class MailServiceRulesController < ApplicationController
     redirect_to archive_mail_service_rules_path
   end
 
+  def courier_servies
+    @services = Courier.find_by(id: params[:courier_id])&.services&.collect { |u| { "id": u.id, "name": u.name } }
+    respond_to do |format|
+      format.html
+      format.json { render json: @services }
+    end
+  end
+
   private
 
   # Use callbacks to share common setup or constraints between actions.
