@@ -2,13 +2,21 @@
 
 Rails.application.routes.draw do
   resources :services
-  resources :mail_service_rules
   resources :couriers
   resources :import_mappings
   require 'sidekiq/web'
   mount Sidekiq::Web => '/sidekiq'
   resources :email_templates
   resources :general_settings
+  resources :mail_service_rules do
+    collection do
+      post 'import', to: 'mail_service_rules#import'
+      post 'bulk_method', to: 'mail_service_rules#bulk_method'
+      get 'archive', to: 'mail_service_rules#archive'
+      post 'restore', to: 'mail_service_rules#restore'
+      post 'permanent_delete', to: 'mail_service_rules#permanent_delete'
+    end
+  end
   resources :seasons do
     collection do
       post 'import', to: 'seasons#import'
