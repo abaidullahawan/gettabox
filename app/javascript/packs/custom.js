@@ -158,6 +158,10 @@ $(document).on('turbolinks:load', function () {
   $('.courier-value').on('change', function () {
   })
 
+  $('.create_service_rule_button').on('click', function () {
+    $('.bulk-method-order-disaptch').trigger('click')
+  })
+
 });
 
 // Preloader JS

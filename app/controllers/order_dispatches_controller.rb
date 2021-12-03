@@ -53,6 +53,19 @@ class OrderDispatchesController < ApplicationController
     redirect_to order_dispatches_path(order_filter: 'unprocessed')
   end
 
+  def bulk_method
+    service_rule = MailServiceRule.find(params[:rule_id])
+    order_ids = params[:object_ids].excluding('0')
+    order_ids.each do |order|
+      channel_order = ChannelOrder.find(order)
+      channel_order&.channel_order_items&.each do |order_item|
+        order_item.update(mail_service_rule_id: service_rule.id)
+      end
+    end
+    redirect_to order_dispatches_path(order_filter: 'ready')
+    flash[:notice] = 'Mail Service Rule Assigned!'
+  end
+
   private
 
   def order_mapping_params; end

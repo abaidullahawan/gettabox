@@ -9,7 +9,7 @@
         </div>
         <div class="modal-body">
             <% order_rule = order.mail_service_rule %>
-            Service Name:  <%= order_rule.service_name %><br>
+            Service Name:  <%= order_rule&.service&.name %><br>
             Service Description:  <%= order_rule.rule_name %><br>
             Service Courier:  <%= order_rule.courier&.name %><br><br>
             <% order_rule.mail_service_labels.each do |label| %>
