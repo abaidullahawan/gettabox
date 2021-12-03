@@ -1,4 +1,8 @@
+# frozen_string_literal: true
+
+# mail service rules for order items
 class MailServiceRule < ApplicationRecord
+  acts_as_paranoid
   belongs_to :channel_order, optional: true
   belongs_to :courier
   belongs_to :service
