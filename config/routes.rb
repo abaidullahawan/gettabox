@@ -15,6 +15,7 @@ Rails.application.routes.draw do
       get 'archive', to: 'mail_service_rules#archive'
       post 'restore', to: 'mail_service_rules#restore'
       post 'permanent_delete', to: 'mail_service_rules#permanent_delete'
+      get 'search_courier_services', to: 'mail_service_rules#courier_servies'
     end
   end
   resources :seasons do
