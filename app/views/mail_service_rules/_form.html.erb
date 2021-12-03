@@ -3,16 +3,8 @@
     <div class="card mb-30">
       <div class="card-body">
         <div class="form-group">
-          <%= f.label :rule_name%>
-          <%= f.text_field :rule_name, class: 'form-control' %>
-        </div>
-        <div class="form-group">
-          <%= f.label 'Add Courier' %>
-          <%= f.select :courier_id, options_for_select(Courier.all.collect { | courier | [courier.name, courier.id] }),{}, class: 'form-control courier-value', placeholder: 'Please enter the Courier' %>
-        </div>
-        <div class="form-group">
-          <%= f.label :service_id %>
-          <%= f.select :service_id, options_for_select(Service.all.collect { | service | [service.name, service.id] }),{}, class: 'form-control', placeholder: 'Please enter the Service' %>
+          <%= f.label 'Rule Name' %>
+          <%= f.select :rule_name, options_for_select(MailServiceRule.all.collect { | rule | [rule.rule_name, rule.id] }),{}, class: 'form-control courier-value', placeholder: 'Please enter the Courier' %>
         </div>
         <div class="form-row">
           <div class='form-group col-md-12' style='border-bottom: 1px solid;'>

@@ -93,7 +93,12 @@ Rails.application.routes.draw do
     end
   end
   resources :extra_field_names
-  resources :order_dispatches
+  resources :order_dispatches do
+    collection do
+      post 'bulk_method', to: 'order_dispatches#bulk_method'
+    end
+  end
+  
   post 'product_file', to: 'products#import_product_file'
 
   # Order Dispatch Routes

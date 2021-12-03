@@ -5,159 +5,191 @@
         <%= form_tag order_dispatches_path,nav_class: "d-inline-b", class: "mb-3", method: :get do |f| %>
         <div class='col-md-12'>
           <div class='float-right'>
+            <button class="btn btn-outline-info w-100" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="height:42px;">
+              Actions
+            </button>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+              <a class="bulk-assign-rule dropdown-item">Assign Rule</a>
+            </div>
             <%# <label for="inputState">Per Page</label> %>
             <%#= select_tag :limit, options_for_select([5, 10, 15, 20], selected: params[:limit] || 5), id: 'change_per_page', class: 'form-control' %>
             <button type="submit" id="per_page_submit" hidden="hidden"></button>
           </div>
         </div>
         <% end %>
-        <div class="table-responsive">
-          <table class="table table-hover text-vertical-middle mb-0">
-            <thead class="bort-none borpt-0">
-              <tr>
-                <th scope="col">Channel</th>
-                <th scope="col">Order Information</th>
-                <th scope="col">Listings</th>
-                <th scope="col">Information</th>
-                <th scope="col">Courier Service</th>
-                <th scope="col">Date</th>
-                <th scope="col">Total</th>
-                <th scope="col">Status</th>
-                <th scope="col"></th>
-              </tr>
-            </thead>
-            <% @not_started_orders.each_with_index do |order, index| %>
-              <tbody>
+        <%= form_with url: bulk_method_order_dispatches_path, method: :post do |f| %>
+          <div class="table-responsive">
+            <table class="table table-hover text-vertical-middle mb-0">
+              <thead class="bort-none borpt-0">
                 <tr>
-                  <td style = "width: 180px">
-                    <%= render  'image_partial', order: order %>
-                  </td>
-                  <td style="width: 170px;">
-                    <%= order.ebayorder_id %><br>
-                    <%= order.buyer_username %><br>
-                    <strong><b><%= order.buyer_name %></b></strong><br>
-                    <span class="sku-width"><%= order.address%><br></span>
-                  </td>
-                  <td style="width: 320px">
-                    <% order&.channel_order_items&.each do |product|%>
-                      <%= link_to product_mappings_path(q:{item_sku_or_item_id_cont: product.item_data['legacyItemId']}) do %>
-                        <div class="card-style">
-                          <div class="col-12 d-flex">
-                            <span class="order-listing"><%= product.ordered %></span>
-                            <div class="d-flex">
-                            <% if (ChannelProduct.where(item_sku: product.sku )&.first&.product_data.present?  && ChannelProduct.where(item_sku: product.sku )&.first&.product_data["PictureDetails"] != nil)%>
-                                <%= image_tag(ChannelProduct.where(item_sku: product.sku )&.first&.product_data["PictureDetails"]["GalleryURL"])%>
-                            <% else %>
-                              <%= image_tag('user/1.jpg', width: "50px", height: "50px", class: 'mr-3 img-thumbnail img-height', alt: 'User Image') %>
-                            <% end %>
-                            <div>
-                            <span class="truncate text-white" title="<%= product.item_data['title'] %>"><%= product.item_data['title'] if product.item_data['title'].present?%></span>
-                            <b class = "text-white"><%= product.item_data['legacyItemId'] if product.item_data['legacyItemId'].present? %></b><br>
-                            <div class="sku-width text-white"><%= product&.sku if product&.sku.present? %></div>
+                  <th><input type="checkbox" id="" name="" value="" class='select-all-checkbox'></th>
+                  <th scope="col">Channel</th>
+                  <th scope="col">Order Information</th>
+                  <th scope="col">Listings</th>
+                  <th scope="col">Information</th>
+                  <th scope="col">Courier Service</th>
+                  <th scope="col">Date</th>
+                  <th scope="col">Total</th>
+                  <th scope="col">Status</th>
+                  <th scope="col"></th>
+                </tr>
+              </thead>
+              <% @not_started_orders.each_with_index do |order, index| %>
+                <tbody>
+                  <tr>
+                    <td><%= f.check_box 'object_ids[]', {}, order.id %></td>
+                    <td style = "width: 180px">
+                      <%= render  'image_partial', order: order %>
+                    </td>
+                    <td style="width: 170px;">
+                      <%= order.ebayorder_id %><br>
+                      <%= order.buyer_username %><br>
+                      <strong><b><%= order.buyer_name %></b></strong><br>
+                      <span class="sku-width"><%= order.address%><br></span>
+                    </td>
+                    <td style="width: 320px">
+                      <% order&.channel_order_items&.each do |product|%>
+                        <%= link_to product_mappings_path(q:{item_sku_or_item_id_cont: product.item_data['legacyItemId']}) do %>
+                          <div class="card-style">
+                            <div class="col-12 d-flex">
+                              <span class="order-listing"><%= product.ordered %></span>
+                              <div class="d-flex">
+                              <% if (ChannelProduct.where(item_sku: product.sku )&.first&.product_data.present?  && ChannelProduct.where(item_sku: product.sku )&.first&.product_data["PictureDetails"] != nil)%>
+                                  <%= image_tag(ChannelProduct.where(item_sku: product.sku )&.first&.product_data["PictureDetails"]["GalleryURL"])%>
+                              <% else %>
+                                <%= image_tag('user/1.jpg', width: "50px", height: "50px", class: 'mr-3 img-thumbnail img-height', alt: 'User Image') %>
+                              <% end %>
+                              <div>
+                              <span class="truncate text-white" title="<%= product.item_data['title'] %>"><%= product.item_data['title'] if product.item_data['title'].present?%></span>
+                              <b class = "text-white"><%= product.item_data['legacyItemId'] if product.item_data['legacyItemId'].present? %></b><br>
+                              <div class="sku-width text-white"><%= product&.sku if product&.sku.present? %></div>
+                            </div>
                           </div>
-                        </div>
+                        <% end %>
                       <% end %>
-                    <% end %>
-                  </td>
-                  <td style="width: 250px;">
-                    <% order.channel_order_items.each do |product|%>
-                      <% if ChannelOrder.check_mapping(product) == 'mapped' %>
-                        <% if ChannelOrder.find_product(product)&.product_type == 'multiple'%>
-                          <% ChannelProduct.find_by(item_sku: product.sku)&.product_mapping&.product&.multipack_products&.each do |record| %>
-                          <div class="card-style2">
-                            <%= link_to record.child.sku, product_path(record.child.id) %>
-                            <p style="color: white;">
-                              <b>Location:</b> <span><%= record.child.location %></span>
-                            </p>
-                            <div class="d-flex">
-                              <div class="col-4 col-padding">
-                                <p class="heading-table">Avail</p>
-                                <p class="table-value"><%= record.child.total_stock.to_i %></p>
+                    </td>
+                    <td style="width: 250px;">
+                      <% order.channel_order_items.each do |product|%>
+                        <% if ChannelOrder.check_mapping(product) == 'mapped' %>
+                          <% if ChannelOrder.find_product(product)&.product_type == 'multiple'%>
+                            <% ChannelProduct.find_by(item_sku: product.sku)&.product_mapping&.product&.multipack_products&.each do |record| %>
+                            <div class="card-style2">
+                              <%= link_to record.child.sku, product_path(record.child.id) %>
+                              <p style="color: white;">
+                                <b>Location:</b> <span><%= record.child.location %></span>
+                              </p>
+                              <div class="d-flex">
+                                <div class="col-4 col-padding">
+                                  <p class="heading-table">Avail</p>
+                                  <p class="table-value"><%= record.child.total_stock.to_i %></p>
+                                </div>
+                                <div class="col-4 col-padding">
+                                  <p class="heading-table">Alloc</p>
+                                  <p class="table-value"><%= product.ordered * record.quantity.to_i%></p>
+                                </div>
+                                <div class="col-4 col-padding">
+                                  <p class="heading-table">Disp</p>
+                                  <p class="table-value">0</p>
+                                </div>
                               </div>
-                              <div class="col-4 col-padding">
-                                <p class="heading-table">Alloc</p>
-                                <p class="table-value"><%= product.ordered * record.quantity.to_i%></p>
-                              </div>
-                              <div class="col-4 col-padding">
-                                <p class="heading-table">Disp</p>
+                            </div>
+                            <% end %>
+                          <% else %>
+                            <div class="card-style2">
+                              <%= link_to ChannelOrder.find_product(product)&.sku, product_path(ChannelOrder.find_product(product)&.id), style: "color: white" %>
+                              <p style="color: white;">
+                                <b>Location:</b> <span><%= ChannelOrder.find_product(product)&.location %></span>
+                              </p>
+                              <div class="d-flex">
+                                <div class="col-4 col-padding">
+                                  <p class="heading-table">Avail</p>
+                                  <p class="table-value"><%= ChannelProduct.find_by(item_sku: product.sku).product_mapping.product.total_stock.to_i %></p>
+                                </div>
+                                <div class="col-4 col-padding">
+                                  <p class="heading-table">Alloc</p>
+                                  <p class="table-value"><%= product.ordered%></p>
+                                </div>
+                                <div class="col-4 col-padding">
+                                  <p class="heading-table">Disp</p>
                                 <p class="table-value">0</p>
                               </div>
+                              </div>
                             </div>
-                          </div>
                           <% end %>
-                        <% else %>
-                          <div class="card-style2">
-                            <%= link_to ChannelOrder.find_product(product)&.sku, product_path(ChannelOrder.find_product(product)&.id), style: "color: white" %>
-                            <p style="color: white;">
-                              <b>Location:</b> <span><%= ChannelOrder.find_product(product)&.location %></span>
-                            </p>
-                            <div class="d-flex">
-                              <div class="col-4 col-padding">
-                                <p class="heading-table">Avail</p>
-                                <p class="table-value"><%= ChannelProduct.find_by(item_sku: product.sku).product_mapping.product.total_stock.to_i %></p>
-                              </div>
-                              <div class="col-4 col-padding">
-                                <p class="heading-table">Alloc</p>
-                                <p class="table-value"><%= product.ordered%></p>
-                              </div>
-                              <div class="col-4 col-padding">
-                                <p class="heading-table">Disp</p>
-                              <p class="table-value">0</p>
-                            </div>
-                            </div>
-                          </div>
                         <% end %>
                       <% end %>
-                    <% end %>
-                  </td>
-                  <td>
-                    <% if order.mail_service_rule.present? %>
-                      <div class= "service-rule" id="service_rule_<%=index%>">
-                        <br><%= order.mail_service_rule&.rule_name %>
-                        <br><%= order.mail_service_rule&.courier&.name %>
-                      </div>
-                      <%= render 'order_label_model', order: order, index: index %>
-                    <% else %>
-                      <div class="shipment_modal" data-id="<%= order.id %>" id="shipment_modal_<%=index%>">
-                        <%= order.fulfillment_instruction %>
-                        <% order.channel_order_items.each do |product|%>
-                          <% if ChannelOrder.check_mapping(product) == 'mapped' %>
-                            <% if ChannelOrder.find_product(product)&.product_type == 'muliple'%>
-                            <% else %>
-                              <%= hidden_field_tag 'length',  ChannelOrder.find_product(product).length, class: "length-value" %>
-                              <%= hidden_field_tag 'width',  ChannelOrder.find_product(product).width, class: "width-value" %>
-                              <%= hidden_field_tag 'height',  ChannelOrder.find_product(product).height, class: "height-value"%>
-                              <%= hidden_field_tag 'weight',  ChannelOrder.find_product(product).weight, class: "weight-value"%>
+                    </td>
+                    <td>
+                      <% if order.channel_order_items.first.mail_service_rule_id.present? %>
+                        <div class= "service-rule" id="service_rule_<%=index%>">
+                          <br><%= order.channel_order_items.first.mail_service_rule&.rule_name %>
+                          <br><%= order.channel_order_items.first.mail_service_rule&.courier&.name %>
+                          <br><%= order.channel_order_items.first.mail_service_rule&.service&.name %>
+                        </div>
+                        <%= render 'order_label_model', order: order.channel_order_items.first, index: index %>
+                      <% else %>
+                        <div class="shipment_modal" data-id="<%= order.id %>" id="shipment_modal_<%=index%>">
+                          <%= order.fulfillment_instruction %>
+                          <% order.channel_order_items.each do |product|%>
+                            <% if ChannelOrder.check_mapping(product) == 'mapped' %>
+                              <% if ChannelOrder.find_product(product)&.product_type == 'muliple'%>
+                              <% else %>
+                                <%= hidden_field_tag 'length',  ChannelOrder.find_product(product).length, class: "length-value" %>
+                                <%= hidden_field_tag 'width',  ChannelOrder.find_product(product).width, class: "width-value" %>
+                                <%= hidden_field_tag 'height',  ChannelOrder.find_product(product).height, class: "height-value"%>
+                                <%= hidden_field_tag 'weight',  ChannelOrder.find_product(product).weight, class: "weight-value"%>
+                              <% end %>
                             <% end %>
                           <% end %>
                         <% end %>
-                      <% end %>
-                      </div>
-                  </td>
-                  <td style="width: 100px;"><%= order.created_at.strftime("%m/%d/%Y %H:%M") %></td>
-                  <td><%= order.total_amount%></td>
-                  <td><span class="badge badge_warning py-1"><%= order.order_status%></span></td>
-                  <td>
-                    <button class="btn btn-primary" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                      <i data-feather='refresh-ccw' class='icon wh-15 mt-minus-3'></i>
-                      Retry
-                    </button>
-                    <button class="btn btn-primary" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                      <i data-feather='x' class='icon wh-15 mt-minus-3'></i>
-                      Hide
-                    </button>
-                  </td>
-                </tr>
-              </tbody>
-            <% end %>
-          </table>
-          <div class='float-right'>
-             <%= page_entries_info @not_started_orders %>
-          </div><br>
-          <div class="pagination justify-content-center mt-1">
-            <%= paginate @not_started_orders, :param_name => :not_started_page,theme: "twitter-bootstrap-4",pagination_class: "pagination-sm",nav_class: "d-inline-b" %>
+                        </div>
+                    </td>
+                    <td style="width: 100px;"><%= order.created_at.strftime("%m/%d/%Y %H:%M") %></td>
+                    <td><%= order.total_amount%></td>
+                    <td><span class="badge badge_warning py-1"><%= order.order_status%></span></td>
+                    <td>
+                      <button class="btn btn-primary" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i data-feather='refresh-ccw' class='icon wh-15 mt-minus-3'></i>
+                        Retry
+                      </button>
+                      <button class="btn btn-primary" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i data-feather='x' class='icon wh-15 mt-minus-3'></i>
+                        Hide
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              <% end %>
+            </table>
+            <div class='float-right'>
+              <%= page_entries_info @not_started_orders %>
+            </div><br>
+            <div class="pagination justify-content-center mt-1">
+              <%= paginate @not_started_orders, :param_name => :not_started_page,theme: "twitter-bootstrap-4",pagination_class: "pagination-sm",nav_class: "d-inline-b" %>
+            </div>
           </div>
-        </div>
+          <div class="modal fade" id="bulk-mail-service-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-scrollable" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title">Create Single Pack Product</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <%= label_tag "Rule Name" %>
+                  <%= select_tag "rule_id", options_for_select(MailServiceRule.all.collect{ |u| [u.rule_name, u.id]}), class: "form-control" %>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary mr-auto" data-dismiss="modal">Close</button>
+                    <button class= "btn btn-outline-primary create_product_button"> Create </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <%= f.submit '', class: 'bulk-method-order-disaptch d-none'%>
+        <% end %>
       </div>
     </div>
   </div>
@@ -178,7 +210,7 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary mr-auto" data-dismiss="modal">Close</button>
-            <%= f.submit(@product.new_record? ? "Create" : "Save changes", class: 'btn btn-outline-primary create_product_button') %>
+            <%= f.submit(@product.new_record? ? "Create" : "Save changes", class: 'btn btn-outline-primary create_service_rule_button') %>
         </div>
       </div>
     </div>
