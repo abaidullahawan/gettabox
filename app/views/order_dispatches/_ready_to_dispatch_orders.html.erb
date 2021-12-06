@@ -42,10 +42,10 @@
                       <%= render  'image_partial', order: order %>
                     </td>
                     <td style="width: 170px;">
-                      <%= order.ebayorder_id %><br>
-                      <%= order.buyer_username %><br>
-                      <strong><b><%= order.buyer_name %></b></strong><br>
-                      <span class="sku-width"><%= order.address%><br></span>
+                      <%= order.ebayorder_id %>
+                      <br><%= order.buyer_username %>
+                      <br><strong><b><%= order.buyer_name %></b></strong>
+                      <br><span class="sku-width"><%= order.address%></span>
                     </td>
                     <td style="width: 320px">
                       <% order&.channel_order_items&.each do |product|%>
@@ -121,15 +121,16 @@
                     </td>
                     <td>
                       <% if order.channel_order_items.first.mail_service_rule_id.present? %>
-                        <div class= "service-rule" id="service_rule_<%=index%>">
-                          <br><%= order.channel_order_items.first.mail_service_rule&.rule_name %>
-                          <br><%= order.channel_order_items.first.mail_service_rule&.courier&.name %>
-                          <br><%= order.channel_order_items.first.mail_service_rule&.service&.name %>
-                        </div>
-                        <%= render 'order_label_model', order: order.channel_order_items.first, index: index %>
+                        <%= link_to mail_service_rule_path(order.channel_order_items.first.mail_service_rule) do %>
+                          <span class="text-success py-1">
+                            <br><%= order.channel_order_items.first.mail_service_rule&.rule_name %>
+                            <br><%= order.channel_order_items.first.mail_service_rule&.courier&.name %>
+                            <br><%= order.channel_order_items.first.mail_service_rule&.service&.name %>
+                          </span>
+                        <% end %>
                       <% else %>
-                        <div class="shipment_modal" data-id="<%= order.id %>" id="shipment_modal_<%=index%>">
-                          <%= order.fulfillment_instruction %>
+                        <div class="shipment_modal cursur-pointer" data-id="<%= order.id %>" id="shipment_modal_<%=index%>">
+                          <span class=" text-danger py-1"><%= order.fulfillment_instruction %></span>
                           <% order.channel_order_items.each do |product|%>
                             <% if ChannelOrder.check_mapping(product) == 'mapped' %>
                               <% if ChannelOrder.find_product(product)&.product_type == 'muliple'%>
@@ -172,7 +173,7 @@
             <div class="modal-dialog modal-dialog-scrollable" role="document">
               <div class="modal-content">
                 <div class="modal-header">
-                  <h5 class="modal-title">Create Single Pack Product</h5>
+                  <h5 class="modal-title">Assign Rule</h5>
                   <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                   </button>
