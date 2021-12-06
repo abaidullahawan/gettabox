@@ -24,11 +24,11 @@ $(document).on('turbolinks:load', function () {
     })
   })
 
-  $('.rule_field').on('change', function () {
-    var field = this.value
+  window.change_operator = function (event) {
+    var field = event.currentTarget.value
     $.ajax({
       url: '/mail_service_rules/search_courier_services',
-      context: this,
+      context: event.currentTarget,
       data: { 'rule_field': field },
       type: "GET",
       dataType: "json",
@@ -52,5 +52,5 @@ $(document).on('turbolinks:load', function () {
         }
       }
     })
-  })
+  }
 })
