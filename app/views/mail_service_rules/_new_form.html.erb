@@ -7,13 +7,20 @@
 
   <div class="form-group col-md-4">
     <%= f.label :courier_id %>
-    <%= f.select :courier_id, options_for_select(Courier.all.collect { | service | [service.name, service.id] }, f.object.courier_id), {include_blank: 'Select Courier'}, class: "form-control" %>
+    <%= f.select :courier_id, options_for_select(Courier.all.collect { | c | [c.name, c.id] }, f.object.courier_id), {include_blank: 'Select Courier'}, class: "form-control" %>
   </div>
 
+  <% if f.object.service.present? %>
+    <div class="form-group col-md-4">
+      <%= f.label :service_id %>
+      <%= f.select :service_id, options_for_select(f.object.courier.services.collect { | s | [s.name, s.id] }, f.object.service_id), {}, class: "form-control" %>
+    </div>
+  <% else %>
   <div class="form-group col-md-4">
     <%= f.label :service_id %>
     <%= f.select :service_id, options_for_select([], f.object.service_id), {include_blank: 'Please select courier first'}, class: "form-control" %>
   </div>
+  <% end %>
 </div>
 
 <div class="form-row">

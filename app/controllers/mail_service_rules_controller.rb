@@ -32,7 +32,7 @@ class MailServiceRulesController < ApplicationController
     @mail_service_rule = MailServiceRule.new(mail_service_rule_params)
     if @mail_service_rule.save
       redirect_to mail_service_rules_path
-      flash[:notice] = "Mail service rule was successfully created."
+      flash[:notice] = 'Mail service rule was successfully created.'
     else
       flash[:alert] = "#{@mail_service_rule.errors.full_messages} Cannot create rule"
       redirect_to mail_service_rules_path
@@ -79,7 +79,8 @@ class MailServiceRulesController < ApplicationController
   end
 
   def permanent_delete
-    flash[:notice] = if params[:object_id].present? && MailServiceRule.only_deleted.find(params[:object_id]).really_destroy!
+    object_id = params[:object_id]
+    flash[:notice] = if object_id.present? && MailServiceRule.only_deleted.find(object_id).really_destroy!
                        'Mail Service Rule deleted successfully'
                      else
                        'Mail Service Rule cannot be deleted/Please select something to delete'
@@ -88,7 +89,7 @@ class MailServiceRulesController < ApplicationController
   end
 
   def courier_servies
-    @services = Courier.find_by(id: params[:courier_id])&.services&.collect { |u| { "id": u.id, "name": u.name } }
+    @services = params[:courier_id].nil? ? rule_operators(params[:rule_field]) : find_courier(params[:courier_id])
     respond_to do |format|
       format.html
       format.json { render json: @services }
@@ -112,5 +113,20 @@ class MailServiceRulesController < ApplicationController
       mail_service_labels_attributes: %i[id length width height weight product_ids courier_id _destroy],
       rules_attributes: %i[id rule_field rule_operator rule_value is_optional mail_service_rule_id _destroy]
     )
+  end
+
+  def find_courier(courier_id)
+    Courier.find_by(id: courier_id)&.services&.collect { |u| { "id": u.id, "name": u.name } }
+  end
+
+  def rule_operators(rule_field)
+    case rule_field
+    when /true/ then true
+    when /option/ then Rule.rule_operator_product_options
+    when /warehouse/ then Rule.rule_operator_warehouses
+    when /dropshiped_by/ then Rule.rule_operator_dropshippeds
+    else
+      Rule.rule_operators
+    end
   end
 end

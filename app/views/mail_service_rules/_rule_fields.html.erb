@@ -2,13 +2,13 @@
   <br>
   <div class="form-group row">
     <div class="col-3">
-      <%= f.select :rule_field, Rule.rule_fields.map { |key, value| [value, key] }, {}, class: "form-control" %>
+      <%= f.select :rule_field, Rule.rule_fields.map { |key, value| [value, key] }, {}, class: "form-control rule_field" %>
     </div>
     <div class="col-2">
-    <%= f.select :rule_operator, Rule.rule_operators.map { |key, value| [value, key] }, {}, class: "form-control" %>
+    <%= f.select :rule_operator, Rule.rule_operators.map { |key, value| [value, key] }, {}, class: "form-control rule_operator" %>
     </div>
     <div class="col-3">
-      <%= f.text_field :rule_value, class: 'form-control', placeholder: '0' %>
+      <%= f.text_field :rule_value, class: 'form-control rule_value', placeholder: '0' %>
     </div>
     <div class='col-1 mb-1'>
       <br>
