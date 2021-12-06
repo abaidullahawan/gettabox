@@ -1,3 +1,3 @@
 class MailServiceLabel < ApplicationRecord
-  belongs_to :mail_service_rule
+  belongs_to :assign_rule
 end

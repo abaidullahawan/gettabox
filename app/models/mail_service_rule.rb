@@ -7,9 +7,7 @@ class MailServiceRule < ApplicationRecord
   belongs_to :courier
   belongs_to :service
   has_many :channel_order_item
-  has_many :mail_service_labels
   has_many :rules
-  accepts_nested_attributes_for :mail_service_labels
   accepts_nested_attributes_for :rules
 
   enum label_type: {
