@@ -70,9 +70,6 @@ $(document).on('turbolinks:load', function () {
     $('#bulk-mail-service-modal').modal('show')
   })
 
-  $('.service-rule').on('click', function () {
-    $('#mail-service-label-modal-'+this.id.split("_")[2]).modal('show')
-  })
 
 
 
