@@ -59,11 +59,17 @@ $(document).on('turbolinks:load', function () {
     var width = $(parent).find('.width-value').val()
     var height = $(parent).find('.height-value').val()
     var weight = $(parent).find('.weight-value').val()
+    $('#channel_order_id').val(this.dataset.id)
     $('.mail_service_rule_mail_service_labels_attributes_0_weight').val(weight)
     $('.mail_service_rule_mail_service_labels_attributes_0_height').val(height)
     $('.mail_service_rule_mail_service_labels_attributes_0_length').val(length)
     $('.mail_service_rule_mail_service_labels_attributes_0_width').val(width)
     $('#mail-service-roles-modal').modal('show')
+  })
+
+  $('.update-rule-modal').on('click', function () {
+    var index = this.dataset.index
+    $('#mail-service-roles-update-modal-'+index).modal('show')
   })
 
   $('.bulk-assign-rule').on('click', function () {

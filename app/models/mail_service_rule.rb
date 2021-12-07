@@ -6,7 +6,6 @@ class MailServiceRule < ApplicationRecord
   belongs_to :channel_order, optional: true
   belongs_to :courier
   belongs_to :service
-  has_many :channel_order_item
   has_many :rules
   accepts_nested_attributes_for :rules
 
