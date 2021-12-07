@@ -1,7 +1,7 @@
 <%= form_for @service do |f| %>
-  <div class="form-group">
+  <div class="form-group required">
     <%= f.label 'Add Courier' %>
-    <%= f.select :courier_id, options_for_select(Courier.all.collect { | courier | [courier.name, courier.id] }),{}, class: 'form-control courier-value', placeholder: 'Please enter the Courier' %>
+    <%= f.select :courier_id, options_for_select(Courier.all.collect { | courier | [courier.name, courier.id] }),{include_blank: 'Please select courier'}, class: 'form-control courier-value', placeholder: 'Please enter the Courier' %>
   </div>
   <div class="form-group">
     <%= f.label 'Service Name' %><br>

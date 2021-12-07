@@ -1,8 +1,26 @@
 # frozen_string_literal: true
 
 Rails.application.routes.draw do
-  resources :services
-  resources :couriers
+  resources :services do
+    collection do
+      post 'import', to: 'services#import'
+      post 'bulk_method', to: 'services#bulk_method'
+      get 'archive', to: 'services#archive'
+      post 'restore', to: 'services#restore'
+      post 'permanent_delete', to: 'services#permanent_delete'
+      post 'season_by_name', to: 'services#search_season_by_name'
+    end
+  end
+  resources :couriers do
+    collection do
+      post 'import', to: 'couriers#import'
+      post 'bulk_method', to: 'couriers#bulk_method'
+      get 'archive', to: 'couriers#archive'
+      post 'restore', to: 'couriers#restore'
+      post 'permanent_delete', to: 'couriers#permanent_delete'
+      post 'season_by_name', to: 'couriers#search_season_by_name'
+    end
+  end
   resources :import_mappings
   resources :assign_rules
   require 'sidekiq/web'
