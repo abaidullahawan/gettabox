@@ -1,3 +1,5 @@
 class Courier < ApplicationRecord
-  has_many :services
+  acts_as_paranoid
+
+  has_many :services, dependent: :destroy
 end
