@@ -3,7 +3,7 @@
 # products from apo
 class ChannelProduct < ApplicationRecord
   has_one :product_mapping
-
+  belongs_to :assign_rule, optional: true
   enum channel_type: {
     ebay: 0,
     amazon: 1,

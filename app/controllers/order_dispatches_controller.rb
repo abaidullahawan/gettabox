@@ -17,8 +17,8 @@ class OrderDispatchesController < ApplicationController
       format.csv
     end
     all_order_data if params[:orders_api].present?
-    @mail_service_rule = MailServiceRule.new
-    @mail_service_rule.mail_service_labels.build
+    @assign_rule = AssignRule.new
+    @assign_rule.mail_service_labels.build
   end
 
   def show; end
@@ -60,6 +60,23 @@ class OrderDispatchesController < ApplicationController
       channel_order = ChannelOrder.find(order)
       channel_order&.channel_order_items&.each do |order_item|
         order_item.update(mail_service_rule_id: service_rule.id)
+      end
+    end
+    redirect_to order_dispatches_path(order_filter: 'ready')
+    flash[:notice] = 'Mail Service Rule Assigned!'
+  end
+
+  def assign_rule
+    service_rule = MailServiceRule.find(params[:rule_name])
+    if params[:next_time] == '1'
+      ChannelOrder.find(params[:channel_order_id])&.channel_order_items&.each do |order_item|
+        order_item.update(mail_service_rule_id: service_rule.id)
+        ChannelProduct.where(item_sku: order_item.sku).update_all(mail_service_rule_id: service_rule.id)
+        ChannelOrderItem.where(sku: order_item.sku).update_all(mail_service_rule_id: service_rule.id)
+      end
+    else
+      ChannelOrder.find(params[:channel_order_id])&.channel_order_items&.each do |order_item|
+        order_item.update(mail_service_rule_id: params[:rule_name])
       end
     end
     redirect_to order_dispatches_path(order_filter: 'ready')
@@ -177,7 +194,8 @@ class OrderDispatchesController < ApplicationController
     @unpaid_orders_count = @channel_orders.where(payment_status: 'UNPAID')
                                           .or(@channel_orders.where(order_status: 'Pending')).distinct.count
     @not_started_count = @channel_orders.joins(:channel_order_items).where(order_status: 'NOT_STARTED')
-                                        .where.not('channel_order_items.sku': [nil, @unmatch_product_data]).distinct.count
+                                        .where.not('channel_order_items.sku': [nil,
+                                                                               @unmatch_product_data]).distinct.count
     @completed_count = @channel_orders.where('order_status in (?)', %i[FULFILLED Shipped]).distinct.count
     @un_matched_orders_count = @channel_orders.joins(:channel_order_items)
                                               .where('channel_order_items.sku': @unmatch_product_data)

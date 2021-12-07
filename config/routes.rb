@@ -4,6 +4,7 @@ Rails.application.routes.draw do
   resources :services
   resources :couriers
   resources :import_mappings
+  resources :assign_rules
   require 'sidekiq/web'
   mount Sidekiq::Web => '/sidekiq'
   resources :email_templates
@@ -105,6 +106,7 @@ Rails.application.routes.draw do
   resources :order_dispatches do
     collection do
       post 'bulk_method', to: 'order_dispatches#bulk_method'
+      post 'assign_rule', to: 'order_dispatches#assign_rule'
     end
   end
   
