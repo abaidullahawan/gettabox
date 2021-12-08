@@ -122,8 +122,8 @@
                     <td>
                       <% if order.channel_order_items.first.assign_rule.present? || ChannelProduct.find_by(item_sku: order.channel_order_items.first.sku )&.assign_rule != nil %>
                         <span class="update-rule-modal text-success py-1" data-id= "<%= order.id %>"data-index= "<%=index%>">
-                          <br><%= order.channel_order_items.first.assign_rule.mail_service_rule.rule_name %>
-                          <br><%= order.channel_order_items.first.assign_rule.mail_service_rule.service.name%>
+                          <br><%= order.channel_order_items&.first.assign_rule&.mail_service_rule&.rule_name %>
+                          <br><%= order.channel_order_items&.first.assign_rule&.mail_service_rule&.service&.name%>
                         </span>
                         <form> </form>
                         <%= form_for order.channel_order_items.first.assign_rule, url: assign_rule_path(order.channel_order_items.first.assign_rule.id), method: :put do |ar| %>
