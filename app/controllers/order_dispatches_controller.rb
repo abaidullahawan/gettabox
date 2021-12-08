@@ -156,9 +156,18 @@ class OrderDispatchesController < ApplicationController
   def not_started_orders
     return unless params[:order_filter].eql? 'ready'
 
-    @not_started_orders = @channel_orders.joins(:channel_order_items).where(order_status: 'NOT_STARTED')
-                                         .where.not('channel_order_items.sku': [nil, @unmatch_product_data]).distinct
-                                         .order(created_at: :desc).page(params[:not_started_page]).per(25)
+    if params['assign_rule_name'].present?
+      @not_started_orders = @channel_orders.joins(channel_order_items: [assign_rule: :mail_service_rule])
+                                           .where('mail_service_rules.rule_name Like ? and order_status = ?',
+                                                  "%#{params['assign_rule_name']}%", 'NOT_STARTED')
+                                           .where.not('channel_order_items.sku': [nil, @unmatch_product_data])
+                                           .distinct
+                                           .order(created_at: :desc).page(params[:not_started_page]).per(25)
+    else
+      @not_started_orders = @channel_orders.joins(:channel_order_items).where(order_status: 'NOT_STARTED')
+                                           .where.not('channel_order_items.sku': [nil, @unmatch_product_data]).distinct
+                                           .order(created_at: :desc).page(params[:not_started_page]).per(25)
+    end
   end
 
   def unmatched_product_orders
