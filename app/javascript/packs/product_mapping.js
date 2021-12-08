@@ -69,6 +69,7 @@ $(document).on('turbolinks:load', function () {
 
   $('.update-rule-modal').on('click', function () {
     var index = this.dataset.index
+    $('#update_channel_order_id').val(this.dataset.id)
     $('#mail-service-roles-update-modal-'+index).modal('show')
   })
 
