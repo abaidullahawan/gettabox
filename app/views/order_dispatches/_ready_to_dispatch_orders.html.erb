@@ -74,7 +74,7 @@
                           <% if ChannelOrder.find_product(product)&.product_type == 'multiple'%>
                             <% ChannelProduct.find_by(item_sku: product.sku)&.product_mapping&.product&.multipack_products&.each do |record| %>
                             <div class="card-style2">
-                              <%= link_to record.child.sku, product_path(record.child.id) %>
+                              <%= link_to record.child.sku, product_path(record.child.id), target: 'blank' %>
                               <p style="color: white;">
                                 <b>Location:</b> <span><%= record.child.location %></span>
                               </p>
@@ -96,7 +96,7 @@
                             <% end %>
                           <% else %>
                             <div class="card-style2">
-                              <%= link_to ChannelOrder.find_product(product)&.sku, product_path(ChannelOrder.find_product(product)&.id), style: "color: white" %>
+                              <%= link_to ChannelOrder.find_product(product)&.sku, product_path(ChannelOrder.find_product(product)&.id), target: 'blank', style: "color: white" %>
                               <p style="color: white;">
                                 <b>Location:</b> <span><%= ChannelOrder.find_product(product)&.location %></span>
                               </p>
@@ -121,31 +121,33 @@
                     </td>
                     <td>
                       <% if order.channel_order_items.first.assign_rule.present? || ChannelProduct.find_by(item_sku: order.channel_order_items.first.sku )&.assign_rule != nil %>
-                        <span class="update-rule-modal text-success py-1" data-index= "<%=index%>">
-                          <br><%= MailServiceRule.find(order.channel_order_items.first.assign_rule.mail_service_rule.id).rule_name %>
+                        <span class="update-rule-modal text-success py-1" data-id= "<%= order.id %>"data-index= "<%=index%>">
+                          <br><%= order.channel_order_items.first.assign_rule.mail_service_rule.rule_name %>
+                          <br><%= order.channel_order_items.first.assign_rule.mail_service_rule.service.name%>
                         </span>
-                        <div class="modal fade" id="mail-service-roles-update-modal-<%=index%>" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
-                          <div class="modal-dialog modal-dialog-scrollable" role="document">
-                            <div class="modal-content">
-                              <div class="modal-header">
-                                <h5 class="modal-title">Mail Service Rule</h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                  <span aria-hidden="true">&times;</span>
-                                </button>
-                              </div>
-                              <div class="modal-body">
-                                <%= form_for order.channel_order_items.first.assign_rule, url: assign_rule_path(order.channel_order_items.first.assign_rule.id), method: :put do |f| %>
-                                  <%= hidden_field_tag :update_channel_order_id %>
-                                  <%= render partial: 'assign_rule_form', locals: { f: f }  %>
-                                <% end %>
-                              </div>
-                              <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary mr-auto" data-dismiss="modal">Close</button>
-                                  <%= f.submit "Assign" , class: 'btn btn-outline-primary create_service_rule_button' %>
+                        <form> </form>
+                        <%= form_for order.channel_order_items.first.assign_rule, url: assign_rule_path(order.channel_order_items.first.assign_rule.id), method: :put do |ar| %>
+                          <div class="modal fade" id="mail-service-roles-update-modal-<%=index%>" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-scrollable" role="document">
+                              <div class="modal-content">
+                                <div class="modal-header">
+                                  <h5 class="modal-title">Mail Service Rule</h5>
+                                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                  </button>
+                                </div>
+                                <div class="modal-body">
+                                  <%= hidden_field_tag :update_channel_order_id, order.id %>
+                                  <%= render partial: 'assign_rule_form', locals: { f: ar }  %>
+                                </div>
+                                <div class="modal-footer">
+                                  <button type="button" class="btn btn-secondary mr-auto" data-dismiss="modal">Close</button>
+                                    <%= ar.submit "Assign" , class: 'btn btn-outline-primary create_service_rule_button' %>
+                                </div>
                               </div>
                             </div>
                           </div>
-                        </div>
+                        <% end %>
                       <% else %>
                         <div class="shipment_modal cursur-pointer" data-id="<%= order.id %>" id="shipment_modal_<%=index%>">
                           <span class=" text-danger py-1">Please Select Service Rule</span>
