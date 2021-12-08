@@ -3,7 +3,7 @@
     <div class="card mb-30">
       <div class="card-body">
         <%= form_tag order_dispatches_path,nav_class: "d-inline-b", class: "mb-3", method: :get do |f| %>
-        <div class='col-md-12'>
+        <div class='col-md-4 offset-8'>
           <div class='float-right'>
             <button class="btn btn-outline-info w-100" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="height:42px;">
               Actions
@@ -14,6 +14,10 @@
             <%# <label for="inputState">Per Page</label> %>
             <%#= select_tag :limit, options_for_select([5, 10, 15, 20], selected: params[:limit] || 5), id: 'change_per_page', class: 'form-control' %>
             <button type="submit" id="per_page_submit" hidden="hidden"></button>
+          </div>
+            <%= hidden_field_tag "order_filter", params[:order_filter] %>
+          <div class='float-right mr-2'>
+            <%= search_field_tag :assign_rule_name, params[:assign_rule_name], class: 'form-control', placeholder: 'Search rule name' %>
           </div>
         </div>
         <% end %>
