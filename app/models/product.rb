@@ -4,6 +4,8 @@
 class Product < ApplicationRecord
   acts_as_paranoid
   has_one :extra_field_value, as: :fieldvalueable
+  after_create :re_modulate_dimensions
+  after_update :re_modulate_dimensions
 
   validates :sku, presence: true, uniqueness: { case_sensitive: false }
   validates :title, presence: true
@@ -38,5 +40,11 @@ class Product < ApplicationRecord
         csv << attributes.map { |attr| product.send(attr) }
       end
     end
+  end
+
+  def re_modulate_dimensions
+    max = [length, height].max
+    min = [length, height].min
+    update_columns(length: max, height: min)
   end
 end
