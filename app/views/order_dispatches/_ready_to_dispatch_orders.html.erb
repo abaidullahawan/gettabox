@@ -125,13 +125,14 @@
                       <% end %>
                     </td>
                     <td>
-                      <% if order.channel_order_items.first.assign_rule.present? || ChannelProduct.find_by(item_sku: order.channel_order_items.first.sku )&.assign_rule != nil %>
+                       <% assign_rule = order.channel_order_items.first.assign_rule || ChannelProduct.find_by(item_sku: order.channel_order_items.first.sku )&.assign_rule %>
+                      <% if assign_rule.present? %>
                         <span class="update-rule-modal text-success py-1" data-id= "<%= order.id %>"data-index= "<%=index%>">
                           <br><%= order.channel_order_items&.first.assign_rule&.mail_service_rule&.rule_name %>
                           <br><%= order.channel_order_items&.first.assign_rule&.mail_service_rule&.service&.name%>
                         </span>
                         <form> </form>
-                        <%= form_for order.channel_order_items.first.assign_rule, url: assign_rule_path(order.channel_order_items.first.assign_rule.id), method: :put do |ar| %>
+                        <%= form_for assign_rule, url: assign_rule_path(assign_rule.id ), method: :put do |ar| %>
                           <div class="modal fade" id="mail-service-roles-update-modal-<%=index%>" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
                             <div class="modal-dialog modal-dialog-scrollable" role="document">
                               <div class="modal-content">
