@@ -54,12 +54,13 @@ class OrderDispatchesController < ApplicationController
   end
 
   def bulk_method
-    service_rule = MailServiceRule.find(params[:rule_id])
+    @assign_rule = AssignRule.create(mail_service_rule_id: params[:rule_id], save_later: true)
+    @service_label = MailServiceLabel.create(height: params[:height], weight: params[:weight], length: params[:length], width: params[:width], assign_rule_id: @assign_rule.id)
     order_ids = params[:object_ids].excluding('0')
     order_ids.each do |order|
       channel_order = ChannelOrder.find(order)
       channel_order&.channel_order_items&.each do |order_item|
-        order_item.update(mail_service_rule_id: service_rule.id)
+        order_item.update(assign_rule_id: @assign_rule.id)
       end
     end
     redirect_to order_dispatches_path(order_filter: 'ready')
