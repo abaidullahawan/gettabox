@@ -10,6 +10,7 @@
             </button>
             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
               <a class="bulk-assign-rule dropdown-item">Assign Rule</a>
+              <a class="bulk-assign-rule dropdown-item">Recalculate Rule</a>
             </div>
             <%# <label for="inputState">Per Page</label> %>
             <%#= select_tag :limit, options_for_select([5, 10, 15, 20], selected: params[:limit] || 5), id: 'change_per_page', class: 'form-control' %>
@@ -56,7 +57,7 @@
                         <%= link_to product_mappings_path(q:{item_sku_or_item_id_cont: product.item_data['legacyItemId']}) do %>
                           <div class="card-style">
                             <div class="col-12 d-flex">
-                              <span class="order-listing"><%= product.ordered %></span>
+                              <span class="order-listing order-quantity"><%= product.ordered %></span>
                               <div class="d-flex">
                               <% if (ChannelProduct.where(item_sku: product.sku )&.first&.product_data.present?  && ChannelProduct.where(item_sku: product.sku )&.first&.product_data["PictureDetails"] != nil)%>
                                   <%= image_tag(ChannelProduct.where(item_sku: product.sku )&.first&.product_data["PictureDetails"]["GalleryURL"])%>
@@ -203,8 +204,28 @@
                   </button>
                 </div>
                 <div class="modal-body">
-                  <%= label_tag "Rule Name" %>
-                  <%= select_tag "rule_id", options_for_select(MailServiceRule.all.collect{ |u| [u.rule_name, u.id]}), class: "form-control" %>
+                  <div class="form-group">
+                    <%= label_tag "Rule Name" %>
+                    <%= select_tag "rule_id", options_for_select(MailServiceRule.all.collect{ |u| [u.rule_name, u.id]}), class: "form-control" %>
+                  </div>
+                  <div class="form-group row">
+                    <div class="col-11">
+                      <%= label_tag 'Add weight' %>
+                      <%= number_field_tag :weight,{}, :class => "form-control", placeholder: 'Please enter the weight' %>
+                    </div>
+                    <div class="col-11">
+                      <%= label_tag 'Add height' %>
+                      <%= number_field_tag :height,{}, :class => "form-control", placeholder: 'Please enter the height' %>
+                    </div>
+                    <div class="col-11">
+                      <%= label_tag 'Add length' %>
+                      <%= number_field_tag :length,{}, :class =>"form-control", placeholder: 'Please enter the length' %>
+                    </div>
+                    <div class="col-11">
+                      <%= label_tag 'Add width' %>
+                      <%= number_field_tag :width,{}, :class => "form-control", placeholder: 'Please enter the width' %>
+                    </div>
+                  </div>
                 </div>
                 <div class="modal-footer">
                   <button type="button" class="btn btn-secondary mr-auto" data-dismiss="modal">Close</button>
