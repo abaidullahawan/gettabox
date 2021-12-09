@@ -29,11 +29,11 @@ class CouriersController < ApplicationController
   # POST /couriers or /couriers.json
   def create
     @courier = Courier.new(courier_params)
-    flash[:notice] = if @courier.save
-                       'Courier was successfully created.'
-                     else
-                       'Unable to create Courier.'
-                     end
+    if @courier.save
+      flash[:notice] = 'Courier was successfully created.'
+    else
+      flash[:alert] = @courier.errors.full_messages
+    end
     redirect_to couriers_path
   end
 

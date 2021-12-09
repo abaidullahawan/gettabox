@@ -1,9 +1,37 @@
-<p id="notice"><%= notice %></p>
-
-<p>
-  <strong>Name:</strong>
-  <%= @courier.name %>
-</p>
-
-<%= link_to 'Edit', edit_courier_path(@courier) %> |
-<%= link_to 'Back', couriers_path %>
+<!-- Main Content Header -->
+<div class="main-content-header">
+  <h1>Couriers</h1>
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item">
+      <a href="<%= home_path %>">Dashboard</a>
+    </li>
+    <li class="breadcrumb-item">
+      <a href="<%= settings_path %>">Settings</a>
+    </li>
+    <li class="breadcrumb-item active">
+      <a href="<%= couriers_path %>">Couriers</a>
+    </li>
+    <li class="breadcrumb-item active">
+      <span class="active">Show</span>
+    </li>
+  </ol>
+</div>
+<!-- End Main Content Header -->
+<div class="row">
+  <div class="col-xl-12">
+    <div class="card mb-30">
+      <div class="card-body">
+        <div class="card-header">
+          <h5 class="card-title">
+            Show
+          </h5>
+        </div>
+        <%# <fieldset disabled> %>
+        <%= form_for @courier, url: courier_path(@courier) do |f| %>
+          <%= render 'form', f: f %>
+          <%= f.submit 'Update', class: 'btn btn-success mt-4 float-right'%>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

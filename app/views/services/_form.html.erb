@@ -1,13 +1,8 @@
-<%= form_for @service do |f| %>
-  <div class="form-group required">
-    <%= f.label 'Add Courier' %>
-    <%= f.select :courier_id, options_for_select(Courier.all.collect { | courier | [courier.name, courier.id] }),{include_blank: 'Please select courier'}, class: 'form-control courier-value', placeholder: 'Please enter the Courier' %>
-  </div>
-  <div class="form-group">
-    <%= f.label 'Service Name' %><br>
-    <%= f.text_field :name,class: 'form-control' %>
-  </div>
-  <div class="form-group">
-    <%= f.submit(@service.new_record? ? "Create" : "Update", class: 'btn btn-primary mt-5 float-right') %>
-  </div>
-<% end %>
+<div class="form-group required">
+  <%= f.label 'Add Courier' %>
+  <%= f.select :courier_id, options_for_select(Courier.all.collect { | courier | [courier.name, courier.id] }, f.object.courier_id),{include_blank: 'Please select courier'}, class: 'form-control courier-value', placeholder: 'Please enter the Courier' %>
+</div>
+<div class="form-group">
+  <%= f.label 'Service Name' %><br>
+  <%= f.text_field :name, class: 'form-control', placeholder: 'Please enter name for service' %>
+</div>

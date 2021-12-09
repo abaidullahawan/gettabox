@@ -15,8 +15,9 @@
         <div class="card-header">
           <h5 class="card-title">Create</h5>
         </div>
-            <%= render 'form', service: @service %>
-            <%= link_to 'Back', services_path %>
+          <%= form_for @service do |f| %>
+            <%= render 'form', f: f %>
+          <% end %>
       </div>
     </div>
   </div>
