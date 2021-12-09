@@ -39,14 +39,12 @@ class ServicesController < ApplicationController
 
   # PATCH/PUT /services/1 or /services/1.json
   def update
-    respond_to do |format|
-      if @service.update(service_params)
-        format.html { redirect_to @service, notice: 'Service was successfully updated.' }
-        format.json { render :show, status: :ok, location: @service }
-      else
-        format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @service.errors, status: :unprocessable_entity }
-      end
+    if @service.update(service_params)
+      flash[:notice] = 'Service was successfully updated.'
+      redirect_to service_path(@service)
+    else
+      flash.now[:alert] = @service.errors.full_messages
+      render :show
     end
   end
 

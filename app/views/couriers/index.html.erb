@@ -115,6 +115,10 @@
         <div class="modal-body">
           <%= render 'form', f: f %>
         </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+          <%= f.submit 'Create', class: 'btn btn-info'%>
+        </div>
       </div>
     </div>
   </div>
