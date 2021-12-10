@@ -4,6 +4,7 @@
 class ChannelOrder < ApplicationRecord
   has_many :channel_order_items, dependent: :destroy
   has_one :mail_service_rule, dependent: :destroy
+  belongs_to :assign_rule, optional: true
   validates_uniqueness_of :order_data
   validates_uniqueness_of :ebayorder_id
   enum channel_type: {
@@ -32,11 +33,11 @@ class ChannelOrder < ApplicationRecord
     ChannelProduct.find_by(item_sku: product.sku)&.product_mapping&.product&.location
   end
 
-  def self.picture_check(product)
-    ChannelProduct.find_by(item_sku: product.sku )&.product_data.present?  && ChannelProduct.find_by(item_sku: product.sku )&.product_data["PictureDetails"] != nil
-  end
+  # def self.picture_check(product)
+  #   ChannelProduct.find_by(item_sku: product.sku)&.product_data.present? && !ChannelProduct.find_by(item_sku: product.sku)&.product_data['PictureDetails'].nil?
+  # end
 
-  def self.picture_data(product)
-    ChannelProduct.find_by(item_sku: product.sku )&.product_data["PictureDetails"]["GalleryURL"]
-  end
+  # def self.picture_data(product)
+  #   ChannelProduct.find_by(item_sku: product.sku)&.product_data['PictureDetails']['GalleryURL']
+  # end
 end

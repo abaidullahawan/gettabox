@@ -54,14 +54,14 @@ class OrderDispatchesController < ApplicationController
   end
 
   def bulk_method
+    return unless params[:object_ids].excluding('0').present?
+
     @assign_rule = AssignRule.create(mail_service_rule_id: params[:rule_id], save_later: true)
     @service_label = MailServiceLabel.create(height: params[:height], weight: params[:weight], length: params[:length], width: params[:width], assign_rule_id: @assign_rule.id)
     order_ids = params[:object_ids].excluding('0')
     order_ids.each do |order|
       channel_order = ChannelOrder.find(order)
-      channel_order&.channel_order_items&.each do |order_item|
-        order_item.update(assign_rule_id: @assign_rule.id)
-      end
+      channel_order&.update(assign_rule_id: @assign_rule.id)
     end
     redirect_to order_dispatches_path(order_filter: 'ready')
     flash[:notice] = 'Mail Service Rule Assigned!'
@@ -158,12 +158,13 @@ class OrderDispatchesController < ApplicationController
     return unless params[:order_filter].eql? 'ready'
 
     if params['assign_rule_name'].present?
-      @not_started_orders = @channel_orders.joins(channel_order_items: [assign_rule: :mail_service_rule])
-                                           .where('mail_service_rules.rule_name Like ? and order_status = ?',
-                                                  "%#{params['assign_rule_name']}%", 'NOT_STARTED')
-                                           .where.not('channel_order_items.sku': [nil, @unmatch_product_data])
-                                           .distinct
-                                           .order(created_at: :desc).page(params[:not_started_page]).per(25)
+      @not_started_orders = @channel_orders
+                            .joins(:channel_order_items, assign_rule: [mail_service_rule: :service])
+                            .where('mail_service_rules.rule_name LIKE ? OR services.name LIKE ? and order_status = ?',
+                                   "%#{params['assign_rule_name']}%", "%#{params['assign_rule_name']}%", 'NOT_STARTED')
+                            .where.not('channel_order_items.sku': [nil, @unmatch_product_data])
+                            .distinct
+                            .order(created_at: :desc).page(params[:not_started_page]).per(25)
     else
       @not_started_orders = @channel_orders.joins(:channel_order_items).where(order_status: 'NOT_STARTED')
                                            .where.not('channel_order_items.sku': [nil, @unmatch_product_data]).distinct
