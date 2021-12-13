@@ -3,18 +3,22 @@
   <div class="form-group row">
     <div class="col-11">
       <%= f.label 'Add weight' %>
+      <%= hidden_field_tag :hidden_weight, f.object.weight, class: 'hidden_weight' %>
       <%= f.number_field :weight, class: "mail_service_rule_mail_service_labels_attributes_0_weight form-control", placeholder: 'Please enter the weight' %>
     </div>
     <div class="col-11">
       <%= f.label 'Add height' %>
+      <%= hidden_field_tag :hidden_height, f.object.height, class: 'hidden_height' %>
       <%= f.number_field :height, class: "mail_service_rule_mail_service_labels_attributes_0_height form-control", placeholder: 'Please enter the height' %>
     </div>
     <div class="col-11">
       <%= f.label 'Add length' %>
+      <%= hidden_field_tag :hidden_length, f.object.length, class: 'hidden_length' %>
       <%= f.number_field :length, class: "mail_service_rule_mail_service_labels_attributes_0_length form-control", placeholder: 'Please enter the length' %>
     </div>
     <div class="col-11">
       <%= f.label 'Add width' %>
+      <%= hidden_field_tag :hidden_width, f.object.width, class: 'hidden_width' %>
       <%= f.number_field :width, class: "mail_service_rule_mail_service_labels_attributes_0_width form-control", placeholder: 'Please enter the width' %>
     </div>
     <div class='col-1 pt-3'>

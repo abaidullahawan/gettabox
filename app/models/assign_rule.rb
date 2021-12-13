@@ -11,6 +11,7 @@ class AssignRule < ApplicationRecord
     unready: 0,
     ready: 1,
     printed: 2,
-    part_ready: 3
-  }
+    part_ready: 3,
+    customized: 4
+  }, _prefix: true
 end
