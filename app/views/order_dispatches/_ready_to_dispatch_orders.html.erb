@@ -174,10 +174,11 @@
                     <td><%= order.total_amount%></td>
                     <td><span class="badge badge_warning py-1"><%= order.order_status%></span></td>
                     <td>
-                      <button class="btn btn-primary" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                      <!--button class="btn btn-primary" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <i data-feather='refresh-ccw' class='icon wh-15 mt-minus-3'></i>
                         Retry
-                      </button>
+                      </button-->
+                      <span class="mt-2 mr-2 badge badge-warning mb-1"><%= order.assign_rule&.status %></span>
                       <button class="btn btn-primary" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <i data-feather='x' class='icon wh-15 mt-minus-3'></i>
                         Hide
