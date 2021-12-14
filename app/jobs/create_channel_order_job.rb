@@ -31,6 +31,9 @@ class CreateChannelOrderJob < ApplicationJob
           channel_order_item.ordered = order_product['quantity']
           channel_order_item.save
         end
+        criteria = channel_order_record.channel_order_items.map { |h| [h[:sku], h[:ordered]] }
+        assign_rules = AssignRule.where(criteria: criteria)&.last
+        channel_order_record.update(assign_rule_id: assign_rules.id) if assign_rules.present?
       end
       response_order.status_executed!
       response_order.status_partial! if response_order.response['orders'].count < 200
