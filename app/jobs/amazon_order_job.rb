@@ -53,6 +53,9 @@ class AmazonOrderJob < ApplicationJob
         channel_order.fulfillment_instruction = order['FulfillmentChannel']
         channel_order.save
         add_product(channel_order.ebayorder_id, access_token, channel_order.id)
+        criteria = channel_order.channel_order_items.map { |h| [h[:sku], h[:ordered]] }
+        assign_rules = AssignRule.where(criteria: criteria)&.last
+        channel_order.update(assign_rule_id: assign_rules.id) if assign_rules.present?
       end
       amazon_order.update(status: 'executed')
     end
