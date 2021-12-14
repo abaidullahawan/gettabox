@@ -15,9 +15,7 @@ class ProductMappingsController < ApplicationController
     amazon_request if params[:coresultmmit].eql? 'Amazon Request'
     maped_products(@body) if params[:q].present? && (params[:q][:status_eq].eql? '1')
     all_product_data if params[:all_product_data].present?
-    if params[:commit].eql? 'Export'
-      export_csv(@products)
-    end
+    export_csv(@products) if params[:commit].eql? 'Export'
   end
 
   def all_product_data
@@ -108,7 +106,7 @@ class ProductMappingsController < ApplicationController
     when 'Create'
       create_product
     end
-    if request.referrer == "http://localhost:3000/order_dispatches" || request.referrer == "https://portal.channeldispatch.co.uk/order_dispatches"
+    if request.referrer == 'http://localhost:3000/order_dispatches' || request.referrer == 'https://portal.channeldispatch.co.uk/order_dispatches'
       redirect_to order_dispatches_path(order_filter: 'unprocessed')
     else
       redirect_to product_mappings_path

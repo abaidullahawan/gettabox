@@ -5,6 +5,7 @@ class AssignRulesController < ApplicationController
   before_action :customize_rule, only: %i[create]
 
   def index; end
+
   def create
     channel_order = ChannelOrder.find(params[:channel_order_id])
     criteria = channel_order.channel_order_items.map { |h| [h[:sku], h[:ordered]] }

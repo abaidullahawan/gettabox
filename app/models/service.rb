@@ -1,3 +1,6 @@
+# frozen_string_literal: true
+
+# services belongs to courier for mailing orders
 class Service < ApplicationRecord
   acts_as_paranoid
 

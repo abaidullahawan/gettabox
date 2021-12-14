@@ -1,5 +1,8 @@
+# frozen_string_literal: true
+
+# Import mapping used for importing files
 class ImportMappingsController < ApplicationController
-  before_action :set_import_mapping, only: %i[ show edit update destroy ]
+  before_action :set_import_mapping, only: %i[show edit update destroy]
 
   # GET /import_mappings or /import_mappings.json
   def index
@@ -8,8 +11,7 @@ class ImportMappingsController < ApplicationController
   end
 
   # GET /import_mappings/1 or /import_mappings/1.json
-  def show
-  end
+  def show; end
 
   # GET /import_mappings/new
   def new
@@ -22,17 +24,16 @@ class ImportMappingsController < ApplicationController
     @table_names = ['Product']
   end
 
-
   # POST /import_mappings or /import_mappings.json
   def create
     mapping = {}
     Product.column_names.each do |col_name|
-      mapping["#{col_name}"] = params[:"#{col_name}"]
+      mapping[col_name.to_s] = params[:"#{col_name}"]
     end
     @import_mapping = ImportMapping.new(table_name: params[:table_name], mapping_data: mapping, sub_type: params[:sub_type], table_data: params[:header_data].split(' '), header_data: params[:header_data].split(' '))
     respond_to do |format|
       if @import_mapping.save
-        format.html { redirect_to import_mappings_path, notice: "Import mapping was successfully created." }
+        format.html { redirect_to import_mappings_path, notice: 'Import mapping was successfully created.' }
         format.json { render :index, status: :created, location: @import_mapping }
       else
         format.json { render json: @import_mapping.errors, status: :unprocessable_entity }
@@ -44,11 +45,11 @@ class ImportMappingsController < ApplicationController
   def update
     mapping = {}
     Product.column_names.each do |col_name|
-      mapping["#{col_name}"] = params[:"#{col_name}"]
+      mapping[col_name.to_s] = params[:"#{col_name}"]
     end
     @import_mapping = ImportMapping.update(mapping_data: mapping, sub_type: params[:sub_type])
     respond_to do |format|
-      format.html { redirect_to import_mappings_path, notice: "Import mapping was successfully updated." }
+      format.html { redirect_to import_mappings_path, notice: 'Import mapping was successfully updated.' }
       format.json { render :show, status: :ok, location: @import_mapping }
     end
   end
@@ -57,19 +58,20 @@ class ImportMappingsController < ApplicationController
   def destroy
     @import_mapping.destroy
     respond_to do |format|
-      format.html { redirect_to import_mappings_url, notice: "Import mapping was successfully destroyed." }
+      format.html { redirect_to import_mappings_url, notice: 'Import mapping was successfully destroyed.' }
       format.json { head :no_content }
     end
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_import_mapping
-      @import_mapping = ImportMapping.find(params[:id])
-    end
 
-    # Only allow a list of trusted parameters through.
-    def import_mapping_params
-      params.require(:import_mapping).permit(:table_name, :mapping_data, :sub_type)
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_import_mapping
+    @import_mapping = ImportMapping.find(params[:id])
+  end
+
+  # Only allow a list of trusted parameters through.
+  def import_mapping_params
+    params.require(:import_mapping).permit(:table_name, :mapping_data, :sub_type)
+  end
 end

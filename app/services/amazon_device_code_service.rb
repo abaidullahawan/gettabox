@@ -34,7 +34,8 @@ class AmazonDeviceCodeService
       'https://api.amazon.com/auth/o2/token'.to_str,
       body: body,
       headers: { 'Content-Type' => 'application/x-www-form-urlencoded',
-                 'charset' => 'UTF-8',})
+                 'charset' => 'UTF-8' }
+    )
   end
 
   def self.return_response(result)
