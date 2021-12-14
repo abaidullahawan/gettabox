@@ -150,7 +150,8 @@ class OrderDispatchesController < ApplicationController
   def unpaid_orders
     return unless params[:order_filter].eql? 'unpaid'
 
-    @unpaid_orders = @channel_orders.where(payment_status: 'UNPAID').or(@channel_orders.where(order_status: 'Pending')).distinct
+    @unpaid_orders = @channel_orders.where(payment_status: 'UNPAID')
+                                    .or(@channel_orders.where(order_status: 'Pending')).distinct
     @unpaid = @unpaid_orders.order(created_at: :desc).page(params[:unpaid_page]).per(params[:limit])
   end
 

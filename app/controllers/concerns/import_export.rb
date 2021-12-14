@@ -69,7 +69,7 @@ module ImportExport
   def klass_import
     file = params[:file]
     if file.present? && file.path.split('.').last.to_s.downcase == 'csv'
-      csv_text = File.read(file).force_encoding("ISO-8859-1").encode("utf-8", replace: nil)
+      csv_text = File.read(file).force_encoding('ISO-8859-1').encode('utf-8', replace: nil)
       convert = ImportMapping.where(sub_type: params[:mapping_type]).last.mapping_data.invert
       csv = CSV.parse(csv_text, headers: true, skip_blanks: true, header_converters: lambda { |name| convert[name] })
       csv_headers_check(csv)

@@ -27,9 +27,7 @@ class ProductsController < ApplicationController
         render pdf: 'file.pdf', viewport_size: '1280x1024', template: 'products/index.pdf.erb'
       end
     end
-    if params[:fake_stock].present?
-      @q.result.update_all(fake_stock: 0)
-    end
+    @q.result.update_all(fake_stock: 0) if params[:fake_stock].present?
   end
 
   def new; end
@@ -140,21 +138,21 @@ class ProductsController < ApplicationController
   end
 
   def import_product_file
-    if params[:product][:file].present?
-      file = params[:product][:file]
-      file_type = file.present? ? file.path.split('.').last.to_s.downcase : ''
-      if file.present? && (file_type == 'csv' or file_type == 'xlsx')
-        spreadsheet = open_spreadsheet(file)
-        @header = spreadsheet.headers
-        @data = []
-        @import_mapping = ImportMapping.new
-        @table_names = ['Order', 'Product']
-        @db_names = Product.column_names
-        redirect_to new_import_mapping_path(db_columns: @db_names, header: @header, import_mapping: @import_mapping)
-      else
-        flash[:alert] = 'Try again file not match'
-        redirect_to product_mappings_path
-      end
+    return unless params[:product][:file].present?
+
+    file = params[:product][:file]
+    file_type = file.present? ? file.path.split('.').last.to_s.downcase : ''
+    if file.present? && %w['csv xlsx'].include?(file_type)
+      spreadsheet = open_spreadsheet(file)
+      @header = spreadsheet.headers
+      @data = []
+      @import_mapping = ImportMapping.new
+      @table_names = %w['Order Product']
+      @db_names = Product.column_names
+      redirect_to new_import_mapping_path(db_columns: @db_names, header: @header, import_mapping: @import_mapping)
+    else
+      flash[:alert] = 'Try again file not match'
+      redirect_to product_mappings_path
     end
   end
 
@@ -162,7 +160,7 @@ class ProductsController < ApplicationController
 
   def open_spreadsheet(file)
     case File.extname(file.original_filename)
-    when ".csv" then CSV.parse(File.read(file.path).force_encoding("ISO-8859-1").encode("utf-8", replace: nil), :headers => true)
+    when '.csv' then CSV.parse(File.read(file.path).force_encoding('ISO-8859-1').encode('utf-8', replace: nil), headers: true)
     when '.xls' then  Roo::Excel.new(file.path, packed: nil, file_warning: :ignore)
     when '.xlsx' then Roo::Excelx.new(file.path, packed: nil, file_warning: :ignore)
     else raise "Unknown file type: #{file.original_filename}"

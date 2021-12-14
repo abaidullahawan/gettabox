@@ -127,7 +127,7 @@ Rails.application.routes.draw do
       post 'assign_rule', to: 'order_dispatches#assign_rule'
     end
   end
-  
+
   post 'product_file', to: 'products#import_product_file'
 
   # Order Dispatch Routes

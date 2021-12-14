@@ -1,3 +1,6 @@
+# frozen_string_literal: true
+
+# Courier has Service which used for mailing
 class CouriersController < ApplicationController
   include ImportExport
 

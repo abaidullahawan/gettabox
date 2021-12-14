@@ -17,7 +17,6 @@ class EbaySellingListJob < ApplicationJob
     require 'builder'
 
     ebay_products.each do |product|
-
       response = get_product_response(product, refresh_token)
       sleep 1
       next unless response.status.to_s.include?('OK')
