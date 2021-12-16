@@ -157,9 +157,23 @@
                       <% else %>
                         <div class="shipment_modal cursur-pointer" data-id="<%= order.id %>" id="shipment_modal_<%=index%>">
                           <span class=" text-danger py-1">Please Select Service Rule</span>
+                          <% @length = 0%>
+                          <% @weight = 0%>
+                          <% @height = []%>
+                          <% @width = []%>
                           <% order.channel_order_items.each do |product|%>
                             <% if ChannelOrder.check_mapping(product) == 'mapped' %>
-                              <% if ChannelOrder.find_product(product)&.product_type == 'muliple'%>
+                              <% if ChannelOrder.find_product(product)&.product_type == 'multiple'%>
+                                <% ChannelProduct.find_by(item_sku: product.sku)&.product_mapping&.product&.multipack_products&.each do |record| %>
+                                  <% @length += record&.child&.length&.to_f %>
+                                  <% @weight += record&.child&.weight&.to_f%>
+                                  <% @height.push(record&.child&.height&.to_f)%>
+                                  <% @width.push(record&.child&.width&.to_f)%>
+                                <% end %>
+                                <%= hidden_field_tag 'length',  @length, class: "length-value" %>
+                                <%= hidden_field_tag 'width',  @width.max, class: "width-value" %>
+                                <%= hidden_field_tag 'height',  @height.max, class: "height-value"%>
+                                <%= hidden_field_tag 'weight',  @weight, class: "weight-value"%>
                               <% else %>
                                 <%= hidden_field_tag 'length',  ChannelOrder.find_product(product).length, class: "length-value" %>
                                 <%= hidden_field_tag 'width',  ChannelOrder.find_product(product).width, class: "width-value" %>
