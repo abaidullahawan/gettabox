@@ -39,7 +39,7 @@ class AssignRulesController < ApplicationController
     end
     @assign_rule.new_record? ? @assign_rule.save : @assign_rule.update(assign_rule_params)
     @assign_rule.update(criteria: criteria)
-    @assign_rule.update(status: 'customized') if check_labels(assign_rule_params[:mail_service_labels_attributes]['0']) || assign_rule_params[:mail_service_labels_attributes]['1'].present?
+    @assign_rule.update(status: 'customized') if (params[:status].eql? 'customized') || check_labels(assign_rule_params[:mail_service_labels_attributes]['0']) || assign_rule_params[:mail_service_labels_attributes]['1'].present?
     channel_order.update(assign_rule_id: @assign_rule.id)
     redirect_to order_dispatches_path(order_filter: 'ready')
     flash[:notice] = 'Mail Service Rule Updated!'
@@ -56,7 +56,7 @@ class AssignRulesController < ApplicationController
   def customize_rule
     assign_rule_labels = assign_rule_params[:mail_service_labels_attributes].to_h
     @assign_rule = AssignRule.new
-    return unless assign_rule_labels['1'].nil? || check_labels(assign_rule_labels['0'])
+    return unless assign_rule_labels['1'].present? || check_labels(assign_rule_labels['0'])
 
     @assign_rule = AssignRule.new(status: 'customized')
   end
