@@ -39,7 +39,7 @@ class OrderDispatchesController < ApplicationController
   def export_csv(orders)
     request.format = 'csv'
     respond_to do |format|
-      format.csv { send_data csv_export(orders), filename: "products-#{Date.today}.csv" }
+      format.csv { send_data csv_export(orders), filename: "orders-#{Date.today}.csv" }
     end
   end
 
@@ -168,7 +168,7 @@ class OrderDispatchesController < ApplicationController
       @not_started_orders = (@channel_orders.joins(:channel_order_items).where(order_status: 'NOT_STARTED')
                                            .where.not('channel_order_items.sku': [nil, @unmatch_product_data]) - @un_matched_product_order).uniq
     end
-    @not_started_orders = @not_started_orders.sort_by(&:"created_at").reverse!
+    @not_started_orders = @not_started_orders.sort_by(&:created_at).reverse!
     @not_started_order_data = Kaminari.paginate_array(@not_started_orders).page(params[:not_started_page]).per(25)
   end
 
