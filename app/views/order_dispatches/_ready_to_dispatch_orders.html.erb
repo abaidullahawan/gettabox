@@ -203,10 +203,10 @@
               <% end %>
             </table>
             <div class='float-right'>
-              <%= page_entries_info @not_started_orders %>
+              <%= page_entries_info @not_started_order_data %>
             </div><br>
             <div class="pagination justify-content-center mt-1">
-              <%= paginate @not_started_orders, :param_name => :not_started_page,theme: "twitter-bootstrap-4",pagination_class: "pagination-sm",nav_class: "d-inline-b" %>
+              <%= paginate @not_started_order_data, :param_name => :not_started_page,theme: "twitter-bootstrap-4",pagination_class: "pagination-sm",nav_class: "d-inline-b" %>
             </div>
           </div>
           <div class="modal fade" id="bulk-mail-service-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">

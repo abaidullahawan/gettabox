@@ -6,11 +6,20 @@
                   <div class="card-header">
                       <h5 class="card-title">Import Mappings</h5>
                   </div>
-                  <div class= "mb-4">
-                    <%= form_for @product, url: product_file_path, method: :post do |f| %>
-                      <%= f.file_field :file, style:"width:240px;", class: 'btn', accept: ".csv",required: true %>
-                      <%= f.submit 'Create Mapping', class:"btn btn-primary"%>
-                    <% end %>
+                  <div class= "d-flex">
+                    <div class= "mb-4 border">
+                      <%= form_for @product, url: product_file_path, method: :post do |f| %>
+                        <%= f.file_field :file, style:"width:240px;", class: 'btn', accept: ".csv",required: true %>
+                        <%= f.submit 'Create Mapping', class:"btn btn-primary"%>
+                      <% end %>
+                    </div>
+                    <div class= "mb-4 border" style="padding-left: 15%;">
+                      <%= form_with url: file_mapping_path, method: :post do |form|%>
+                        <%= file_field_tag "file_1", :accept => 'csv', required: true%>
+                        <%= form.file_field "file_2", :accept => 'csv', required: true%>
+                        <%= form.submit 'Create Mapping', class:"btn btn-primary"%>
+                      <% end %>
+                    </div>
                   </div>
                   <% @import_mappings.each do |import_mapping| %>
                     <div class='col-12 mb-2 float-right'>
@@ -89,5 +98,3 @@
       </div>
   </div>
 <!-- End Basic Table -->
-
-
