@@ -56,14 +56,15 @@ $(document).on('turbolinks:load', function () {
   $('.shipment_modal').on('click', function () {
     var parent = $(this).parent()
     var quantity = $(this.closest('tr')).find('.order-quantity')[0].innerHTML
-    var length = $(parent).find('.length-value').val()
-    var width = $(parent).find('.width-value').val()
-    var height = $(parent).find('.height-value').val()
-    var weight = $(parent).find('.weight-value').val()
+    debugger
+    var length = $(parent).find('.length-value').val() || 0
+    var width = $(parent).find('.width-value').val() || 0
+    var height = $(parent).find('.height-value').val() || 0
+    var weight = $(parent).find('.weight-value').val() || 0
     $('#channel_order_id').val(this.dataset.id)
     $('#mail-service-roles-modal').find('.hidden_length').val(length * quantity)
-    $('#mail-service-roles-modal').find('.hidden_length').val(weight * quantity)
-    $('#mail-service-roles-modal').find('.hidden_length').val(height)
+    $('#mail-service-roles-modal').find('.hidden_weight').val(weight * quantity)
+    $('#mail-service-roles-modal').find('.hidden_height').val(height)
     $('#mail-service-roles-modal').find('.hidden_width').val(width)
     $('.mail_service_rule_mail_service_labels_attributes_0_weight').val(weight * quantity)
     $('.mail_service_rule_mail_service_labels_attributes_0_height').val(height)

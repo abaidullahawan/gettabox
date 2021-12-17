@@ -41,15 +41,12 @@ class MailServiceRulesController < ApplicationController
 
   # PATCH/PUT /mail_service_rules/1 or /mail_service_rules/1.json
   def update
-    respond_to do |format|
-      if @mail_service_rule.update(mail_service_rule_params)
-        format.html { redirect_to @mail_service_rule, notice: 'Mail service rule was successfully updated.' }
-        format.json { render :show, status: :ok, location: @mail_service_rule }
-      else
-        format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @mail_service_rule.errors, status: :unprocessable_entity }
-      end
+    if @mail_service_rule.update(mail_service_rule_params)
+      flash[:notice] = 'Mail service rule was successfully updated.'
+    else
+      flash[:alert] = @mail_service_rule.errors.full_messages
     end
+    redirect_to @mail_service_rule
   end
 
   # DELETE /mail_service_rules/1 or /mail_service_rules/1.json

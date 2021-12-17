@@ -3,7 +3,7 @@
     <div class="card mb-30">
       <div class="card-body">
         <div class="form-group">
-          <%= f.check_box :save_later %>
+          <%= f.check_box :save_later, {}, false %>
           <%= f.label "Save for next orders" %>
         </div>
         <div class="d-flex">
@@ -11,6 +11,7 @@
             <%= f.label 'Rule Name' %>
             <%= f.select :mail_service_rule_id, options_for_select(MailServiceRule.all.collect { | rule | [rule.rule_name, rule.id] }, f.object.mail_service_rule_id),{}, class: 'form-control courier-value', placeholder: 'Please enter the Courier' %>
           </div>
+        <%= hidden_field_tag :status, f.object.status %>
           <div class="dropdown dropleft mt-4 col-2">
             <button class="btn btn-primary" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Actions">
               <i data-feather='bell' class='icon wh-15'></i>
