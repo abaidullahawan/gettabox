@@ -6,8 +6,8 @@ class OrderDispatchesController < ApplicationController
   before_action :authenticate_user!
   # before_action :refresh_token, :refresh_token_amazon, only: %i[index all_order_data]
   before_action :check_status, only: %i[index fetch_response_orders]
-  before_action :ransack_params, :load_counts, :completed_orders, :no_sku, :unpaid_orders, :unmatched_product_orders,
-                :unmatched_sku, :not_started_orders, only: %i[index]
+  before_action :ransack_params, :load_counts, :unmatched_product_orders, :completed_orders, :no_sku, :not_started_orders, :unpaid_orders,
+                :unmatched_sku, only: %i[index]
   before_action :new_product, :product_load_resources, :first_or_create_category, only: %i[index]
 
   def index
@@ -156,25 +156,24 @@ class OrderDispatchesController < ApplicationController
   end
 
   def not_started_orders
-    return unless params[:order_filter].eql? 'ready'
+    # return unless params[:order_filter].eql? 'ready'
 
     if params['assign_rule_name'].present?
-      @not_started_orders = @channel_orders
+      @not_started_orders = (@channel_orders
                             .joins(:channel_order_items, assign_rule: [mail_service_rule: :service])
                             .where('mail_service_rules.rule_name LIKE ? OR services.name LIKE ? and order_status = ?',
                                    "%#{params['assign_rule_name']}%", "%#{params['assign_rule_name']}%", 'NOT_STARTED')
-                            .where.not('channel_order_items.sku': [nil, @unmatch_product_data])
-                            .distinct
-                            .order(created_at: :desc).page(params[:not_started_page]).per(25)
+                            .where('channel_order_items.sku': [@product_data]) - @un_matched_product_order).uniq
     else
-      @not_started_orders = @channel_orders.joins(:channel_order_items).where(order_status: 'NOT_STARTED')
-                                           .where.not('channel_order_items.sku': [nil, @unmatch_product_data]).distinct
-                                           .order(created_at: :desc).page(params[:not_started_page]).per(25)
+      @not_started_orders = (@channel_orders.joins(:channel_order_items).where(order_status: 'NOT_STARTED')
+                                           .where.not('channel_order_items.sku': [nil, @unmatch_product_data]) - @un_matched_product_order).uniq
     end
+    @not_started_orders = @not_started_orders.sort_by(&:"created_at").reverse!
+    @not_started_order_data = Kaminari.paginate_array(@not_started_orders).page(params[:not_started_page]).per(25)
   end
 
   def unmatched_product_orders
-    return unless params[:order_filter].eql? 'unprocessed'
+    # return unless params[:order_filter].eql? 'unprocessed'
 
     @un_matched_product_order = @channel_orders.joins(:channel_order_items)
                                                .where('channel_order_items.sku': @unmatch_product_data)
@@ -205,9 +204,6 @@ class OrderDispatchesController < ApplicationController
                                          .where.not(order_status: %w[FULFILLED Shipped]).distinct.count
     @unpaid_orders_count = @channel_orders.where(payment_status: 'UNPAID')
                                           .or(@channel_orders.where(order_status: 'Pending')).distinct.count
-    @not_started_count = @channel_orders.joins(:channel_order_items).where(order_status: 'NOT_STARTED')
-                                        .where.not('channel_order_items.sku': [nil,
-                                                                               @unmatch_product_data]).distinct.count
     @completed_count = @channel_orders.where('order_status in (?)', %i[FULFILLED Shipped]).distinct.count
     @un_matched_orders_count = @channel_orders.joins(:channel_order_items)
                                               .where('channel_order_items.sku': @unmatch_product_data)

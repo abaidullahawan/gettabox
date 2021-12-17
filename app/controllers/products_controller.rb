@@ -142,7 +142,7 @@ class ProductsController < ApplicationController
 
     file = params[:product][:file]
     file_type = file.present? ? file.path.split('.').last.to_s.downcase : ''
-    if file.present? && %w['csv xlsx'].include?(file_type)
+    if file.present? && (file_type.include? 'csv') || (file_type.include? 'xlsx')
       spreadsheet = open_spreadsheet(file)
       @header = spreadsheet.headers
       @data = []
@@ -152,7 +152,7 @@ class ProductsController < ApplicationController
       redirect_to new_import_mapping_path(db_columns: @db_names, header: @header, import_mapping: @import_mapping)
     else
       flash[:alert] = 'Try again file not match'
-      redirect_to product_mappings_path
+      redirect_to import_mappings_path
     end
   end
 

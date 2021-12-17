@@ -85,7 +85,7 @@
             <a class="nav-link <%= 'active' if params[:order_filter].eql? 'unprocessed' %>" href=<%= order_dispatches_path(order_filter: 'unprocessed')%>><%= "Unprocessed Orders (#{@unmatched_sku_count.to_i + @un_matched_orders_count.to_i})" %></a>
           </li>
           <li class="nav-item">
-            <a class="nav-link <%= 'active' if params[:order_filter].eql? 'ready' %>" href=<%= order_dispatches_path(order_filter: 'ready')%>><%= "Ready to Dispatch(#{@not_started_count})" %></a>
+            <a class="nav-link <%= 'active' if params[:order_filter].eql? 'ready' %>" href=<%= order_dispatches_path(order_filter: 'ready')%>><%= "Ready to Dispatch(#{@not_started_orders.count})" %></a>
           </li>
           <li class="nav-item">
             <a class="nav-link <%= 'active' if params[:order_filter].eql? 'assignment' %>" href=<%= order_dispatches_path(order_filter: 'assignment')%>><%= "Order for Assignment" %></a>

@@ -194,4 +194,7 @@ Rails.application.routes.draw do
   get 'auth/signup', to: 'auth#signup', as: :auth_signup
   get 'auth/signin', to: 'auth#signin', as: :auth_signin
   get 'auth/forgot_password', to: 'auth#forgot_password', as: :auth_forgot_password
+
+  post 'file_mapping', to: 'import_mappings#file_mapping'
+  get 'file_mapping_page', to: 'import_mappings#file_mapping_page'
 end
