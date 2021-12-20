@@ -129,6 +129,7 @@ Rails.application.routes.draw do
   end
 
   post 'product_file', to: 'products#import_product_file'
+  post 'multi_file', to: 'import_mappings#multi_file_mapping'
 
   # Order Dispatch Routes
   get 'all_order_data', to: 'order_dispatches#all_order_data'
