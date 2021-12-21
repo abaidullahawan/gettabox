@@ -27,7 +27,13 @@
             <table class="table table-hover text-vertical-middle mb-0">
               <thead class="bort-none borpt-0">
                 <tr>
-                  <th><input type="checkbox" id="" name="" value="" class='select-all-checkbox'></th>
+                  <th>
+                    <input type="checkbox" id="" name="" value="" class='select-all-checkbox'>
+                    <div class="custom-control custom-switch">
+                      <input type="checkbox" class="custom-control-input" id="customSwitchAll">
+                      <label class="custom-control-label" for="customSwitchAll"></label>
+                    </div>
+                  </th>
                   <th scope="col">Channel</th>
                   <th scope="col">Order Information</th>
                   <th scope="col">Listings</th>
@@ -42,7 +48,13 @@
               <% @not_started_orders.each.with_index(1) do |order, index| %>
                 <tbody>
                   <tr>
-                    <td><%= f.check_box 'object_ids[]', {}, order.id %></td>
+                    <td>
+                      <%= f.check_box 'object_ids[]', {}, order.id %>
+                      <div class="custom-control custom-switch">
+                        <input type="checkbox" class="custom-control-input customSwitch1" name="orders-switch" id="<%=order.id%>" <%= order.selected? ? 'checked': ''%>>
+                        <label class="custom-control-label" for="<%=order.id%>"></label>
+                      </div>
+                    </td>
                     <td style = "width: 180px">
                       <%= render  'image_partial', order: order %>
                     </td>
