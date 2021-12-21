@@ -6,16 +6,11 @@ class OrderDispatchesController < ApplicationController
   before_action :authenticate_user!
   # before_action :refresh_token, :refresh_token_amazon, only: %i[index all_order_data]
   before_action :check_status, only: %i[index fetch_response_orders]
-  before_action :ransack_params, :load_counts, :unmatched_product_orders, :completed_orders, :no_sku, :not_started_orders, :unpaid_orders,
-                :unmatched_sku, only: %i[index]
+  before_action :ransack_params, :load_counts, :unmatched_product_orders, :completed_orders, :no_sku,
+                :not_started_orders, :unpaid_orders, :unmatched_sku, only: %i[index]
   before_action :new_product, :product_load_resources, :first_or_create_category, only: %i[index]
 
   def index
-    export_csv(@channel_orders) if params[:export_csv].present?
-    respond_to do |format|
-      format.html
-      format.csv
-    end
     all_order_data if params[:orders_api].present?
     @assign_rule = AssignRule.new
     @assign_rule.mail_service_labels.build
@@ -84,6 +79,28 @@ class OrderDispatchesController < ApplicationController
     flash[:notice] = 'Mail Service Rule Assigned!'
   end
 
+  def update_selected
+    if params[:order_id].present? && params[:selected].present?
+      order = ChannelOrder.find_by(id: params[:order_id])
+      order&.update(selected: params[:selected])
+      message = { result: order.selected, message: 'Order Updated!' }
+    else
+      message = { result: 'error', message: 'Order not found' }
+    end
+    respond_to do |format|
+      format.json { render json: message }
+    end
+  end
+
+  def bulk_update_selected
+    ChannelOrder.where(id: params[:selected]).update_all(selected: true)
+    ChannelOrder.where(id: params[:unselected]).update_all(selected: false)
+    message = { result: true, message: 'All orders updated' }
+    respond_to do |format|
+      format.json { render json: message }
+    end
+  end
+
   private
 
   def order_mapping_params; end
@@ -117,17 +134,26 @@ class OrderDispatchesController < ApplicationController
     return unless params[:order_filter].eql? 'unprocessed'
 
     # @unmatched_sku = []
-    @unmatched_sku = @channel_orders.joins(:channel_order_items)
-                                    .where.not('channel_order_items.sku': [nil, @data])
-                                    .where.not(order_status: %w[FULFILLED Shipped Pending])
-                                    .order(created_at: :desc).distinct
-                                    .page(params[:unmatched_page]).per(5)
+    @unmatched_sku_body = @channel_orders.joins(:channel_order_items)
+                                         .where.not('channel_order_items.sku': [nil, @data])
+                                         .where.not(order_status: %w[FULFILLED Shipped Pending])
+                                         .order(created_at: :desc).distinct
+    @unmatched_sku = @unmatched_sku_body.page(params[:unmatched_page]).per(params[:limit])
     @matching_products = {}
     @un_matched_product_order.each do |order|
       order.channel_order_items.each do |item|
         matching = Product.find_by('sku LIKE ?', "%#{item.sku}%")
         @matching_products[item.id] = matching if matching.present?
       end
+    end
+    return unless params[:export]
+
+    orders = @un_matched_product_order_body + @unmatched_sku_body
+    orders = ChannelOrder.where(id: orders.pluck(:id), selected: true) if params[:selected]
+    export_csv(orders)
+    respond_to do |format|
+      format.html
+      format.csv
     end
   end
 
@@ -136,15 +162,30 @@ class OrderDispatchesController < ApplicationController
 
     @completed = @channel_orders.where('order_status in (?)', %w[FULFILLED Shipped]).distinct
     @completed_orders = @completed.order(created_at: :desc).page(params[:completed_page]).per(params[:limit])
+    return unless params[:export]
+
+    @completed = @completed.where(selected: true) if params[:selected]
+    export_csv(@completed)
+    respond_to do |format|
+      format.html
+      format.csv
+    end
   end
 
   def no_sku
     return unless params[:order_filter].eql? 'issue'
 
-    @issue_orders = @channel_orders.joins(:channel_order_items).where('channel_order_items.sku': nil)
+    @issue = @channel_orders.joins(:channel_order_items).where('channel_order_items.sku': nil)
                                    .where.not(order_status: %w[FULFILLED Shipped Pending])
-                                   .order(created_at: :desc).distinct
-                                   .page(params[:orders_page]).per(5)
+    @issue_orders = @issue.order(created_at: :desc).distinct.page(params[:orders_page]).per(params[:limit])
+    return unless params[:export]
+
+    @issue = @issue.where(selected: true) if params[:selected]
+    export_csv(@issue)
+    respond_to do |format|
+      format.html
+      format.csv
+    end
   end
 
   def unpaid_orders
@@ -153,6 +194,14 @@ class OrderDispatchesController < ApplicationController
     @unpaid_orders = @channel_orders.where(payment_status: 'UNPAID')
                                     .or(@channel_orders.where(order_status: 'Pending')).distinct
     @unpaid = @unpaid_orders.order(created_at: :desc).page(params[:unpaid_page]).per(params[:limit])
+    return unless params[:export]
+
+    @unpaid_orders = @unpaid_orders.where(selected: true) if params[:selected]
+    export_csv(@unpaid_orders)
+    respond_to do |format|
+      format.html
+      format.csv
+    end
   end
 
   def not_started_orders
@@ -169,17 +218,25 @@ class OrderDispatchesController < ApplicationController
                                            .where.not('channel_order_items.sku': [nil, @unmatch_product_data]) - @un_matched_product_order).uniq
     end
     @not_started_orders = @not_started_orders.sort_by(&:created_at).reverse!
-    @not_started_order_data = Kaminari.paginate_array(@not_started_orders).page(params[:not_started_page]).per(25)
+    @not_started_order_data = Kaminari.paginate_array(@not_started_orders).page(params[:not_started_page]).per(params[:limit])
+    return unless (params[:order_filter].eql? 'ready') && params[:export]
+
+    @not_started_orders = ChannelOrder.where(id: @not_started_orders.pluck(:id), selected: true) if params[:selected]
+    export_csv(@not_started_orders)
+    respond_to do |format|
+      format.html
+      format.csv
+    end
   end
 
   def unmatched_product_orders
     # return unless params[:order_filter].eql? 'unprocessed'
 
-    @un_matched_product_order = @channel_orders.joins(:channel_order_items)
-                                               .where('channel_order_items.sku': @unmatch_product_data)
-                                               .where.not(order_status: %w[FULFILLED Shipped Pending])
-                                               .order(created_at: :desc).distinct
-                                               .page(params[:unmatched_product_page]).per(5)
+    @un_matched_product_order_body = @channel_orders.joins(:channel_order_items)
+                                                    .where('channel_order_items.sku': @unmatch_product_data)
+                                                    .where.not(order_status: %w[FULFILLED Shipped Pending])
+                                                    .order(created_at: :desc).distinct
+    @un_matched_product_order = @un_matched_product_order_body.page(params[:unmatched_product_page]).per(params[:limit])
   end
 
   def csv_export(orders)

@@ -138,6 +138,56 @@ $(document).on('turbolinks:load', function () {
   $('#change_per_page').on('change', function () {
     $('#per_page_submit').trigger('click')
   })
+  $('#orders_per_page').on('change', function () {
+    $('.product-mapping-request').trigger('click')
+  })
+
+  $('#customSwitchAll').on('click', function () {
+    var switches = $('input[name="orders-switch"]');
+    switches.prop("checked", this.checked);
+    var selected = []
+    var unselected = []
+    switches.each(function () {
+      if (this.checked) {
+        selected.push(this.id)
+      }
+      else {
+        unselected.push(this.id)
+      }
+    })
+    $.ajax({
+      url: '/order_dispatches/bulk_update_selected',
+      type: 'GET',
+      data: { 'selected': selected, 'unselected': unselected },
+      success: function (response) {
+        if (response.result){
+          alert(response.message);
+        }
+      }
+    })
+  })
+
+  $('.customSwitch1').on('click', function () {
+    var value = this.checked
+    var order_id = this.id
+
+    $.ajax({
+      url: '/order_dispatches/update_selected',
+      type: "GET",
+      data: { 'selected': value, 'order_id': order_id },
+      success: function (response) {
+        if (response.result){
+          // alert('Order updated as selected true!');
+        }
+        else if(response.result == 'error'){
+          // alert('Order cannot be updated!');
+        }
+        else{
+          // alert('Order updated as selected false!');
+        }
+      }
+    })
+  })
 
   $('.import-btn').on('click', function () {
     $('.import-file').trigger('click')

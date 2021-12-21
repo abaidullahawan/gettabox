@@ -125,6 +125,8 @@ Rails.application.routes.draw do
     collection do
       post 'bulk_method', to: 'order_dispatches#bulk_method'
       post 'assign_rule', to: 'order_dispatches#assign_rule'
+      get 'update_selected', to: 'order_dispatches#update_selected'
+      get 'bulk_update_selected', to: 'order_dispatches#bulk_update_selected'
     end
   end
 
