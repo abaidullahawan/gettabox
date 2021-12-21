@@ -11,7 +11,7 @@
             <%= f.select :table_name,  @table_names, {}, class: 'form-control'%>
           </div>
           <div class="form-group">
-            <%= f.label :sub_type %>
+            <%= f.label :sub_type, 'Description' %>
             <%= f.text_field :sub_type, class: 'form-control'%>
           </div>
           <% db_columns.each do |col_name| %>
@@ -24,6 +24,7 @@
           <% end %>
           <%= f.hidden_field :header_data, value: header %>
           <%= f.hidden_field :table_data, value: db_columns %>
+          <%= f.hidden_field :mapping_type, value: 'single' %>
           <div class="form-group">
             <%= f.button :Create, class: 'btn btn-outline-primary' %>
           </div>
