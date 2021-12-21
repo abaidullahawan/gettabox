@@ -99,6 +99,8 @@ class OrderDispatchesController < ApplicationController
     respond_to do |format|
       format.json { render json: message }
     end
+  end
+
   def import_order_file
     return unless params[:channel_order][:file].present?
 
