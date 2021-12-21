@@ -7,7 +7,9 @@ class ImportMappingsController < ApplicationController
   # GET /import_mappings or /import_mappings.json
   def index
     @product = Product.new
-    @import_mappings = ImportMapping.where(mapping_type: nil)
+    @order = ChannelOrder.new
+    @product_mappings = ImportMapping.where(table_name: 'Product')
+    @order_mappings = ImportMapping.where(table_name: 'Order')
     @multi_mappings = ImportMapping.where(mapping_type: 'dual')
   end
 
@@ -17,12 +19,12 @@ class ImportMappingsController < ApplicationController
   # GET /import_mappings/new
   def new
     @import_mapping = ImportMapping.new
-    @table_names = ['Product']
+    @table_names = ['Product', 'Order']
   end
 
   # GET /import_mappings/1/edit
   def edit
-    @table_names = ['Product']
+    @table_names = ['Product', 'Order']
   end
 
   def file_mapping
@@ -77,11 +79,16 @@ class ImportMappingsController < ApplicationController
         end
       end
       @import_mapping.data_to_print = header_to_print if header_to_print.present?
-    else
+    elsif params[:table_name] == 'Product'
       Product.column_names.each do |col_name|
         mapping[col_name.to_s] = params[:"#{col_name}"]
       end
-      @import_mapping = ImportMapping.new(sub_type: params[:sub_type], table_name: params[:table_data], mapping_data: mapping, sub_type: params[:sub_type], table_data: params[:header_data].split(' '), header_data: params[:header_data].split(' '))
+      @import_mapping = ImportMapping.new(sub_type: params[:sub_type], table_name: params[:table_name], mapping_data: mapping, sub_type: params[:sub_type], table_data: params[:header_data].split(' '), header_data: params[:header_data].split(' '))
+    elsif params[:table_name] == 'Order'
+      ChannelOrder.column_names.each do |col_name|
+        mapping[col_name.to_s] = params[:"#{col_name}"]
+      end
+      @import_mapping = ImportMapping.new(sub_type: params[:sub_type], table_name: params[:table_name], mapping_data: mapping, sub_type: params[:sub_type], table_data: params[:header_data].split(' '), header_data: params[:header_data].split(' '))
     end
     respond_to do |format|
       if @import_mapping.save

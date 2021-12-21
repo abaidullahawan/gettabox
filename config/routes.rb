@@ -123,6 +123,7 @@ Rails.application.routes.draw do
   resources :extra_field_names
   resources :order_dispatches do
     collection do
+      post 'import', to: 'order_dispatches#import'
       post 'bulk_method', to: 'order_dispatches#bulk_method'
       post 'assign_rule', to: 'order_dispatches#assign_rule'
       get 'update_selected', to: 'order_dispatches#update_selected'
@@ -131,6 +132,7 @@ Rails.application.routes.draw do
   end
 
   post 'product_file', to: 'products#import_product_file'
+  post 'order_file', to: 'order_dispatches#import_order_file'
   post 'multi_file', to: 'import_mappings#multi_file_mapping'
 
   # Order Dispatch Routes
