@@ -99,9 +99,73 @@ class OrderDispatchesController < ApplicationController
     respond_to do |format|
       format.json { render json: message }
     end
+  def import_order_file
+    return unless params[:channel_order][:file].present?
+
+    file = params[:channel_order][:file]
+    file_type = file.present? ? file.path.split('.').last.to_s.downcase : ''
+    if file.present? && (file_type.include? 'csv') || (file_type.include? 'xlsx')
+      spreadsheet = open_spreadsheet(file)
+      @header = spreadsheet.headers
+      @data = []
+      @import_mapping = ImportMapping.new
+      @table_names = %w['Order Product']
+      @db_names = ChannelOrder.column_names
+      redirect_to new_import_mapping_path(db_columns: @db_names, header: @header, import_mapping: @import_mapping)
+    else
+      flash[:alert] = 'Try again file not match'
+      redirect_to import_mappings_path
+    end
+  end
+
+  def import
+    file = params[:file]
+    if file.present? && file.path.split('.').last.to_s.downcase == 'csv'
+      csv_text = File.read(file).force_encoding('ISO-8859-1').encode('utf-8', replace: nil)
+      convert = ImportMapping.where(sub_type: params[:mapping_type]).last.mapping_data.invert
+      csv = CSV.parse(csv_text, headers: true, skip_blanks: true, header_converters: lambda { |name| convert[name] })
+    else
+      flash[:alert] = 'File format no matched! Please change file'
+    end
+    is_valid = (csv.headers.compact | ChannelOrder.column_names).sort == ChannelOrder.column_names.sort
+    if is_valid
+      @csv = csv
+    else
+      flash[:alert] = 'File not matched! Please change file'
+    end
+    if @csv.present?
+      @csv.delete('id')
+      @csv.delete('created_at')
+      @csv.delete('updated_at')
+      csv_create_records(@csv)
+      flash[:alert] = 'File Upload Successful!'
+    end
+    redirect_to products_path
   end
 
   private
+
+  def csv_create_records(csv)
+    csv.each do |row|
+      row = row.to_hash
+      order = ChannelOrder.find_or_initialize_by(id: row['order_id'])
+      next order.update(row.compact)
+
+      row = row.to_hash
+      row.delete(nil)
+      order.update!(row)
+    end
+  end
+
+
+  def open_spreadsheet(file)
+    case File.extname(file.original_filename)
+    when '.csv' then CSV.parse(File.read(file.path).force_encoding('ISO-8859-1').encode('utf-8', replace: nil), headers: true)
+    when '.xls' then  Roo::Excel.new(file.path, packed: nil, file_warning: :ignore)
+    when '.xlsx' then Roo::Excelx.new(file.path, packed: nil, file_warning: :ignore)
+    else raise "Unknown file type: #{file.original_filename}"
+    end
+  end
 
   def order_mapping_params; end
 
