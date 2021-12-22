@@ -81,9 +81,9 @@
                   <%= form_for :anything, data_no_turbolink: true, url: product_mappings_path do |f| %>
                     <tr class=''>
                       <td style = "width: 5%">
-                        <% if item.channel_type.downcase.eql? 'ebay'%>
+                        <% if item&.channel_type&.downcase&.eql? 'ebay'%>
                           <img src="/assets/pngegg_80.png" alt="ebay" style="max-width: 70%;"><br>
-                        <% elsif item.channel_type.downcase.eql? 'amazon' %>
+                        <% elsif item&.channel_type&.downcase&.eql? 'amazon' %>
                           <img src="/assets/amazon.png" alt="ebay" style=""><br>
                         <%else %>
                           CC
