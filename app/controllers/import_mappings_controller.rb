@@ -8,8 +8,10 @@ class ImportMappingsController < ApplicationController
   def index
     @product = Product.new
     @order = ChannelOrder.new
+    @channel_product = ChannelProduct.new
     @product_mappings = ImportMapping.where(table_name: 'Product')
-    @order_mappings = ImportMapping.where(table_name: 'Order')
+    @order_mappings = ImportMapping.where(table_name: 'Channel Order')
+    @channel_product_mappings = ImportMapping.where(table_name: 'Channel Product')
     @multi_mappings = ImportMapping.where(mapping_type: 'dual')
   end
 
@@ -19,12 +21,12 @@ class ImportMappingsController < ApplicationController
   # GET /import_mappings/new
   def new
     @import_mapping = ImportMapping.new
-    @table_names = ['Product', 'Order']
+    @table_names = ['Product', 'Channel Order', 'Channel Product']
   end
 
   # GET /import_mappings/1/edit
   def edit
-    @table_names = ['Product', 'Order']
+    @table_names = ['Product', 'Channel Order', 'Channel Product']
   end
 
   def file_mapping
@@ -55,7 +57,7 @@ class ImportMappingsController < ApplicationController
       @csv2_headers.push(header.gsub('_', ' ').gsub(' ', '_'))
     end
     @csv1_headers = @csv1_headers.reject { |c| c.empty? }
-    @csv2_headers = @csv2_headers.reject { |c| c.empty? } 
+    @csv2_headers = @csv2_headers.reject { |c| c.empty? }
   end
 
   # POST /import_mappings or /import_mappings.json
@@ -79,16 +81,14 @@ class ImportMappingsController < ApplicationController
         end
       end
       @import_mapping.data_to_print = header_to_print if header_to_print.present?
-    elsif params[:table_name] == 'Product'
-      Product.column_names.each do |col_name|
+    else
+      @table_name = params[:table_name]
+      @table_name.parameterize.underscore.classify.constantize.column_names.each do |col_name|
         mapping[col_name.to_s] = params[:"#{col_name}"]
       end
-      @import_mapping = ImportMapping.new(sub_type: params[:sub_type], table_name: params[:table_name], mapping_data: mapping, sub_type: params[:sub_type], table_data: params[:header_data].split(' '), header_data: params[:header_data].split(' '))
-    elsif params[:table_name] == 'Order'
-      ChannelOrder.column_names.each do |col_name|
-        mapping[col_name.to_s] = params[:"#{col_name}"]
-      end
-      @import_mapping = ImportMapping.new(sub_type: params[:sub_type], table_name: params[:table_name], mapping_data: mapping, sub_type: params[:sub_type], table_data: params[:header_data].split(' '), header_data: params[:header_data].split(' '))
+      @import_mapping = ImportMapping.new(table_name: params[:table_name], mapping_data: mapping,
+                                          sub_type: params[:sub_type], table_data: params[:header_data].split(' '),
+                                          header_data: params[:header_data].split(' '))
     end
     respond_to do |format|
       if @import_mapping.save

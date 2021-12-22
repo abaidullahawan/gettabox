@@ -128,27 +128,58 @@ class ProductMappingsController < ApplicationController
     file = params[:file]
     if file.present? && file.path.split('.').last.to_s.downcase == 'csv'
       csv_text = File.read(file).force_encoding('ISO-8859-1').encode('utf-8', replace: nil)
-      csv = CSV.parse(csv_text, headers: true)
-      import_csv(csv)
+      convert = ImportMapping.where(sub_type: params[:mapping_type]).last.mapping_data.invert
+      csv = CSV.parse(csv_text, headers: true, skip_blanks: true, header_converters: lambda { |name| convert[name] })
+      csv_headers_check(csv)
     else
-      flash[:alert] = 'File format no matched! Please change file (Supporting only csv)'
+      flash[:alert] = 'File format no matched! Please change file'
     end
     redirect_to product_mappings_path
   end
 
-  def import_csv(csv)
-    csv.each do |row|
-      channel_product = ChannelProduct.find_or_initialize_by(
-        channel_type: 'cloud_commerce', item_id: row['Product_ID'], item_sku: row['VAR_SKU']
-      )
-      channel_product.update(
-        product_range_id: row['Product_Range_ID'], range_sku: row['RNG_SKU'], product_data: row.to_hash
-      )
+  def csv_headers_check(csv)
+    is_valid = (csv.headers.compact | ChannelProduct.column_names).sort == ChannelProduct.column_names.sort
+    if is_valid
+      csv.each do |row|
+        row = row.to_hash
+        row.delete(nil)
+        channel_product = ChannelProduct.new
+        channel_product.update(row)
+      end
+    else
+      flash[:alert] = 'File not matched! Please change file'
     end
-    flash[:notice] = 'File Upload Successful!'
+  end 
+
+  def import_product_file
+    return unless params[:channel_product][:file].present?
+
+    file = params[:channel_product][:file]
+    file_type = file.present? ? file.path.split('.').last.to_s.downcase : ''
+    if file.present? && (file_type.include? 'csv') || (file_type.include? 'xlsx')
+      spreadsheet = open_spreadsheet(file)
+      @header = spreadsheet.headers
+      @data = []
+      @import_mapping = ImportMapping.new
+      @table_names = %w['Order Product']
+      @db_names = ChannelProduct.column_names
+      redirect_to new_import_mapping_path(db_columns: @db_names, header: @header, import_mapping: @import_mapping)
+    else
+      flash[:alert] = 'Try again file not match'
+      redirect_to import_mappings_path
+    end
   end
 
   private
+
+  def open_spreadsheet(file)
+    case File.extname(file.original_filename)
+    when '.csv' then CSV.parse(File.read(file.path).force_encoding('ISO-8859-1').encode('utf-8', replace: nil), headers: true)
+    when '.xls' then  Roo::Excel.new(file.path, packed: nil, file_warning: :ignore)
+    when '.xlsx' then Roo::Excelx.new(file.path, packed: nil, file_warning: :ignore)
+    else raise "Unknown file type: #{file.original_filename}"
+    end
+  end
 
   def csv_export(product)
     attributes = ChannelProduct.column_names.excluding('created_at', 'updated_at').including('available_stock')

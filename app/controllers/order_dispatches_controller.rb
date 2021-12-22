@@ -124,7 +124,7 @@ class OrderDispatchesController < ApplicationController
     file = params[:file]
     if file.present? && file.path.split('.').last.to_s.downcase == 'csv'
       csv_text = File.read(file).force_encoding('ISO-8859-1').encode('utf-8', replace: nil)
-      convert = ImportMapping.where(sub_type: params[:mapping_type]).last.mapping_data.invert
+      convert = ImportMapping.where(sub_type: params[:mapping_type]).last.mapping_data.compact_blank.invert
       csv = CSV.parse(csv_text, headers: true, skip_blanks: true, header_converters: lambda { |name| convert[name] })
     else
       flash[:alert] = 'File format no matched! Please change file'
@@ -142,7 +142,7 @@ class OrderDispatchesController < ApplicationController
       csv_create_records(@csv)
       flash[:alert] = 'File Upload Successful!'
     end
-    redirect_to products_path
+    redirect_to import_mappings_path
   end
 
   private
@@ -150,12 +150,9 @@ class OrderDispatchesController < ApplicationController
   def csv_create_records(csv)
     csv.each do |row|
       row = row.to_hash
-      order = ChannelOrder.find_or_initialize_by(id: row['order_id'])
-      next order.update(row.compact)
-
-      row = row.to_hash
       row.delete(nil)
-      order.update!(row)
+      order = ChannelOrder.new
+      order.update(row)
     end
   end
 
