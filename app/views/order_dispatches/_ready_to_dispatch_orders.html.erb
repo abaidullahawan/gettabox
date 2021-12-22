@@ -71,8 +71,8 @@
                             <div class="col-12 d-flex">
                               <span class="order-listing order-quantity"><%= product.ordered %></span>
                               <div class="d-flex">
-                              <% if (ChannelProduct.where(item_sku: product.sku )&.first&.product_data.present?  && ChannelProduct.where(item_sku: product.sku )&.first&.product_data["PictureDetails"] != nil)%>
-                                  <%= image_tag(ChannelProduct.where(item_sku: product.sku )&.first&.product_data["PictureDetails"]["GalleryURL"])%>
+                              <% if product.channel_product&.item_image.present?%>
+                                  <%= image_tag(product.channel_product.item_image, width: '55px', height: '80px', class: 'mr-3')%>
                               <% else %>
                                 <%= image_tag('user/1.jpg', width: "50px", height: "50px", class: 'mr-3 img-thumbnail img-height', alt: 'User Image') %>
                               <% end %>
@@ -87,9 +87,9 @@
                     </td>
                     <td style="width: 250px;">
                       <% order.channel_order_items.each do |product|%>
-                        <% if ChannelOrder.check_mapping(product) == 'mapped' %>
-                          <% if ChannelOrder.find_product(product)&.product_type == 'multiple'%>
-                            <% ChannelProduct.find_by(item_sku: product.sku)&.product_mapping&.product&.multipack_products&.each do |record| %>
+                        <% if product.channel_product&.product_mapping.present? %>
+                          <% if product.channel_product&.product_mapping&.product&.product_type_multiple? %>
+                            <% product.channel_product&.product_mapping&.product&.multipack_products&.each do |record| %>
                             <div class="card-style2">
                               <%= link_to record.child.sku, product_path(record.child.id), target: 'blank' %>
                               <p style="color: white;">
@@ -113,14 +113,14 @@
                             <% end %>
                           <% else %>
                             <div class="card-style2">
-                              <%= link_to ChannelOrder.find_product(product)&.sku, product_path(ChannelOrder.find_product(product)&.id), target: 'blank', style: "color: white" %>
+                              <%= link_to product.channel_product&.product_mapping&.product&.sku, product_path(product.channel_product&.product_mapping&.product&.id), target: 'blank', style: "color: white" %>
                               <p style="color: white;">
-                                <b>Location:</b> <span><%= ChannelOrder.find_product(product)&.location %></span>
+                                <b>Location:</b> <span><%= product.channel_product&.product_mapping&.product&.location %></span>
                               </p>
                               <div class="d-flex">
                                 <div class="col-4 col-padding">
                                   <p class="heading-table">Avail</p>
-                                  <p class="table-value"><%= ChannelProduct.find_by(item_sku: product.sku).product_mapping.product.total_stock.to_i %></p>
+                                  <p class="table-value"><%= product.channel_product&.product_mapping&.product&.total_stock&.to_i %></p>
                                 </div>
                                 <div class="col-4 col-padding">
                                   <p class="heading-table">Alloc</p>
@@ -174,9 +174,9 @@
                           <% @height = []%>
                           <% @width = []%>
                           <% order.channel_order_items.each do |product|%>
-                            <% if ChannelOrder.check_mapping(product) == 'mapped' %>
-                              <% if ChannelOrder.find_product(product)&.product_type == 'multiple'%>
-                                <% ChannelProduct.find_by(item_sku: product.sku)&.product_mapping&.product&.multipack_products&.each do |record| %>
+                            <% if product.channel_product&.product_mapping.present? %>
+                              <% if product.channel_product.product_mapping.product&.product_type_multiple? %>
+                                <% product.channel_product.product_mapping.product&.multipack_products&.each do |record| %>
                                   <% @length += record&.child&.length&.to_f %>
                                   <% @weight += record&.child&.weight&.to_f%>
                                   <% @height.push(record&.child&.height&.to_f)%>
@@ -187,10 +187,10 @@
                                 <%= hidden_field_tag 'height',  @height.max, class: "height-value"%>
                                 <%= hidden_field_tag 'weight',  @weight, class: "weight-value"%>
                               <% else %>
-                                <%= hidden_field_tag 'length',  ChannelOrder.find_product(product).length, class: "length-value" %>
-                                <%= hidden_field_tag 'width',  ChannelOrder.find_product(product).width, class: "width-value" %>
-                                <%= hidden_field_tag 'height',  ChannelOrder.find_product(product).height, class: "height-value"%>
-                                <%= hidden_field_tag 'weight',  ChannelOrder.find_product(product).weight, class: "weight-value"%>
+                                <%= hidden_field_tag 'length',  product.channel_product.product_mapping&.product&.length, class: "length-value" %>
+                                <%= hidden_field_tag 'width',  product.channel_product.product_mapping&.product&.width, class: "width-value" %>
+                                <%= hidden_field_tag 'height',  product.channel_product.product_mapping&.product&.height, class: "height-value"%>
+                                <%= hidden_field_tag 'weight',  product.channel_product.product_mapping&.product&.weight, class: "weight-value"%>
                               <% end %>
                             <% end %>
                           <% end %>
