@@ -189,4 +189,55 @@ $(document).on('turbolinks:load', function () {
     $('.bulk-method-destroy-objects').trigger('click')
   })
 
+  window.update_selected = function (url, event) {
+    var target = event.currentTarget
+    debugger;
+    var value = target.checked
+    var id = target.id
+
+    $.ajax({
+      url: url,
+      type: "GET",
+      data: { 'selected': value, 'id': id },
+      success: function (response) {
+        if (response.result) {
+          alert('Order updated as selected true!');
+        }
+        else if (response.result == 'error') {
+          alert('Order cannot be updated!');
+        }
+        else {
+          alert('Order updated as selected false!');
+        }
+      }
+    })
+  }
+
+  window.bulk_update_selected = function (url, event) {
+    var target = event.target
+    debugger;
+    var switches = $('input[name="select-switch"]');
+    switches.prop("checked", target.checked);
+    var selected = []
+    var unselected = []
+    switches.each(function () {
+      if (this.checked) {
+        selected.push(this.id)
+      }
+      else {
+        unselected.push(this.id)
+      }
+    })
+    $.ajax({
+      url: url,
+      type: 'GET',
+      data: { 'selected': selected, 'unselected': unselected },
+      success: function (response) {
+        if (response.result) {
+          alert(response.message);
+        }
+      }
+    })
+  }
+
 })
