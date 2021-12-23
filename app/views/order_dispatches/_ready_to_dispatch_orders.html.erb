@@ -42,7 +42,7 @@
                   <th scope="col">Date</th>
                   <th scope="col">Total</th>
                   <th scope="col">Status</th>
-                  <th scope="col"></th>
+                  <!--th scope="col"></th-->
                 </tr>
               </thead>
               <% @not_started_orders.each.with_index(1) do |order, index| %>
@@ -66,7 +66,7 @@
                     </td>
                     <td style="width: 320px">
                       <% order.channel_order_items&.each do |product|%>
-                        <%= link_to product_mappings_path(q:{item_sku_or_item_id_cont: product.item_data['legacyItemId']}) do %>
+                        <%= link_to product_mappings_path(q:{item_sku_or_item_id_cont: product.sku}) do %>
                           <div class="card-style">
                             <div class="col-12 d-flex">
                               <span class="order-listing order-quantity"><%= product.ordered %></span>
@@ -200,16 +200,16 @@
                     <td style="width: 100px;"><%= order.created_at.strftime("%m/%d/%Y %H:%M") %></td>
                     <td><%= order.total_amount%></td>
                     <td><span class="badge badge_warning py-1"><%= order.order_status%></span></td>
-                    <td>
-                      <!--button class="btn btn-primary" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <!--td>
+                      <button class="btn btn-primary" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <i data-feather='refresh-ccw' class='icon wh-15 mt-minus-3'></i>
                         Retry
-                      </button-->
+                      </button>
                       <button class="btn btn-primary" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <i data-feather='x' class='icon wh-15 mt-minus-3'></i>
                         Hide
                       </button>
-                    </td>
+                    </td-->
                   </tr>
                 </tbody>
               <% end %>
