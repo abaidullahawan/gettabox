@@ -65,7 +65,7 @@
                       <br><span class="sku-width"><%= order.address%></span>
                     </td>
                     <td style="width: 320px">
-                      <% order&.channel_order_items&.each do |product|%>
+                      <% order.channel_order_items&.each do |product|%>
                         <%= link_to product_mappings_path(q:{item_sku_or_item_id_cont: product.item_data['legacyItemId']}) do %>
                           <div class="card-style">
                             <div class="col-12 d-flex">
