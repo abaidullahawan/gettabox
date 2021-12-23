@@ -32,22 +32,28 @@
       <div class="card-body">
         <div class="card-header">
           <div class="dropdown">
-              <button class="btn btn-primary float-right" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Create
-              </button>
-              <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                <a href="#" class="dropdown-item" data-toggle="modal" data-target='#single-product-create-modal'>Single Pack</a>
-                <a href="#" class="dropdown-item" data-toggle="modal" data-target='#multi-product-create-modal'>Multi Pack</a>
-              </div>
+            <button class="btn btn-primary float-right" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Create
+            </button>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+              <a href="#" class="dropdown-item" data-toggle="modal" data-target='#single-product-create-modal'>Single Pack</a>
+              <a href="#" class="dropdown-item" data-toggle="modal" data-target='#multi-product-create-modal'>Multi Pack</a>
             </div>
-            <div class='mr-1 float-right'>
-                <%= link_to 'PDF', products_path(format: :pdf), class:"btn btn-primary float-right ml-1", type:"button"%>
-              </div>
+          </div>
+          <div class='mr-1 float-right'>
+            <%= link_to 'PDF', products_path(format: :pdf), class:"btn btn-primary float-right ml-1", type:"button"%>
+          </div>
           <span class='mr-1 float-right'>
               <%= link_to 'Import', import_mappings_path, class: 'btn btn-outline-info' %>
           </span>
-          <div class='mr-1 float-right'>
-            <%= link_to 'Export', products_path(format: :csv, export_csv: true), class: 'btn btn-outline-primary' %>
+          <div class="mr-1 float-right dropdown">
+            <button class="btn btn-outline-primary" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Export
+            </button>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+              <%= link_to 'Export All', products_path(all: true, format: :csv, export_csv: true), class: 'dropdown-item' %>
+              <%= link_to 'Export Selected', products_path(selected: true, format: :csv, export_csv: true), class: 'dropdown-item' %>
+            </div>
           </div>
           <div class='mr-1 float-right'>
             <%= link_to 'Archives', archive_products_path, class: 'btn btn-outline-info' %>
@@ -91,7 +97,19 @@
             <div class="table-responsive">
               <table class="table m-0 table-hover">
                 <tr>
-                  <th><input type="checkbox" id="" name="" value="" class='select-all-checkbox'></th>
+                  <th>
+                    <div class='row'>
+                    <div class='col-6 p-0  mt-1'>
+                      <input type="checkbox" id="" name="" value="" class='col-6 select-all-checkbox'>
+                    </div>
+                    <div class='col-6 p-0'>
+                      <div class="custom-control custom-switch">
+                        <input type="checkbox" class="custom-control-input" id="selectSwitchAll" onclick="bulk_update_selected('/products/bulk_update_selected', event)">
+                        <label class="custom-control-label" for="selectSwitchAll"></label>
+                      </div>
+                    </div>
+                    </div>
+                  </th>
                   <th>Image</th>
                   <th><%= sort_link(@q, :title, {}, { class: "text-dark" }) %></th>
                   <th class="text-center"><%= sort_link(@q, :sku, {}, { class: "text-dark" }) %></th>
@@ -103,7 +121,19 @@
                 </tr>
                 <% @products&.each&.with_index(1) do |product, index| %>
                   <tr class='<%= (product.minimum.to_i > product.total_stock.to_i ) ? 'table-danger' : '' %>'>
-                    <td><%= f.check_box 'object_ids[]', {}, product.id %></td>
+                    <td>
+                      <div class='row'>
+                        <div class='col-6 p-0 mt-1'>
+                          <%= f.check_box 'object_ids[]', {}, product.id %>
+                        </div>
+                        <div class='col-6 p-0'>
+                          <div class="custom-control custom-switch">
+                            <input type="checkbox" class="custom-control-input selectSwitch" name="select-switch" id="<%=product.id%>" <%= product.selected? ? 'checked': ''%> onclick="update_selected('/products/update_selected', event)">
+                            <label class="custom-control-label" for="<%=product.id%>"></label>
+                          </div>
+                      </div>
+                      </div>
+                    </td>
                     <td>
                       <% if  product.photo.attached? %>
                         <%= image_tag product.photo&.service_url, style:'width:50px; height:50px;' %>

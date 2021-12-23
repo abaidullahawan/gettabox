@@ -74,6 +74,7 @@ class ProductsController < ApplicationController
   end
 
   def export_csv(products)
+    products = products.where(selected: true) if params[:selected]
     request.format = 'csv'
     respond_to do |format|
       format.csv { send_data products.to_csv, filename: "products-#{Date.today}.csv" }
@@ -153,6 +154,28 @@ class ProductsController < ApplicationController
     else
       flash[:alert] = 'Try again file not match'
       redirect_to import_mappings_path
+    end
+  end
+
+  def update_selected
+    if params[:id].present? && params[:selected].present?
+      product = Product.find_by(id: params[:id])
+      product&.update(selected: params[:selected])
+      message = { result: product.selected, message: 'Product Updated!' }
+    else
+      message = { result: 'error', message: 'Product not found' }
+    end
+    respond_to do |format|
+      format.json { render json: message }
+    end
+  end
+
+  def bulk_update_selected
+    Product.where(id: params[:selected]).update_all(selected: true)
+    Product.where(id: params[:unselected]).update_all(selected: false)
+    message = { result: true, message: 'All products updated' }
+    respond_to do |format|
+      format.json { render json: message }
     end
   end
 
