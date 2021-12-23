@@ -7,7 +7,7 @@
         </div>
         <%= form_with url: '/import_mappings', remote: true do |f| %>
           <div class='row '>
-            <div class='col-6'>
+            <div class='col-4'>
               <h3 class='mb-3'>Please Add File Mapping</h3>
               <div class="form-group">
                 <%= f.label :sub_type, 'Description' %>
@@ -22,7 +22,7 @@
                 </div>
               <% end %>
             </div>
-            <div class='col-6'>
+            <div class='col-4'>
               <h3 class='mb-3'>Please Select File Headers</h3>
               <h4 class='mb-3'>File 1 Headers</h4>
               <% @csv1_headers.each do |header| %>
@@ -38,6 +38,21 @@
                   <%= label_tag :"#{header}" %>
                 </div>
               <% end %>
+            </div>
+            <div class='col-4'>
+              <h3 class='mb-3'>Please Add Mapping Rule</h3>
+                <div class="form-group ml-4">
+                  <%= check_box_tag "rules[]", 'upper_case' %>
+                  <%= label_tag :"Upper Case" %>
+                </div>
+                <div class="form-group ml-4">
+                  <%= check_box_tag "rules[]", 'space_case' %>
+                  <%= label_tag :'Space Ignoring' %>
+                </div>
+                <div class="form-group ml-4">
+                  <%= check_box_tag "rules[]", 'symbol_case' %>
+                  <%= label_tag :"Symbol Ignoring" %>
+                </div>
             </div>
           </div>
           <%= f.hidden_field :header_data, value: [@csv2_headers] %>
