@@ -65,7 +65,7 @@ class ImportMappingsController < ApplicationController
     mapping = {}
     if params[:mapping_type] == 'dual'
       header_to_print = []
-      @import_mapping = ImportMapping.new(sub_type: params[:sub_type], table_data: params[:table_data].split(' '), header_data: params[:header_data].split(' '), mapping_data: params[:mapping_data], mapping_type: params[:mapping_type])
+      @import_mapping = ImportMapping.new(mapping_rule: params[:rules], sub_type: params[:sub_type], table_data: params[:table_data].split(' '), header_data: params[:header_data].split(' '), mapping_data: params[:mapping_data], mapping_type: params[:mapping_type])
       @import_mapping.table_data.each do |data|
         mapping[data.to_s] = params[:"#{data}"]
       end
@@ -129,7 +129,8 @@ class ImportMappingsController < ApplicationController
     file2 = params[:file_2]
     file_type1 = file1.present? ? file1.path.split('.').last.to_s.downcase : ''
     file_type2 = file2.present? ? file2.path.split('.').last.to_s.downcase : ''
-    attributes = ImportMapping.find(params[:mapping_id]).data_to_print
+    mapping = ImportMapping.find(params[:mapping_id])
+    attributes = mapping.data_to_print
     attribute_data = []
     attributes.each do |attribute|
       attribute_data.push(attribute.gsub('_',' '))
@@ -137,17 +138,26 @@ class ImportMappingsController < ApplicationController
     if file1.present? && file2.present? && (file_type1.include? 'csv') && (file_type2.include? 'csv')
       spreadsheet1 = open_spreadsheet(file1)
       spreadsheet2 = open_spreadsheet(file2)
-      matchable = ImportMapping.find(params[:mapping_id]).mapping_data.select { |_, v| v.present? && v != '' }
+      matchable = mapping.mapping_data.select { |_, v| v.present? && v != '' }
       @csv = CSV.generate(headers: true) do |csv|
         csv << attributes
         spreadsheet1.each do |record1|
           spreadsheet2.each do |record2|
             matchable.each do |matched|
-              if record1[matched[0].gsub('_',' ')] == record2[matched[1].gsub('_', ' ')]
-                row1 = record1.values_at(*attribute_data).compact
-                row2 = record2.values_at(*attribute_data).compact
-                row = row1 + row2
-                csv << row
+              if mapping.mapping_rule.present?
+                if symbol_case(record1, record2, matched, mapping) || space_case(record1, record2, matched, mapping) || upper_case(record1, record2, matched, mapping)
+                  row1 = record1.values_at(*attribute_data).compact
+                  row2 = record2.values_at(*attribute_data).compact
+                  row = row1 + row2
+                  csv << row
+                end
+              else
+                if record1[matched[0].gsub('_',' ')] == record2[matched[1].gsub('_', ' ')]
+                  row1 = record1.values_at(*attribute_data).compact
+                  row2 = record2.values_at(*attribute_data).compact
+                  row = row1 + row2
+                  csv << row
+                end
               end
             end
           end
@@ -160,6 +170,37 @@ class ImportMappingsController < ApplicationController
     else
       flash[:alert] = 'Try again file not match'
       redirect_to import_mappings_path
+    end
+  end
+
+  def symbol_case(record1, record2, matched, mapping)
+    true unless mapping.mapping_rule.include? ('symbol_case')
+    byebug
+
+    if record1[matched[0].gsub('_',' ')]&.gsub(/[^0-9A-Za-z]/, '')== record2[matched[1].gsub('_',' ')]&.gsub(/[^0-9A-Za-z]/, '')
+      true
+    else
+      false
+    end
+  end
+
+  def space_case(record1, record2, matched, mapping)
+    true unless mapping.mapping_rule.include? ('space_case')
+
+    if record1[matched[0].gsub('_',' ')]&.delete(' ') == record2[matched[1].gsub('_', ' ')]&.delete(' ')
+      true
+    else
+      false
+    end
+  end
+
+  def upper_case(record1, record2, matched, mapping)
+    true unless mapping.mapping_rule.include? ('upper_case')
+
+    if record1[matched[0].gsub('_',' ')]&.casecmp(record2[matched[1].gsub('_', ' ')]) == 0
+      true
+    else
+      false
     end
   end
 
