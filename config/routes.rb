@@ -68,8 +68,6 @@ Rails.application.routes.draw do
       post 'products_by_title', to: 'products#search_products_by_title'
       post 'products_by_sku', to: 'products#search_products_by_sku'
       post 'check_category', to: 'products#search_category'
-      get 'update_selected', to: 'products#update_selected'
-      get 'bulk_update_selected', to: 'products#bulk_update_selected'
     end
   end
 
@@ -142,6 +140,10 @@ Rails.application.routes.draw do
   # Order Dispatch Routes
   get 'all_order_data', to: 'order_dispatches#all_order_data'
   get 'get_response_orders', to: 'order_dispatches#get_response_orders'
+
+  # selected for all
+  get 'update_selected', to: 'application#update_selected'
+  get 'bulk_update_selected', to: 'application#bulk_update_selected'
 
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
 

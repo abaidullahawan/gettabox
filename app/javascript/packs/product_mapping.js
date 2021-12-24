@@ -122,11 +122,6 @@ $(document).on('turbolinks:load', function () {
     $(this).closest('td').find('.productSearch').trigger( "focus" )
   })
 
-  $('.product-mapping-export').on('click', function () {
-    $('.product-export-request').trigger( "click" )
-    setTimeout(location.reload.bind(location), 5000);
-  })
-
   // $('.productSearch').on('focusout', function () {
   //   if ($('.productSearch').value === ''){
   //     $(this).closest('td').find('.productSearchContainer').toggleClass('d-none', 3000);

@@ -13,6 +13,7 @@
 <% end %>
 
 <!-- Main Content Header -->
+<div class="alert alert-dismissible fade show text-white jquery-selected-alert d-none " style="position: fixed; width:93%; z-index:99999;" role="alert"></div>
 <div class="main-content-header">
     <h1>Products</h1>
     <ol class="breadcrumb">
@@ -104,7 +105,7 @@
                     </div>
                     <div class='col-6 p-0'>
                       <div class="custom-control custom-switch">
-                        <input type="checkbox" class="custom-control-input" id="selectSwitchAll" onclick="bulk_update_selected('/products/bulk_update_selected', event)">
+                        <input type="checkbox" class="custom-control-input" id="selectSwitchAll" onclick="bulk_update_selected('/bulk_update_selected', '<%= @products.first.class.name %>', event)">
                         <label class="custom-control-label" for="selectSwitchAll"></label>
                       </div>
                     </div>
@@ -128,7 +129,7 @@
                         </div>
                         <div class='col-6 p-0'>
                           <div class="custom-control custom-switch">
-                            <input type="checkbox" class="custom-control-input selectSwitch" name="select-switch" id="<%=product.id%>" <%= product.selected? ? 'checked': ''%> onclick="update_selected('/products/update_selected', event)">
+                            <input type="checkbox" class="custom-control-input selectSwitch" name="select-switch" id="<%=product.id%>" <%= product.selected? ? 'checked': ''%> onclick="update_selected('/update_selected', '<%= product.class.name %>', event)">
                             <label class="custom-control-label" for="<%=product.id%>"></label>
                           </div>
                       </div>

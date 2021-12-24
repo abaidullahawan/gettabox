@@ -160,8 +160,12 @@ $(document).on('turbolinks:load', function () {
       type: 'GET',
       data: { 'selected': selected, 'unselected': unselected },
       success: function (response) {
-        if (response.result){
-          alert(response.message);
+        if (response.result) {
+          $('.jquery-selected-alert').html('All objects updated successfully')
+          $('.jquery-selected-alert').addClass('bg-success').removeClass('d-none').removeClass('bg-danger')
+          $(".jquery-selected-alert").fadeTo(2000, 500).slideUp(500, function () {
+            $(".jquery-selected-alert").slideUp(500);
+          });
         }
       }
     })
@@ -176,14 +180,20 @@ $(document).on('turbolinks:load', function () {
       type: "GET",
       data: { 'selected': value, 'order_id': order_id },
       success: function (response) {
-        if (response.result){
-          // alert('Order updated as selected true!');
+        if (response.result) {
+          $('.jquery-selected-alert').html('Object updated successfully')
+          $('.jquery-selected-alert').addClass('bg-success').removeClass('d-none').removeClass('bg-danger')
+          $(".jquery-selected-alert").fadeTo(2000, 500).slideUp(500, function () {
+            $(".jquery-selected-alert").slideUp(500);
+          });
         }
-        else if(response.result == 'error'){
-          // alert('Order cannot be updated!');
-        }
-        else{
-          // alert('Order updated as selected false!');
+        else {
+          $('.jquery-selected-alert').html('Object cannot be updated! ' + response.errors[0])
+          $('.jquery-selected-alert').addClass('bg-danger').removeClass('d-none')
+          $('.jquery-selected-alert').alert('show')
+          $(".jquery-selected-alert").fadeTo(2000, 500).slideUp(500, function () {
+            $(".jquery-selected-alert").slideUp(500);
+          });
         }
       }
     })

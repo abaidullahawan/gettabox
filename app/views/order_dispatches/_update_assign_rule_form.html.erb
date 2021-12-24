@@ -9,7 +9,7 @@
         <div class="d-flex">
           <div class="form-group col-10">
             <%= f.label 'Rule Name' %>
-            <%= f.select :mail_service_rule_id, options_for_select(MailServiceRule.all.collect { | rule | [rule.rule_name, rule.id] }, f.object.mail_service_rule_id),{}, class: 'form-control courier-value', placeholder: 'Please enter the Courier' %>
+            <%= f.select :mail_service_rule_id, options_for_select(@mail_service_rules.collect { | rule | [rule.rule_name, rule.id] }, f.object.mail_service_rule_id),{}, class: 'form-control courier-value', placeholder: 'Please enter the Courier' %>
           </div>
         <%= hidden_field_tag :status, f.object.status %>
           <div class="dropdown dropleft mt-4 col-2">
