@@ -6,54 +6,56 @@
             <h5 class="card-title">Create File Mappings</h5>
         </div>
         <%= form_with url: '/import_mappings', remote: true do |f| %>
-          <div class='row '>
-            <div class='col-4'>
-              <h3 class='mb-3'>Please Add File Mapping</h3>
-              <div class="form-group">
-                <%= f.label :sub_type, 'Description' %>
-                <%= f.text_field :sub_type, class: 'form-control'%>
+          <h3 class='mb-3'>Please Add File Mapping</h3>
+          <div class="form-group">
+            <%= f.label :sub_type, 'Description' %>
+            <%= f.text_field :sub_type, class: 'form-control'%>
+          </div>
+          <% @csv1_headers.each_slice(5) do |map| %>
+            <div class="row">
+              <% map.each do |header| %>
+                <div class="col-2 form-group mr-4">
+                  <%= label_tag :"#{header}" %>
+                  <%= select_tag :"#{header}",  options_for_select(@csv2_headers), class: 'chosen-select form-control', prompt: "Select Header"%>
+                </div>
+              <% end %>
+            </div>
+          <% end %>
+          <h3 class='mb-3'>Please Select File Headers</h3>
+          <h4 class='mb-3'>File 1 Headers</h4>
+          <% @csv1_headers.each_slice(5) do |map| %>
+          <div class="row">
+            <% map.each do |header| %>
+              <div class="col-2 form-group ml-4">
+                <%= check_box_tag "headers_1[]", header %>
+                <%= label_tag :"#{header}" %>
               </div>
-              <% @csv1_headers.each do |header| %>
-                <div class="d-flex">
-                  <div class="form-group">
-                    <%= label_tag :"#{header}" %>
-                    <%= select_tag :"#{header}",  options_for_select(@csv2_headers), class: 'chosen-select form-control', prompt: "Select Header"%>
-                  </div>
-                </div>
-              <% end %>
+            <% end %>
+          </div>
+          <% end %>
+          <h4 class='mb-3'>File 2 Headers</h4>
+          <% @csv2_headers.each_slice(5) do |map| %>
+          <div class="row">
+            <% map.each do |header| %>
+            <div class="col-2 form-group ml-4">
+              <%= check_box_tag "headers_2[]", header %>
+              <%= label_tag :"#{header}" %>
             </div>
-            <div class='col-4'>
-              <h3 class='mb-3'>Please Select File Headers</h3>
-              <h4 class='mb-3'>File 1 Headers</h4>
-              <% @csv1_headers.each do |header| %>
-                <div class="form-group ml-4">
-                  <%= check_box_tag "headers_1[]", header %>
-                  <%= label_tag :"#{header}" %>
-                </div>
-              <% end %>
-              <h4 class='mb-3'>File 2 Headers</h4>
-              <% @csv2_headers.each do |header| %>
-                <div class="form-group ml-4">
-                  <%= check_box_tag "headers_2[]", header %>
-                  <%= label_tag :"#{header}" %>
-                </div>
-              <% end %>
-            </div>
-            <div class='col-4'>
-              <h3 class='mb-3'>Please Add Mapping Rule</h3>
-                <div class="form-group ml-4">
-                  <%= check_box_tag "rules[]", 'upper_case' %>
-                  <%= label_tag :"Upper Case" %>
-                </div>
-                <div class="form-group ml-4">
-                  <%= check_box_tag "rules[]", 'space_case' %>
-                  <%= label_tag :'Space Ignoring' %>
-                </div>
-                <div class="form-group ml-4">
-                  <%= check_box_tag "rules[]", 'symbol_case' %>
-                  <%= label_tag :"Symbol Ignoring" %>
-                </div>
-            </div>
+            <% end %>
+          </div>
+          <% end %>
+          <h3 class='mb-3'>Please Add Mapping Rule</h3>
+          <div class="form-group ml-4">
+            <%= check_box_tag "rules[]", 'upper_case' %>
+            <%= label_tag :"Upper Case" %>
+          </div>
+          <div class="form-group ml-4">
+            <%= check_box_tag "rules[]", 'space_case' %>
+            <%= label_tag :'Space Ignoring' %>
+          </div>
+          <div class="form-group ml-4">
+            <%= check_box_tag "rules[]", 'symbol_case' %>
+            <%= label_tag :"Symbol Ignoring" %>
           </div>
           <%= f.hidden_field :header_data, value: [@csv2_headers] %>
           <%= f.hidden_field :table_data, value: [@csv1_headers] %>
