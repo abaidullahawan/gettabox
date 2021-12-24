@@ -11,6 +11,7 @@
   </ol>
 </div>
 <!-- End Main Content Header -->
+<div class="alert alert-dismissible fade show text-white jquery-selected-alert d-none " style="position: fixed; width:93%; z-index:99999;" role="alert"></div>
 <div class="row">
   <div class="col-xl-12">
     <div class="card mb-30">
@@ -28,8 +29,14 @@
               <%= submit_tag "Import", class: 'd-none import-submit' %>
             <% end %>
           </span>
-          <div class='mr-1 float-right'>
-          <button type="button" class="btn btn-outline-primary product-mapping-export">Export</button>
+          <div class="mr-1 float-right dropdown">
+            <button class="btn btn-outline-primary" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Export
+            </button>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+              <%= link_to 'Export All', product_mappings_path(all: true, format: :csv, export_csv: true), class: 'dropdown-item' %>
+              <%= link_to 'Export Selected', product_mappings_path(selected: true, format: :csv, export_csv: true), class: 'dropdown-item' %>
+            </div>
           </div>
           <div class='mr-1 float-right'>
             <%= link_to 'Archives', archive_products_path, class: 'btn btn-outline-info' %>
@@ -48,7 +55,6 @@
                 <%= f.search_field :item_sku_or_item_id_cont, class:"form-control", title: 'Search item sku', placeholder: 'Search Item Sku or Item Id' %>
               </div>
               <%= f.submit 'Mapping', class: 'btn btn-primary product-mapping-request d-none' %>
-              <%= f.submit 'Export', class: 'btn btn-primary product-export-request d-none' %>
               <%= link_to 'Ebay Request', 'https://auth.ebay.com/oauth2/authorize?client_id=ChannelD-ChannelD-PRD-da28ec690-4a9f363c&response_type=code&redirect_uri=Channel_Dispatc-ChannelD-Channe-flynitdm&scope=https://api.ebay.com/oauth/api_scope https://api.ebay.com/oauth/api_scope/sell.marketing.readonly https://api.ebay.com/oauth/api_scope/sell.marketing https://api.ebay.com/oauth/api_scope/sell.inventory.readonly https://api.ebay.com/oauth/api_scope/sell.inventory https://api.ebay.com/oauth/api_scope/sell.account.readonly https://api.ebay.com/oauth/api_scope/sell.account https://api.ebay.com/oauth/api_scope/sell.fulfillment.readonly https://api.ebay.com/oauth/api_scope/sell.fulfillment https://api.ebay.com/oauth/api_scope/sell.analytics.readonly https://api.ebay.com/oauth/api_scope/sell.finances https://api.ebay.com/oauth/api_scope/sell.payment.dispute https://api.ebay.com/oauth/api_scope/commerce.identity.readonly https://api.ebay.com/oauth/api_scope/commerce.notification.subscription https://api.ebay.com/oauth/api_scope/commerce.notification.subscription.readonly' , target: 'blank', class: 'btn btn-info text-center ml-2 d-none' %>
               <%= f.submit 'Amazon Request', class: 'd-none btn btn-info text-center ml-2' %>
               <%= link_to "eBay Products", product_mappings_path(all_product_data: true) ,class:"d-none btn btn-primary float-right ml-1", type:"button", style: "color: white" %>
@@ -60,11 +66,17 @@
           <div class='col-lg-12'>
             <table class="table m-0 text-center table-bordered table-hover">
               <tr>
-                <th colspan='7' class='text-center text-muted'>Channel Products</th>
+                <th colspan='8' class='text-center text-muted'>Channel Products</th>
                 <th colspan='3' class='text-center text-muted'>Local Products</th>
                 <th colspan='2' class='text-center text-muted'>Actions</th>
               </tr>
               <tr>
+                <th>
+                  <div class="custom-control custom-switch">
+                    <input type="checkbox" class="custom-control-input" id="selectSwitchAll" onclick="bulk_update_selected('/bulk_update_selected', '<%= @body.first.class.name %>', event)">
+                    <label class="custom-control-label" for="selectSwitchAll"></label>
+                  </div>
+                </th>
                 <th>Channel</th>
                 <th>Image</th>
                 <th colspan='2' class="text-center"><%= sort_link(@q, :item_sku, 'Sku', {}, {class: 'text-dark'}) %> / <span class="badge bg-info text-white"><%= sort_link(@q, :item_id, 'Item ID', {}, {class: 'text-white'}) %></span></th>
@@ -80,6 +92,12 @@
                 <% @body.each do |item| %>
                   <%= form_for :anything, data_no_turbolink: true, url: product_mappings_path do |f| %>
                     <tr class=''>
+                      <td>
+                        <div class="custom-control custom-switch">
+                          <input type="checkbox" class="custom-control-input selectSwitch" name="select-switch" id="<%=item.id%>" <%= item.selected? ? 'checked': ''%> onclick="update_selected('/update_selected', '<%= item.class.name %>', event)">
+                          <label class="custom-control-label" for="<%=item.id%>"></label>
+                        </div>
+                      </td>
                       <td style = "width: 5%">
                         <% if item&.channel_type&.downcase&.eql? 'ebay'%>
                           <img src="/assets/pngegg_80.png" alt="ebay" style="max-width: 70%;"><br>

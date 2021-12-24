@@ -8,7 +8,7 @@
         </div>
         <div class="form-group">
           <%= f.label 'Rule Name' %>
-          <%= f.select :mail_service_rule_id, options_for_select(MailServiceRule.all.collect { | rule | [rule.rule_name, rule.id] }, f.object.mail_service_rule_id),{}, class: 'form-control courier-value', placeholder: 'Please enter the Courier' %>
+          <%= f.select :mail_service_rule_id, options_for_select(@mail_service_rules.collect { | rule | [rule.rule_name, rule.id] }, f.object.mail_service_rule_id),{}, class: 'form-control courier-value', placeholder: 'Please enter the Courier' %>
         </div>
         <div class="form-row">
           <div class='form-group col-md-12' style='border-bottom: 1px solid;'>

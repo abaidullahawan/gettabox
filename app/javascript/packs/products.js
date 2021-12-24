@@ -189,33 +189,46 @@ $(document).on('turbolinks:load', function () {
     $('.bulk-method-destroy-objects').trigger('click')
   })
 
-  window.update_selected = function (url, event) {
+  window.update_selected = function (url, class_name, event) {
     var target = event.currentTarget
-    debugger;
     var value = target.checked
     var id = target.id
 
-    $.ajax({
-      url: url,
-      type: "GET",
-      data: { 'selected': value, 'id': id },
-      success: function (response) {
-        if (response.result) {
-          alert('Order updated as selected true!');
+    if (typeof class_name === 'string' && typeof value === 'boolean' && typeof id === 'string' && typeof url === 'string'){
+      $.ajax({
+        url: url,
+        type: "GET",
+        data: { 'selected': value, 'id': id, class_name: class_name },
+        success: function (response) {
+          if (response.result) {
+            $('.jquery-selected-alert').html('Object updated successfully')
+            $('.jquery-selected-alert').addClass('bg-success').removeClass('d-none').removeClass('bg-danger')
+            $(".jquery-selected-alert").fadeTo(2000, 500).slideUp(500, function () {
+              $(".jquery-selected-alert").slideUp(500);
+            });
+          }
+          else{
+            $('.jquery-selected-alert').html('Object cannot be updated! '+ response.errors[0])
+            $('.jquery-selected-alert').addClass('bg-danger').removeClass('d-none')
+            $('.jquery-selected-alert').alert('show')
+            $(".jquery-selected-alert").fadeTo(2000, 500).slideUp(500, function () {
+              $(".jquery-selected-alert").slideUp(500);
+            });
+          }
         }
-        else if (response.result == 'error') {
-          alert('Order cannot be updated!');
-        }
-        else {
-          alert('Order updated as selected false!');
-        }
-      }
-    })
+      })
+    }
+    else {
+      $('.jquery-selected-alert').html('Cannot update object, please refresh and try again.')
+      $('.jquery-selected-alert').addClass('bg-danger').removeClass('d-none')
+      $(".jquery-selected-alert").fadeTo(2000, 500).slideUp(500, function () {
+        $(".jquery-selected-alert").slideUp(500);
+      });
+    }
   }
 
-  window.bulk_update_selected = function (url, event) {
+  window.bulk_update_selected = function (url, class_name, event) {
     var target = event.target
-    debugger;
     var switches = $('input[name="select-switch"]');
     switches.prop("checked", target.checked);
     var selected = []
@@ -228,16 +241,30 @@ $(document).on('turbolinks:load', function () {
         unselected.push(this.id)
       }
     })
-    $.ajax({
-      url: url,
-      type: 'GET',
-      data: { 'selected': selected, 'unselected': unselected },
-      success: function (response) {
-        if (response.result) {
-          alert(response.message);
+
+    if (typeof class_name === 'string' && (selected.length + unselected.length > 0) && typeof url === 'string') {
+      $.ajax({
+        url: url,
+        type: 'GET',
+        data: { 'selected': selected, 'unselected': unselected, class_name: class_name },
+        success: function (response) {
+          if (response.result) {
+            $('.jquery-selected-alert').html('All objects updated successfully')
+            $('.jquery-selected-alert').addClass('bg-success').removeClass('d-none').removeClass('bg-danger')
+            $(".jquery-selected-alert").fadeTo(2000, 500).slideUp(500, function () {
+              $(".jquery-selected-alert").slideUp(500);
+            });
+          }
         }
-      }
-    })
+      })
+    }
+    else {
+      $('.jquery-selected-alert').html('Cannot update object, please refresh and try again.')
+      $('.jquery-selected-alert').addClass('bg-danger').removeClass('d-none')
+      $(".jquery-selected-alert").fadeTo(2000, 500).slideUp(500, function () {
+        $(".jquery-selected-alert").slideUp(500);
+      });
+    }
   }
 
 })

@@ -92,4 +92,24 @@ class ApplicationController < ActionController::Base
   rescue StandardError
     flash[:alert] = 'Please contact your administration for process'
   end
+
+  def update_selected
+    object = params[:class_name].constantize.find_by(id: params[:id])
+    object&.update(selected: params[:selected])
+    result = { result: true }
+    result = { result: false, errors: object.errors.full_messages } if object.errors.any?
+    respond_to do |format|
+      format.json { render json: result }
+    end
+  end
+
+  def bulk_update_selected
+    class_name = params[:class_name].constantize
+    class_name.where(id: params[:selected]).update_all(selected: true)
+    class_name.where(id: params[:unselected]).update_all(selected: false)
+    message = { result: true, message: 'Updated all objects' }
+    respond_to do |format|
+      format.json { render json: message }
+    end
+  end
 end

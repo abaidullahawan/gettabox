@@ -7,15 +7,14 @@ class ProductMappingsController < ApplicationController
   before_action :authenticate_user!
   before_action :set_product_mapping, only: %i[show update destroy]
   before_action :refresh_token, :refresh_token_amazon, only: %i[index xml_file]
-  before_action :new_product, :product_load_resources, :load_products, only: %i[index]
+  before_action :new_product, :product_load_resources, :load_products, :export_csv, only: %i[index]
   before_action :fetch_product_id, only: %i[create]
   skip_before_action :verify_authenticity_token
 
   def index
-    amazon_request if params[:coresultmmit].eql? 'Amazon Request'
+    amazon_request if params[:commit].eql? 'Amazon Request'
     maped_products(@body) if params[:q].present? && (params[:q][:status_eq].eql? '1')
     all_product_data if params[:all_product_data].present?
-    export_csv(@products) if params[:commit].eql? 'Export'
   end
 
   def all_product_data
@@ -113,10 +112,13 @@ class ProductMappingsController < ApplicationController
     end
   end
 
-  def export_csv(products)
+  def export_csv
+    return unless params[:export_csv]
+
+    export_products = params[:selected] ? @products.where(selected: true) : @products
     request.format = 'csv'
     respond_to do |format|
-      format.csv { send_data csv_export(products), filename: "ChannelProducts-#{Date.today}.csv" }
+      format.csv { send_data csv_export(export_products), filename: "ChannelProducts-#{Date.today}.csv" }
     end
   end
 

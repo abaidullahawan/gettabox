@@ -83,7 +83,8 @@ class OrderDispatchesController < ApplicationController
     if params[:order_id].present? && params[:selected].present?
       order = ChannelOrder.find_by(id: params[:order_id])
       order&.update(selected: params[:selected])
-      message = { result: order.selected, message: 'Order Updated!' }
+      message = { result: true }
+      message = { result: false, errors: order.errors.full_messages } if order.errors.any?
     else
       message = { result: 'error', message: 'Order not found' }
     end
@@ -201,6 +202,7 @@ class OrderDispatchesController < ApplicationController
     @q = ChannelOrder.ransack(params[:q])
     @channel_orders = @q.result
     @channel_types = ChannelOrder.channel_types
+    @mail_service_rules = MailServiceRule.all
   end
 
   def unmatched_sku
