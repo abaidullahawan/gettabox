@@ -103,10 +103,32 @@ class ImportMappingsController < ApplicationController
   # PATCH/PUT /import_mappings/1 or /import_mappings/1.json
   def update
     mapping = {}
-    Product.column_names.each do |col_name|
-      mapping[col_name.to_s] = params[:"#{col_name}"]
+    if params[:import_mapping][:mapping_type] == 'dual'
+      header_to_print = []
+      @import_mapping.update(mapping_rule: params[:rules], sub_type: params[:import_mapping][:sub_type], mapping_data: params[:mapping_data])
+      @import_mapping.table_data.each do |data|
+        mapping[data.to_s] = params[:"#{data}"]
+      end
+      @import_mapping.update(mapping_data: mapping)
+      if params[:headers_1].present?
+        params[:headers_1].each do |header_1|
+          header_to_print.push(header_1)
+        end
+      end
+      if params[:headers_2].present?
+        params[:headers_2].each do |header_2|
+          header_to_print.push(header_2)
+        end
+      end
+      @import_mapping.update(data_to_print: header_to_print) if header_to_print.present?
+    else
+      @table_name = params[:import_mapping][:table_name]
+      @table_name.parameterize.underscore.classify.constantize.column_names.each do |col_name|
+        mapping[col_name.to_s] = params[:"#{col_name}"]
+      end
+      @import_mapping.update(table_name: params[:import_mapping][:table_name], mapping_data: mapping,
+                                          sub_type: params[:import_mapping][:sub_type])
     end
-    @import_mapping = ImportMapping.update(mapping_data: mapping, sub_type: params[:sub_type])
     respond_to do |format|
       format.html { redirect_to import_mappings_path, notice: 'Import mapping was successfully updated.' }
       format.json { render :show, status: :ok, location: @import_mapping }

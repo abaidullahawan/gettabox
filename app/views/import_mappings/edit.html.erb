@@ -1,35 +1,129 @@
-<div class="row">
-  <div class="col-xl-12">
-    <div class="card mb-30">
-      <div class="card-body">
-        <div class="card-header">
-          <h5 class="card-title">Edit Import Mappings</h5>
-        </div>
-        <%= form_for @import_mapping do |f| %>
-          <div class="form-group">
-           <div class="form-group">
-            <%= f.label :table_name %>
-            <%= f.select :table_name,  options_for_select(@table_names, @import_mapping.table_name), {}, class: 'form-control'%>
+<% if @import_mapping.mapping_type == 'dual'%>
+  <div class="row">
+    <div class="col-xl-12">
+      <div class="card mb-30">
+        <div class="card-body">
+          <div class="card-header">
+              <h5 class="card-title">Create File Mappings</h5>
           </div>
-          </div>
-          <div class="form-group">
-            <%= f.label :sub_type %>
-            <%= f.text_field :sub_type, class: 'form-control'%>
-          </div>
-          <% @import_mapping.table_data&.each do |col_name| %>
-          <div class="d-flex">
+          <%= form_for @import_mapping do |f| %>
+            <h3 class='mb-3'>Please Add File Mapping</h3>
             <div class="form-group">
-              <%= label_tag :"#{col_name}" %>
-            <%= select_tag :"#{col_name}",  options_for_select(@import_mapping&.header_data, @import_mapping.mapping_data[col_name]), class: 'form-control', prompt: "Select Header"%>
+              <%= f.label :sub_type, 'Description' %>
+              <%= f.text_field :sub_type, class: 'form-control'%>
             </div>
-          </div>
+            <% @import_mapping.table_data.each_slice(5) do |map| %>
+              <div class="row">
+                <% map.each do |header| %>
+                  <div class="col-2 form-group mr-4">
+                    <%= label_tag :"#{header}" %>
+                    <%= select_tag :"#{header}",  options_for_select(@import_mapping.header_data, @import_mapping.mapping_data[header]), class: 'chosen-select form-control', prompt: "Select Header"%>
+                  </div>
+                <% end %>
+              </div>
+            <% end %>
+            <h3 class='mb-3'>Please Select File Headers</h3>
+            <h4 class='mb-3'>File 1 Headers</h4>
+            <% @import_mapping.table_data.each_slice(5) do |map| %>
+            <div class="row">
+              <% map.each do |header| %>
+                <div class="col-2 form-group ml-4">
+                <% if @import_mapping.data_to_print.include? header %>
+                  <%= check_box_tag "headers_1[]", header, value: "true" %>
+                  <%= label_tag :"#{header}" %>
+                <% else %>
+                  <%= check_box_tag "headers_1[]", header %>
+                  <%= label_tag :"#{header}" %>
+                <% end %>
+                </div>
+              <% end %>
+            </div>
+            <% end %>
+            <h4 class='mb-3'>File 2 Headers</h4>
+            <% @import_mapping.header_data.each_slice(5) do |map| %>
+            <div class="row">
+              <% map.each do |header| %>
+              <div class="col-2 form-group ml-4">
+                <% if @import_mapping.data_to_print.include? header %>
+                  <%= check_box_tag "headers_1[]", header, value: "true" %>
+                  <%= label_tag :"#{header}" %>
+                <% else %>
+                  <%= check_box_tag "headers_1[]", header %>
+                  <%= label_tag :"#{header}" %>
+                <% end %>
+              </div>
+              <% end %>
+            </div>
+            <% end %>
+            <h3 class='mb-3'>Please Add Mapping Rule</h3>
+            <div class="form-group ml-4">
+              <% if @import_mapping.mapping_rule.include? 'upper_case'%>
+                <%= check_box_tag "rules[]", 'upper_case', value: 'true' %>
+              <% else %>
+                <%= check_box_tag "rules[]", 'upper_case' %>
+              <% end %>
+              <%= label_tag :"Upper Case" %>
+            </div>
+            <div class="form-group ml-4">
+              <% if @import_mapping.mapping_rule.include? 'space_case'%>
+                <%= check_box_tag "rules[]", 'space_case', value: 'true' %>
+              <% else %>
+                <%= check_box_tag "rules[]", 'space_case' %>
+              <% end %>
+              <%= label_tag :"Space Ignoring" %>
+            </div>
+            <div class="form-group ml-4">
+              <% if @import_mapping.mapping_rule.include? 'symbol_case'%>
+                <%= check_box_tag "rules[]", 'symbol_case', value: 'true' %>
+              <% else %>
+                <%= check_box_tag "rules[]", 'symbol_case' %>
+              <% end %>
+              <%= label_tag :"Symbol Ignoring" %>
+            </div>
+            <%= f.hidden_field :mapping_type, value: 'dual' %>
+            <div class="form-group">
+              <%= f.button :Update, class: 'btn btn-outline-primary' %>
+            </div>
           <% end %>
-
-          <div class="form-group">
-            <%= f.button  :submit%>
-          </div>
-        <% end %>
+        </div>
       </div>
     </div>
   </div>
-</div>
+<% else %>
+  <div class="row">
+    <div class="col-xl-12">
+      <div class="card mb-30">
+        <div class="card-body">
+          <div class="card-header">
+            <h5 class="card-title">Edit Import Mappings</h5>
+          </div>
+          <%= form_for @import_mapping do |f| %>
+            <div class="form-group">
+            <div class="form-group">
+              <%= f.label :table_name %>
+              <%= f.select :table_name,  options_for_select(@table_names, @import_mapping.table_name), {}, class: 'form-control'%>
+            </div>
+            </div>
+            <div class="form-group">
+              <%= f.label :sub_type %>
+              <%= f.text_field :sub_type, class: 'form-control'%>
+            </div>
+            <% @import_mapping.table_data&.each do |col_name| %>
+            <div class="d-flex">
+              <div class="form-group">
+                <%= label_tag :"#{col_name}" %>
+                <%= select_tag :"#{col_name}",  options_for_select(@import_mapping&.header_data, @import_mapping.mapping_data[col_name]), class: 'form-control', prompt: "Select Header"%>
+              </div>
+            </div>
+            <%= f.hidden_field :mapping_type, value: 'single' %>
+            <% end %>
+
+            <div class="form-group">
+              <%= f.button  :submit%>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>
