@@ -61,6 +61,7 @@ class ServicesController < ApplicationController
   end
 
   def export_csv(services)
+    services = services.where(selected: true) if params[:selected]
     request.format = 'csv'
     respond_to do |format|
       format.csv { send_data services.to_csv, filename: "services-#{Date.today}.csv" }

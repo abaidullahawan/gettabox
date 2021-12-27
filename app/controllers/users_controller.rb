@@ -100,6 +100,7 @@ class UsersController < ApplicationController
   def profile; end
 
   def export_csv(users)
+    users = users.where(selected: true) if params[:selected]
     request.format = 'csv'
     respond_to do |format|
       format.csv { send_data users.to_csv, filename: "users-#{Date.today}.csv" }

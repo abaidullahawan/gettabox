@@ -14,7 +14,7 @@
   </ol>
 </div>
 <!-- End Main Content Header -->
-
+<div class="alert alert-dismissible fade show text-white jquery-selected-alert d-none " style="position: fixed; width:93%; z-index:99999;" role="alert"></div>
 <div class="row">
   <div class="col-xl-12">
     <div class="card mb-30">
@@ -24,8 +24,14 @@
           <div class='mr-1 float-right'>
             <%= link_to 'PDF', categories_path(format: :pdf), class:"btn btn-primary float-right ml-1", type:"button"%>
           </div>
-          <div class='mr-1 float-right'>
-            <%= link_to 'Export', categories_path(format: :csv, export_csv: true), class: 'btn btn-outline-primary' %>
+          <div class="mr-1 float-right dropdown">
+            <button class="btn btn-outline-primary" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Export
+            </button>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+              <%= link_to 'Export All', categories_path(all: true, format: :csv, export_csv: true), class: 'dropdown-item' %>
+              <%= link_to 'Export Selected', categories_path(selected: true, format: :csv, export_csv: true), class: 'dropdown-item' %>
+            </div>
           </div>
           <div class='mr-1 float-right'>
             <%= link_to 'Archives', archive_categories_path, class: 'btn btn-outline-info' %>
@@ -63,14 +69,38 @@
           <div class="table-responsive">
             <table class="table m-0 table-hover">
               <tr>
-                <th><input type="checkbox" id="" name="" value="" class='select-all-checkbox'></th>
+                <th>
+                  <div class='row' style='max-width: 65px'>
+                    <div class='col-6 p-0  mt-1'>
+                      <input type="checkbox" id="" name="" value="" class='col-6 select-all-checkbox'>
+                    </div>
+                    <div class='col-6 p-0'>
+                      <div class="custom-control custom-switch">
+                        <input type="checkbox" class="custom-control-input" id="selectSwitchAll" onclick="bulk_update_selected('/bulk_update_selected', '<%= @categories.first.class.name %>', event)">
+                        <label class="custom-control-label" for="selectSwitchAll"></label>
+                      </div>
+                    </div>
+                  </div>
+                </th>
                 <th class="text-center">Tilte</th>
                 <th class="text-center">Description</th>
                 <th colspan="3" class="text-center">Actions</th>
               </tr>
               <% @categories&.each&.with_index(1) do |category, index| %>
                 <tr class=''>
-                  <td><%= f.check_box 'object_ids[]', {}, category.id %></td>
+                  <td>
+                    <div class='row' style='max-width: 65px'>
+                      <div class='col-6 p-0 mt-1'>
+                        <%= f.check_box 'object_ids[]', {}, category.id %>
+                      </div>
+                      <div class='col-6 p-0'>
+                        <div class="custom-control custom-switch">
+                          <input type="checkbox" class="custom-control-input selectSwitch" name="select-switch" id="<%=category.id%>" <%= category.selected? ? 'checked': ''%> onclick="update_selected('/update_selected', '<%= category.class.name %>', event)">
+                          <label class="custom-control-label" for="<%=category.id%>"></label>
+                        </div>
+                      </div>
+                    </div>
+                  </td>
                   <td class="text-center"><%= category.title %></td>
                   <td class="text-center"><%= category.description %></td>
                   <td class="text-center">

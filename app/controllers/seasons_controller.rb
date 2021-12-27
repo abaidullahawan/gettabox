@@ -54,6 +54,7 @@ class SeasonsController < ApplicationController
   end
 
   def export_csv(seasons)
+    seasons = seasons.where(selected: true) if params[:selected]
     request.format = 'csv'
     respond_to do |format|
       format.csv { send_data seasons.to_csv, filename: "seasons-#{Date.today}.csv" }

@@ -13,7 +13,6 @@
 <% end %>
 
 <!-- Main Content Header -->
-<div class="alert alert-dismissible fade show text-white jquery-selected-alert d-none " style="position: fixed; width:93%; z-index:99999;" role="alert"></div>
 <div class="main-content-header">
     <h1>Products</h1>
     <ol class="breadcrumb">
@@ -26,7 +25,7 @@
     </ol>
 </div>
 <!-- End Main Content Header -->
-
+<div class="alert alert-dismissible fade show text-white jquery-selected-alert d-none " style="position: fixed; width:93%; z-index:99999;" role="alert"></div>
 <div class="row">
   <div class="col-xl-12">
     <div class="card mb-30">
@@ -100,15 +99,15 @@
                 <tr>
                   <th>
                     <div class='row'>
-                    <div class='col-6 p-0  mt-1'>
-                      <input type="checkbox" id="" name="" value="" class='col-6 select-all-checkbox'>
-                    </div>
-                    <div class='col-6 p-0'>
-                      <div class="custom-control custom-switch">
-                        <input type="checkbox" class="custom-control-input" id="selectSwitchAll" onclick="bulk_update_selected('/bulk_update_selected', '<%= @products.first.class.name %>', event)">
-                        <label class="custom-control-label" for="selectSwitchAll"></label>
+                      <div class='col-6 p-0  mt-1'>
+                        <input type="checkbox" id="" name="" value="" class='col-6 select-all-checkbox'>
                       </div>
-                    </div>
+                      <div class='col-6 p-0'>
+                        <div class="custom-control custom-switch">
+                          <input type="checkbox" class="custom-control-input" id="selectSwitchAll" onclick="bulk_update_selected('/bulk_update_selected', '<%= @products.first.class.name %>', event)">
+                          <label class="custom-control-label" for="selectSwitchAll"></label>
+                        </div>
+                      </div>
                     </div>
                   </th>
                   <th>Image</th>
@@ -132,7 +131,7 @@
                             <input type="checkbox" class="custom-control-input selectSwitch" name="select-switch" id="<%=product.id%>" <%= product.selected? ? 'checked': ''%> onclick="update_selected('/update_selected', '<%= product.class.name %>', event)">
                             <label class="custom-control-label" for="<%=product.id%>"></label>
                           </div>
-                      </div>
+                        </div>
                       </div>
                     </td>
                     <td>

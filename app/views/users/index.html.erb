@@ -14,7 +14,7 @@
   </ol>
 </div>
 <!-- End Main Content Header -->
-
+<div class="alert alert-dismissible fade show text-white jquery-selected-alert d-none " style="position: fixed; width:93%; z-index:99999;" role="alert"></div>
 <div class="row">
   <div class="col-xl-12">
     <div class="card mb-30">
@@ -28,8 +28,14 @@
               <%= submit_tag "Import", class: 'd-none import-submit' %>
             <% end %>
           </span>
-          <div class='mr-1 float-right'>
-            <%= link_to 'Export', users_path(format: :csv, export_csv: true), class: 'btn btn-outline-primary' %>
+          <div class="mr-1 float-right dropdown">
+            <button class="btn btn-outline-primary" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Export
+            </button>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+              <%= link_to 'Export All', users_path(all: true, format: :csv, export_csv: true), class: 'dropdown-item' %>
+              <%= link_to 'Export Selected', users_path(selected: true, format: :csv, export_csv: true), class: 'dropdown-item' %>
+            </div>
           </div>
           <div class='mr-1 float-right'>
             <%= link_to 'Archives', archive_users_path, class: 'btn btn-outline-info' %>
@@ -61,7 +67,19 @@
             <table class="table m-0 table-hover">
               <thead>
                 <tr>
-                  <th><input type="checkbox" id="" name="" value="" class='select-all-checkbox'></th>
+                  <th>
+                    <div class='row' style='max-width: 65px'>
+                      <div class='col-6 p-0  mt-1'>
+                        <input type="checkbox" id="" name="" value="" class='col-6 select-all-checkbox'>
+                      </div>
+                      <div class='col-6 p-0'>
+                        <div class="custom-control custom-switch">
+                          <input type="checkbox" class="custom-control-input" id="selectSwitchAll" onclick="bulk_update_selected('/bulk_update_selected', '<%= @users.first.class.name %>', event)">
+                          <label class="custom-control-label" for="selectSwitchAll"></label>
+                        </div>
+                      </div>
+                    </div>
+                  </th>
                   <th>Profile</th>
                   <th>Email</th>
                   <th class="text-center">Role</th>
@@ -71,7 +89,19 @@
               <tbody>
                 <% @users.each.with_index(1) do |user, index| %>
                   <tr>
-                    <td><%= f.check_box 'object_ids[]', {}, user.id %></td>
+                    <td>
+                      <div class='row' style='max-width: 65px'>
+                        <div class='col-6 p-0 mt-1'>
+                          <%= f.check_box 'object_ids[]', {}, user.id %>
+                        </div>
+                        <div class='col-6 p-0'>
+                          <div class="custom-control custom-switch">
+                            <input type="checkbox" class="custom-control-input selectSwitch" name="select-switch" id="<%=user.id%>" <%= user.selected? ? 'checked': ''%> onclick="update_selected('/update_selected', '<%= user.class.name %>', event)">
+                            <label class="custom-control-label" for="<%=user.id%>"></label>
+                          </div>
+                        </div>
+                      </div>
+                    </td>
                     <td>
                       <% if  user.profile_image.attached? %>
                           <%= image_tag user.profile_image.service_url, style:'width:30px; height:30px; border-radius:50%;' %>
