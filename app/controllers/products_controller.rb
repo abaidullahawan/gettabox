@@ -19,6 +19,7 @@ class ProductsController < ApplicationController
   before_action :klass_import, only: %i[import]
 
   def index
+    @product_exports = ExportMapping.where(table_name: 'Product')
     export_csv(@q.result) if params[:export_csv].present?
     respond_to do |format|
       format.html
