@@ -22,6 +22,7 @@ Rails.application.routes.draw do
     end
   end
   resources :import_mappings
+  resources :export_mappings
   resources :assign_rules
   require 'sidekiq/web'
   mount Sidekiq::Web => '/sidekiq'
@@ -208,4 +209,5 @@ Rails.application.routes.draw do
 
   post 'file_mapping', to: 'import_mappings#file_mapping'
   get 'file_mapping_page', to: 'import_mappings#file_mapping_page'
+  get 'table_name', to: 'export_mappings#get_table_columns'
 end

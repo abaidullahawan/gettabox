@@ -1,0 +1,2 @@
+class ExportMapping < ApplicationRecord
+end

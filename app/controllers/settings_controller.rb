@@ -14,6 +14,7 @@ class SettingsController < ApplicationController
                       import_mapping: ImportMapping.count,
                       courier: Courier.count,
                       service: Service.count,
-                      mail_service_rule: MailServiceRule.count }
+                      mail_service_rule: MailServiceRule.count,
+                      export_mapping: ExportMapping.count }
   end
 end

@@ -53,6 +53,9 @@
             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
               <%= link_to 'Export All', products_path(all: true, format: :csv, export_csv: true), class: 'dropdown-item' %>
               <%= link_to 'Export Selected', products_path(selected: true, format: :csv, export_csv: true), class: 'dropdown-item' %>
+              <% @product_exports.each do |export| %>
+                <%= link_to "#{export.sub_type}", products_path(export_mapping: export.id, format: :csv, export_csv: true), class: 'dropdown-item' %>
+              <% end %>
             </div>
           </div>
           <div class='mr-1 float-right'>

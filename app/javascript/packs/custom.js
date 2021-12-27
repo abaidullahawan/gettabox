@@ -222,6 +222,20 @@ $(document).on('turbolinks:load', function () {
     $('.bulk-method-order-disaptch').trigger('click')
   })
 
+  $('#table_name').on('change', function () {
+    var table = $("#table_name").val()
+    $.ajax({
+        url: '/table_name',
+        type: 'GET',
+        data: { 'table_name': table },
+        success: function(response) {
+          $('.check-boxes').html('')
+          $.each(response , function(index, val) {
+            $('.check-boxes').append('<div class= "col-3">' + '<input type="checkbox" name="'+ val +'" >' + '<label for="'+ val +'"> '+ val +' </label>' + '</br>' + '</div>')
+          });
+        }
+    })
+  })
 });
 
 // Preloader JS
