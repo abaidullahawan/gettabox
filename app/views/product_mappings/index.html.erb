@@ -36,6 +36,9 @@
             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
               <%= link_to 'Export All', product_mappings_path(all: true, format: :csv, export_csv: true), class: 'dropdown-item' %>
               <%= link_to 'Export Selected', product_mappings_path(selected: true, format: :csv, export_csv: true), class: 'dropdown-item' %>
+              <% @product_exports.each do |export| %>
+                <%= link_to "#{export.sub_type}", product_mappings_path(export_mapping: export.id, format: :csv, export_csv: true), class: 'dropdown-item' %>
+              <% end %>
             </div>
           </div>
           <div class='mr-1 float-right'>
@@ -143,7 +146,7 @@
                             </div>
                             <% if item.status_unmapped? %>
                               <div class="productSearchContainer">
-                                <button type="button" class="productSearchBtn btn btn-primary mt-2">
+                                <button type="button" class="productSearchBtn btn btn-primary mr-5">
                                   <i data-feather='search' class='icon wh-15 mt-minus-3'></i>
                                 </button>
                               </div>

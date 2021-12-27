@@ -13,6 +13,7 @@ class SeasonsController < ApplicationController
   before_action :klass_import, only: %i[import]
 
   def index
+    @season_exports = ExportMapping.where(table_name: 'Season')
     @q = Season.ransack(params[:q])
     @seasons = @q.result(distinct: true).order(created_at: :desc).page(params[:page]).per(params[:limit])
     export_csv(@seasons) if params[:export_csv].present?
@@ -55,9 +56,24 @@ class SeasonsController < ApplicationController
 
   def export_csv(seasons)
     seasons = seasons.where(selected: true) if params[:selected]
-    request.format = 'csv'
-    respond_to do |format|
-      format.csv { send_data seasons.to_csv, filename: "seasons-#{Date.today}.csv" }
+    if params[:export_mapping].present?
+      @export_mapping = ExportMapping.find(params[:export_mapping])
+      attributes = @export_mapping.export_data
+      @csv = CSV.generate(headers: true) do |csv|
+        csv << attributes
+        seasons.each do |season|
+          csv << attributes.map { |attr| season.send(attr) }
+        end
+      end
+      request.format = 'csv'
+      respond_to do |format|
+        format.csv { send_data @csv, filename: "seasons-#{Date.today}.csv"}
+      end
+    else
+      request.format = 'csv'
+      respond_to do |format|
+        format.csv { send_data seasons.to_csv, filename: "seasons-#{Date.today}.csv" }
+      end
     end
   end
 

@@ -17,6 +17,7 @@ class SystemUsersController < ApplicationController
   before_action :klass_import, only: %i[import]
 
   def index
+    @system_user_exports = ExportMapping.where(table_name: 'SystemUser')
     if params[:export_csv].present?
       export_csv(@system_users)
     else
@@ -72,9 +73,24 @@ class SystemUsersController < ApplicationController
   end
 
   def export_csv(system_users)
-    request.format = 'csv'
-    respond_to do |format|
-      format.csv { send_data system_users.to_csv, filename: "suppliers-#{Date.today}.csv" }
+    if params[:export_mapping].present?
+      @export_mapping = ExportMapping.find(params[:export_mapping])
+      attributes = @export_mapping.export_data
+      @csv = CSV.generate(headers: true) do |csv|
+        csv << attributes
+        system_users.each do |user|
+          csv << attributes.map { |attr| user.send(attr) }
+        end
+      end
+      request.format = 'csv'
+      respond_to do |format|
+        format.csv { send_data @csv, filename: "suppliers-#{Date.today}.csv" }
+      end
+    else
+      request.format = 'csv'
+      respond_to do |format|
+        format.csv { send_data system_users.to_csv, filename: "suppliers-#{Date.today}.csv" }
+      end
     end
   end
 
