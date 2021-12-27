@@ -114,7 +114,7 @@ Unmapped Product SKU's
             <% order.channel_order_items.each do |product|%>
               <% item = product.channel_product %>
               <%= form_for :anything, url: product_mappings_path do |f| %>
-                <%= f.hidden_field :channel_product_id, value: item.id %>
+                <%= f.hidden_field :channel_product_id, value: item&.id %>
                 <div class="d-flex">
                   <% if @matching_products[product.id].present?%>
                     <%= f.hidden_field :mapped_product_id, value: @matching_products[product.id].id %>
@@ -135,7 +135,7 @@ Unmapped Product SKU's
                       </div>
                       <% if item.status_unmapped? %>
                         <div class="productSearchContainer">
-                          <button type="button" class="productSearchBtn btn btn-primary mt-2">
+                          <button type="button" class="productSearchBtn btn btn-primary mr-5">
                             <i data-feather='search' class='icon wh-15 mt-minus-3'></i>
                           </button>
                         </div>
@@ -157,8 +157,8 @@ Unmapped Product SKU's
                       </button>
                       <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                         <%= f.submit 'Map', class: "dropdown-item" %>
-                        <a type="button" class="dropdown-item create-single-product-mapping" data-id="<%= item.id %>" data-item = '<%= order.channel_order_items.to_json.html_safe %>' >Create Single Pack</a>
-                        <a type="button" class="dropdown-item create-multi-product-mapping" data-id="<%= item.id %>" data-item = '<%= order.channel_order_items.to_json.html_safe %>' >Create Multi Pack</a>
+                        <a type="button" class="dropdown-item create-single-product-mapping" data-id="<%= item&.id %>" data-item = '<%= order.channel_order_items.to_json.html_safe %>' >Create Single Pack</a>
+                        <a type="button" class="dropdown-item create-multi-product-mapping" data-id="<%= item&.id %>" data-item = '<%= order.channel_order_items.to_json.html_safe %>' >Create Multi Pack</a>
                       </div>
                     </div>
                 </div>

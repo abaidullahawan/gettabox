@@ -12,6 +12,7 @@ class ProductMappingsController < ApplicationController
   skip_before_action :verify_authenticity_token
 
   def index
+    @product_exports = ExportMapping.where(table_name: 'ChannelProduct')
     amazon_request if params[:commit].eql? 'Amazon Request'
     maped_products(@body) if params[:q].present? && (params[:q][:status_eq].eql? '1')
     all_product_data if params[:all_product_data].present?
@@ -116,9 +117,24 @@ class ProductMappingsController < ApplicationController
     return unless params[:export_csv]
 
     export_products = params[:selected] ? @products.where(selected: true) : @products
-    request.format = 'csv'
-    respond_to do |format|
-      format.csv { send_data csv_export(export_products), filename: "ChannelProducts-#{Date.today}.csv" }
+    if params[:export_mapping].present?
+      @export_mapping = ExportMapping.find(params[:export_mapping])
+      attributes = @export_mapping.export_data
+      @csv = CSV.generate(headers: true) do |csv|
+        csv << attributes
+        export_products.each do |product|
+          csv << attributes.map { |attr| product.send(attr) }
+        end
+      end
+      request.format = 'csv'
+      respond_to do |format|
+        format.csv { send_data @csv, filename: "ChannelProducts-#{Date.today}.csv" }
+      end
+    else
+      request.format = 'csv'
+      respond_to do |format|
+        format.csv { send_data csv_export(export_products), filename: "ChannelProducts-#{Date.today}.csv" }
+      end
     end
   end
 

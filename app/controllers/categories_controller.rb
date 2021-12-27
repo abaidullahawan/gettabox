@@ -11,6 +11,7 @@ class CategoriesController < ApplicationController
   before_action :klass_restore, only: %i[restore]
 
   def index
+    @category_exports = ExportMapping.where(table_name: 'Category')
     @q = Category.ransack(params[:q])
     @categories = @q.result(distinct: true).order(created_at: :desc).page(params[:page]).per(params[:limit])
     export_csv(@categories) if params[:export_csv].present?
@@ -59,9 +60,24 @@ class CategoriesController < ApplicationController
 
   def export_csv(categories)
     categories = categories.where(selected: true) if params[:selected]
-    request.format = 'csv'
-    respond_to do |format|
-      format.csv { send_data categories.to_csv, filename: "categories-#{Date.today}.csv" }
+    if params[:export_mapping].present?
+      @export_mapping = ExportMapping.find(params[:export_mapping])
+      attributes = @export_mapping.export_data
+      @csv = CSV.generate(headers: true) do |csv|
+        csv << attributes
+        categories.each do |category|
+          csv << attributes.map { |attr| category.send(attr) }
+        end
+      end
+      request.format = 'csv'
+      respond_to do |format|
+        format.csv { send_data @csv, filename: "categories-#{Date.today}.csv" }
+      end
+    else
+      request.format = 'csv'
+      respond_to do |format|
+        format.csv { send_data categories.to_csv, filename: "categories-#{Date.today}.csv" }
+      end
     end
   end
 

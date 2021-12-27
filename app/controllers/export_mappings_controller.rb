@@ -4,10 +4,21 @@
 class ExportMappingsController < ApplicationController
   def index
     @product_export_mappings = ExportMapping.where(table_name: 'Product')
+    @channel_order_export_mappings = ExportMapping.where(table_name: 'ChannelOrder')
+    @channel_product_export_mappings = ExportMapping.where(table_name: 'ChannelProduct')
+    @season_export_mappings = ExportMapping.where(table_name: 'Season')
+    @category_export_mappings = ExportMapping.where(table_name: 'Category')
+    @system_user_export_mappings = ExportMapping.where(table_name: 'SystemUser')
   end
 
   def new
-    @table_names = ['Product', 'ChannelOrder']
+    @export_mapping = ExportMapping.new
+    @table_names = ['Product', 'ChannelOrder', 'ChannelProduct', 'Season', 'Category', 'SystemUser']
+  end
+
+  def edit
+    @export_mapping = ExportMapping.find(params[:id])
+    @table_names = ['Product', 'ChannelOrder', 'ChannelProduct', 'Season', 'Category', 'SystemUser']
   end
 
   def get_table_columns
@@ -33,6 +44,19 @@ class ExportMappingsController < ApplicationController
     else
       flash[:alert] = "#{@export_mapping.errors.full_messages}"
       redirect_to export_mapping
+    end
+  end
+
+  def update
+    byebug
+  end
+
+  def destroy
+    @export_mapping = ExportMapping.find(params[:id])
+    @export_mapping.destroy
+    respond_to do |format|
+      format.html { redirect_to export_mappings_path, notice: 'Export Mapping was successfully destroyed.' }
+      format.json { head :no_content }
     end
   end
 

@@ -23,13 +23,17 @@
                     <tr>
                         <th>Table Name</th>
                         <th class="text-center">Description Name</th>
-                        <th>Actions</th>
+                        <th>Columns Added</th>
                     </tr>
                     <% @product_export_mappings.each do |import_mapping| %>
                       <tr>
                       <td><%= import_mapping.table_name %></td>
                       <td class="text-center font-weight-bold"><%= import_mapping.sub_type %></td>
-                      <td><%= import_mapping.export_data %></td>
+                      <td>
+                        <% import_mapping.export_data.each do |data| %>
+                          <%= data %><br>
+                        <% end %>
+                      </td>
                       </tr>
                     <% end %>
                   </table>
@@ -38,6 +42,184 @@
           </ul>
         </div>
         <!-- Product Accordion End -->
+
+        <!-- Channel Order Accordion -->
+        <div class="faq-accordion mb-30">
+          <ul class="accordion">
+            <li class="accordion-item">
+              <a class="accordion-title" href="javascript:void(0)">
+                <i class="lni-plus"></i>
+                Channel Order Export
+              </a>
+              <div class="accordion-content">
+                <h4 class='mb-3'>Mappings</h4>
+                  <table class="table m-0 table-hover">
+                    <tr>
+                        <th>Table Name</th>
+                        <th class="text-center">Description Name</th>
+                        <th>Columns Added</th>
+                    </tr>
+                    <% @channel_order_export_mappings.each do |import_mapping| %>
+                      <tr>
+                      <td><%= import_mapping.table_name %></td>
+                      <td class="text-center font-weight-bold"><%= import_mapping.sub_type %></td>
+                      <td>
+                        <% import_mapping.export_data.each do |data| %>
+                          <%= data %><br>
+                        <% end %>
+                      </td>
+                      </tr>
+                    <% end %>
+                  </table>
+              </div>
+            </li>
+          </ul>
+        </div>
+        <!-- Channel Order Accordion End -->
+
+        <!-- Channel Product Accordion -->
+        <div class="faq-accordion mb-30">
+          <ul class="accordion">
+            <li class="accordion-item">
+              <a class="accordion-title" href="javascript:void(0)">
+                <i class="lni-plus"></i>
+                Channel Product Export
+              </a>
+              <div class="accordion-content">
+                <h4 class='mb-3'>Mappings</h4>
+                  <table class="table m-0 table-hover">
+                    <tr>
+                        <th>Table Name</th>
+                        <th class="text-center">Description Name</th>
+                        <th>Columns Added</th>
+                    </tr>
+                    <% @channel_product_export_mappings.each do |import_mapping| %>
+                      <tr>
+                      <td><%= import_mapping.table_name %></td>
+                      <td class="text-center font-weight-bold"><%= import_mapping.sub_type %></td>
+                      <td>
+                        <% import_mapping.export_data.each do |data| %>
+                          <%= data %><br>
+                        <% end %>
+                      </td>
+                      </tr>
+                    <% end %>
+                  </table>
+              </div>
+            </li>
+          </ul>
+        </div>
+        <!-- Channel Product Accordion End -->
+
+        <!-- Season Accordion -->
+        <div class="faq-accordion mb-30">
+          <ul class="accordion">
+            <li class="accordion-item">
+              <a class="accordion-title" href="javascript:void(0)">
+                <i class="lni-plus"></i>
+                Season Export
+              </a>
+              <div class="accordion-content">
+                <h4 class='mb-3'>Mappings</h4>
+                  <table class="table m-0 table-hover">
+                    <tr>
+                        <th>Table Name</th>
+                        <th class="text-center">Description Name</th>
+                        <th>Columns Added</th>
+                    </tr>
+                    <% @season_export_mappings.each do |import_mapping| %>
+                      <tr>
+                      <td><%= import_mapping.table_name %></td>
+                      <td class="text-center font-weight-bold"><%= import_mapping.sub_type %></td>
+                      <td>
+                        <% import_mapping.export_data.each do |data| %>
+                          <%= data %><br>
+                        <% end %>
+                      </td>
+                      </tr>
+                    <% end %>
+                  </table>
+              </div>
+            </li>
+          </ul>
+        </div>
+        <!-- Season Accordion End -->
+
+        <!-- Cateogry Accordion -->
+        <div class="faq-accordion mb-30">
+          <ul class="accordion">
+            <li class="accordion-item">
+              <a class="accordion-title" href="javascript:void(0)">
+                <i class="lni-plus"></i>
+                Cateogry Export
+              </a>
+              <div class="accordion-content">
+                <h4 class='mb-3'>Mappings</h4>
+                  <table class="table m-0 table-hover">
+                    <tr>
+                        <th>Table Name</th>
+                        <th class="text-center">Description Name</th>
+                        <th>Columns Added</th>
+                    </tr>
+                    <% @category_export_mappings.each do |import_mapping| %>
+                      <tr>
+                      <td><%= import_mapping.table_name %></td>
+                      <td class="text-center font-weight-bold"><%= import_mapping.sub_type %></td>
+                      <td>
+                        <% import_mapping.export_data.each do |data| %>
+                          <%= data %><br>
+                        <% end %>
+                      </td>
+                      </tr>
+                    <% end %>
+                  </table>
+              </div>
+            </li>
+          </ul>
+        </div>
+        <!-- Category Accordion End -->
+
+        <!-- System User Accordion -->
+        <div class="faq-accordion mb-30">
+          <ul class="accordion">
+            <li class="accordion-item">
+              <a class="accordion-title" href="javascript:void(0)">
+                <i class="lni-plus"></i>
+                Supplier Export
+              </a>
+              <div class="accordion-content">
+                <h4 class='mb-3'>Mappings</h4>
+                  <table class="table m-0 table-hover">
+                    <tr>
+                        <th>Table Name</th>
+                        <th class="text-center">Description Name</th>
+                        <th>Columns Added</th>
+                        <th>Actions</th>
+                    </tr>
+                    <% @system_user_export_mappings.each do |import_mapping| %>
+                      <tr>
+                      <td><%= import_mapping.table_name %></td>
+                      <td class="text-center font-weight-bold"><%= import_mapping.sub_type %></td>
+                      <td>
+                        <% import_mapping.export_data.each do |data| %>
+                          <%= data %><br>
+                        <% end %>
+                      </td>
+                      <td>
+                        <div class= 'd-flex'>
+                      <%= link_to 'Destroy', import_mapping, method: :delete, data: { confirm: 'Are you sure?' }, class: "text-white btn btn-danger" %>
+                      <%= link_to 'Edit', edit_export_mapping_path(import_mapping), class: "text-white btn btn-info ml-3 mr-3" %>
+                    </div>
+                      </td>
+                      </tr>
+                    <% end %>
+                  </table>
+              </div>
+            </li>
+          </ul>
+        </div>
+        <!-- Season Accordion End -->
+
       </div>
     </div>
   </div>

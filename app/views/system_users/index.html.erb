@@ -31,7 +31,15 @@
             <% end %>
           </span>
             <div class='mr-1 float-right'>
-              <%= link_to 'Export', system_users_path(format: :csv, export_csv: true), class: 'btn btn-outline-primary' %>
+              <button class="btn btn-outline-primary" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Export
+              </button>
+              <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                <%= link_to 'Export All', system_users_path(all: true, format: :csv, export_csv: true), class: 'dropdown-item' %>
+                <% @system_user_exports.each do |export| %>
+                  <%= link_to "#{export.sub_type}", system_users_path(export_mapping: export.id, format: :csv, export_csv: true), class: 'dropdown-item' %>
+                <% end %>
+              </div>
             </div>
             <div class='mr-1 float-right'>
               <%= link_to 'Archives', archive_system_users_path, class: 'btn btn-outline-info' %>

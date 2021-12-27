@@ -11,6 +11,7 @@ class OrderDispatchesController < ApplicationController
   before_action :new_product, :product_load_resources, :first_or_create_category, only: %i[index]
 
   def index
+    @order_exports = ExportMapping.where(table_name: 'ChannelOrder')
     all_order_data if params[:orders_api].present?
     @assign_rule = AssignRule.new
     @assign_rule.mail_service_labels.build
