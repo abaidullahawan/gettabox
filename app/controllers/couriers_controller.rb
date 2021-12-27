@@ -63,6 +63,7 @@ class CouriersController < ApplicationController
   end
 
   def export_csv(couriers)
+    couriers = couriers.where(selected: true) if params[:selected]
     request.format = 'csv'
     respond_to do |format|
       format.csv { send_data couriers.to_csv, filename: "couriers-#{Date.today}.csv" }

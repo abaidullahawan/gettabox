@@ -12,8 +12,9 @@ class MailServiceRulesController < ApplicationController
   # GET /mail_service_rules or /mail_service_rules.json
   def index
     @q = MailServiceRule.ransack(params[:q])
-    @mail_service_rules = @q.result.page(params[:page]).per(params[:limit])
+    @mail_service_rules = @q.result.order(created_at: :desc).page(params[:page]).per(params[:limit])
     @mail_service_rule = MailServiceRule.new
+    export_csv(@mail_service_rules) if params[:export_csv].present?
   end
 
   # GET /mail_service_rules/1 or /mail_service_rules/1.json
@@ -60,6 +61,14 @@ class MailServiceRulesController < ApplicationController
 
   def new_rule
     @new_rule = MailServiceRule.new
+  end
+
+  def export_csv(mail_service_rules)
+    mail_service_rules = mail_service_rules.where(selected: true) if params[:selected]
+    request.format = 'csv'
+    respond_to do |format|
+      format.csv { send_data mail_service_rules.to_csv, filename: "ServiceRules-#{Date.today}.csv" }
+    end
   end
 
   def bulk_method

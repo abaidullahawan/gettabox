@@ -15,7 +15,7 @@ class CategoriesController < ApplicationController
     @categories = @q.result(distinct: true).order(created_at: :desc).page(params[:page]).per(params[:limit])
     export_csv(@categories) if params[:export_csv].present?
 
-    generate_pdf
+    generate_pdf if params[:format].eql? 'pdf'
   end
 
   def new
@@ -58,6 +58,7 @@ class CategoriesController < ApplicationController
   end
 
   def export_csv(categories)
+    categories = categories.where(selected: true) if params[:selected]
     request.format = 'csv'
     respond_to do |format|
       format.csv { send_data categories.to_csv, filename: "categories-#{Date.today}.csv" }
