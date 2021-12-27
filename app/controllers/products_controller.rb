@@ -75,9 +75,24 @@ class ProductsController < ApplicationController
 
   def export_csv(products)
     products = products.where(selected: true) if params[:selected]
-    request.format = 'csv'
-    respond_to do |format|
-      format.csv { send_data products.to_csv, filename: "products-#{Date.today}.csv" }
+    if params[:export_mapping].present?
+      @export_mapping = ExportMapping.find(params[:export_mapping])
+      attributes = @export_mapping.export_data
+      @csv = CSV.generate(headers: true) do |csv|
+        csv << attributes
+        products.each do |product|
+          csv << attributes.map { |attr| product.send(attr) }
+        end
+      end
+      request.format = 'csv'
+      respond_to do |format|
+        format.csv { send_data @csv, filename: "products-#{Date.today}.csv" }
+      end
+    else
+      request.format = 'csv'
+      respond_to do |format|
+        format.csv { send_data products.to_csv, filename: "products-#{Date.today}.csv" }
+      end
     end
   end
 

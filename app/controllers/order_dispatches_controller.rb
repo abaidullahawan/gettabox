@@ -32,9 +32,24 @@ class OrderDispatchesController < ApplicationController
   end
 
   def export_csv(orders)
-    request.format = 'csv'
-    respond_to do |format|
-      format.csv { send_data csv_export(orders), filename: "orders-#{Date.today}.csv" }
+    if params[:export_mapping].present?
+      @export_mapping = ExportMapping.find(params[:export_mapping])
+      attributes = @export_mapping.export_data
+      @csv = CSV.generate(headers: true) do |csv|
+        csv << attributes
+        orders.each do |order|
+          csv << attributes.map { |attr| order.send(attr) }
+        end
+      end
+      request.format = 'csv'
+      respond_to do |format|
+        format.csv { send_data @csv, filename: "orders-#{Date.today}.csv" }
+      end
+    else
+      request.format = 'csv'
+      respond_to do |format|
+        format.csv { send_data csv_export(orders), filename: "orders-#{Date.today}.csv" }
+      end
     end
   end
 

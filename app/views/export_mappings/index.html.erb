@@ -1,0 +1,44 @@
+<!-- Basic Table -->
+  <div class="row">
+    <div class="col-xl-12">
+      <div class="card mb-30">
+        <div class="card-body">
+        <div class="card-header">
+            <h5 class="card-title">Export Mappings</h5>
+            <div class='mr-1 float-right'>
+            <%= link_to 'Create', new_export_mapping_path, class:"btn btn-primary float-right ml-1", type:"button"%>
+          </div>
+        </div>
+        <!-- Product Accordion -->
+        <div class="faq-accordion mb-30">
+          <ul class="accordion">
+            <li class="accordion-item">
+              <a class="accordion-title" href="javascript:void(0)">
+                <i class="lni-plus"></i>
+                Product Export
+              </a>
+              <div class="accordion-content">
+                <h4 class='mb-3'>Mappings</h4>
+                  <table class="table m-0 table-hover">
+                    <tr>
+                        <th>Table Name</th>
+                        <th class="text-center">Description Name</th>
+                        <th>Actions</th>
+                    </tr>
+                    <% @product_export_mappings.each do |import_mapping| %>
+                      <tr>
+                      <td><%= import_mapping.table_name %></td>
+                      <td class="text-center font-weight-bold"><%= import_mapping.sub_type %></td>
+                      <td><%= import_mapping.export_data %></td>
+                      </tr>
+                    <% end %>
+                  </table>
+              </div>
+            </li>
+          </ul>
+        </div>
+        <!-- Product Accordion End -->
+      </div>
+    </div>
+  </div>
+</div>
