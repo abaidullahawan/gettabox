@@ -146,10 +146,7 @@ class UsersController < ApplicationController
       user = User.with_deleted.create_with(email: row['email'], password: 'Sample',
                                            password_confirmation: 'Sample', role: 'staff')
                  .find_or_create_by(email: row['email'])
-      unless update_user(user, row)
-        flash[:alert] = "#{user.errors.full_messages} at ID: #{user.id} , Try again "
-        redirect_to users_path
-      end
+      flash[:alert] = "#{user.errors.full_messages} at ID: #{user.id} , Try again " unless update_user(user, row)
     end
   end
 
