@@ -198,7 +198,6 @@ class ImportMappingsController < ApplicationController
 
   def symbol_case(record1, record2, matched, mapping)
     true unless mapping.mapping_rule.include? ('symbol_case')
-    byebug
 
     if record1[matched[0].gsub('_',' ')]&.gsub(/[^0-9A-Za-z]/, '')== record2[matched[1].gsub('_',' ')]&.gsub(/[^0-9A-Za-z]/, '')
       true
