@@ -83,7 +83,7 @@ class PurchaseDeliveriesController < ApplicationController
   def import
     if @csv.present?
       csv_create_records(@csv)
-      flash[:alert] = 'File Upload Successful!'
+      flash[:notice] = 'File Upload Successful!'
     end
     redirect_to purchase_deliveries_path
   end

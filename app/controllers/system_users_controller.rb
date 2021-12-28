@@ -97,7 +97,7 @@ class SystemUsersController < ApplicationController
   def import
     if @csv.present?
       csv_create_records(@csv)
-      flash[:alert] = 'File Upload Successful!'
+      flash[:notice] = 'File Upload Successful!'
     end
     redirect_to system_users_path
   end

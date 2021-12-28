@@ -95,6 +95,7 @@ class ImportMappingsController < ApplicationController
         format.html { redirect_to import_mappings_path, notice: 'Import mapping was successfully created.' }
         format.json { render :index, status: :created, location: @import_mapping }
       else
+        format.html { redirect_to :back, notice: @import_mapping.errors.full_messages }
         format.json { render json: @import_mapping.errors, status: :unprocessable_entity }
       end
     end
