@@ -19,6 +19,7 @@ class ExportMappingsController < ApplicationController
   def edit
     @export_mapping = ExportMapping.find(params[:id])
     @table_names = ['Product', 'ChannelOrder', 'ChannelProduct', 'Season', 'Category', 'SystemUser']
+    @column_names = @export_mapping.table_name.constantize.column_names
   end
 
   def get_table_columns
@@ -48,7 +49,18 @@ class ExportMappingsController < ApplicationController
   end
 
   def update
-    byebug
+    @export_mapping = ExportMapping.find(params[:id])
+    @export_mapping.update(export_mapping_params)
+    col_names = @export_mapping.table_name.constantize.column_names
+    added_columns = []
+    col_names.each do |col_name|
+      if params.include? col_name
+        added_columns.push(col_name)
+      end
+    end
+    @export_mapping.update(export_data: added_columns)
+    redirect_to export_mappings_path
+    flash[:notice] = 'Export Mapping Updated.'
   end
 
   def destroy

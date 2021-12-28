@@ -5,19 +5,30 @@
         <div class="card-header">
             <h5 class="card-title">Edit Export Mapping</h5>
         </div>
-        <%= form_with url: export_mappings_path, method: :put do |f| %>
+        <%= form_for @export_mapping, method: :put do |f| %>
           <div class="form-group">
             <%= f.label :table_name %>
-            <%= f.select :table_name, options_for_select(@table_names,  @export_mapping.table_name), {include_blank: 'Please Select Table Name'}, class: 'form-control'%>
+            <%= f.select :table_name, options_for_select([@export_mapping.table_name]), {}, class: 'form-control'%>
           </div>
           <div class="form-group">
             <%= f.label :sub_type %>
             <%= f.text_field :sub_type, value: @export_mapping.sub_type, class: 'form-control' %>
           </div>
-          <div class="form-group row check-boxes">
+          <div class="form-group row">
+            <% @column_names.each do |column| %>
+            <div class= "col-3">
+              <% if @export_mapping.export_data.include? column %>
+                <input type = "checkbox" name = <%= column %> checked = true>
+              <% else %>
+                <input type = "checkbox" name = <%= column %>>
+              <% end %>
+              <label for= <%= column %>> <%= column %> </label>
+              <br>
+            </div>
+            <% end %>
           </div>
           <div class="form-group">
-            <%= f.button :Create, class: 'btn btn-outline-primary' %>
+            <%= f.button :Update, class: 'btn btn-outline-primary' %>
           </div>
         <% end %>
       </div>
