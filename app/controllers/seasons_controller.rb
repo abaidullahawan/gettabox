@@ -131,10 +131,7 @@ class SeasonsController < ApplicationController
   def csv_create_records(csv)
     csv.each do |row|
       data = Season.with_deleted.find_or_initialize_by(name: row['name'])
-      unless data.update(row.to_hash)
-        flash[:alert] = "#{data.errors.full_messages} at ID: #{data.id} , Try again"
-        redirect_to seasons_path
-      end
+      flash[:alert] = "#{data.errors.full_messages} at ID: #{data.id} , Try again" unless data.update(row.to_hash)
     end
   end
 end

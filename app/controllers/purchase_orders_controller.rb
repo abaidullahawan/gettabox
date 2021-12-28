@@ -185,7 +185,6 @@ class PurchaseOrdersController < ApplicationController
       data = PurchaseOrder.with_deleted.find_or_initialize_by(id: row['id'])
       if !data.update(row.to_hash)
         flash[:alert] = "#{data.errors.full_messages} at ID: #{data.id} , Try again"
-        redirect_to purchase_orderss_path
       else
         data.update(user_type: 'supplier')
       end

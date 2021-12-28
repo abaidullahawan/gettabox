@@ -169,8 +169,7 @@ class SystemUsersController < ApplicationController
     csv.each do |row|
       data = SystemUser.with_deleted.find_or_initialize_by(email: row['email'])
       if !data.update(row.to_hash)
-        flash[:alert] = "#{data.errors.full_messages} at ID: #{data.id} , Try again"
-        redirect_to system_users_path
+        flash[:alert] = "#{data.errors.full_messages} of ID: #{data.id} NAME: #{data.name} , Try again"
       else
         data.update(user_type: 'supplier')
       end
