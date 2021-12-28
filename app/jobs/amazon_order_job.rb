@@ -75,6 +75,7 @@ class AmazonOrderJob < ApplicationJob
       )
       channel_item.sku = item['SellerSKU']
       channel_item.item_data = item
+      channel_item.channel_product_id = ChannelProduct.find_by(item_sku: channel_item.sku)&.id
       channel_item.save
     end
   end
