@@ -11,7 +11,7 @@
     </ol>
 </div>
 <!-- End Main Content Header -->
-
+<div class="alert alert-dismissible fade show text-white jquery-selected-alert d-none " style="position: fixed; width:93%; z-index:99999;" role="alert"></div>
 <div class="row">
   <div class="col-xl-12">
     <div class="card mb-30">
@@ -36,6 +36,7 @@
               </button>
               <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                 <%= link_to 'Export All', system_users_path(all: true, format: :csv, export_csv: true), class: 'dropdown-item' %>
+                <%= link_to 'Export Selected', system_users_path(selected: true, format: :csv, export_csv: true), class: 'dropdown-item' %>
                 <% @system_user_exports.each do |export| %>
                   <%= link_to "#{export.sub_type}", system_users_path(export_mapping: export.id, format: :csv, export_csv: true), class: 'dropdown-item' %>
                 <% end %>
@@ -90,7 +91,19 @@
               <h6 class='text-center text-muted'>Suppliers</h6>
               <table class="overflow-auto w-100 table m-0 table-hover">
                 <tr>
-                  <th><input type="checkbox" id="" name="" value="" class='select-all-checkbox'></th>
+                  <th>
+                    <div class='row' style='max-width: 65px'>
+                      <div class='col-6 p-0  mt-1'>
+                        <input type="checkbox" id="" name="" value="" class='col-6 select-all-checkbox'>
+                      </div>
+                      <div class='col-6 p-0'>
+                        <div class="custom-control custom-switch">
+                          <input type="checkbox" class="custom-control-input" id="selectSwitchAll" onclick="bulk_update_selected('/bulk_update_selected', '<%= @system_users&.first&.class&.name %>', event)">
+                          <label class="custom-control-label" for="selectSwitchAll"></label>
+                        </div>
+                      </div>
+                    </div>
+                  </th>
                   <th class="text-center">Name</th>
                   <th class="text-center">Not Sent</th>
                   <th class="text-center">Pending</th>
@@ -99,7 +112,19 @@
                 </tr>
                 <% @system_users&.each&.with_index(1) do |system_user, index| %>
                   <tr class=''>
-                    <td><%= f.check_box 'object_ids[]', {}, system_user.id %></td>
+                    <td>
+                      <div class='row' style='max-width: 65px'>
+                        <div class='col-6 p-0 mt-1'>
+                          <%= f.check_box 'object_ids[]', {}, system_user.id %>
+                        </div>
+                        <div class='col-6 p-0'>
+                          <div class="custom-control custom-switch">
+                            <input type="checkbox" class="custom-control-input selectSwitch" name="select-switch" id="<%=system_user.id%>" <%= system_user.selected? ? 'checked': ''%> onclick="update_selected('/update_selected', '<%= system_user.class.name %>', event)">
+                            <label class="custom-control-label" for="<%=system_user.id%>"></label>
+                          </div>
+                        </div>
+                      </div>
+                    </td>
                     <%
                       orders = system_user.purchase_orders.present? ? system_user.purchase_orders&.count : 0
                       deliveries = system_user.purchase_orders&.first&.purchase_deliveries.present? ? system_user.purchase_orders&.first&.purchase_deliveries&.count : 0 %>

@@ -87,6 +87,7 @@ class SystemUsersController < ApplicationController
         format.csv { send_data @csv, filename: "suppliers-#{Date.today}.csv" }
       end
     else
+      system_users = system_users.where(selected: true) if params[:selected]
       request.format = 'csv'
       respond_to do |format|
         format.csv { send_data system_users.to_csv, filename: "suppliers-#{Date.today}.csv" }
