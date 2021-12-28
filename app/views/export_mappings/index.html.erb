@@ -24,6 +24,7 @@
                         <th>Table Name</th>
                         <th class="text-center">Description Name</th>
                         <th>Columns Added</th>
+                        <th>Actions</th>
                     </tr>
                     <% @product_export_mappings.each do |import_mapping| %>
                       <tr>
@@ -33,6 +34,12 @@
                         <% import_mapping.export_data.each do |data| %>
                           <%= data %><br>
                         <% end %>
+                      </td>
+                      <td>
+                        <div class= 'd-flex'>
+                          <%= link_to 'Destroy', import_mapping, method: :delete, data: { confirm: 'Are you sure?' }, class: "text-white btn btn-danger" %>
+                          <%= link_to 'Edit', edit_export_mapping_path(import_mapping), class: "text-white btn btn-info ml-3 mr-3" %>
+                        </div>
                       </td>
                       </tr>
                     <% end %>
@@ -58,6 +65,7 @@
                         <th>Table Name</th>
                         <th class="text-center">Description Name</th>
                         <th>Columns Added</th>
+                        <th>Actions</th>
                     </tr>
                     <% @channel_order_export_mappings.each do |import_mapping| %>
                       <tr>
@@ -67,6 +75,12 @@
                         <% import_mapping.export_data.each do |data| %>
                           <%= data %><br>
                         <% end %>
+                      </td>
+                      <td>
+                        <div class= 'd-flex'>
+                          <%= link_to 'Destroy', import_mapping, method: :delete, data: { confirm: 'Are you sure?' }, class: "text-white btn btn-danger" %>
+                          <%= link_to 'Edit', edit_export_mapping_path(import_mapping), class: "text-white btn btn-info ml-3 mr-3" %>
+                        </div>
                       </td>
                       </tr>
                     <% end %>
@@ -92,6 +106,7 @@
                         <th>Table Name</th>
                         <th class="text-center">Description Name</th>
                         <th>Columns Added</th>
+                        <th>Actions</th>
                     </tr>
                     <% @channel_product_export_mappings.each do |import_mapping| %>
                       <tr>
@@ -101,6 +116,12 @@
                         <% import_mapping.export_data.each do |data| %>
                           <%= data %><br>
                         <% end %>
+                      </td>
+                      <td>
+                        <div class= 'd-flex'>
+                          <%= link_to 'Destroy', import_mapping, method: :delete, data: { confirm: 'Are you sure?' }, class: "text-white btn btn-danger" %>
+                          <%= link_to 'Edit', edit_export_mapping_path(import_mapping), class: "text-white btn btn-info ml-3 mr-3" %>
+                        </div>
                       </td>
                       </tr>
                     <% end %>
@@ -126,6 +147,7 @@
                         <th>Table Name</th>
                         <th class="text-center">Description Name</th>
                         <th>Columns Added</th>
+                        <th>Actions</th>
                     </tr>
                     <% @season_export_mappings.each do |import_mapping| %>
                       <tr>
@@ -135,6 +157,12 @@
                         <% import_mapping.export_data.each do |data| %>
                           <%= data %><br>
                         <% end %>
+                      </td>
+                      <td>
+                        <div class= 'd-flex'>
+                          <%= link_to 'Destroy', import_mapping, method: :delete, data: { confirm: 'Are you sure?' }, class: "text-white btn btn-danger" %>
+                          <%= link_to 'Edit', edit_export_mapping_path(import_mapping), class: "text-white btn btn-info ml-3 mr-3" %>
+                        </div>
                       </td>
                       </tr>
                     <% end %>
@@ -160,6 +188,7 @@
                         <th>Table Name</th>
                         <th class="text-center">Description Name</th>
                         <th>Columns Added</th>
+                        <th>Actions</th>
                     </tr>
                     <% @category_export_mappings.each do |import_mapping| %>
                       <tr>
@@ -169,6 +198,12 @@
                         <% import_mapping.export_data.each do |data| %>
                           <%= data %><br>
                         <% end %>
+                      </td>
+                      <td>
+                        <div class= 'd-flex'>
+                          <%= link_to 'Destroy', import_mapping, method: :delete, data: { confirm: 'Are you sure?' }, class: "text-white btn btn-danger" %>
+                          <%= link_to 'Edit', edit_export_mapping_path(import_mapping), class: "text-white btn btn-info ml-3 mr-3" %>
+                        </div>
                       </td>
                       </tr>
                     <% end %>
@@ -207,9 +242,9 @@
                       </td>
                       <td>
                         <div class= 'd-flex'>
-                      <%= link_to 'Destroy', import_mapping, method: :delete, data: { confirm: 'Are you sure?' }, class: "text-white btn btn-danger" %>
-                      <%= link_to 'Edit', edit_export_mapping_path(import_mapping), class: "text-white btn btn-info ml-3 mr-3" %>
-                    </div>
+                          <%= link_to 'Destroy', import_mapping, method: :delete, data: { confirm: 'Are you sure?' }, class: "text-white btn btn-danger" %>
+                          <%= link_to 'Edit', edit_export_mapping_path(import_mapping), class: "text-white btn btn-info ml-3 mr-3" %>
+                        </div>
                       </td>
                       </tr>
                     <% end %>
@@ -218,7 +253,7 @@
             </li>
           </ul>
         </div>
-        <!-- Season Accordion End -->
+        <!-- System User Accordion End -->
 
       </div>
     </div>
