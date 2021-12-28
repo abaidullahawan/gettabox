@@ -106,7 +106,7 @@ class ProductMappingsController < ApplicationController
     when 'Create'
       create_product
     end
-    if request.referrer == 'http://localhost:3000/order_dispatches' || request.referrer == 'https://portal.channeldispatch.co.uk/order_dispatches'
+    if request.referrer.include? 'order_dispatches'
       redirect_to order_dispatches_path(order_filter: 'unprocessed')
     else
       redirect_to product_mappings_path

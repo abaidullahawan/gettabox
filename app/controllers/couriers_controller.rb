@@ -76,7 +76,7 @@ class CouriersController < ApplicationController
       @csv.delete('created_at')
       @csv.delete('updated_at')
       csv_create_records(@csv)
-      flash[:alert] = 'File Upload Successful!'
+      flash[:notice] = 'File Upload Successful!'
     end
     redirect_to couriers_path
   end
