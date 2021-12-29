@@ -13,12 +13,12 @@ class ExportMappingsController < ApplicationController
 
   def new
     @export_mapping = ExportMapping.new
-    @table_names = ['Product', 'ChannelOrder', 'ChannelProduct', 'Season', 'Category', 'SystemUser']
+    @table_names = %w[Courier Product ChannelOrder ChannelProduct Season Category SystemUser]
   end
 
   def edit
     @export_mapping = ExportMapping.find(params[:id])
-    @table_names = ['Product', 'ChannelOrder', 'ChannelProduct', 'Season', 'Category', 'SystemUser']
+    @table_names = %w[Courier Product ChannelOrder ChannelProduct Season Category SystemUser]
     @column_names = @export_mapping.table_name.constantize.column_names
   end
 
@@ -75,7 +75,6 @@ class ExportMappingsController < ApplicationController
   private
 
   def export_mapping_params
-    params.permit(:table_name, :sub_type)
+    params.require(:export_mapping).permit(:table_name, :sub_type)
   end
-
 end

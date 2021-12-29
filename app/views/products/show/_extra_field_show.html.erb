@@ -7,7 +7,7 @@
     <div class="list-group">
     <div class="list-group-item">
       <div class='row'>
-      <% if @product.extra_field_value.field_value.present? %>
+      <% if @product.extra_field_value&.field_value&.present? %>
         <% @product.extra_field_value.field_value.each do |extra_field_value|%>
           <% if extra_field_value[0] != 'id' %>
             <div class='col-3'>

@@ -95,6 +95,9 @@
                               <p style="color: white;">
                                 <b>Location:</b> <span><%= record.child.location %></span>
                               </p>
+                              <p style="color: white;">
+                                <b>QTY:</b> <span><%= record.quantity*product.ordered %></span>
+                              </p>
                               <div class="d-flex">
                                 <div class="col-4 col-padding">
                                   <p class="heading-table">Avail</p>
@@ -116,6 +119,9 @@
                               <%= link_to product.channel_product&.product_mapping&.product&.sku, product_path(product.channel_product&.product_mapping&.product&.id), target: 'blank', style: "color: white" %>
                               <p style="color: white;">
                                 <b>Location:</b> <span><%= product.channel_product&.product_mapping&.product&.location %></span>
+                              </p>
+                              <p style="color: white;">
+                                <b>QTY:</b> <span><%= product.channel_product&.product_mapping&.product.pack_quantity %></span>
                               </p>
                               <div class="d-flex">
                                 <div class="col-4 col-padding">
