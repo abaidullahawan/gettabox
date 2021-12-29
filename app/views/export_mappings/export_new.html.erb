@@ -1,0 +1,36 @@
+<div class="row">
+  <div class="col-xl-12">
+    <div class="card mb-30">
+      <div class="card-body">
+        <div class="card-header">
+            <h5 class="card-title">Create Export Mapping</h5>
+        </div>
+        <%= form_with url: '/export_mappings/export_create', remote: true do |f| %>
+          <div class="form-group">
+            <%= f.label :table_name %>
+            <%= f.select :table_name, ['Courier csv export'], {}, class: 'form-control'%>
+          </div>
+          <div class="form-group">
+            <%= f.label :sub_type %>
+            <%= f.text_field :sub_type, class: 'form-control' %>
+          </div>
+          <div class='row'>
+          <% params[:csv_headers].each do |col_name| %>
+          <div class="col-3">
+            <div class="form-group">
+              <%= label_tag :"#{col_name}" %>
+            <%= select_tag "mapping_data",  options_for_select(params[:column_names]), class: 'chosen-select form-control', prompt: "Select Header"%>
+            </div>
+          </div>
+          <% end %>
+          </div>
+          <div class="form-group row check-boxes">
+          </div>
+          <div class="form-group">
+            <%= f.button :Create, class: 'btn btn-outline-primary' %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
