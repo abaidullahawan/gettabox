@@ -6,6 +6,7 @@ class ImportMappingsController < ApplicationController
 
   # GET /import_mappings or /import_mappings.json
   def index
+    @courier_csv_export = Courier.new
     @product = Product.new
     @order = ChannelOrder.new
     @channel_product = ChannelProduct.new
@@ -13,6 +14,13 @@ class ImportMappingsController < ApplicationController
     @order_mappings = ImportMapping.where(table_name: 'Channel Order')
     @channel_product_mappings = ImportMapping.where(table_name: 'Channel Product')
     @multi_mappings = ImportMapping.where(mapping_type: 'dual')
+    # index export_mapping
+    @product_export_mappings = ExportMapping.where(table_name: 'Product')
+    @channel_order_export_mappings = ExportMapping.where(table_name: 'ChannelOrder')
+    @channel_product_export_mappings = ExportMapping.where(table_name: 'ChannelProduct')
+    @season_export_mappings = ExportMapping.where(table_name: 'Season')
+    @category_export_mappings = ExportMapping.where(table_name: 'Category')
+    @system_user_export_mappings = ExportMapping.where(table_name: 'SystemUser')
   end
 
   # GET /import_mappings/1 or /import_mappings/1.json
@@ -219,7 +227,7 @@ class ImportMappingsController < ApplicationController
   def upper_case(record1, record2, matched, mapping)
     true unless mapping.mapping_rule.include? ('upper_case')
 
-    if record1[matched[0].gsub('_',' ')]&.casecmp(record2[matched[1].gsub('_', ' ')]) == 0
+    if record1[matched[0].gsub('_',' ')]&.casecmp(record2[matched[1].gsub('_', ' ')])&.zero?
       true
     else
       false
