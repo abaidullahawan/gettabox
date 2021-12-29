@@ -222,8 +222,8 @@ $(document).on('turbolinks:load', function () {
     $('.bulk-method-order-disaptch').trigger('click')
   })
 
-  $('#table_name').on('change', function () {
-    var table = $("#table_name").val()
+  $('#export_mapping_table_name').on('change', function () {
+    var table = $("#export_mapping_table_name").val()
     $.ajax({
         url: '/table_name',
         type: 'GET',

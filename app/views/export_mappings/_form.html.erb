@@ -5,7 +5,7 @@
         <div class="card-header">
             <h5 class="card-title">Create Export Mapping</h5>
         </div>
-        <%= form_with url: '/export_mappings', remote: true do |f| %>
+        <%= form_for @export_mapping, method: :post do |f| %>
           <div class="form-group">
             <%= f.label :table_name %>
             <%= f.select :table_name, table_names, {include_blank: 'Please Select Table Name'}, class: 'form-control'%>
