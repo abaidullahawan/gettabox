@@ -14,7 +14,7 @@
             <%= f.label :sub_type, 'Description' %>
             <%= f.text_field :sub_type, class: 'form-control'%>
           </div>
-          <% db_columns.each do |col_name| %>
+          <% column_names.each do |col_name| %>
           <div class="d-flex">
             <div class="form-group">
               <%= label_tag :"#{col_name}" %>

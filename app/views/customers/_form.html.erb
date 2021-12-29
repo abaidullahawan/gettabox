@@ -1,0 +1,44 @@
+
+<div class="form-group">
+  <%= f.label :name %>
+  <%= f.text_field :name, autofocus: true, required: true, class: 'form-control', placeholder: 'Enter Name' %>
+</div>
+<div class="form-group">
+  <%= f.label :email %>
+  <%= f.text_field :email, required: true, class: 'form-control', placeholder: 'Enter Email' %>
+</div>
+<div class="form-group">
+  <%= f.label :phone_number %>
+  <%= f.text_field :phone_number, required: true, class: 'form-control', placeholder: 'Enter Phone Number' %>
+</div>
+<%= f.fields_for :address do |pd|%>
+  <div class="form-group">
+    <%= pd.label :company %>
+    <%= pd.text_field :company, class: 'form-control', placeholder: 'Enter Company Name'%>
+  </div>
+  <div class="form-group">
+    <%= pd.label :address %>
+    <%= pd.text_field :address, class: 'form-control', placeholder: 'Enter Address' %>
+  </div>
+  <div class="form-group">
+    <%= pd.label :city %>
+    <%= pd.text_field :city, class: 'form-control', placeholder: 'Enter City' %>
+  </div>
+  <div class="form-group">
+    <%= pd.label :region %>
+    <%= pd.text_field :region, class: 'form-control', placeholder: 'Enter Region' %>
+  </div>
+  <div class="form-group">
+    <%= pd.label :postcode %>
+    <%= pd.text_field :postcode, class: 'form-control', placeholder: 'Enter Postal Code' %>
+  </div>
+  <div class="form-group">
+    <%= pd.label :country %>
+    <%= pd.text_field :country, class: 'form-control', placeholder: 'Enter Country' %>
+  </div>
+<% end %>
+<hr>
+<div class="form-group">
+  <%= label_tag 'Sales Channel' %>
+  <%= select_tag 'Sales Channel', %w[Gettabox_eBay_UK Gettabox_Amazon_UK Gettabox_Shopify_UK Gettabox_Manual_Orders], class: 'form-control', placeholder: 'Enter Country' %>
+</div>

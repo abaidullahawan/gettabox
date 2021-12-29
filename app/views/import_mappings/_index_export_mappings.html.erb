@@ -14,7 +14,7 @@
       <div class="accordion-content">
         <h4 class='mb-3'>Mappings</h4>
            <div class= "mb-4 border">
-            <%= form_for @courier_csv_export, url: product_file_path, method: :post do |f| %>
+            <%= form_for @courier_csv_export, url: courier_csv_export_path, method: :post do |f| %>
               <%= f.file_field :file, style:"width:240px;", class: 'btn', accept: ".csv",required: true %>
               <%= f.submit 'Create Mapping', class:"btn btn-primary"%>
             <% end %>

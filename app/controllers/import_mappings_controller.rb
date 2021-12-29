@@ -6,7 +6,7 @@ class ImportMappingsController < ApplicationController
 
   # GET /import_mappings or /import_mappings.json
   def index
-    @courier_csv_export = Courier.new
+    @courier_csv_export = ChannelOrder.new
     @product = Product.new
     @order = ChannelOrder.new
     @channel_product = ChannelProduct.new
@@ -259,6 +259,27 @@ class ImportMappingsController < ApplicationController
       redirect_to new_import_mapping_path(db_columns: @db_names, header: @header, import_mapping: @import_mapping)
     else
       flash[:alert] = 'Try again file not match'
+    end
+  end
+
+   def courier_csv_export
+    file = params[:channel_order][:file]
+    if file.present? && file.path.split('.').last.to_s.downcase == 'csv'
+      csv_text = File.read(file)
+      csv_headers = CSV.parse(csv_text, headers: true).headers
+      column_names = (ChannelOrder.column_names + MailServiceLabel.column_names.excluding('id') + SystemUser.column_names.excluding('id') + Address.column_names.excluding('id'))
+                     .excluding('user_type', 'selected', 'created_at', 'updated_at')
+      redirect_to export_new_export_mappings_path(column_names: column_names, csv_headers: csv_headers)
+      # export_mapping = ExportMapping.new(table_name: 'Order', sub_type: 'Courier csv export', export_data: csv_headers)
+      # if export_mapping.save
+      #   flash[:notice] = 'Export Mapping created'
+      #   redirect_to import_mappings_path
+      # else
+      #   flash[:alert] = export_mapping.errors.full_messages
+      #   render 'edit'
+      # end
+    else
+      flash[:alert] = 'Please use csv file'
       redirect_to import_mappings_path
     end
   end
