@@ -39,6 +39,7 @@
                   <th scope="col">Listings</th>
                   <th scope="col">Information</th>
                   <th scope="col">Courier Service</th>
+                  <th scope="col">Tracking</th>
                   <th scope="col">Date</th>
                   <th scope="col">Total</th>
                   <th scope="col">Status</th>
@@ -195,6 +196,11 @@
                             <% end %>
                           <% end %>
                         </div>
+                      <% end %>
+                    </td>
+                    <td>
+                      <% if order.assign_rule %>
+                        <%= order.assign_rule.mail_service_rule.courier.name %>
                       <% end %>
                     </td>
                     <td style="width: 100px;"><%= order.created_at.strftime("%m/%d/%Y %H:%M") %></td>
