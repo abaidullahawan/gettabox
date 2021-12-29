@@ -16,6 +16,13 @@ class ExportMappingsController < ApplicationController
     @table_names = %w[Courier Product ChannelOrder ChannelProduct Season Category SystemUser]
   end
 
+  def export_new
+  end
+
+  def export_create
+    # byebug
+  end
+
   def edit
     @export_mapping = ExportMapping.find(params[:id])
     @table_names = %w[Courier Product ChannelOrder ChannelProduct Season Category SystemUser]
