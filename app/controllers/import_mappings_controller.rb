@@ -10,10 +10,12 @@ class ImportMappingsController < ApplicationController
     @product = Product.new
     @order = ChannelOrder.new
     @channel_product = ChannelProduct.new
+    @tracking = Tracking.new
     @product_mappings = ImportMapping.where(table_name: 'Product')
     @order_mappings = ImportMapping.where(table_name: 'Channel Order')
     @channel_product_mappings = ImportMapping.where(table_name: 'Channel Product')
     @multi_mappings = ImportMapping.where(mapping_type: 'dual')
+    @tracking_mappings = ImportMapping.where(table_name: 'Tracking')
     # index export_mapping
     @product_export_mappings = ExportMapping.where(table_name: 'Product')
     @channel_order_export_mappings = ExportMapping.where(table_name: 'ChannelOrder')
@@ -29,12 +31,12 @@ class ImportMappingsController < ApplicationController
   # GET /import_mappings/new
   def new
     @import_mapping = ImportMapping.new
-    @table_names = ['Product', 'Channel Order', 'Channel Product']
+    @table_names = ['Product', 'Channel Order', 'Channel Product', 'Tracking']
   end
 
   # GET /import_mappings/1/edit
   def edit
-    @table_names = ['Product', 'Channel Order', 'Channel Product']
+    @table_names = ['Product', 'Channel Order', 'Channel Product', 'Tracking']
   end
 
   def file_mapping
@@ -103,7 +105,7 @@ class ImportMappingsController < ApplicationController
         format.html { redirect_to import_mappings_path, notice: 'Import mapping was successfully created.' }
         format.json { render :index, status: :created, location: @import_mapping }
       else
-        format.html { redirect_to :back, notice: @import_mapping.errors.full_messages }
+        format.html { redirect_to import_mappings_path, notice: @import_mapping.errors.full_messages }
         format.json { render json: @import_mapping.errors, status: :unprocessable_entity }
       end
     end
@@ -240,6 +242,24 @@ class ImportMappingsController < ApplicationController
     when '.xls' then  Roo::Excel.new(file.path, packed: nil, file_warning: :ignore)
     when '.xlsx' then Roo::Excelx.new(file.path, packed: nil, file_warning: :ignore)
     else raise "Unknown file type: #{file.original_filename}"
+    end
+  end
+
+  def tracking_file
+    return unless params[:tracking][:file].present?
+
+    file = params[:tracking][:file]
+    file_type = file.present? ? file.path.split('.').last.to_s.downcase : ''
+    if file.present? && (file_type.include? 'csv') || (file_type.include? 'xlsx')
+      spreadsheet = open_spreadsheet(file)
+      @header = spreadsheet.headers
+      @data = []
+      @import_mapping = ImportMapping.new
+      @db_names = Tracking.column_names
+      redirect_to new_import_mapping_path(db_columns: @db_names, header: @header, import_mapping: @import_mapping)
+    else
+      flash[:alert] = 'Try again file not match'
+      redirect_to import_mappings_path
     end
   end
 
