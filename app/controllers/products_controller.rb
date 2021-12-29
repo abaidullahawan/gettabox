@@ -166,7 +166,7 @@ class ProductsController < ApplicationController
       @import_mapping = ImportMapping.new
       @table_names = %w['Order Product']
       @db_names = Product.column_names
-      # redirect_to new_import_mapping_path(db_columns: @db_names, header: @header, import_mapping: @-p[;l./[-p;./-[p';/.-[p;'/-[p';'[-p';/.'[-p';l./import_mapping)
+      redirect_to new_import_mapping_path(db_columns: @db_names, header: @header, import_mapping: @import_mapping)
     else
       flash[:alert] = 'Try again file not match'
       redirect_to import_mappings_path
