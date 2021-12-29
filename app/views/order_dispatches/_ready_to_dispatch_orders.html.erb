@@ -206,7 +206,12 @@
                     </td>
                     <td>
                       <% if order.assign_rule %>
-                        <%= order.assign_rule.mail_service_rule.courier.name %>
+                        <%= order.assign_rule.mail_service_rule.courier.name %><br>
+                      <% end %>
+                      <% if order.trackings.present? %>
+                        <% order.trackings.each do |tracking| %>
+                          <%= tracking.tracking_no %>
+                        <% end %>
                       <% end %>
                     </td>
                     <td style="width: 100px;"><%= order.created_at.strftime("%m/%d/%Y %H:%M") %></td>

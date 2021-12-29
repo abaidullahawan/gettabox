@@ -3,6 +3,7 @@
 # orders from api
 class ChannelOrder < ApplicationRecord
   has_many :channel_order_items, dependent: :destroy
+  has_many :trackings
   has_one :mail_service_rule, dependent: :destroy
   belongs_to :assign_rule, optional: true
   validates_uniqueness_of :order_data

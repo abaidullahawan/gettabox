@@ -24,6 +24,11 @@ Rails.application.routes.draw do
   resources :import_mappings
   resources :export_mappings
   resources :assign_rules
+  resources :trackings do
+    collection do
+      post 'import', to: 'trackings#import'
+    end
+  end
   require 'sidekiq/web'
   mount Sidekiq::Web => '/sidekiq'
   resources :email_templates
@@ -137,6 +142,7 @@ Rails.application.routes.draw do
   post 'channel_product_file', to: 'product_mappings#import_product_file'
   post 'order_file', to: 'order_dispatches#import_order_file'
   post 'multi_file', to: 'import_mappings#multi_file_mapping'
+  post 'tracking_file', to: 'import_mappings#tracking_file'
 
   # Order Dispatch Routes
   get 'all_order_data', to: 'order_dispatches#all_order_data'
