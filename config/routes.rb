@@ -22,7 +22,12 @@ Rails.application.routes.draw do
     end
   end
   resources :import_mappings
-  resources :export_mappings
+  resources :export_mappings do
+    collection do
+      get 'export_new', to: 'export_mappings#export_new'
+      post 'export_create', to: 'export_mappings#export_create'
+    end
+  end
   resources :assign_rules
   resources :trackings do
     collection do
@@ -138,10 +143,21 @@ Rails.application.routes.draw do
     end
   end
 
+  resources :customers do
+    collection do
+      post 'import', to: 'couriers#import'
+      post 'bulk_method', to: 'couriers#bulk_method'
+      get 'archive', to: 'couriers#archive'
+      post 'restore', to: 'couriers#restore'
+      post 'permanent_delete', to: 'couriers#permanent_delete'
+    end
+  end
+
   post 'product_file', to: 'products#import_product_file'
   post 'channel_product_file', to: 'product_mappings#import_product_file'
   post 'order_file', to: 'order_dispatches#import_order_file'
   post 'multi_file', to: 'import_mappings#multi_file_mapping'
+  post 'courier_csv_export', to: 'import_mappings#courier_csv_export'
   post 'tracking_file', to: 'import_mappings#tracking_file'
 
   # Order Dispatch Routes
