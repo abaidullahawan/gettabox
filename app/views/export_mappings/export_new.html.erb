@@ -19,10 +19,12 @@
           <div class="col-3">
             <div class="form-group">
               <%= label_tag :"#{col_name}" %>
-            <%= select_tag "mapping_data",  options_for_select(params[:column_names]), class: 'chosen-select form-control', prompt: "Select Header"%>
+              <%= select_tag col_name,  options_for_select(params[:column_names]), class: 'chosen-select form-control', prompt: "Select Header"%>
             </div>
           </div>
           <% end %>
+          <%= hidden_field_tag "map_able", value: [params[:csv_headers]] %>
+          <%= hidden_field_tag "mapped", value: [params[:column_names]] %>
           </div>
           <div class="form-group row check-boxes">
           </div>

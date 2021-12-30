@@ -8,8 +8,8 @@ class SystemUsersController < ApplicationController
   before_action :find_system_user, only: %i[show edit update destroy]
   before_action :fetch_field_names, only: %i[new create show index update]
   before_action :new, :ransack_system_users, :purchase_orders, only: [:index]
-  before_action :build_system_user, :build_extra_field_value, only: %i[create]
-  before_action :build_extra_field_value, only: %i[update]
+  before_action :build_system_user, only: %i[create]
+  before_action :build_extra_field, only: %i[update create]
   before_action :filter_object_ids, only: %i[bulk_method restore]
   skip_before_action :verify_authenticity_token, only: %i[create update]
   before_action :klass_bulk_method, only: %i[bulk_method]
@@ -132,7 +132,7 @@ class SystemUsersController < ApplicationController
 
   def fetch_field_names
     @field_names = []
-    @field_names = ExtraFieldName.where(table_name: 'SystemUser').pluck(:field_name)
+    @field_names = ExtraFieldName.where(table_name: 'Supplier')
   end
 
   def system_user_params
@@ -157,11 +157,11 @@ class SystemUsersController < ApplicationController
     @system_user = SystemUser.new(system_user_params)
   end
 
-  def build_extra_field_value
+  def build_extra_field
     @system_user.build_extra_field_value if @system_user.extra_field_value.nil?
     @system_user.extra_field_value.field_value = {} if @system_user.extra_field_value.field_value.nil?
-    @field_names.each do |field_name|
-      @system_user.extra_field_value.field_value[field_name.to_s] = params[:"#{field_name}"]
+    @field_names.each do |field|
+      @system_user.extra_field_value.field_value[field.field_name.to_s] = params[:"#{field.field_name}"]
     end
   end
 

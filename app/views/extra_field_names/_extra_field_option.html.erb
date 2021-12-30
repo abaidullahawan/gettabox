@@ -1,0 +1,13 @@
+<div class="nested-fields">
+  <br>
+  <div class="form-group row">
+    <div class="col-11">
+      <%= f.label :option_name %>
+      <%= f.text_field :option_name, class: 'form-control'%>
+    </div>
+    <div class='col-1 pt-3'>
+      <br>
+      <%= link_to_remove_association 'X', f, class: 'text-danger remove-association-button' %>
+    </div>
+  </div>
+</div>
