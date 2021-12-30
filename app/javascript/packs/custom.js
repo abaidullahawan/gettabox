@@ -236,6 +236,18 @@ $(document).on('turbolinks:load', function () {
         }
     })
   })
+
+  $('#extra_field_name_field_type').on('change', function () {
+    var field_name = $("#extra_field_name_field_type").val()
+    if(field_name === 'Select')
+      {
+        $('.add-association-button').removeClass('d-none')
+      } else
+      {
+        $('.add-association-button').addClass('d-none')
+      }
+  })
+
 });
 
 // Preloader JS

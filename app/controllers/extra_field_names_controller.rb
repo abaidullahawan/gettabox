@@ -4,8 +4,10 @@
 class ExtraFieldNamesController < ApplicationController
   def index
     @extra_field_names = ExtraFieldName.all
-    @table_names = %w[Product SystemUser]
+    @table_names = %w[Product Customer Supplier]
+    @field_names = %w[Text Select]
     @extra_field_name = ExtraFieldName.new
+    @extra_field_name.extra_field_options.build
   end
 
   def create
@@ -33,6 +35,7 @@ class ExtraFieldNamesController < ApplicationController
   private
 
   def extra_field_name_params
-    params.require(:extra_field_name).permit(:field_name, :table_name)
+    params.require(:extra_field_name).permit(:field_name, :table_name, :field_type,
+                                              extra_field_options_attributes: %i[ option_name ])
   end
 end

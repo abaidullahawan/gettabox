@@ -1,9 +1,13 @@
 <% if @field_names.present? %>
-    <% @field_names&.each do |field_name| %>
+    <% @field_names&.each do |field| %>
         <div class="form-group ">
-            <%= label_tag :"#{field_name}" %>
-            <% extra_value = @system_user.extra_field_value&.field_value.present? ? @system_user.extra_field_value&.field_value[field_name.to_s] : ""%>
-            <%= text_field_tag :"#{field_name}", "", value: extra_value, class: 'form-control', placeholder: "Enter #{field_name}" %>
+            <%= label_tag :"#{field.field_name}" %>
+            <% extra_value = @system_user.extra_field_value&.field_value.present? ? @system_user.extra_field_value&.field_value[field.field_name.to_s] : ""%>
+            <% if field.field_type == 'Select'%>
+              <%= select_tag :"#{field.field_name}" , options_for_select(field.extra_field_options.pluck(:option_name), extra_value), class: 'form-control' %>
+            <% else %>
+              <%= text_field_tag :"#{field.field_name}", "", value: extra_value, class: 'form-control', placeholder: "Enter #{field.field_name}" %>
+            <% end %>
         </div>
     <% end %>
 <% end %>
