@@ -32,7 +32,7 @@ class SystemUsersController < ApplicationController
 
   def new
     @system_user = SystemUser.new
-    @user_address = @system_user.build_address
+    @user_address = @system_user.addresses.build
     @system_user.build_extra_field_value
   end
 

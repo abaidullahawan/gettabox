@@ -5,17 +5,19 @@ class CustomersController < ApplicationController
   include ImportExport
 
   before_action :authenticate_user!
-  # before_action :find_category, only: %i[show edit update destroy]
+  before_action :find_customer, only: %i[show edit update destroy]
   # before_action :filter_object_ids, only: %i[bulk_method restore]
   # before_action :klass_bulk_method, only: %i[bulk_method]
   # before_action :klass_restore, only: %i[restore]
+  before_action :fetch_field_names, only: %i[new create show index update]
 
   def index
     @q = SystemUser.where(user_type: 0).ransack(params[:q])
     @customers = @q.result(distinct: true).order(created_at: :desc).page(params[:page]).per(params[:limit])
     export_csv(@customers) if params[:export_csv].present?
     @customer = SystemUser.new
-    @customer.build_address
+    @customer.addresses.build
+    @customer.build_extra_field_value
   end
 
   def show; end
@@ -99,11 +101,21 @@ class CustomersController < ApplicationController
 
   private
 
-  def set_customer
+  def find_customer
     @customer = SystemUser.find(params[:id])
   end
 
   def customer_params
-    params.require(:customer).permit(:name)
+    params.require(:system_user)
+          .permit(:user_type, :name, :photo, :payment_method, :days_for_payment, :days_for_order_to_completion,
+                  :days_for_completion_to_delivery, :currency_symbol, :exchange_rate, :email, :phone_number,
+                  address_attributes: %i[id company address city region postcode country],
+                  extra_field_value_attributes:
+                  %i[id field_value])
+  end
+
+  def fetch_field_names
+    @field_names = []
+    @field_names = ExtraFieldName.where(table_name: 'SystemUser').pluck(:field_name)
   end
 end

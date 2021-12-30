@@ -262,7 +262,7 @@ class ImportMappingsController < ApplicationController
     end
   end
 
-   def courier_csv_export
+  def courier_csv_export
     file = params[:channel_order][:file]
     if file.present? && file.path.split('.').last.to_s.downcase == 'csv'
       csv_text = File.read(file)

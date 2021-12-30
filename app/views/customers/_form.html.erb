@@ -1,4 +1,4 @@
-
+<%= f.hidden_field :user_type, value: 'customer'%>
 <div class="form-group">
   <%= f.label :name %>
   <%= f.text_field :name, autofocus: true, required: true, class: 'form-control', placeholder: 'Enter Name' %>
@@ -11,34 +11,49 @@
   <%= f.label :phone_number %>
   <%= f.text_field :phone_number, required: true, class: 'form-control', placeholder: 'Enter Phone Number' %>
 </div>
-<%= f.fields_for :address do |pd|%>
-  <div class="form-group">
-    <%= pd.label :company %>
-    <%= pd.text_field :company, class: 'form-control', placeholder: 'Enter Company Name'%>
+<div class="form-row">
+  <div class='form-group col-md-12' style='border-bottom: 1px solid;'>
+    <h5 class='fs-14'>Address</h5>
   </div>
-  <div class="form-group">
-    <%= pd.label :address %>
-    <%= pd.text_field :address, class: 'form-control', placeholder: 'Enter Address' %>
+  <div class="form-group col-md-12">
+  <div class='links add_fields_div text-right'>
+    <%= link_to_add_association '+', f, :addresses, partial: 'address_fields', class: 'nested_fields_btn btn btn-outline-primary rounded'%>
   </div>
-  <div class="form-group">
-    <%= pd.label :city %>
-    <%= pd.text_field :city, class: 'form-control', placeholder: 'Enter City' %>
+    <%= f.fields_for :addresses do |address|%>
+      <%= render 'address_fields', f: address %>
+    <% end %>
   </div>
-  <div class="form-group">
-    <%= pd.label :region %>
-    <%= pd.text_field :region, class: 'form-control', placeholder: 'Enter Region' %>
-  </div>
-  <div class="form-group">
-    <%= pd.label :postcode %>
-    <%= pd.text_field :postcode, class: 'form-control', placeholder: 'Enter Postal Code' %>
-  </div>
-  <div class="form-group">
-    <%= pd.label :country %>
-    <%= pd.text_field :country, class: 'form-control', placeholder: 'Enter Country' %>
-  </div>
-<% end %>
-<hr>
-<div class="form-group">
-  <%= label_tag 'Sales Channel' %>
-  <%= select_tag 'Sales Channel', %w[Gettabox_eBay_UK Gettabox_Amazon_UK Gettabox_Shopify_UK Gettabox_Manual_Orders], class: 'form-control', placeholder: 'Enter Country' %>
 </div>
+<!--div class="form-group">
+  <%= label_tag 'EORI' %>
+  <%= text_field_tag 'EORI', {}, class: 'form-control', placeholder: 'Enter EORI' %>
+</div>
+<p>Additional Admin Information</p>
+<hr>
+<div class='row'>
+  <div class="form-group col-6">
+    <%= label_tag 'Sales Channel' %>
+    <%= select_tag 'Sales Channel', options_for_select(['Gettabox_eBay_UK', 'Gettabox_Amazon_UK', 'Gettabox_Shopify_UK', 'Gettabox_Manual_Orders']), class: 'form-control' %>
+  </div>
+  <div class="form-group col-6">
+    <%= label_tag 'Customer Type' %>
+    <%= select_tag 'Customer Type', options_for_select(['Retail', 'Trade', 'Agent']), class: 'form-control' %>
+  </div>
+</div>
+<div class="form-group">
+  <%= label_tag 'VAT No' %>
+  <%= text_field_tag 'VAT No', {}, class: 'form-control', placeholder: 'Enter VAT Number' %>
+</div>
+<div class='row'>
+  <div class="form-group col-6">
+    <%= label_tag 'Agent' %>
+    <%= select_tag 'Agent', options_for_select(['None']), class: 'form-control' %>
+  </div>
+  <div class="form-group col-6">
+    <%= label_tag 'Bank Account' %>
+    <%= select_tag 'Bank Account', options_for_select(['Inv. Fin.', 'Current']), class: 'form-control' %>
+  </div>
+</div-->
+<% if @field_names.present? %>
+  <%= render 'extra_field_value'%>
+<% end %>
