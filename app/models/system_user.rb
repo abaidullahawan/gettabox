@@ -9,11 +9,11 @@ class SystemUser < ApplicationRecord
   has_one :extra_field_value, as: :fieldvalueable
   has_many :purchase_orders, foreign_key: 'supplier_id', primary_key: 'id', dependent: :destroy
   validates :name, presence: true
-  validates :email, presence: true
-  validates :phone_number, presence: true
+  validates :email, presence: true, unless: -> { user_type_customer? }
+  validates :phone_number, presence: true, unless: -> { user_type_customer? }
   has_one_attached :photo
-  has_one :address, as: :addressable
-  accepts_nested_attributes_for :address
+  has_many :addresses, as: :addressable
+  accepts_nested_attributes_for :addresses
   accepts_nested_attributes_for :extra_field_value
   enum user_type: {
     customer: 0,

@@ -1,0 +1,42 @@
+<div class="row">
+  <div class="col-xl-12">
+    <div class="card mb-30">
+      <div class="card-body">
+        <div class="card-header">
+          <h5 class="card-title">
+            Show
+            <a type="button" class="btn btn-link text-primary p-0 ml-3 float-right" data-toggle="modal" data-target="#season-update-modal">
+              <i data-feather="edit-2" class="icon wh-15"></i>
+            </a>
+          </h5>
+        </div>
+        <fieldset disabled>
+        <%= form_for(@customer, url: customer_path) do |f| %>
+          <%= render 'form', f: f %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+<%= form_for(@customer, url: customer_path) do |f| %>
+  <!-- Basic Info Modal -->
+  <div class="modal fade" id="basic-info-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Basic Info</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+              <%= render 'form', f: f %>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <%= f.submit(@customer.new_record? ? "Create" : "Save changes", class: 'btn btn-outline-primary') %>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>

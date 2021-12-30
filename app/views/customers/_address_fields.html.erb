@@ -1,0 +1,35 @@
+<div class="nested-fields">
+  <div class='link pt-1 links remove_fields_div text-right'>
+    <%= link_to_remove_association 'X', f, class: 'text-danger btn btn-outline-danger rounded' %>
+  </div>
+  <div class="form-group row">
+    <div class="form-group col-12">
+      <%= f.label :address_title %>
+      <%= f.select :address_title, options_for_select(Address.address_titles), {}, class: 'form-control' %>
+    </div>
+    <div class="form-group col-12">
+      <%= f.label :company %>
+      <%= f.text_field :company, class: 'form-control', placeholder: 'Enter Company Name'%>
+    </div>
+    <div class="form-group col-12">
+      <%= f.label :address %>
+      <%= f.text_field :address, class: 'form-control', placeholder: 'Enter Address' %>
+    </div>
+    <div class="form-group col-12">
+      <%= f.label :city %>
+      <%= f.text_field :city, class: 'form-control', placeholder: 'Enter City' %>
+    </div>
+    <div class="form-group col-12">
+      <%= f.label :region %>
+      <%= f.text_field :region, class: 'form-control', placeholder: 'Enter Region' %>
+    </div>
+    <div class="form-group col-12">
+      <%= f.label :postcode %>
+      <%= f.text_field :postcode, class: 'form-control', placeholder: 'Enter Postal Code' %>
+    </div>
+    <div class="form-group col-12">
+      <%= f.label :country %>
+      <%= f.text_field :country, class: 'form-control', placeholder: 'Enter Country' %>
+    </div>
+  </div>
+</div>

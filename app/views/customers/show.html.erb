@@ -1,0 +1,45 @@
+<!-- Main Content Header -->
+<% if @customer.errors.any? %>
+  <div class="alert alert-danger alert-dismissible fade show" role="alert" id="error_explanation">
+    <h5><%= pluralize(@customer.errors.count, "error") %> prohibited this customer from being saved:</h5>
+    <ul class='error-list'>
+      <% @customer.errors.each do |error| %>
+        <li><%= error.full_message %></li>
+      <% end %>
+    </ul>
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+<% end %>
+<div class="main-content-header">
+  <h1>Customer</h1>
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item">
+      <a href="<%= home_path %>" role="button">Dashboard</a>
+    </li>
+    <li class="breadcrumb-item">
+      <a href="<%= customers_path %>">Customer</a>
+    </li>
+    <li class="breadcrumb-item active">
+      <span class="active">Show</span>
+    </li>
+  </ol>
+</div>
+<!-- End Main Content Header -->
+<div class="row">
+  <div class="col-md-12">
+    <%= render 'customers/show/customer_data' %>
+  </div>
+</div>
+<div class="row">
+  <div class="col-md-12">
+  </div>
+</div>
+<div class="row">
+  <div class="col-lg-6">
+  </div>
+
+  <div class="col-lg-6">
+  </div>
+</div>

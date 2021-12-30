@@ -85,6 +85,9 @@
                   </div>
                 </th>
                 <th class="text-center">Name</th>
+                <th class="text-center">Email</th>
+                <th class="text-center">Address</th>
+                <th class="text-center">Phone Number</th>
                 <th colspan="3" class="text-center">Actions</th>
               </tr>
               <% @customers&.each&.with_index(1) do |customer, index| %>
@@ -103,6 +106,9 @@
                     </div>
                   </td>
                   <td class="text-center"><%= customer.name %></td>
+                  <td class="text-center"><%= customer.email %></td>
+                  <td class="text-center"><%= customer.addresses.first.address %></td>
+                  <td class="text-center"><%= customer.phone_number %></td>
 
                   <td class="text-center">
                     <div class="dropdown dropleft">

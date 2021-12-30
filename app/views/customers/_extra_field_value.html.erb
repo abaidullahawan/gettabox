@@ -1,0 +1,9 @@
+<% if @field_names.present? %>
+  <% @field_names&.each do |field_name| %>
+    <div class="form-group ">
+      <%= label_tag :"#{field_name}" %>
+      <% extra_value = @customer.extra_field_value&.field_value.present? ? @system_user.extra_field_value&.field_value[field_name.to_s] : ""%>
+      <%= text_field_tag :"#{field_name}", "", value: extra_value, class: 'form-control', placeholder: "Enter #{field_name}" %>
+    </div>
+  <% end %>
+<% end %>
