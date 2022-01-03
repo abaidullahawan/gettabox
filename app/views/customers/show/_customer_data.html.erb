@@ -1,42 +1,202 @@
-<div class="row">
-  <div class="col-xl-12">
+
+<!-- End Main Content Header -->
+<div class='row'>
+  <div class='col-8 .col-sm-4'>
+    <div class="">
+      <div class="card mb-30">
+        <div class="card-body">
+          <div class="card-header">
+            <h5 class="card-title"> Show</h5>
+          </div>
+          <div class='container border-bottom border-dark'>
+            <div class='row'>
+              <h3 class="fs-14 col-6">Customer Name:</h3>
+              <h3 class="fs-14 col-6"><%= @customer.name %></h3>
+            </div>
+            <div class='row'>
+              <h3 class="fs-14 mb-1 col-6">Trading as:</h3>
+              <h3 class="fs-14 col-6"><%#= @customer.name %></h3>
+            </div>
+          </div>
+          <div class='container border-bottom mt-3'>
+            <% @customer.extra_field_value&.field_value&.each do |extra_field| %>
+              <div class='row'>
+                <h3 class="fs-14 mb-1 col-6"><%= extra_field[0]%>:</h3>
+                <h3 class="fs-14 col-6"><%= extra_field[1]%></h3>
+              </div>
+            <% end %>
+          </div>
+          <div class='container border-bottom mt-3'>
+            <div class='row'>
+              <div class='col-6'>
+                <div class='row'>
+                  <h5 class="fs-14 mb-1 col-4">Vat Number:</h5>
+                  <p class="col-8"><%#= @customer.name %></p>
+                  <h5 class="fs-14 mb-1 col-4">Customer Type:</h5>
+                  <p class="col-8"><%#= @purchase_order&.system_user&.name %></p>
+                  <h5 class="fs-14 mb-1 col-4">Bank Account:</h5>
+                  <p class="col-8"><%#= @purchase_order&.system_user&.days_for_completion_to_delivery %></p>
+                  <h5 class="fs-14 mb-1 col-4">Company Agent:</h5>
+                  <p class="col-8"><%#= @purchase_order&.order_status&.capitalize %></p>
+                  <br><br>
+                </div>
+              </div>
+              <div class='col-6'>
+                <div class='row'>
+                  <h5 class="fs-14 mb-1 col-4">Account Ref:</h5>
+                  <p class="col-8"><%#= @purchase_order.created_at.strftime('%d-%m-%y') %></p>
+                  <h5 class="fs-14 mb-1 col-4">Credit Limit:</h5>
+                  <p class="col-8"><%#= @purchase_order&.system_user&.delivery_method.present? ? @purchase_order.system_user.delivery_method : 'Not Specified' %></p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class='container border-bottom mt-3'>
+            <div class='row'>
+              <h3 class="fs-14 mb-1 col-6">Payment Terms:</h3>
+              <h3 class="fs-14 col-6"><%#= @customer.name %></h3>
+            </div>
+          </div>
+          <div class='container border-bottom mt-3'>
+            <div class='row'>
+              <h3 class="fs-14 mb-1 col-6">Balance:</h3>
+              <h3 class="fs-14 col-6"><%#= @customer.name %></h3>
+            </div>
+          </div>
+          <div class='container border-bottom mt-3'>
+            <div class='row'>
+              <h3 class="fs-14 mb-1 col-6">Loyality Points:</h3>
+              <h3 class="fs-14 col-6"><%#= @customer.name %></h3>
+            </div>
+          </div>
+          <br>
+          <br>
+          <!-- Delivery Data -->
+        </div>
+      </div>
+    </div>
+    <!-- Orders Table Data -->
     <div class="card mb-30">
       <div class="card-body">
         <div class="card-header">
-          <h5 class="card-title">
-            Show
-            <a type="button" class="btn btn-link text-primary p-0 ml-3 float-right" data-toggle="modal" data-target="#season-update-modal">
-              <i data-feather="edit-2" class="icon wh-15"></i>
-            </a>
-          </h5>
+          <h5 class="card-title">Recent Orders</h5>
         </div>
-        <fieldset disabled>
-        <%= form_for(@customer, url: customer_path) do |f| %>
-          <%= render 'form', f: f %>
-        <% end %>
+        <div class="table-responsive">
+          <table class="table table-hover text-vertical-middle mb-0">
+            <thead class="bort-none borpt-0">
+              <tr>
+                <th scope="col">Date</th>
+                <th scope="col">Order ID</th>
+                <th scope="col">Reference</th>
+                <th scope="col">Qty</th>
+                <th scope="col">Cost</th>
+                <th scope="col">Status</th>
+                <th scope="col">Sales Channel</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @customer.channel_orders.each do |order| %>
+                <tr>
+                  <td><%= order.created_at.strftime('%d-%m-%y') %></td>
+                  <td><strong><%= order.id %></strong></td>
+                  <td><%= order.ebayorder_id %></td>
+                  <td>
+                    <% @total_ordered = 0 %>
+                    <% order.channel_order_items.each do |item| %>
+                      <% @total_ordered += item.ordered %>
+                    <% end %>
+                    <%= @total_ordered %>
+                  </td>
+                  <td><%= order.total_amount%></td>
+                  <td><span class="badge badge_success py-1"><%= order.order_status %></span></td>
+                  <td><%= order.channel_type %></td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <!-- Orders Table Data End -->
+  </div>
+
+  <div class='col-4'>
+    <div class="card mb-30">
+      <div class="card-body">
+        <div class='d-flex'>
+          <h3 class='col-10'>Address</h3>
+          <div class='col-2'>
+            <button type="button" class="btn btn-sm btn-primary">Add</button>
+          </div>
+        </div>
+        <div class='mt-4 d-flex'>
+          <h4 class='col-10'>Admin</h4>
+          <div class='col-2'>
+            <button type="button" class="btn btn-sm btn-primary">Edit</button>
+          </div>
+        </div>
+        <h5 class='ml-4 mt-3'><%= @admin_address&.address%></h5>
+        <h5 class='ml-4'><%= @admin_address&.country%></h5>
+        <h5 class='ml-4'><%= @admin_address&.postcode%></h5>
+        <div class='row ml-2'>
+          <h5 class="fs-14 mb-1 col-4">Email</h5>
+          <p class="col-8"><%= @customer&.email %></p>
+          <h5 class="fs-14 mb-1 col-4">Tel</h5>
+          <p class="col-8"><%#= @purchase_order&.system_user&.name %></p>
+          <h5 class="fs-14 mb-1 col-4">Fax</h5>
+          <p class="col-8"><%#= @purchase_order&.system_user&.days_for_completion_to_delivery %></p>
+          <h5 class="fs-14 mb-1 col-4">Mobile</h5>
+          <p class="col-8"><%= @customer&.phone_number %></p>
+          <h5 class="fs-14 mb-1 col-4">EORI</h5>
+          <p class="col-8"><%#= @purchase_order&.order_status&.capitalize %></p>
+          <br><br>
+        </div>
+        <div class='mt-4 d-flex'>
+          <h4 class='col-10'>Delivery</h4>
+          <div class='col-2'>
+            <button type="button" class="btn btn-sm btn-primary">Edit</button>
+          </div>
+        </div>
+        <h5 class='ml-4 mt-3'><%= @delivery_address&.address%></h5>
+        <h5 class='ml-4'><%= @delivery_address&.country%></h5>
+        <h5 class='ml-4'><%= @delivery_address&.postcode%></h5>
+        <div class='row ml-2'>
+          <h5 class="fs-14 mb-1 col-4">Email</h5>
+          <p class="col-8"><%= @customer&.email %></p>
+          <h5 class="fs-14 mb-1 col-4">Tel</h5>
+          <p class="col-8"><%#= @purchase_order&.system_user&.name %></p>
+          <h5 class="fs-14 mb-1 col-4">Fax</h5>
+          <p class="col-8"><%#= @purchase_order&.system_user&.days_for_completion_to_delivery %></p>
+          <h5 class="fs-14 mb-1 col-4">Mobile</h5>
+          <p class="col-8"><%= @customer&.phone_number %></p>
+          <h5 class="fs-14 mb-1 col-4">EORI</h5>
+          <p class="col-8"><%#= @purchase_order&.order_status&.capitalize %></p>
+          <br><br>
+        </div>
+        <div class='mt-4 d-flex'>
+          <h4 class='col-10'>Billing</h4>
+          <div class='col-2'>
+            <button type="button" class="btn btn-sm btn-primary">Edit</button>
+          </div>
+        </div>
+        <h5 class='ml-4 mt-3'><%= @billing_address&.address%></h5>
+        <h5 class='ml-4'><%= @billing_address&.country%></h5>
+        <h5 class='ml-4'><%= @billing_address&.postcode%></h5>
+        <div class='row ml-2'>
+          <h5 class="fs-14 mb-1 col-4">Email</h5>
+          <p class="col-8"><%= @customer&.email %></p>
+          <h5 class="fs-14 mb-1 col-4">Tel</h5>
+          <p class="col-8"><%#= @purchase_order&.system_user&.name %></p>
+          <h5 class="fs-14 mb-1 col-4">Fax</h5>
+          <p class="col-8"><%#= @purchase_order&.system_user&.days_for_completion_to_delivery %></p>
+          <h5 class="fs-14 mb-1 col-4">Mobile</h5>
+          <p class="col-8"><%= @customer&.phone_number %></p>
+          <h5 class="fs-14 mb-1 col-4">EORI</h5>
+          <p class="col-8"><%#= @purchase_order&.order_status&.capitalize %></p>
+          <br><br>
+        </div>
       </div>
     </div>
   </div>
+
 </div>
-<%= form_for(@customer, url: customer_path) do |f| %>
-  <!-- Basic Info Modal -->
-  <div class="modal fade" id="basic-info-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-scrollable" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Basic Info</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-              <%= render 'form', f: f %>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <%= f.submit(@customer.new_record? ? "Create" : "Save changes", class: 'btn btn-outline-primary') %>
-        </div>
-      </div>
-    </div>
-  </div>
-<% end %>

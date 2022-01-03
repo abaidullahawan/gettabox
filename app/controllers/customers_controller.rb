@@ -20,7 +20,11 @@ class CustomersController < ApplicationController
     @customer.build_extra_field_value
   end
 
-  def show; end
+  def show
+    @admin_address = @customer.addresses.find_by(address_title: 'admin')
+    @billing_address = @customer.addresses.find_by(address_title: 'billing')
+    @delivery_address = @customer.addresses.find_by(address_title: 'delivery')
+  end
 
   def new
     @customer = SystemUser.new

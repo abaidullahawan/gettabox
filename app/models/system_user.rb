@@ -6,6 +6,7 @@ class SystemUser < ApplicationRecord
 
   has_many :product_suppliers
   has_many :products, through: :product_suppliers
+  has_many :channel_orders
   has_one :extra_field_value, as: :fieldvalueable
   has_many :purchase_orders, foreign_key: 'supplier_id', primary_key: 'id', dependent: :destroy
   validates :name, presence: true

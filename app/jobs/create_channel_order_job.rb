@@ -22,7 +22,7 @@ class CreateChannelOrderJob < ApplicationJob
         channel_order_record.buyer_name = order['fulfillmentStartInstructions'][0]['shippingStep']['shipTo']['fullName']&.capitalize
         channel_order_record.buyer_username = order['buyer']['username']
         channel_order_record.fulfillment_instruction = order['fulfillmentStartInstructions'][0]['shippingStep']['shippingServiceCode']
-        customer_records(order) if channel_order_record.save
+        customer_records(channel_order_record) if channel_order_record.save
         channel_order_record.order_data['lineItems'].each do |order_product|
           channel_order_item = ChannelOrderItem.find_or_initialize_by(line_item_id: order_product['lineItemId'])
           channel_order_item.channel_order_id = channel_order_record.id
@@ -42,15 +42,15 @@ class CreateChannelOrderJob < ApplicationJob
   end
 
   def customer_records(order)
-    customer = SystemUser.find_or_initialize_by(user_type: 'customer', name: order['buyer']['username'])
-    address = order['buyer']['taxAddress']
+    customer = SystemUser.find_or_initialize_by(user_type: 'customer', name: order.order_data['buyer']['username'])
+    address = order.order_data['buyer']['taxAddress']
     if address.present?
       customer.addresses.build(address_title: 'admin',
                                country: address['countryCode'],
                                region: address['stateOrProvince'],
                                postcode: address['postalCode'])
     end
-    order['fulfillmentStartInstructions'].each do |delivery_address|
+    order.order_data['fulfillmentStartInstructions'].each do |delivery_address|
       cust_add = delivery_address['shippingStep']['shipTo']['contactAddress']
       next unless cust_add.present?
 
@@ -61,7 +61,8 @@ class CreateChannelOrderJob < ApplicationJob
                                country: cust_add['countryCode'],
                                region: cust_add['stateOrProvince'])
     end
-    customer.build_extra_field_value(field_value: {'Sales Channel': 'Gettabox eBay UK'})
     customer.save
+    customer.build_extra_field_value(field_value: {'Sales Channel': 'Gettabox eBay UK'}) if customer.new_record?
+    order.update(system_user_id: customer.id)
   end
 end
