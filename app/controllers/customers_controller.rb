@@ -45,7 +45,7 @@ class CustomersController < ApplicationController
   def update
     respond_to do |format|
       if @customer.update(customer_params)
-        format.html { redirect_to @customer, notice: 'Customer was successfully updated.' }
+        format.html { redirect_to customer_path(@customer), notice: 'Customer was successfully updated.' }
         format.json { render :show, status: :ok, location: @customer }
       else
         format.html { render :edit, status: :unprocessable_entity }
@@ -113,7 +113,7 @@ class CustomersController < ApplicationController
     params.require(:system_user)
           .permit(:user_type, :name, :photo, :payment_method, :days_for_payment, :days_for_order_to_completion,
                   :days_for_completion_to_delivery, :currency_symbol, :exchange_rate, :email, :phone_number,
-                  address_attributes: %i[id company address city region postcode country],
+                  addresses_attributes: %i[id company address city region postcode country address_title _destroy ],
                   extra_field_value_attributes:
                   %i[id field_value])
   end

@@ -96,7 +96,7 @@
             </thead>
             <tbody>
               <% @customer.channel_orders.each do |order| %>
-                <tr>
+                <tr style='cursor: pointer;' data-link="<%= order_dispatches_path(order_filter: 'unprocessed', q:{ebayorder_id_or_order_status_or_buyer_name_cont: order.ebayorder_id}) %>">
                   <td><%= order.created_at.strftime('%d-%m-%y') %></td>
                   <td><strong><%= order.id %></strong></td>
                   <td><%= order.ebayorder_id %></td>
@@ -126,14 +126,13 @@
         <div class='d-flex'>
           <h3 class='col-10'>Address</h3>
           <div class='col-2'>
-            <button type="button" class="btn btn-sm btn-primary">Add</button>
+            <button type="button" class="btn btn-primary float-right" data-toggle="modal" data-target="#customer-update-modal">
+              Edit
+          </button>
           </div>
         </div>
         <div class='mt-4 d-flex'>
           <h4 class='col-10'>Admin</h4>
-          <div class='col-2'>
-            <button type="button" class="btn btn-sm btn-primary">Edit</button>
-          </div>
         </div>
         <h5 class='ml-4 mt-3'><%= @admin_address&.address%></h5>
         <h5 class='ml-4'><%= @admin_address&.country%></h5>
@@ -153,9 +152,6 @@
         </div>
         <div class='mt-4 d-flex'>
           <h4 class='col-10'>Delivery</h4>
-          <div class='col-2'>
-            <button type="button" class="btn btn-sm btn-primary">Edit</button>
-          </div>
         </div>
         <h5 class='ml-4 mt-3'><%= @delivery_address&.address%></h5>
         <h5 class='ml-4'><%= @delivery_address&.country%></h5>
@@ -175,9 +171,6 @@
         </div>
         <div class='mt-4 d-flex'>
           <h4 class='col-10'>Billing</h4>
-          <div class='col-2'>
-            <button type="button" class="btn btn-sm btn-primary">Edit</button>
-          </div>
         </div>
         <h5 class='ml-4 mt-3'><%= @billing_address&.address%></h5>
         <h5 class='ml-4'><%= @billing_address&.country%></h5>
@@ -200,3 +193,25 @@
   </div>
 
 </div>
+
+<%= form_for @customer, url: customer_path(@customer), method: :put do |f| %>
+  <div class="modal fade" id="customer-update-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
+    <div class="modal-dialog  modal-dialog-scrollable modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Edit Customer</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <%= render 'form', f: f %>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+          <%= f.submit 'Update', class: 'btn btn-info'%>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>
