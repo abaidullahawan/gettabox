@@ -23,6 +23,7 @@ class ImportMappingsController < ApplicationController
     @season_export_mappings = ExportMapping.where(table_name: 'Season')
     @category_export_mappings = ExportMapping.where(table_name: 'Category')
     @system_user_export_mappings = ExportMapping.where(table_name: 'SystemUser')
+    @courier_csv_exports = ExportMapping.where(table_name: 'Courier csv export')
   end
 
   # GET /import_mappings/1 or /import_mappings/1.json

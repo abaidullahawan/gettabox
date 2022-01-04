@@ -31,14 +31,14 @@
               <td><%= import_mapping.table_name %></td>
               <td class="text-center font-weight-bold"><%= import_mapping.sub_type %></td>
               <td>
-                <% import_mapping.export_data.each do |data| %>
+                <% import_mapping.mapping_data.each do |data| %>
                   <%= data %><br>
                 <% end %>
               </td>
               <td>
                 <div class= 'd-flex'>
                   <%= link_to 'Destroy', import_mapping, method: :delete, data: { confirm: 'Are you sure?' }, class: "text-white btn btn-danger" %>
-                  <%= link_to 'Edit', edit_export_mapping_path(import_mapping), class: "text-white btn btn-info ml-3 mr-3" %>
+                  <%#= link_to 'Edit', edit_export_mapping_path(import_mapping), class: "text-white btn btn-info ml-3 mr-3" %>
                 </div>
               </td>
               </tr>
