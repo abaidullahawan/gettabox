@@ -16,13 +16,13 @@
           </div>
           <div class='row'>
           <% params[:csv_headers].each do |col_name| %>
-          <div class="col-3">
-            <div class="form-group">
-              <%= label_tag :"#{col_name}" %>
-              <%= select_tag col_name,  options_for_select(params[:column_names]), class: 'chosen-select form-control', prompt: "Select Header"%>
+            <div class="col-3">
+              <div class="form-group">
+                <%= label_tag :"#{col_name}" %>
+                <%= select_tag col_name,  options_for_select(params[:column_names]), class: 'chosen-select form-control', prompt: "Select Header"%>
+              </div>
             </div>
-          </div>
-          <%= hidden_field_tag "map_able[]", col_name %>
+            <%= hidden_field_tag "map_able[]", col_name %>
           <% end %>
           <%= hidden_field_tag "mapped[]", params[:column_names] %>
           </div>
