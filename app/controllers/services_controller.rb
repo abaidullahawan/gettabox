@@ -16,6 +16,7 @@ class ServicesController < ApplicationController
     @services = @q.result(distinct: true).order(created_at: :desc).page(params[:page]).per(params[:limit])
     export_csv(@services) if params[:export_csv].present?
     @service = Service.new
+    @mail_service_rule = MailServiceRule.new
   end
 
   # GET /services/1 or /services/1.json

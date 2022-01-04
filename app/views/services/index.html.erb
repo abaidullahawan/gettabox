@@ -112,7 +112,8 @@
                         <i data-feather='bell' class='icon wh-15 mt-minus-3'></i>
                       </button>
                       <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                        <a class="dropdown-item" href="<%= service_path(service)%>">Show</a>
+                        <a class="dropdown-item" href="<%= service_path(service)%>">Edit</a>
+                        <a href="#" class="dropdown-item new-service-rule-modal" data-toggle="modal" data-target='#new-rule-modal' data-courier='<%= service.courier.id %>' data-service='<%= service.id %>'>Create New Rule</a>
                         <%= link_to 'Archive', service_path(service), method: 'delete', data: {confirm: "Are you sure you want to archive"}, class: "dropdown-item"%>
                       </div>
                     </div>
@@ -146,6 +147,28 @@
         </div>
         <div class="modal-body">
           <%= render 'form', f: f %>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+          <%= f.submit 'Create', class: 'btn btn-info'%>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>
+
+<%= form_for @mail_service_rule, url: mail_service_rules_path, method: :post, remote: true do |f| %>
+  <div class="modal fade ExtraLargeModal" id="new-rule-modal" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Create Rule</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <%= render '/mail_service_rules/new_form', f: f %>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>

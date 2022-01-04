@@ -252,6 +252,31 @@ $(document).on('turbolinks:load', function () {
     window.location = $(this).data("link")
   })
 
+  $('.new-service-rule-modal').on('click', function () {
+    var courier = this.dataset.courier
+    var service = this.dataset.service
+    $.ajax({
+      url: '/mail_service_rules/search_courier_services',
+      data: { 'courier_id': courier },
+      type: "GET",
+      dataType: "json",
+      success: function (response) {
+        $("#mail_service_rule_service_id").html('')
+        if (response == null) {
+          $("#mail_service_rule_service_id").append('<option>-- Please select courier first --</option>')
+        }
+        else {
+          $("#mail_service_rule_service_id").append('<option>-- Select One --</option>')
+          for (var i = 0; i < response.length; i++) {
+            $("#mail_service_rule_service_id").append('<option value="' + response[i]["id"] + '">' + response[i]["name"] + '</option>');
+          }
+          $('#mail_service_rule_service_id').val(service)
+        }
+      }
+    })
+    $('#mail_service_rule_courier_id').val(courier)
+  })
+
 });
 
 // Preloader JS
