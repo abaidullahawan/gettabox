@@ -61,8 +61,8 @@ class CreateChannelOrderJob < ApplicationJob
                                country: cust_add['countryCode'],
                                region: cust_add['stateOrProvince'])
     end
-    customer.save
     customer.build_extra_field_value(field_value: {'Sales Channel': 'Gettabox eBay UK'}) if customer.new_record?
+    customer.save
     order.update(system_user_id: customer.id)
   end
 end
