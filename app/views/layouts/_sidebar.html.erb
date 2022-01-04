@@ -62,6 +62,14 @@
                 </a>
 
                 <a
+                    class="nav-link <%= active_klass(customers_path) %>"
+                    href="<%= customers_path %>"
+                >
+                    <i data-feather="users" class="icon"></i>
+                    <span class="title">Customer</span>
+                </a>
+
+                <a
                     class="nav-link <%= active_klass(system_users_path) %>"
                     href="<%= system_users_path %>"
                 >

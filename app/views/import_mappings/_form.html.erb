@@ -12,9 +12,9 @@
           </div>
           <div class="form-group">
             <%= f.label :sub_type, 'Description' %>
-            <%= f.text_field :sub_type, class: 'form-control'%>
+            <%= f.text_field :sub_type, class: 'form-control', required: true %>
           </div>
-          <% column_names.each do |col_name| %>
+          <% db_columns.each do |col_name| %>
           <div class="d-flex">
             <div class="form-group">
               <%= label_tag :"#{col_name}" %>
