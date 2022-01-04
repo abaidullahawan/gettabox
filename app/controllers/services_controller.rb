@@ -17,6 +17,7 @@ class ServicesController < ApplicationController
     export_csv(@services) if params[:export_csv].present?
     @service = Service.new
     @mail_service_rule = MailServiceRule.new
+    @courier_mappings = ExportMapping.where(table_name: 'Courier csv export').pluck(:sub_type)
   end
 
   # GET /services/1 or /services/1.json
