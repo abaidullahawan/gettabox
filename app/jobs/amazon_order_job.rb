@@ -51,7 +51,7 @@ class AmazonOrderJob < ApplicationJob
         address = "#{order['ShippingAddress']['PostalCode']} #{order['ShippingAddress']['City']} #{order['ShippingAddress']['CountryCode']}" if order['ShippingAddress'].present?
         channel_order.address = address
         channel_order.fulfillment_instruction = order['FulfillmentChannel']
-        channel_order.save
+        customer_records(channel_order) if channel_order.save
         add_product(channel_order.ebayorder_id, access_token, channel_order.id)
         criteria = channel_order.channel_order_items.map { |h| [h[:sku], h[:ordered]] }
         assign_rules = AssignRule.where(criteria: criteria)&.last
@@ -78,5 +78,34 @@ class AmazonOrderJob < ApplicationJob
       channel_item.channel_product_id = ChannelProduct.find_by(item_sku: channel_item.sku)&.id
       channel_item.save
     end
+  end
+
+  def customer_records(order)
+    url = "https://sellingpartnerapi-eu.amazon.com/orders/v0/orders/#{order.ebayorder_id}/buyerInfo"
+    result = AmazonService.amazon_api(@refresh_token_amazon.access_token, url)
+    return puts result unless result[:status]
+
+    create_customer(result[:body], order.order_data)
+  end
+
+  def create_customer(result, order)
+    customer = SystemUser.find_or_initialize_by(user_type: 'customer', email: result['payload']['BuyerEmail'])
+    address = order['ShippingAddress']
+    add_customer_address(customer, address, 'admin')
+    # delivery_address = order['ShippingAddress']
+    add_customer_address(customer, address, 'delivery')
+    customer.build_extra_field_value(field_value: { 'Sales Channel': 'Gettabox eBay UK' }) if customer.new_record?
+    customer.save
+  end
+
+  def add_customer_address(customer, address, title)
+    return unless address.present?
+
+    customer.addresses.build(address_title: title,
+                             address: address['AddressLine1'],
+                             city: address['City'],
+                             postcode: address['PostalCode'],
+                             country: address['CountryCode'],
+                             region: address['StateOrRegion'])
   end
 end
