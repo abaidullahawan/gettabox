@@ -2,6 +2,7 @@
 
 # Export mapping used for exporting files
 class ExportMappingsController < ApplicationController
+  before_action :find_export_mapping, only: %i[edit update destroy]
   def index
     @product_export_mappings = ExportMapping.where(table_name: 'Product')
     @channel_order_export_mappings = ExportMapping.where(table_name: 'ChannelOrder')
@@ -16,15 +17,16 @@ class ExportMappingsController < ApplicationController
     @table_names = %w[Courier Product ChannelOrder ChannelProduct Season Category SystemUser]
   end
 
-  def export_new
-  end
+  def export_new; end
 
   def export_create
-    # byebug
+    @export_mapping = ExportMapping.new(export_mapping_params)
+      @import_mapping = ImportMapping.new(table_name: params[:table_name], mapping_data: mapping,
+                                          sub_type: params[:sub_type], table_data: params[:header_data].split(' '),
+                                          header_data: params[:header_data].split(' '))
   end
-
+  export_mapping_params
   def edit
-    @export_mapping = ExportMapping.find(params[:id])
     @table_names = %w[Courier Product ChannelOrder ChannelProduct Season Category SystemUser]
     @column_names = @export_mapping.table_name.constantize.column_names
   end
@@ -50,20 +52,17 @@ class ExportMappingsController < ApplicationController
       redirect_to export_mappings_path
       flash[:notice] = 'Export Mapping Created.'
     else
-      flash[:alert] = "#{@export_mapping.errors.full_messages}"
+      flash[:alert] = @export_mapping.errors.full_messages.to_s
       redirect_to export_mapping
     end
   end
 
   def update
-    @export_mapping = ExportMapping.find(params[:id])
     @export_mapping.update(export_mapping_params)
     col_names = @export_mapping.table_name.constantize.column_names
     added_columns = []
     col_names.each do |col_name|
-      if params.include? col_name
-        added_columns.push(col_name)
-      end
+      added_columns.push(col_name) if params.include? col_name
     end
     @export_mapping.update(export_data: added_columns)
     redirect_to export_mappings_path
@@ -71,7 +70,6 @@ class ExportMappingsController < ApplicationController
   end
 
   def destroy
-    @export_mapping = ExportMapping.find(params[:id])
     @export_mapping.destroy
     respond_to do |format|
       format.html { redirect_to export_mappings_path, notice: 'Export Mapping was successfully destroyed.' }
@@ -80,6 +78,10 @@ class ExportMappingsController < ApplicationController
   end
 
   private
+
+  def find_export_mapping
+    @export_mapping = ExportMapping.find(params[:id])
+  end
 
   def export_mapping_params
     params.require(:export_mapping).permit(:table_name, :sub_type)
