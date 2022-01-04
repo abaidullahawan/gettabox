@@ -20,12 +20,20 @@ class ExportMappingsController < ApplicationController
   def export_new; end
 
   def export_create
-    @export_mapping = ExportMapping.new(export_mapping_params)
-      @import_mapping = ImportMapping.new(table_name: params[:table_name], mapping_data: mapping,
-                                          sub_type: params[:sub_type], table_data: params[:header_data].split(' '),
-                                          header_data: params[:header_data].split(' '))
+    @export_mapping = ExportMapping.new(table_name: params[:table_name], sub_type: params[:sub_type])
+    mapping = {}
+    params[:map_able].each do |col_name|
+      mapping[col_name.to_s] = params[:"#{col_name}"]
+    end
+    @export_mapping.mapping_data = mapping
+    if @export_mapping.save
+      flash[:notice] = 'Export mapping created'
+    else
+      flash[:alert] = @export_mapping.errors.full_messages
+    end
+    redirect_to import_mappings_path
   end
-  export_mapping_params
+
   def edit
     @table_names = %w[Courier Product ChannelOrder ChannelProduct Season Category SystemUser]
     @column_names = @export_mapping.table_name.constantize.column_names
@@ -43,9 +51,7 @@ class ExportMappingsController < ApplicationController
     col_names = @export_mapping.table_name.constantize.column_names
     added_columns = []
     col_names.each do |col_name|
-      if params.include? col_name
-        added_columns.push(col_name)
-      end
+      added_columns.push(col_name) if params.include? col_name
     end
     @export_mapping.export_data = added_columns
     if @export_mapping.save
