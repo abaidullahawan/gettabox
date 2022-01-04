@@ -15,7 +15,7 @@ class MailServiceRulesController < ApplicationController
     @mail_service_rules = @q.result.order(created_at: :desc).page(params[:page]).per(params[:limit])
     @mail_service_rule = MailServiceRule.new
     export_csv(@mail_service_rules) if params[:export_csv].present?
-    @courier_mappings = ExportMapping.where(table_name: 'Courier csv export').pluck(:sub_type)
+    @courier_mappings = ExportMapping.where(table_name: 'Courier csv export')
   end
 
   # GET /mail_service_rules/1 or /mail_service_rules/1.json

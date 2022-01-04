@@ -39,10 +39,6 @@ class MailServiceRule < ApplicationRecord
     default: 0
   }, _prefix: true
 
-  enum manual_dispatch_label_template: {
-    default: 0
-  }, _prefix: true
-
   enum courier_account: {
     test: 0
   }, _prefix: true
