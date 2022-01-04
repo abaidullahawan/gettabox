@@ -86,7 +86,8 @@
 <div class='form-row'>
   <div class="form-group col-md-4">
   <%= f.label :manual_dispatch_label_template %>
-  <%= f.select :manual_dispatch_label_template, options_for_select(@courier_mappings), {prompt: "Please Select Export Rule"}, class: 'form-control' %>
+  <%= f.select(:manual_dispatch_label_template,  ExportMapping.where(table_name: 'Courier csv export').collect {|u| [u.sub_type, u.id]},{:prompt => 'Select'}, class: 'form-control' ) %>
+  <%#= f.select :manual_dispatch_label_template, options_for_select(@courier_mappings), {prompt: "Please Select Export Rule"}, class: 'form-control' %>
 </div>
 
   <div class="form-group col-md-3">
