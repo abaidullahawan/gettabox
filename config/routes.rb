@@ -231,5 +231,5 @@ Rails.application.routes.draw do
 
   post 'file_mapping', to: 'import_mappings#file_mapping'
   get 'file_mapping_page', to: 'import_mappings#file_mapping_page'
-  get 'table_name', to: 'export_mappings#get_table_columns'
+  get 'table_name', to: 'export_mappings#table_columns'
 end
