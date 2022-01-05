@@ -56,14 +56,15 @@ class OrderDispatchesController < ApplicationController
 
   def courier_csv_export(orders)
     @all_rules = []
+    orders = orders.joins(:assign_rule)
     orders.each do |order|
-      @all_rules.push(order.assign_rule.mail_service_rule.manual_dispatch_label_template)
+      @all_rules.push(order.assign_rule.mail_service_rule.service.export_mapping_id)
     end
     filename = 'attachment.zip'
     temp_file = Tempfile.new(filename)
 
     Zip::File.open(temp_file.path, Zip::File::CREATE) do |zip_file|
-      @all_rules.each do |rule|
+      @all_rules.uniq.compact.each do |rule|
         rule_name = ExportMapping.find_by(id: rule).sub_type
         @export_mapping = ExportMapping.find_by(id: rule)
         attributes = []
@@ -73,7 +74,9 @@ class OrderDispatchesController < ApplicationController
         @csv = CSV.generate(headers: true) do |csv|
           csv << attributes
           orders.each do |order|
-            csv << attributes.map { |attr| order.send(attr) }
+            if order.assign_rule.mail_service_rule.service.export_mapping_id == rule
+              csv << attributes.map { |attr| order.send(attr) }
+            end
           end
         end
         zip_file.get_output_stream("#{rule_name}.csv") { |f| f.puts(@csv) }

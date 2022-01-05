@@ -207,7 +207,7 @@
                     <td>
                       <% if order.assign_rule %>
                         <%= order.assign_rule.mail_service_rule&.courier&.name %><br>
-                        <%= ExportMapping.find_by(id: order.assign_rule&.mail_service_rule&.manual_dispatch_label_template)&.sub_type %>
+                        <%= ExportMapping.find_by(id: order.assign_rule&.mail_service_rule&.service&.export_mapping_id)&.sub_type %>
                       <% end %>
                       <% if order.trackings.present? %>
                         <% order.trackings.each do |tracking| %>
