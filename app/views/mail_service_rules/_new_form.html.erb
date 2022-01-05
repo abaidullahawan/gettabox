@@ -17,7 +17,7 @@
     </div>
   <% else %>
   <div class="form-group col-md-4">
-    <%= f.label :service_id %>
+    <%= f.label 'Service / CSV Template' %>
     <%= f.select :service_id, options_for_select([], f.object.service_id), {include_blank: 'Please select courier first'}, class: "form-control" %>
   </div>
   <% end %>
@@ -84,12 +84,6 @@
 </div>
 
 <div class='form-row'>
-  <div class="form-group col-md-4">
-  <%= f.label :manual_dispatch_label_template %>
-  <%= f.select(:manual_dispatch_label_template,  ExportMapping.where(table_name: 'Courier csv export').collect {|u| [u.sub_type, u.id]},{:prompt => 'Select'}, class: 'form-control' ) %>
-  <%#= f.select :manual_dispatch_label_template, options_for_select(@courier_mappings), {prompt: "Please Select Export Rule"}, class: 'form-control' %>
-</div>
-
   <div class="form-group col-md-3">
     <%= f.label :priority_delivery_days %>
     <%= f.text_field :priority_delivery_days, class: 'form-control', placeholder: '0' %>
@@ -115,6 +109,11 @@
   <div class="form-group col-md-4">
     <%= f.label :additional_label %>
     <%= f.text_field :additional_label, class: 'form-control', placeholder: '0' %>
+  </div>
+
+  <div class="form-group col-md-2 text-center d-none">
+    <%= f.label :tracking_import %>
+    <%= f.check_box :tracking_import, class: 'form-control' %>
   </div>
 </div>
 

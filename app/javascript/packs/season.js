@@ -2,23 +2,33 @@ import $ from 'jquery'
 
 $(document).on('turbolinks:load', function () {
 
-  $('#mail_service_rule_courier_id').on('change', function(){
+  $('#mail_service_rule_courier_id').on('change', function () {
     var a = this.value
+    var courier_name = $("option:selected", this).text()
     $.ajax({
       url: '/mail_service_rules/search_courier_services',
-      data: {'courier_id': a},
+      data: { 'courier_id': a },
       type: "GET",
       dataType: "json",
       success: function (response) {
+        var courier = courier_name;
         $("#mail_service_rule_service_id").html('')
-        if (response == null){
+        if (response == null) {
           $("#mail_service_rule_service_id").append('<option>-- Please select courier first --</option>')
+          $('#mail_service_rule_tracking_import').closest('div').addClass('d-none')
+        }
+        else if(courier == 'Manual Dispatch'){
+          for (var i = 0; i < response.length; i++) {
+            $("#mail_service_rule_service_id").append('<option value="' + response[i]["id"] + '">' + response[i]["name"] + ' / ' + response[i]["template"] + '</option>');
+          }
+          $('#mail_service_rule_tracking_import').closest('div').removeClass('d-none')
         }
         else {
           $("#mail_service_rule_service_id").append('<option>-- Select One --</option>')
           for (var i = 0; i < response.length; i++) {
-            $("#mail_service_rule_service_id").append('<option value="' + response[i]["id"] + '">' + response[i]["name"] + '</option>');
+            $("#mail_service_rule_service_id").append('<option value="' + response[i]["id"] + '">' + response[i]["name"] + ' / ' + response[i]["template"] + '</option>');
           }
+          $('#mail_service_rule_tracking_import').closest('div').addClass('d-none')
         }
       }
     })

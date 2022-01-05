@@ -26,10 +26,11 @@ class ExportMappingsController < ApplicationController
       mapping[col_name.to_s] = params[:"#{col_name}"]
     end
     @export_mapping.mapping_data = mapping
-    if @export_mapping.save
+    service = Service.find_by(id: params[:service])
+    if @export_mapping.save && service.update(export_mapping_id: @export_mapping.id)
       flash[:notice] = 'Export mapping created'
     else
-      flash[:alert] = @export_mapping.errors.full_messages
+      flash[:alert] = @export_mapping.errors.full_messages || service.errors.full_messages
     end
     redirect_to import_mappings_path
   end
