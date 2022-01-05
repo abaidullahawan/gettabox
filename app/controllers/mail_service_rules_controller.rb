@@ -123,7 +123,10 @@ class MailServiceRulesController < ApplicationController
   end
 
   def find_courier(courier_id)
-    Courier.find_by(id: courier_id)&.services&.collect { |u| { "id": u.id, "name": u.name } }
+    Courier
+      .find_by(
+        id: courier_id
+      )&.services&.collect { |u| { "id": u.id, "name": u.name, "template": u.export_mapping&.sub_type } }
   end
 
   def rule_operators(rule_field)

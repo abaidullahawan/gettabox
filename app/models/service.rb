@@ -6,6 +6,7 @@ class Service < ApplicationRecord
 
   belongs_to :courier
   has_many :mail_service_rules, dependent: :destroy
+  belongs_to :export_mapping, optional: true
 
   def self.to_csv
     attributes = all.column_names
