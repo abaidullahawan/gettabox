@@ -54,6 +54,35 @@ class OrderDispatchesController < ApplicationController
     end
   end
 
+  def courier_csv_export(orders)
+    @all_rules = []
+    orders.each do |order|
+      @all_rules.push(order.assign_rule.mail_service_rule.manual_dispatch_label_template)
+    end
+    filename = 'attachment.zip'
+    temp_file = Tempfile.new(filename)
+
+    Zip::File.open(temp_file.path, Zip::File::CREATE) do |zip_file|
+      @all_rules.each do |rule|
+        rule_name = ExportMapping.find_by(id: rule).sub_type
+        @export_mapping = ExportMapping.find_by(id: rule)
+        attributes = []
+        @export_mapping.mapping_data.compact_blank.values.each do |attribute|
+          attributes.push(attribute) if ChannelOrder.column_names.include? attribute
+        end
+        @csv = CSV.generate(headers: true) do |csv|
+          csv << attributes
+          orders.each do |order|
+            csv << attributes.map { |attr| order.send(attr) }
+          end
+        end
+        zip_file.get_output_stream("#{rule_name}.csv") { |f| f.puts(@csv) }
+      end
+    end
+    zip_data = File.read(temp_file.path)
+    send_data(zip_data, :type => 'application/zip', :filename => filename)
+  end
+
   def fetch_response_orders
     if @status.zero?
       flash[:notice] = 'Please CALL eBay Orders.'
@@ -320,10 +349,14 @@ class OrderDispatchesController < ApplicationController
     return unless (params[:order_filter].eql? 'ready') && params[:export]
 
     @not_started_orders = ChannelOrder.where(id: @not_started_orders.pluck(:id), selected: true) if params[:selected]
-    export_csv(@not_started_orders)
-    respond_to do |format|
-      format.html
-      format.csv
+    if params[:courier_csv].present?
+      courier_csv_export(@not_started_orders)
+    else
+      export_csv(@not_started_orders)
+      respond_to do |format|
+        format.html
+        format.csv
+      end
     end
   end
 

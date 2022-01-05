@@ -39,7 +39,7 @@ class ExportMappingsController < ApplicationController
     @column_names = @export_mapping.table_name.constantize.column_names
   end
 
-  def get_table_columns
+  def table_columns
     @table_columns = params[:table_name].constantize.column_names
     respond_to do |format|
       format.json { render json: @table_columns }

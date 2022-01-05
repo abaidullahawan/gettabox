@@ -457,6 +457,8 @@ GEM
     xpath (3.2.0)
       nokogiri (~> 1.8)
     zeitwerk (2.4.2)
+    zip-zip (0.3)
+      rubyzip (>= 1.0.0)
 
 PLATFORMS
   x86_64-linux
@@ -503,6 +505,7 @@ DEPENDENCIES
   rexml (~> 3.2.4)
   roo (~> 2.8)
   rubocop
+  rubyzip (>= 1.0.0)
   sass-rails (>= 6)
   selenium-webdriver
   sidekiq
@@ -519,6 +522,7 @@ DEPENDENCIES
   webpacker (~> 4.0)
   wicked_pdf!
   wkhtmltopdf-binary
+  zip-zip
 
 RUBY VERSION
    ruby 3.0.1p64
