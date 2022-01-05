@@ -36,10 +36,10 @@
           <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
             <%= link_to 'Export All', order_dispatches_path(all: true, export: true, order_filter: params[:order_filter]), class: 'dropdown-item' %>
             <%= link_to 'Export Selected', order_dispatches_path(selected: true, export: true, order_filter: params[:order_filter]), class: 'dropdown-item' %>
-            <%= link_to '1-Click dispatch', order_dispatches_path(selected: true, courier_csv: true, export: true, order_filter: params[:order_filter]), class: 'dropdown-item' %>
+            <%= link_to 'Order Dispatch', order_dispatches_path(selected: true, courier_csv: true, export: true, order_filter: params[:order_filter]), class: 'dropdown-item' %>
             <% @order_exports.each do |export| %>
-                <%= link_to "#{export.sub_type}", order_dispatches_path(export_mapping: export.id,  export: true, order_filter: params[:order_filter]), class: 'dropdown-item' %>
-              <% end %>
+              <%= link_to "#{export.sub_type}", order_dispatches_path(export_mapping: export.id,  export: true, order_filter: params[:order_filter]), class: 'dropdown-item' %>
+            <% end %>
           </div>
         </div>
         <div class="form-group">
