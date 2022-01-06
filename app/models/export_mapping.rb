@@ -1,3 +1,3 @@
 class ExportMapping < ApplicationRecord
-  has_one :service
+  has_one :mail_service_rule
 end

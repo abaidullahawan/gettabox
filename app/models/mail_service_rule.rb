@@ -5,8 +5,9 @@ class MailServiceRule < ApplicationRecord
   acts_as_paranoid
   belongs_to :channel_order, optional: true
   belongs_to :courier
-  belongs_to :service
+  belongs_to :service, optional: true
   has_many :rules
+  belongs_to :export_mapping, optional: true
   accepts_nested_attributes_for :rules
 
   enum label_type: {

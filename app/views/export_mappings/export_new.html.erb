@@ -7,16 +7,11 @@
         </div>
         <%= form_with url: '/export_mappings/export_create', remote: true do |f| %>
           <div class="form-group">
-            <%= f.label :table_name %>
-            <%= f.select :table_name, ['Courier csv export'], {}, class: 'form-control'%>
+            <%= f.hidden_field :table_name, value:  'Courier csv export', class: 'form-control', disabled: true%>
           </div>
           <div class="form-group">
-            <%= f.label :sub_type %>
+            <%= f.label 'Title' %>
             <%= f.text_field :sub_type, class: 'form-control', required: true %>
-          </div>
-          <div class="form-group">
-            <%= label_tag 'service' %>
-            <%= select_tag 'service', options_for_select(Service.all.map { | s | [s.name, s.id] }), class: "form-control", required: true, include_blank: 'Please select service' %>
           </div>
           <div class='row'>
           <% params[:csv_headers].each do |col_name| %>

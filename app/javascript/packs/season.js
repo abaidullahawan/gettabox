@@ -18,15 +18,16 @@ $(document).on('turbolinks:load', function () {
           $('#mail_service_rule_tracking_import').closest('div').addClass('d-none')
         }
         else if(courier == 'Manual Dispatch'){
-          for (var i = 0; i < response.length; i++) {
-            $("#mail_service_rule_service_id").append('<option value="' + response[i]["id"] + '">' + response[i]["name"] + ' / ' + response[i]["template"] + '</option>');
-          }
+          $('#mail_service_rule_service_id').closest('div').addClass('d-none')
+          $('#mail_service_rule_export_mapping_id').closest('div').removeClass('d-none')
           $('#mail_service_rule_tracking_import').closest('div').removeClass('d-none')
         }
         else {
+          $('#mail_service_rule_service_id').closest('div').removeClass('d-none')
+          $('#mail_service_rule_export_mapping_id').closest('div').addClass('d-none')
           $("#mail_service_rule_service_id").append('<option>-- Select One --</option>')
           for (var i = 0; i < response.length; i++) {
-            $("#mail_service_rule_service_id").append('<option value="' + response[i]["id"] + '">' + response[i]["name"] + ' / ' + response[i]["template"] + '</option>');
+            $("#mail_service_rule_service_id").append('<option value="' + response[i]["id"] + '">' + response[i]["name"] + '</option>');
           }
           $('#mail_service_rule_tracking_import').closest('div').addClass('d-none')
         }
