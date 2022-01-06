@@ -60,30 +60,31 @@ class OrderDispatchesController < ApplicationController
     orders.each do |order|
       @all_rules.push(order.assign_rule.mail_service_rule.export_mapping_id)
     end
-    filename = 'attachment.zip'
-    temp_file = Tempfile.new(filename)
-
-    Zip::File.open(temp_file.path, Zip::File::CREATE) do |zip_file|
-      @all_rules.uniq.compact.each do |rule|
-        rule_name = ExportMapping.find_by(id: rule).sub_type
-        @export_mapping = ExportMapping.find_by(id: rule)
-        attributes = []
-        @export_mapping.mapping_data.compact_blank.values.each do |attribute|
-          attributes.push(attribute) if ChannelOrder.column_names.include? attribute
-        end
-        @csv = CSV.generate(headers: true) do |csv|
-          csv << attributes
-          orders.each do |order|
-            if order.assign_rule.mail_service_rule.service.export_mapping_id == rule
-              csv << attributes.map { |attr| order.send(attr) }
-            end
+    @rules = @all_rules.uniq.compact
+    if @rules.count == 1
+      rule = @rules.first
+      rule_name = ExportMapping.find_by(id: rule).sub_type
+      @export_mapping = ExportMapping.find_by(id: rule)
+      attributes = []
+      @export_mapping.mapping_data.compact_blank.values.each do |attribute|
+        attributes.push(attribute) if ChannelOrder.column_names.include? attribute
+      end
+      @csv = CSV.generate(headers: true) do |csv|
+        csv << attributes
+        orders.each do |order|
+          if order.assign_rule.mail_service_rule.export_mapping_id == rule
+            csv << attributes.map { |attr| order.send(attr) }
           end
         end
-        zip_file.get_output_stream("#{rule_name}.csv") { |f| f.puts(@csv) }
       end
+      request.format = 'csv'
+      respond_to do |format|
+        format.csv { send_data @csv, filename: "#{rule_name}.csv" }
+      end
+    else
+      flash[:alert] = 'Please select order with same template'
+      redirect_to order_dispatches_path(order_filter: 'ready')
     end
-    zip_data = File.read(temp_file.path)
-    send_data(zip_data, :type => 'application/zip', :filename => filename)
   end
 
   def fetch_response_orders
