@@ -58,7 +58,7 @@ class OrderDispatchesController < ApplicationController
     @all_rules = []
     orders = orders.joins(:assign_rule)
     orders.each do |order|
-      @all_rules.push(order.assign_rule.mail_service_rule.service.export_mapping_id)
+      @all_rules.push(order.assign_rule.mail_service_rule.export_mapping_id)
     end
     filename = 'attachment.zip'
     temp_file = Tempfile.new(filename)
