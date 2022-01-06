@@ -7,7 +7,7 @@
         </div>
         <%= form_with url: '/export_mappings/export_create', remote: true do |f| %>
           <div class="form-group">
-            <%= f.hidden_field :table_name, value:  'Courier csv export', class: 'form-control', disabled: true%>
+            <%= f.hidden_field :table_name, value:  'Courier csv export', class: 'form-control', readonly: true%>
           </div>
           <div class="form-group">
             <%= f.label 'Title' %>
