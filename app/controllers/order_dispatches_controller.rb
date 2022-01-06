@@ -56,7 +56,7 @@ class OrderDispatchesController < ApplicationController
 
   def courier_csv_export(orders)
     @all_rules = []
-    orders = orders.joins(:assign_rule)
+    orders = orders.joins(:assign_rule).includes(:assign_rule)
     orders.each do |order|
       @all_rules.push(order.assign_rule.mail_service_rule.export_mapping_id)
     end
@@ -65,15 +65,29 @@ class OrderDispatchesController < ApplicationController
       rule = @rules.first
       rule_name = ExportMapping.find_by(id: rule).sub_type
       @export_mapping = ExportMapping.find_by(id: rule)
-      attributes = []
-      @export_mapping.mapping_data.compact_blank.values.each do |attribute|
-        attributes.push(attribute) if ChannelOrder.column_names.include? attribute
+      channel_order = []
+      channel_order_item = []
+      address = []
+      system_user = []
+      mail_service_label = []
+      @export_mapping.mapping_data.compact_blank.each_value do |attribute|
+        channel_order.push(attribute) if ChannelOrder.column_names.include? attribute
+        channel_order_item.push(attribute) if ChannelOrderItem.column_names.include? attribute
+        address.push(attribute) if Address.column_names.include? attribute
+        system_user.push(attribute) if SystemUser.column_names.include? attribute
+        mail_service_label.push(attribute) if MailServiceLabel.column_names.include? attribute
       end
+      attributes = channel_order + channel_order_item + address + system_user + mail_service_label
       @csv = CSV.generate(headers: true) do |csv|
         csv << attributes
         orders.each do |order|
           if order.assign_rule.mail_service_rule.export_mapping_id == rule
-            csv << attributes.map { |attr| order.send(attr) }
+            order_data = channel_order.map { |attr| order.send(attr) }
+            item_data = channel_order_item.map { |attr| order.channel_order_items.first.send(attr) }
+            address_data = address.map { |attr| order.system_user.addresses.find_by(address_title: 'delivery').send(attr) }
+            system_user_data = system_user.map { |attr| order.system_user.send(attr) }
+            label_data = mail_service_label.map { |attr| order.assign_rule.mail_service_labels.first.send(attr) }
+            csv << order_data + item_data + system_user_data + address_data + label_data
           end
         end
       end

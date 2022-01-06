@@ -7,6 +7,7 @@ class ChannelOrder < ApplicationRecord
   has_one :mail_service_rule, dependent: :destroy
   belongs_to :assign_rule, optional: true
   belongs_to :channel_order, optional: true
+  belongs_to :system_user
   validates_uniqueness_of :order_data
   validates_uniqueness_of :ebayorder_id
   enum channel_type: {
