@@ -35,8 +35,7 @@
           </button>
           <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
             <%= link_to 'Export All', order_dispatches_path(all: true, export: true, order_filter: params[:order_filter]), class: 'dropdown-item' %>
-            <%= link_to 'Export Selected', order_dispatches_path(selected: true, export: true, order_filter: params[:order_filter]), class: 'dropdown-item' %>
-            <%= link_to 'Order Dispatch', order_dispatches_path(selected: true, courier_csv: true, export: true, order_filter: params[:order_filter]), class: 'dropdown-item' %>
+            <%#= link_to 'Export Selected', order_dispatches_path(selected: true, export: true, order_filter: params[:order_filter]), class: 'dropdown-item' %>
             <% @order_exports.each do |export| %>
               <%= link_to "#{export.sub_type}", order_dispatches_path(export_mapping: export.id,  export: true, order_filter: params[:order_filter]), class: 'dropdown-item' %>
             <% end %>
@@ -110,7 +109,7 @@
             <a class="nav-link <%= 'active' if params[:order_filter].eql? 'ready' %>" href=<%= order_dispatches_path(order_filter: 'ready', q: { channel_type_eq: params[:q].try(:[], :channel_type_eq), ebayorder_id_or_order_status_or_buyer_name_cont: params[:q].try(:[], :ebayorder_id_or_order_status_or_buyer_name_cont)})%>><%= "Ready to Dispatch(#{@not_started_orders.count})" %></a>
           </li>
           <li class="nav-item">
-            <a class="nav-link <%= 'active' if params[:order_filter].eql? 'assignment' %>" href=<%= order_dispatches_path(order_filter: 'assignment', q: { channel_type_eq: params[:q].try(:[], :channel_type_eq), ebayorder_id_or_order_status_or_buyer_name_cont: params[:q].try(:[], :ebayorder_id_or_order_status_or_buyer_name_cont)})%>><%= "Assigned Orders" %></a>
+            <a class="nav-link <%= 'active' if params[:order_filter].eql? 'pack' %>" href=<%= order_dispatches_path(order_filter: 'pack', q: { channel_type_eq: params[:q].try(:[], :channel_type_eq), ebayorder_id_or_order_status_or_buyer_name_cont: params[:q].try(:[], :ebayorder_id_or_order_status_or_buyer_name_cont)})%>><%= "Ready to Pack" %></a>
           </li>
           <li class="nav-item">
             <a class="nav-link <%= 'active' if params[:order_filter].eql? 'issue' %>" href=<%= order_dispatches_path(order_filter: 'issue', q: { channel_type_eq: params[:q].try(:[], :channel_type_eq), ebayorder_id_or_order_status_or_buyer_name_cont: params[:q].try(:[], :ebayorder_id_or_order_status_or_buyer_name_cont)})%>><%= "Issue Orders (#{@issue_orders_count.to_i})"%></a>
@@ -129,8 +128,8 @@
           <div class="tab-pane fade <%= 'show active' if params[:order_filter].eql? 'ready' %>" id="demo_three_home" role="tabpanel">
             <%= render 'ready_to_dispatch_orders' if params[:order_filter].eql? 'ready' %>
           </div>
-          <div class="tab-pane fade <%= 'show active' if params[:order_filter].eql? 'assignment' %>" id="demo_four_home" role="tabpanel">
-            <%= render 'order_for_assignment' if params[:order_filter].eql? 'assignment' %>
+          <div class="tab-pane fade <%= 'show active' if params[:order_filter].eql? 'pack' %>" id="demo_four_home" role="tabpanel">
+            <%= render 'ready_to_pack' if params[:order_filter].eql? 'pack' %>
           </div>
           <div class="tab-pane fade <%= 'show active' if params[:order_filter].eql? 'issue' %>" id="demo_five_home" role="tabpanel">
             <%= render 'issue_orders' if params[:order_filter].eql? 'issue' %>

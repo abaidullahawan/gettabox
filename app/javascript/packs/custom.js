@@ -222,6 +222,10 @@ $(document).on('turbolinks:load', function () {
     $('.bulk-method-order-disaptch').trigger('click')
   })
 
+  $('.order-dispatch-export-button').on('click', function () {
+    $('.order-dispatch-export-method').trigger('click')
+  })
+
   $('#export_mapping_table_name').on('change', function () {
     var table = $("#export_mapping_table_name").val()
     $.ajax({
