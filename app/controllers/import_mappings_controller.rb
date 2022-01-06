@@ -266,10 +266,12 @@ class ImportMappingsController < ApplicationController
   def courier_csv_export
     file = params[:channel_order][:file]
     if file.present? && file.path.split('.').last.to_s.downcase == 'csv'
+      to_be_ignored = ['id', 'user_type', 'selected','created_at', 'updated_at']
       csv_text = File.read(file)
       csv_headers = CSV.parse(csv_text, headers: true).headers
-      column_names = (ChannelOrder.column_names + MailServiceLabel.column_names.excluding('id') + SystemUser.column_names.excluding('id') + Address.column_names.excluding('id'))
-                     .excluding('user_type', 'selected', 'created_at', 'updated_at')
+      column_names = (ChannelOrder.column_names + ChannelOrderItem.column_names.excluding(to_be_ignored) +
+                      MailServiceLabel.column_names.excluding(to_be_ignored) + SystemUser.column_names
+                      .excluding(to_be_ignored) + Address.column_names.excluding.excluding(to_be_ignored))
       redirect_to export_new_export_mappings_path(column_names: column_names, csv_headers: csv_headers)
       # export_mapping = ExportMapping.new(table_name: 'Order', sub_type: 'Courier csv export', export_data: csv_headers)
       # if export_mapping.save

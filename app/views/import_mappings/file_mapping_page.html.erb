@@ -9,7 +9,7 @@
           <h3 class='mb-3'>Please Add File Mapping</h3>
           <div class="form-group">
             <%= f.label :sub_type, 'Description' %>
-            <%= f.text_field :sub_type, class: 'form-control'%>
+            <%= f.text_field :sub_type, required: true, class: 'form-control'%>
           </div>
           <% @csv1_headers.each_slice(5) do |map| %>
             <div class="row">
