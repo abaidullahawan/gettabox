@@ -108,6 +108,7 @@ class MailServiceRulesController < ApplicationController
   # Use callbacks to share common setup or constraints between actions.
   def set_mail_service_rule
     @mail_service_rule = MailServiceRule.find(params[:id])
+    @courier_mappings = ExportMapping.where(table_name: 'Courier csv export')
   end
 
   # Only allow a list of trusted parameters through.
@@ -116,17 +117,19 @@ class MailServiceRulesController < ApplicationController
       :service_name, :rule_name, :channel_order_id, :public_cost, :initial_weight, :additonal_cost_per_kg,
       :vat_percentage, :label_type, :csv_file, :courier_account, :rule_naming_type, :manual_dispatch_label_template,
       :priority_delivery_days, :is_priority, :estimated_delivery_days, :courier_id, :service_id, :print_queue_type,
-      :additional_label, :pickup_address, :bonus_score, :base_weight, :base_weight_max,
+      :additional_label, :pickup_address, :bonus_score, :base_weight, :base_weight_max, :export_mapping_id,
       mail_service_labels_attributes: %i[id length width height weight product_ids courier_id _destroy],
       rules_attributes: %i[id rule_field rule_operator rule_value is_optional mail_service_rule_id _destroy]
     )
   end
 
   def find_courier(courier_id)
-    Courier
-      .find_by(
-        id: courier_id
-      )&.services&.collect { |u| { "id": u.id, "name": u.name, "template": u.export_mapping&.sub_type } }
+    courier = Courier.find_by(id: courier_id)
+    if courier.name.eql? 'Manual Dispatch'
+      ExportMapping.where(table_name: 'Courier csv export')&.collect { |u| { "id": u.id, "name": u.sub_type } }
+    else
+      courier.services&.collect { |u| { "id": u.id, "name": u.name } }
+    end
   end
 
   def rule_operators(rule_field)
