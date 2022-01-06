@@ -11,6 +11,8 @@
             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
               <a class="bulk-assign-rule dropdown-item">Assign Rule</a>
               <a class="bulk-assign-rule dropdown-item">Recalculate Rule</a>
+              <a class="order-dispatch-export-button dropdown-item">Order Dispatch</a>
+              <a class="one-click-dispatch dropdown-item" data-toggle="modal" data-target=".ExtraLargeModal">1-Click Dispatch</a>
             </div>
             <%# <label for="inputState">Per Page</label> %>
             <%#= select_tag :limit, options_for_select([5, 10, 15, 20], selected: params[:limit] || 5), id: 'change_per_page', class: 'form-control' %>
@@ -29,10 +31,6 @@
                 <tr>
                   <th>
                     <input type="checkbox" id="" name="" value="" class='select-all-checkbox'>
-                    <div class="custom-control custom-switch">
-                      <input type="checkbox" class="custom-control-input" id="customSwitchAll">
-                      <label class="custom-control-label" for="customSwitchAll"></label>
-                    </div>
                   </th>
                   <th scope="col">Channel</th>
                   <th scope="col">Order Information</th>
@@ -51,10 +49,6 @@
                   <tr>
                     <td>
                       <%= f.check_box 'object_ids[]', {}, order.id %>
-                      <div class="custom-control custom-switch">
-                        <input type="checkbox" class="custom-control-input customSwitch1" name="orders-switch" id="<%=order.id%>" <%= order.selected? ? 'checked': ''%>>
-                        <label class="custom-control-label" for="<%=order.id%>"></label>
-                      </div>
                     </td>
                     <td style = "width: 180px">
                       <%= render  'image_partial', order: order %>
@@ -280,6 +274,7 @@
             </div>
           </div>
           <%= f.submit '', class: 'bulk-method-order-disaptch d-none'%>
+          <%= f.submit 'order_dispatch', class: 'order-dispatch-export-method d-none' %>
         <% end %>
       </div>
     </div>
@@ -307,3 +302,25 @@
     </div>
   </div>
 <% end %>
+
+  <div class="modal fade ExtraLargeModal" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">1-Click Dispatch</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <%= render partial: 'one-click-dispatch', locals: {f: f} %>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary">Save changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
