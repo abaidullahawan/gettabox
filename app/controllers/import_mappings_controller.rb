@@ -44,13 +44,13 @@ class ImportMappingsController < ApplicationController
     file = params[:file_1]
     file2 = params[:file_2]
     if file.present? && file.path.split('.').last.to_s.downcase == 'csv'
-      csv_text1 = File.read(file)
+      csv_text1 = File.read(file).force_encoding('ISO-8859-1').encode('utf-8', replace: nil)
       csv1 = CSV.parse(csv_text1, headers: true)
     else
       flash[:alert] = 'File format no matched! Please change file'
     end
     if file2.present? && file2.path.split('.').last.to_s.downcase == 'csv'
-      csv_text2 = File.read(file2)
+      csv_text2 = File.read(file2).force_encoding('ISO-8859-1').encode('utf-8', replace: nil)
       csv2 = CSV.parse(csv_text2, headers: true)
     else
       flash[:alert] = 'File format no matched! Please change file'
