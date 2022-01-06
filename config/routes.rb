@@ -153,6 +153,8 @@ Rails.application.routes.draw do
     end
   end
 
+  resources :order_batches
+
   post 'product_file', to: 'products#import_product_file'
   post 'channel_product_file', to: 'product_mappings#import_product_file'
   post 'order_file', to: 'order_dispatches#import_order_file'

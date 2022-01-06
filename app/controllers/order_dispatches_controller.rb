@@ -15,6 +15,7 @@ class OrderDispatchesController < ApplicationController
     all_order_data if params[:orders_api].present?
     @assign_rule = AssignRule.new
     @assign_rule.mail_service_labels.build
+    @order_batch = OrderBatch.new
   end
 
   def show; end
