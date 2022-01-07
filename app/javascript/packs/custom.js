@@ -143,7 +143,7 @@ $(document).on('turbolinks:load', function () {
   })
 
   $('#customSwitchAll').on('click', function () {
-    var switches = $('input[name="orders-switch"]');
+    var switches = $('.orders-switch');
     switches.prop("checked", this.checked);
     var selected = []
     var unselected = []

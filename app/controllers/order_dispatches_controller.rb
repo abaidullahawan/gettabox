@@ -7,7 +7,7 @@ class OrderDispatchesController < ApplicationController
   # before_action :refresh_token, :refresh_token_amazon, only: %i[index all_order_data]
   before_action :check_status, only: %i[index fetch_response_orders]
   before_action :ransack_params, :load_counts, :unmatched_product_orders, :completed_orders, :no_sku,
-                :not_started_orders, :unpaid_orders, :unmatched_sku, only: %i[index]
+                :not_started_orders, :unpaid_orders, :unmatched_sku, :ready_to_print_orders, only: %i[index]
   before_action :new_product, :product_load_resources, :first_or_create_category, only: %i[index]
 
   def index
@@ -83,6 +83,7 @@ class OrderDispatchesController < ApplicationController
         csv << attributes
         orders.each do |order|
           if order.assign_rule.mail_service_rule.export_mapping_id == rule
+            order.update(ready_to_print: true)
             order_data = channel_order.map { |attr| order.send(attr) }
             item_data = channel_order_item.map { |attr| order.channel_order_items.first.send(attr) }
             address_data = address.map { |attr| order.system_user.addresses.find_by(address_title: 'delivery').send(attr) }
@@ -144,9 +145,9 @@ class OrderDispatchesController < ApplicationController
   end
 
   def update_selected
-    if params[:order_id].present? && params[:selected].present?
+    if params[:order_id].present? || params[:selected].present?
       order = ChannelOrder.find_by(id: params[:order_id])
-      order&.update(selected: params[:selected])
+      order&.update(selected: true)
       message = { result: true }
       message = { result: false, errors: order.errors.full_messages } if order.errors.any?
     else
@@ -387,6 +388,10 @@ class OrderDispatchesController < ApplicationController
                                                     .where.not(order_status: %w[FULFILLED Shipped Pending])
                                                     .order(created_at: :desc).distinct
     @un_matched_product_order = @un_matched_product_order_body.page(params[:unmatched_product_page]).per(params[:limit])
+  end
+
+  def ready_to_print_orders
+    @orders = ChannelOrder.where(ready_to_print: true)
   end
 
   def csv_export(orders)
