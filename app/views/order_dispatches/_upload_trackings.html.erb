@@ -1,0 +1,4 @@
+<%= form_tag multi_file_path, local:true, multipart: true, method: :post do%>
+  <%= file_field_tag "file_1", :accept => 'csv', required: true%>
+  <%= submit_tag 'Create Mapping', class:"btn btn-primary"%>
+<% end %>
