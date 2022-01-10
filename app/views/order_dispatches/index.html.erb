@@ -109,7 +109,7 @@
             <a class="nav-link <%= 'active' if params[:order_filter].eql? 'ready' %>" href=<%= order_dispatches_path(order_filter: 'ready', q: { channel_type_eq: params[:q].try(:[], :channel_type_eq), ebayorder_id_or_order_status_or_buyer_name_cont: params[:q].try(:[], :ebayorder_id_or_order_status_or_buyer_name_cont)})%>><%= "Ready to Dispatch(#{@not_started_orders.count})" %></a>
           </li>
           <li class="nav-item">
-            <a class="nav-link <%= 'active' if params[:order_filter].eql? 'assignment' %>" href=<%= order_dispatches_path(order_filter: 'assignment', q: { channel_type_eq: params[:q].try(:[], :channel_type_eq), ebayorder_id_or_order_status_or_buyer_name_cont: params[:q].try(:[], :ebayorder_id_or_order_status_or_buyer_name_cont)})%>><%= "Ready to Pack" %></a>
+            <a class="nav-link <%= 'active' if params[:order_filter].eql? 'assignment' %>" href=<%= order_dispatches_path(order_filter: 'assignment', q: { channel_type_eq: params[:q].try(:[], :channel_type_eq), ebayorder_id_or_order_status_or_buyer_name_cont: params[:q].try(:[], :ebayorder_id_or_order_status_or_buyer_name_cont)})%>><%= "Ready to Pack(#{@ready_to_pack_count})" %></a>
           </li>
           <li class="nav-item">
             <a class="nav-link <%= 'active' if params[:order_filter].eql? 'issue' %>" href=<%= order_dispatches_path(order_filter: 'issue', q: { channel_type_eq: params[:q].try(:[], :channel_type_eq), ebayorder_id_or_order_status_or_buyer_name_cont: params[:q].try(:[], :ebayorder_id_or_order_status_or_buyer_name_cont)})%>><%= "Issue Orders (#{@issue_orders_count.to_i})"%></a>
