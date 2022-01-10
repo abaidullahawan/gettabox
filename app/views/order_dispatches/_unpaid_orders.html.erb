@@ -37,7 +37,7 @@
                     <%= order.ebayorder_id %><br>
                     <%= order.buyer_username %><br>
                     <strong><b><%= order.buyer_name %></b></strong><br>
-                    <%= order.address%>
+                    <%= order.system_user&.addresses&.find_by(address_title: 'delivery')&.address%>
                   </td>
                   <td>
                     <% order.channel_order_items.each do |order|%>

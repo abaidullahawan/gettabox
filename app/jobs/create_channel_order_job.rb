@@ -17,8 +17,6 @@ class CreateChannelOrderJob < ApplicationJob
         channel_order_record.payment_status = order['paymentSummary']['payments'].last['paymentStatus']
         channel_order_record.total_amount = order['lineItems'][0]['total']['value']
         contact_address = order['fulfillmentStartInstructions'][0]['shippingStep']['shipTo']['contactAddress']
-        address = "#{contact_address['addressLine1']} #{contact_address['city']} #{contact_address['postalCode']}"
-        channel_order_record.address = address
         channel_order_record.buyer_name = order['fulfillmentStartInstructions'][0]['shippingStep']['shipTo']['fullName']&.capitalize
         channel_order_record.buyer_username = order['buyer']['username']
         channel_order_record.fulfillment_instruction = order['fulfillmentStartInstructions'][0]['shippingStep']['shippingServiceCode']
