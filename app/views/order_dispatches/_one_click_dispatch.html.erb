@@ -1,111 +1,157 @@
-<div class='form-row'>
-  <div class="form-group col-md-2 offset-10">
-    <%= f.label :pick_preset %>
-    <%= f.select :pick_preset, OrderBatch.pick_presets.map { |key, value| [value, key] }, {}, class: "form-control" %>
-  </div>
-</div>
-<div class='row'>
-  <div class='col-md-6'>
-    <div class="card bg-light mb-3">
-      <div class="card-header text-center">Pick Operations</div>
-      <div class="card-body">
-        <div class="row mb-2">
-          <%= f.label :print_packing_list, class: 'h5 font-weight-bold' %>
-          <p>Mark orders as printed and produce Picking list(s) for the order(s).</p>
-          <%= f.select :print_packing_list, OrderBatch.print_packing_lists.map { |key, value| [value, key] }, {}, class: 'form-control' %>
-        </div>
-
-        <div class="row mb-2">
-          <div class='col-2'>
-            <%= f.check_box :mark_as_picked, class: 'form-control' %>
-          </div>
-          <div class='col-10'>
-            <%= f.label :mark_as_picked, class: 'h5 font-weight-bold' %>
-            <p>Mark orders with a picked status to indicate which orders have been retrieved from stock.</p>
-          </div>
-        </div>
-
-        <div class="row mb-2">
-          <div class='col-2'>
-            <%= f.check_box :print_courier_labels, class: 'form-control' %>
-          </div>
-          <div class='col-10'>
-            <%= f.label :print_courier_labels, class: 'h5 font-weight-bold' %>
-            <p>Request shipping labels from the courier(s) for your orders.</p>
-          </div>
-        </div>
-
-      </div>
+<div class="row">
+  <div class="col-10">
+    <div class='h5 d-flex align-items-center'>
+      <%= hidden_field_tag :order_ids %>
+      <i class="icofont-2x icofont-info-circle text-primary mr-1"></i>
+      You are about to perform Pick & Pack operations on <span class='total_orders font-weight-bold'></span> order(s) containing <span class='total_products font-weight-bold'></span> product(s)
     </div>
   </div>
-  <div class='col-md-6'>
-    <div class="card bg-light mb-3">
-      <div class="card-header text-center">Pack Operations</div>
-      <div class="card-body">
-        <div class="row mb-2">
-          <div class='col-2'>
-            <%= f.check_box :print_invoice, class: 'form-control' %>
-          </div>
-          <div class='col-10'>
-            <%= f.label :print_invoice, class: 'h5 font-weight-bold' %>
-            <p>Print an invoice for orders that have already had an invoice generated.</p>
-          </div>
-        </div>
-
-        <div class="row mb-2">
-          <div class='col-2'>
-            <%= f.check_box :update_channels, class: 'form-control' %>
-          </div>
-          <div class='col-10'>
-            <%= f.label :update_channels, class: 'h5 font-weight-bold' %>
-            <p>Indicate to the external channels (i.e. eBay, Amazon) that the orders have been dispatched.</p>
-          </div>
-        </div>
-
-        <div class="row mb-2">
-          <div class='col-2'>
-            <%= f.check_box :mark_order_as_dispatched, class: 'form-control' %>
-          </div>
-          <div class='col-10'>
-            <%= f.label :mark_order_as_dispatched, class: 'h5 font-weight-bold' %>
-            <p>Remove the order from the dispatch queue, producing accompanying documentation for the orders.</p>
-          </div>
-        </div>
+  <div class="col-2">
+    <div class='form-row'>
+      <div class="form-group">
+        <%= f.label :pick_preset %>
+        <%= f.select :pick_preset, OrderBatch.pick_presets.map { |key, value| [value, key] }, {}, class: "form-control" %>
       </div>
     </div>
   </div>
 </div>
-<div class="card bg-light mb-3">
-  <div class="card-header text-center">Options</div>
-  <div class="card-body">
-    <div class="row mb-2">
-      <div class='col-1'>
-        <%= f.check_box :batch_name, class: 'form-control' %>
+<div class="faq-accordion mb-30">
+  <ul class="accordion">
+    <li class="accordion-item">
+      <a class="accordion-title" href="javascript:void(0)">
+        <i class="lni-plus"></i>
+        Pick Operations
+      </a>
+      <div class="accordion-content">
+        <div class='row'>
+          <div class="col-12">
+            <div class="row mb-2">
+              <div class='col-1 d-flex align-items-center'>
+                <%= f.check_box :print_packing_list, class: 'form-control form-control-checkbox' %>
+              </div>
+              <div class='col-5'>
+                <%= f.label :print_packing_list, class: 'h5 font-weight-bold' %>
+                <p>Mark orders as printed and produce Picking list(s) for the order(s).</p>
+              </div>
+              <div class='col-4 d-none'>
+                <%= f.select :print_packing_list_option, OrderBatch.print_packing_list_options.map { |key, value| [value, key] }, {}, disabled: true, class: 'form-control' %>
+              </div>
+            </div>
+          </div>
+          <div class='col-6'>
+            <div class="row mb-2">
+              <div class='col-2 d-flex align-items-center'>
+                <%= f.check_box :mark_as_picked, class: 'form-control form-control-checkbox' %>
+              </div>
+              <div class='col-10'>
+                <%= f.label :mark_as_picked, class: 'h5 font-weight-bold' %>
+                <p>Mark orders with a picked status to indicate which orders have been retrieved from stock.</p>
+              </div>
+            </div>
+          </div>
+          <div class='col-6'>
+            <div class="row mb-2">
+              <div class='col-2 d-flex align-items-center'>
+                <%= f.check_box :print_courier_labels, class: 'form-control form-control-checkbox' %>
+              </div>
+              <div class='col-10'>
+                <%= f.label :print_courier_labels, class: 'h5 font-weight-bold' %>
+                <p>Request shipping labels from the courier(s) for your orders.</p>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class='col-10'>
-        <%= f.label :batch_name, class: 'h5 font-weight-bold' %>
-        <p>Set a distinct name for the batch to recall at a later date or use an existing batch. Type below to search through your recent batches</p>
+    </li>
+    <li class="accordion-item">
+      <a class="accordion-title" href="javascript:void(0)">
+        <i class="lni-plus"></i>
+        Pack Operations
+      </a>
+      <div class="accordion-content">
+        <div class='row'>
+          <div class='col-6'>
+            <div class="row mb-2">
+              <div class='col-2 d-flex align-items-center'>
+                <%= f.check_box :print_invoice, class: 'form-control form-control-checkbox' %>
+              </div>
+              <div class='col-10'>
+                <%= f.label :print_invoice, class: 'h5 font-weight-bold' %>
+                <p>Print an invoice for orders that have already had an invoice generated.</p>
+              </div>
+            </div>
+          </div>
+          <div class='col-6'>
+            <div class="row mb-2">
+              <div class='col-2 d-flex align-items-center'>
+                <%= f.check_box :update_channels, class: 'form-control form-control-checkbox' %>
+              </div>
+              <div class='col-10'>
+                <%= f.label :update_channels, class: 'h5 font-weight-bold' %>
+                <p>Indicate to the external channels (i.e. eBay, Amazon) that the orders have been dispatched.</p>
+              </div>
+            </div>
+          </div>
+          <div class='col-6'>
+            <div class="row mb-2">
+              <div class='col-2 d-flex align-items-center'>
+                <%= f.check_box :mark_order_as_dispatched, class: 'form-control form-control-checkbox' %>
+              </div>
+              <div class='col-10'>
+                <%= f.label :mark_order_as_dispatched, class: 'h5 font-weight-bold' %>
+                <p>Remove the order from the dispatch queue, producing accompanying documentation for the orders.</p>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
-
-    <div class="row mb-2">
-      <div class='col-1'>
-        <%= f.check_box :shipping_rule_max_weight, class: 'form-control' %>
+    </li>
+    <li class="accordion-item">
+      <a class="accordion-title" href="javascript:void(0)">
+        <i class="lni-plus"></i>
+        Options
+      </a>
+      <div class="accordion-content">
+        <div class='row'>
+          <div class='col-12'>
+            <div class="row mb-2">
+              <div class='col-1 d-flex align-items-center'>
+                <%= f.check_box :batch_name, class: 'form-control form-control-checkbox' %>
+              </div>
+              <div class='col-5'>
+                <%= f.label :batch_name, class: 'h5 font-weight-bold' %>
+                <p>Set a distinct name for the batch to recall at a later date or use an existing batch. Type below to search through your recent batches</p>
+              </div>
+              <div class='col-4'>
+                <%= f.label :batch_name %>
+                <%= f.text_field :batch_name, class: 'form-control' %>
+              </div>
+            </div>
+          </div>
+          <div class='col-6'>
+            <div class="row mb-2">
+              <div class='col-2 d-flex align-items-center'>
+                <%= f.check_box :shipping_rule_max_weight, class: 'form-control form-control-checkbox' %>
+              </div>
+              <div class='col-10'>
+                <%= f.label :shipping_rule_max_weight, class: 'h5 font-weight-bold' %>
+                <p>Use the Baseline Weight Max value from the shipping rule to cap the weight of the parcel. This may cause errors on international shipments if the upper bound is set too low</p>
+              </div>
+            </div>
+          </div>
+          <div class='col-6'>
+            <div class="row mb-2">
+              <div class='col-2 d-flex align-items-center'>
+                <%= f.check_box :overwrite_order_notes, class: 'form-control form-control-checkbox' %>
+              </div>
+              <div class='col-10'>
+                <%= f.label :overwrite_order_notes, class: 'h5 font-weight-bold' %>
+                <p>Overwrite the delivery information supplied by the customer with a different message for the selected orders</p>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class='col-10'>
-        <%= f.label :shipping_rule_max_weight, class: 'h5 font-weight-bold' %>
-        <p>Use the Baseline Weight Max value from the shipping rule to cap the weight of the parcel. This may cause errors on international shipments if the upper bound is set too low</p>
-      </div>
-    </div>
-
-    <div class="row mb-2">
-      <div class='col-1'>
-        <%= f.check_box :overwrite_order_notes, class: 'form-control' %>
-      </div>
-      <div class='col-10'>
-        <%= f.label :overwrite_order_notes, class: 'h5 font-weight-bold' %>
-        <p>Overwrite the delivery information supplied by the customer with a different message for the selected orders</p>
-      </div>
-    </div>
-  </div>
+    </li>
+  </ul>
 </div>
