@@ -11,6 +11,7 @@ class OrderDispatchesController < ApplicationController
   before_action :new_product, :product_load_resources, :first_or_create_category, only: %i[index]
 
   def index
+    ChannelOrder.update_all(selected: false)
     @order_exports = ExportMapping.where(table_name: 'ChannelOrder')
     all_order_data if params[:orders_api].present?
     @assign_rule = AssignRule.new
@@ -412,6 +413,7 @@ class OrderDispatchesController < ApplicationController
     @product_data = ChannelProduct.where(status: 'mapped').pluck(:item_sku).compact
     @data = ChannelProduct.pluck(:item_sku).compact
     @today_orders = @channel_orders.where('Date(created_at) = ?', Date.today).distinct.count
+    @ready_to_pack_count = @channel_orders.where(ready_to_print: true).distinct.count
     @issue_orders_count = @channel_orders.joins(:channel_order_items).where('channel_order_items.sku': nil)
                                          .where.not(order_status: %w[FULFILLED Shipped]).distinct.count
     @unpaid_orders_count = @channel_orders.where(payment_status: 'UNPAID')
