@@ -81,6 +81,18 @@ class ServicesController < ApplicationController
     redirect_to services_path
   end
 
+  def csv_create_records(csv)
+    csv.each do |row|
+      service = Service.with_deleted.create_with(name: row['name'], courier_id: row['courier_id'])
+      .find_or_create_by(name: row['name'], courier_id: row['courier_id'])
+      flash[:alert] = "#{service.errors.full_messages} at ID: #{service.id} , Try again " unless update_service(service, row)
+    end
+  end
+  
+  def update_service(service, row)
+    service.update(row.to_hash)
+  end
+
   def bulk_method
     redirect_to services_path
   end
