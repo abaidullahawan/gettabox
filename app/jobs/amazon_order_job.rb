@@ -41,7 +41,7 @@ class AmazonOrderJob < ApplicationJob
   def create_amazon_orders(amazon_orders, access_token)
     amazon_orders.each do |amazon_order|
       amazon_order.response['payload']['Orders'].each do |order|
-        channel_order = ChannelOrder.find_or_initialize_by(ebayorder_id: order['AmazonOrderId'],
+        channel_order = ChannelOrder.find_or_initialize_by(order_id: order['AmazonOrderId'],
                                                            channel_type: 'amazon')
         channel_order.order_data = order
         channel_order.created_at = order['PurchaseDate']
@@ -50,7 +50,7 @@ class AmazonOrderJob < ApplicationJob
         channel_order.total_amount = amount
         channel_order.fulfillment_instruction = order['FulfillmentChannel']
         customer_records(channel_order) if channel_order.save
-        add_product(channel_order.ebayorder_id, access_token, channel_order.id)
+        add_product(channel_order.order_id, access_token, channel_order.id)
         criteria = channel_order.channel_order_items.map { |h| [h[:sku], h[:ordered]] }
         assign_rules = AssignRule.where(criteria: criteria)&.last
         channel_order.update(assign_rule_id: assign_rules.id) if assign_rules.present?
@@ -79,7 +79,7 @@ class AmazonOrderJob < ApplicationJob
   end
 
   def customer_records(order)
-    url = "https://sellingpartnerapi-eu.amazon.com/orders/v0/orders/#{order.ebayorder_id}/buyerInfo"
+    url = "https://sellingpartnerapi-eu.amazon.com/orders/v0/orders/#{order.order_id}/buyerInfo"
     result = AmazonService.amazon_api(@refresh_token_amazon.access_token, url)
     return puts result unless result[:status]
 

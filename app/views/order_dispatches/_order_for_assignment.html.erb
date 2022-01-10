@@ -22,7 +22,7 @@
                     <%= render  'image_partial', order: order %>
                   </td>
                   <td>
-                    <%= order.ebayorder_id %><br>
+                    <%= order.order_id %><br>
                     <%= order.buyer_username %><br>
                     <strong><b><%= order.buyer_name %></b></strong><br>
                     <%= order.system_user&.addresses&.find_by(address_title: 'delivery')&.address %>

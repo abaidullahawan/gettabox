@@ -92,7 +92,7 @@ class AmazonService
 
   # def self.create_orders(result)
   #   result[:body]['payload']['Orders'].each do |order|
-  #     channel_order_record = ChannelOrder.find_or_initialize_by(ebayorder_id: order['AmazonOrderId'],
+  #     channel_order_record = ChannelOrder.find_or_initialize_by(order_id: order['AmazonOrderId'],
   #                                                               channel_type: 'amazon')
 
   #     channel_order_record.order_data = order
