@@ -56,7 +56,7 @@
                       <%= render  'image_partial', order: order %>
                     </td>
                     <td style="width: 170px;">
-                      <%= order.ebayorder_id %>
+                      <%= order.order_id %>
                       <br><%= order.buyer_username %>
                       <br><strong><b><%= order.buyer_name %></b></strong>
                       <br><span class="sku-width"><%= order.system_user&.addresses&.find_by(address_title: 'delivery')&.address%></span>

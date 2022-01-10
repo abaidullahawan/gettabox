@@ -30,10 +30,10 @@ class TrackingsController < ApplicationController
 
   def csv_create_records(csv)
     csv.each do |row|
-      if row['ebayorder_id'].nil?
+      if row['order_id'].nil?
         @order_id = row['channel_order_id']
       else
-        order = ChannelOrder.find_by(ebayorder_id: row['ebayorder_id'])
+        order = ChannelOrder.find_by(order_id: row['order_id'])
         @order_id = order.id if order.present?
       end
       tracking_numbers = row['tracking_no'].split(',')

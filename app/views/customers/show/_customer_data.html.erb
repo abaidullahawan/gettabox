@@ -96,10 +96,10 @@
             </thead>
             <tbody>
               <% @customer.channel_orders.each do |order| %>
-                <tr style='cursor: pointer;' data-link="<%= order_dispatches_path(order_filter: 'unprocessed', q:{ebayorder_id_or_order_status_or_buyer_name_cont: order.ebayorder_id}) %>">
+                <tr style='cursor: pointer;' data-link="<%= order_dispatches_path(order_filter: 'unprocessed', q:{order_id_or_order_status_or_buyer_name_cont: order.order_id}) %>">
                   <td><%= order.created_at.strftime('%d-%m-%y') %></td>
                   <td><strong><%= order.id %></strong></td>
-                  <td><%= order.ebayorder_id %></td>
+                  <td><%= order.order_id %></td>
                   <td>
                     <% @total_ordered = 0 %>
                     <% order.channel_order_items.each do |item| %>

@@ -9,7 +9,7 @@ class CreateChannelOrderJob < ApplicationJob
     @response_orders.each do |response_order|
       response_order.response['orders'].each do |order|
         creationdate = order['creationDate']
-        channel_order_record = ChannelOrder.find_or_initialize_by(ebayorder_id: order['orderId'],
+        channel_order_record = ChannelOrder.find_or_initialize_by(order_id: order['orderId'],
                                                                   channel_type: 'ebay')
         channel_order_record.order_data = order
         channel_order_record.created_at = creationdate
