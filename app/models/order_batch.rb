@@ -2,7 +2,7 @@
 
 # personal detail have all relvent infotmation about user
 class OrderBatch < ApplicationRecord
-  enum print_packing_list: {
+  enum print_packing_list_options: {
     orders: 'Orders',
     products: 'Products'
   }, _prefix: true

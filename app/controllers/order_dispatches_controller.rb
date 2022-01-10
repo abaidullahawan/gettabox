@@ -361,7 +361,7 @@ class OrderDispatchesController < ApplicationController
         .where('channel_order_items.sku': [@product_data]) - @un_matched_product_order).uniq
     else
       @not_started_orders = (@channel_orders
-        .joins(:channel_order_items).where(order_status: 'NOT_STARTED')
+        .joins(:channel_order_items).where(order_status: 'NOT_STARTED', ready_to_print: nil)
         .where.not('channel_order_items.sku': [nil, @unmatch_product_data]) - @un_matched_product_order).uniq
     end
     @not_started_orders = @not_started_orders.sort_by(&:created_at).reverse!

@@ -277,6 +277,35 @@ $(document).on('turbolinks:load', function () {
     $('#mail_service_rule_courier_id').val(courier)
   })
 
+  $('#order_batch_print_packing_list').on('click', function () {
+    var option = this.checked
+    $('#order_batch_print_packing_list_option').prop('disabled', !option)
+    if (option){
+      $($('#order_batch_print_packing_list_option').closest('div')).removeClass('d-none')
+    }
+    else {
+      $($('#order_batch_print_packing_list_option').closest('div')).addClass('d-none')
+    }
+  })
+
+  $('.one-click-dispatch').on('click', function () {
+    var object_ids = $('input[name="object_ids[]"]:checked')
+    var order_ids = object_ids.map(function (i, e) { return e.value }).toArray();
+    if (object_ids.length > 0){
+      $('.total_orders').html(object_ids.length)
+      $('.total_products').html(object_ids.length*2)
+      $('input[name="order_ids"]').val(order_ids)
+      $('.ExtraLargeModal').modal('show')
+    }
+    else {
+      $('.jquery-selected-alert').html('Please select orders first!')
+      $('.jquery-selected-alert').addClass('bg-danger').removeClass('d-none').removeClass('bg-success')
+      $(".jquery-selected-alert").fadeTo(4000, 500).slideUp(500, function () {
+        $(".jquery-selected-alert").slideUp(500);
+      });
+    }
+  })
+
 });
 
 // Preloader JS
