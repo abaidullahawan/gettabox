@@ -48,8 +48,6 @@ class AmazonOrderJob < ApplicationJob
         channel_order.order_status = order['OrderStatus']
         amount = order['OrderTotal'].nil? ? nil : order['OrderTotal']['Amount']
         channel_order.total_amount = amount
-        address = "#{order['ShippingAddress']['PostalCode']} #{order['ShippingAddress']['City']} #{order['ShippingAddress']['CountryCode']}" if order['ShippingAddress'].present?
-        channel_order.address = address
         channel_order.fulfillment_instruction = order['FulfillmentChannel']
         customer_records(channel_order) if channel_order.save
         add_product(channel_order.ebayorder_id, access_token, channel_order.id)
