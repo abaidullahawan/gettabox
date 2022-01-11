@@ -81,6 +81,18 @@ class CouriersController < ApplicationController
     redirect_to couriers_path
   end
 
+  def csv_create_records(csv)
+    csv.each do |row|
+      courier = Courier.with_deleted.create_with(name: row['name'])
+      .find_or_create_by(name: row['name'])
+      flash[:alert] = "#{courier.errors.full_messages} at ID: #{courier.id} , Try again " unless update_courier(courier, row)
+    end
+  end
+  
+  def update_courier(courier, row)
+    courier.update(row.to_hash)
+  end
+
   def bulk_method
     redirect_to couriers_path
   end
