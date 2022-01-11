@@ -50,7 +50,8 @@
                   <tr>
                     <td>
                       <div id="<%=order.id%>" class= 'orders-switch customSwitch1' name="orders-switch">
-                        <%= f.check_box 'object_ids[]', {}, order.id %>
+                        <input id="object_ids[]" class="ml-2 form_field_questions" type="checkbox" data-export="<%= order.assign_rule&.mail_service_rule&.export_mapping_id %>" data-item="<%= order.channel_order_items.count %>" value="<%=order.id%>" name="object_ids[]">
+                        <%# f.check_box 'object_ids[]', {'data-item': order.channel_order_items.count}, order.id %>
                       </div>
                     </td>
                     <td style = "width: 180px">
@@ -307,7 +308,7 @@
   </div>
 <% end %>
 <%= form_for @order_batch, url: order_batches_path, method: :post do |f| %>
-  <div class="modal fade ExtraLargeModal" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel" aria-hidden="true">
+  <div class="modal fade OrderBatchModal" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl">
       <div class="modal-content">
         <div class="modal-header">
@@ -323,7 +324,7 @@
 
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <%= f.submit 'Dispatch Orders', class: 'btn btn-primary' %>
+          <%= f.submit 'Dispatch Orders', class: 'btn btn-primary OrderBatchSubmit' %>
         </div>
       </div>
     </div>
