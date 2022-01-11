@@ -219,7 +219,11 @@ $(document).on('turbolinks:load', function () {
   })
 
   $('.create_service_rule_button').on('click', function () {
-    $('.bulk-method-order-disaptch').trigger('click')
+    $('.bulk-method-order-dispatch').trigger('click')
+  })
+
+  $('.order-dispatch-button').on('click', function () {
+    $('.bulk-courier-order-dispatch').trigger('click')
   })
 
   $('#export_mapping_table_name').on('change', function () {
