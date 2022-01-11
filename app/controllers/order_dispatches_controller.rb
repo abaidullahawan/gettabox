@@ -67,41 +67,32 @@ class OrderDispatchesController < ApplicationController
       rule = @rules.first
       @export_mapping = ExportMapping.find_by(id: rule)
       rule_name = @export_mapping.sub_type
-      channel_order_keys = []
-      channel_order_values = []
-      channel_order_item_keys = []
-      channel_order_item_values = []
-      address_keys = []
-      address_values = []
-      system_user_keys = []
-      system_user_values = []
-      mail_service_label_keys = []
-      mail_service_label_values = []
+      to_be_ignored = ['id', 'user_type', 'selected','created_at', 'updated_at']
+      channel_order_data = {}
+      channel_order_item_data = {}
+      address_data = {}
+      system_user_data = {}
+      mail_service_label_data = {}
       @export_mapping.mapping_data.compact_blank.each do |key, attribute|
-        channel_order_keys.push(key) if ChannelOrder.column_names.include? attribute
-        channel_order_values.push(attribute) if ChannelOrder.column_names.include? attribute
-        channel_order_item_keys.push(key) if ChannelOrderItem.column_names.include? attribute
-        channel_order_item_values.push(attribute) if ChannelOrderItem.column_names.include? attribute
-        address_keys.push(key) if Address.column_names.include? attribute
-        address_values.push(attribute) if Address.column_names.include? attribute
-        system_user_keys.push(key) if SystemUser.column_names.include? attribute
-        system_user_values.push(attribute) if SystemUser.column_names.include? attribute
-        mail_service_label_keys.push(key) if MailServiceLabel.column_names.include? attribute
-        mail_service_label_values.push(attribute) if MailServiceLabel.column_names.include? attribute
+        channel_order_data[key] = attribute if ChannelOrder.column_names.include? attribute
+        channel_order_item_data[key] = attribute if ChannelOrderItem.column_names.excluding(to_be_ignored).include? attribute
+        address_data[key] = attribute if Address.column_names.excluding(to_be_ignored).include? attribute
+        system_user_data[key] = attribute if SystemUser.column_names.excluding(to_be_ignored).include? attribute
+        mail_service_label_data[key] = attribute if MailServiceLabel.column_names.excluding(to_be_ignored).include? attribute
       end
-      attributes = channel_order_keys + channel_order_item_keys + address_keys + system_user_keys + mail_service_label_keys
+      attributes = channel_order_data.keys + channel_order_item_data.keys + system_user_data.keys + address_data.keys + mail_service_label_data.keys
       @csv = CSV.generate(headers: true) do |csv|
         csv << attributes
         orders.each do |order|
           next unless order.assign_rule.mail_service_rule.export_mapping_id == rule
 
           order.update(ready_to_print: true)
-          order_data = channel_order_values.map { |attr| order.send(attr) }
-          item_data = channel_order_item_values.map { |attr| order.channel_order_items.first.send(attr) }
-          address_data = address_values.map { |attr| order.system_user&.addresses&.find_by(address_title: 'delivery')&.send(attr) }
-          system_user_data = system_user_values.map { |attr| order.system_user&.send(attr) }
-          label_data = mail_service_label_values.map { |attr| order.assign_rule.mail_service_labels.first.send(attr) }
-          csv << order_data + item_data + system_user_data + address_data + label_data
+          order_csv = channel_order_data.values.map { |attr| order.send(attr) }
+          item_csv = channel_order_item_data.values.map { |attr| order.channel_order_items.first.send(attr) }
+          address_csv = address_data.values.map { |attr| order.system_user&.addresses&.find_by(address_title: 'delivery')&.send(attr) }
+          system_user_csv = system_user_data.values.map { |attr| order.system_user&.send(attr) }
+          label_csv = mail_service_label_data.values.map { |attr| order.assign_rule.mail_service_labels.first.send(attr) }
+          csv << order_csv + item_csv + system_user_csv + address_csv + label_csv
         end
       end
       request.format = 'csv'
