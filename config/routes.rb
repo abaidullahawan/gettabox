@@ -135,7 +135,7 @@ Rails.application.routes.draw do
   resources :order_dispatches do
     collection do
       post 'import', to: 'order_dispatches#import'
-      post 'bulk_method', to: 'order_dispatches#bulk_method'
+      get 'bulk_method', to: 'order_dispatches#bulk_method'
       post 'assign_rule', to: 'order_dispatches#assign_rule'
       get 'update_selected', to: 'order_dispatches#update_selected'
       get 'bulk_update_selected', to: 'order_dispatches#bulk_update_selected'

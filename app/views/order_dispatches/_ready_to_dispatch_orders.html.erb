@@ -12,7 +12,7 @@
               <a class="bulk-assign-rule dropdown-item">Assign Rule</a>
               <a class="bulk-assign-rule dropdown-item">Recalculate Rule</a>
               <a class="one-click-dispatch dropdown-item">1-Click Dispatch</a>
-              <%= link_to 'Order Dispatch', order_dispatches_path(selected: true, courier_csv: true, export: true, order_filter: params[:order_filter]), class: 'dropdown-item' %>
+              <a class="order-dispatch-button dropdown-item">Order Dispatch</a>
               <a class="upload_trackings dropdown-item" data-toggle="modal" data-target=".upload-trackings">Upload Trackings</a>
             </div>
             <%# <label for="inputState">Per Page</label> %>
@@ -25,7 +25,7 @@
           </div>
         </div>
         <% end %>
-        <%= form_with url: bulk_method_order_dispatches_path, method: :post do |f| %>
+        <%= form_with(url: bulk_method_order_dispatches_path(format: "csv") , method: 'get', local: true) do |f| %>
           <div class="table-responsive">
             <table class="table table-hover text-vertical-middle mb-0">
               <thead class="bort-none borpt-0">
@@ -276,7 +276,8 @@
               </div>
             </div>
           </div>
-          <%= f.submit '', class: 'bulk-method-order-disaptch d-none'%>
+          <%= f.submit '', class: 'bulk-method-order-dispatch d-none'%>
+          <%= f.submit 'courier_csv', class: 'bulk-courier-order-dispatch d-none' %>
         <% end %>
       </div>
     </div>

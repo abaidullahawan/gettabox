@@ -108,6 +108,7 @@ class OrderDispatchesController < ApplicationController
       respond_to do |format|
         format.csv { send_data @csv, filename: "#{rule_name}.csv" }
       end
+      flash[:alert] = 'Courier CSV Export Done!'
     else
       flash[:alert] = 'Please select order with same template'
       redirect_to order_dispatches_path(order_filter: 'ready')
@@ -127,15 +128,20 @@ class OrderDispatchesController < ApplicationController
   def bulk_method
     return unless params[:object_ids].excluding('0').present?
 
-    @assign_rule = AssignRule.create(mail_service_rule_id: params[:rule_id], save_later: true)
-    @service_label = MailServiceLabel.create(height: params[:height], weight: params[:weight], length: params[:length], width: params[:width], assign_rule_id: @assign_rule.id)
-    order_ids = params[:object_ids].excluding('0')
-    order_ids.each do |order|
-      channel_order = ChannelOrder.find(order)
-      channel_order&.update(assign_rule_id: @assign_rule.id)
+    if params[:commit] == 'courier_csv'
+      @orders = ChannelOrder.where(id: params[:object_ids].excluding('0'), selected: true)
+      courier_csv_export(@orders)
+    else
+      @assign_rule = AssignRule.create(mail_service_rule_id: params[:rule_id], save_later: true)
+      @service_label = MailServiceLabel.create(height: params[:height], weight: params[:weight], length: params[:length], width: params[:width], assign_rule_id: @assign_rule.id)
+      order_ids = params[:object_ids].excluding('0')
+      order_ids.each do |order|
+        channel_order = ChannelOrder.find(order)
+        channel_order&.update(assign_rule_id: @assign_rule.id)
+      end
+      redirect_to order_dispatches_path(order_filter: 'ready')
+      flash[:notice] = 'Mail Service Rule Assigned!'
     end
-    redirect_to order_dispatches_path(order_filter: 'ready')
-    flash[:notice] = 'Mail Service Rule Assigned!'
   end
 
   def assign_rule
@@ -380,14 +386,10 @@ class OrderDispatchesController < ApplicationController
     return unless (params[:order_filter].eql? 'ready') && params[:export]
 
     @not_started_orders = ChannelOrder.where(id: @not_started_orders.pluck(:id), selected: true) if params[:selected]
-    if params[:courier_csv].present?
-      courier_csv_export(@not_started_orders)
-    else
-      export_csv(@not_started_orders)
-      respond_to do |format|
-        format.html
-        format.csv
-      end
+    export_csv(@not_started_orders)
+    respond_to do |format|
+      format.html
+      format.csv
     end
   end
 
