@@ -83,17 +83,19 @@ class AmazonOrderJob < ApplicationJob
     result = AmazonService.amazon_api(@refresh_token_amazon.access_token, url)
     return puts result unless result[:status]
 
-    create_customer(result[:body], order.order_data)
+    create_customer(result[:body], order)
   end
 
   def create_customer(result, order)
     customer = SystemUser.find_or_initialize_by(user_type: 'customer', email: result['payload']['BuyerEmail'])
-    address = order['ShippingAddress']
+    address = order.order_data['ShippingAddress']
     add_customer_address(customer, address, 'admin')
     # delivery_address = order['ShippingAddress']
     add_customer_address(customer, address, 'delivery')
-    customer.build_extra_field_value(field_value: { 'Sales Channel': 'Gettabox eBay UK' }) if customer.new_record?
+    customer.sales_channel = 'Amazon UK'
+    customer.name = 'Amazon User'
     customer.save
+    order.update(system_user_id: customer.id)
   end
 
   def add_customer_address(customer, address, title)
