@@ -153,6 +153,18 @@ Rails.application.routes.draw do
     end
   end
 
+  resources :packers do
+    collection do
+      get 'packers', to: 'packers#index'
+      post 'import', to: 'packers#import'
+      post 'bulk_method', to: 'packers#bulk_method'
+      get 'archive', to: 'packers#archive'
+      post 'restore', to: 'packers#restore'
+      post 'permanent_delete', to: 'packers#permanent_delete'
+      post 'season_by_name', to: 'packers#search_season_by_name'
+    end
+  end
+
   resources :order_batches
 
   post 'product_file', to: 'products#import_product_file'
