@@ -229,30 +229,28 @@ $(document).on('turbolinks:load', function () {
   $('#export_mapping_table_name').on('change', function () {
     var table = $("#export_mapping_table_name").val()
     $.ajax({
-        url: '/table_name',
-        type: 'GET',
-        data: { 'table_name': table },
-        success: function(response) {
-          $('.check-boxes').html('')
-          $.each(response , function(index, val) {
-            $('.check-boxes').append('<div class= "col-3">' + '<input type="checkbox" name="'+ val +'" >' + '<label for="'+ val +'"> '+ val +' </label>' + '</br>' + '</div>')
-          });
-        }
+      url: '/table_name',
+      type: 'GET',
+      data: { 'table_name': table },
+      success: function (response) {
+        $('.check-boxes').html('')
+        $.each(response, function (index, val) {
+          $('.check-boxes').append('<div class= "col-3">' + '<input type="checkbox" name="' + val + '" >' + '<label for="' + val + '"> ' + val + ' </label>' + '</br>' + '</div>')
+        });
+      }
     })
   })
 
   $('#extra_field_name_field_type').on('change', function () {
     var field_name = $("#extra_field_name_field_type").val()
-    if(field_name === 'Select')
-      {
-        $('.add-association-button').removeClass('d-none')
-      } else
-      {
-        $('.add-association-button').addClass('d-none')
-      }
+    if (field_name === 'Select') {
+      $('.add-association-button').removeClass('d-none')
+    } else {
+      $('.add-association-button').addClass('d-none')
+    }
   })
 
-  $("tr[data-link]").click(function() {
+  $("tr[data-link]").click(function () {
     window.location = $(this).data("link")
   })
 
@@ -284,7 +282,7 @@ $(document).on('turbolinks:load', function () {
   $('#order_batch_print_packing_list').on('click', function () {
     var option = this.checked
     $('#order_batch_print_packing_list_option').prop('disabled', !option)
-    if (option){
+    if (option) {
       $($('#order_batch_print_packing_list_option').closest('div')).removeClass('d-none')
     }
     else {
@@ -295,11 +293,22 @@ $(document).on('turbolinks:load', function () {
   $('.one-click-dispatch').on('click', function () {
     var object_ids = $('input[name="object_ids[]"]:checked')
     var order_ids = object_ids.map(function (i, e) { return e.value }).toArray();
-    if (object_ids.length > 0){
+    var count = 0
+    object_ids.map(function (i, e) { return count = count + parseInt(e.dataset.item) })
+    var export_ids = object_ids.map(function (i, e) { return e.dataset.export }).toArray();
+    var same_rule = export_ids.every((val, i, arr) => val === arr[0])
+    if (!same_rule) {
+      $('.jquery-selected-alert').html('Please select orders with same rule and export')
+      $('.jquery-selected-alert').addClass('bg-danger').removeClass('d-none').removeClass('bg-success')
+      $(".jquery-selected-alert").fadeTo(4000, 500).slideUp(500, function () {
+        $(".jquery-selected-alert").slideUp(500);
+      });
+    }
+    else if (object_ids.length > 0) {
       $('.total_orders').html(object_ids.length)
-      $('.total_products').html(object_ids.length*2)
+      $('.total_products').html(count)
       $('input[name="order_ids"]').val(order_ids)
-      $('.ExtraLargeModal').modal('show')
+      $('.OrderBatchModal').modal('show')
     }
     else {
       $('.jquery-selected-alert').html('Please select orders first!')
@@ -307,6 +316,12 @@ $(document).on('turbolinks:load', function () {
       $(".jquery-selected-alert").fadeTo(4000, 500).slideUp(500, function () {
         $(".jquery-selected-alert").slideUp(500);
       });
+    }
+  })
+
+  $('.OrderBatchModal').on('hidden.bs.modal', function () {
+    if ($('.OrderBatchSubmit').is(":disabled")) {
+      window.location.reload()
     }
   })
 
