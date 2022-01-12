@@ -22,7 +22,9 @@ class PackersController < ApplicationController
   end
 
   # GET /services/1/edit
-  def edit; end
+  def edit
+    byebug
+end
 
   # POST /services or /services.json
   def create
