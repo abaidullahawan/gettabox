@@ -1,0 +1,18 @@
+<%= f.hidden_field :user_type, value: 'customer'%>
+<div class="form-group">
+  <%= f.label :channel_type %>
+  <%= f.select :channel_type, ChannelOrder.channel_types.map { |key, value| [key.humanize, key] }, {}, class: "form-control" %>
+</div>
+<div class="form-row">
+  <div class='form-group col-md-12' style='border-bottom: 1px solid;'>
+    <h5 class='fs-14'>Products</h5>
+  </div>
+  <div class="form-group col-md-12">
+  <div class='links add_fields_div text-right'>
+    <%= link_to_add_association '+', f, :channel_order_items, partial: 'product_fields', class: 'nested_fields_btn btn btn-outline-primary rounded'%>
+  </div>
+    <%= f.fields_for :channel_order_items do |item|%>
+      <%= render 'product_fields', f: item %>
+    <% end %>
+  </div>
+</div>

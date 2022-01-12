@@ -15,6 +15,7 @@ class Product < ApplicationRecord
   has_many :multipack_products, dependent: :destroy
   has_many :products, through: :multipack_products
   has_many :product_mappings
+  has_many :channel_order_items
 
   belongs_to :category
   belongs_to :season, optional: true

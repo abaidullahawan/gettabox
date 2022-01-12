@@ -1,0 +1,22 @@
+<div class="nested-fields">
+  <div class='link pt-1 links remove_fields_div text-right'>
+    <%= link_to_remove_association 'X', f, class: 'text-danger btn btn-outline-danger rounded' %>
+  </div>
+  <div class="form-group row">
+    <div class="form-group col-6">
+      <%= f.label :sku, 'Product Name' %>
+      <div class="dropdown form-group" style="min-width: 250px;">
+        <%= f.search_field :sku, class: 'form-control dropdown-toggle', id: 'product-title-search', data: {toggle: 'dropdown', option: {array: {index: 0} } }, autocomplete: 'off', placeholder:"Search in Title", onkeyup: "dropdown_search( '/products/products_by_title', 'product-dropdown-list', 'product-list-item', event)", onclick: "dropdown_search( '/products/products_by_title', 'product-dropdown-list', 'product-list-item', event)" %>
+        <span class="searchclear">@@</span>
+        <ul class="dropdown-menu product-dropdown-list search-list" aria-labelledby="product-title-search">
+          <li><label class="dropdown-item product-list-item">Select the Product</label></li>
+        </ul>
+        <%= f.hidden_field :product_id %>
+      </div>
+    </div>
+    <div class="form-group col-3">
+      <%= f.label :ordered, 'Quantity' %>
+      <%= f.text_field :ordered, class: 'form-control', placeholder: 'Enter Quantity' %>
+    </div>
+  </div>
+</div>
