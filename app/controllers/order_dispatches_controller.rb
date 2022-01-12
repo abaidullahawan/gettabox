@@ -21,7 +21,16 @@ class OrderDispatchesController < ApplicationController
 
   def show; end
 
-  def create; end
+  def create
+    @order = ChannelOrder.new(order_dispatches_params)
+    @order.channel_order_items.build
+    if @order.save
+      flash[:notice] = 'Order Created!'
+    else
+      flash[:alert] = @order.errors.full_messages
+    end
+    redirect_to customer_path(@order.system_user)
+  end
 
   def all_order_data
     if params[:amazon]
@@ -231,6 +240,13 @@ class OrderDispatchesController < ApplicationController
 
   private
 
+  def order_dispatches_params
+    params.require(:channel_order)
+          .permit(:buyer_name, :system_user_id, :channel_type, :order_status,
+                  channel_order_items_attributes:
+                  %i[sku ordered product_id _destroy])
+  end
+
   def csv_create_records(csv)
     csv.each do |row|
       row = row.to_hash
@@ -239,7 +255,6 @@ class OrderDispatchesController < ApplicationController
       order.update(row)
     end
   end
-
 
   def open_spreadsheet(file)
     case File.extname(file.original_filename)

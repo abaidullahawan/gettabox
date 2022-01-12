@@ -24,6 +24,9 @@ class CustomersController < ApplicationController
     @admin_address = @customer.addresses.find_by(address_title: 'admin')
     @billing_address = @customer.addresses.find_by(address_title: 'billing')
     @delivery_address = @customer.addresses.find_by(address_title: 'delivery')
+    @product_sku = Product.pluck(:sku)
+    @order = ChannelOrder.new
+    @order.channel_order_items.build
   end
 
   def new
@@ -112,7 +115,7 @@ class CustomersController < ApplicationController
   def customer_params
     params.require(:system_user)
           .permit(:user_type, :name, :photo, :payment_method, :days_for_payment, :days_for_order_to_completion,
-                  :days_for_completion_to_delivery, :currency_symbol, :exchange_rate, :email, :phone_number,
+                  :days_for_completion_to_delivery, :currency_symbol, :exchange_rate, :email, :phone_number, :sales_channel,
                   addresses_attributes: %i[id company address city region postcode country address_title _destroy ],
                   extra_field_value_attributes:
                   %i[id field_value])

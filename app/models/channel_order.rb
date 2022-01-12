@@ -8,12 +8,12 @@ class ChannelOrder < ApplicationRecord
   belongs_to :assign_rule, optional: true
   belongs_to :channel_order, optional: true
   belongs_to :system_user, optional: true
-  validates_uniqueness_of :order_data
-  validates_uniqueness_of :order_id
+  accepts_nested_attributes_for :channel_order_items
   enum channel_type: {
     ebay: 0,
     amazon: 1,
-    shopify: 3
+    shopify: 3,
+    manual_order: 4
   }, _prefix: true
 
   def self.find_product(product)
