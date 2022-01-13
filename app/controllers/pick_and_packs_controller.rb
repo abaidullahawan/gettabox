@@ -14,8 +14,16 @@ class PickAndPacksController < ApplicationController
   end
 
   # GET /services/1 or /services/1.json
-  def show; end
+  def show
+    @orders = @pick_and_pack.channel_orders
+    respond_to do |format|
+      format.js
+    end
+  end
 
+  def show_order 
+    @order_batch = OrderBatch.find(params[:id])
+  end
   # GET /services/new
   def new
     @packer = SystemUser.new
@@ -113,7 +121,7 @@ class PickAndPacksController < ApplicationController
 
   # Use callbacks to share common setup or constraints between actions.
   def set_packer
-    @pick_and_pack = SystemUser.find(params[:id])
+    @pick_and_pack = OrderBatch.find(params[:id])
   end
 
   # Only allow a list of trusted parameters through.
