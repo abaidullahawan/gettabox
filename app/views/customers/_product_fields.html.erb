@@ -18,5 +18,6 @@
       <%= f.label :ordered, 'Quantity' %>
       <%= f.text_field :ordered, class: 'form-control', placeholder: 'Enter Quantity' %>
     </div>
+    <%= f.hidden_field :sales_channel, value: 'manual_order'%>
   </div>
 </div>

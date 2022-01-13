@@ -58,7 +58,7 @@ class CreateChannelOrderJob < ApplicationJob
                                country: cust_add['countryCode'],
                                region: cust_add['stateOrProvince'])
     end
-    customer.sales_channel = 'Ebay UK'
+    customer.sales_channel = 'ebay'
     customer.phone_number = order.order_data['fulfillmentStartInstructions'][0]['shippingStep']['shipTo']['primaryPhone']['phoneNumber']
     customer.email = order.order_data['fulfillmentStartInstructions'][0]['shippingStep']['shipTo']['email']
     order.update(system_user_id: customer.id) if customer.save

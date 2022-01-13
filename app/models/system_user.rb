@@ -21,6 +21,13 @@ class SystemUser < ApplicationRecord
     supplier: 1,
   }, _prefix: true
 
+  enum sales_channel: {
+    ebay: 'ebay',
+    amazon: 'Amazon',
+    shopify: 'shopify',
+    manual_order: 'manual_order'
+  }, _prefix: true
+
   enum payment_method: {
     debit: 0,
     credit: 1

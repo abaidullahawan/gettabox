@@ -340,6 +340,9 @@ $(document).on('turbolinks:load', function () {
     $('.upload-trackings').modal('show')
   })
 
+  $('#q_sales_channel_eq').on('change', function () {
+    $('.customer_ransack_submit').trigger('click')
+  })
 });
 
 // Preloader JS

@@ -5,8 +5,13 @@
     <div class="">
       <div class="card mb-30">
         <div class="card-body">
-          <div class="card-header">
+          <div class="card-header d-flex">
             <h5 class="card-title"> Show</h5>
+            <div class='mr-1 ml-auto'>
+            <button type="button" class="btn btn-primary float-right" data-toggle="modal" data-target="#create-order-modal">
+              Replacement Order
+            </button>
+          </div>
           </div>
           <div class='container border-bottom border-dark'>
             <div class='row'>
@@ -80,11 +85,6 @@
       <div class="card-body">
         <div class="card-header">
           <h5 class="card-title">Recent Orders</h5>
-          <span class='mr-1 float-right'>
-            <button type="button" class="btn btn-primary float-right" data-toggle="modal" data-target="#create-order-modal">
-              Create Order
-            </button>
-          </span>
         </div>
         <div class="table-responsive">
           <table class="table table-hover text-vertical-middle mb-0">
@@ -96,7 +96,7 @@
                 <th scope="col">Qty</th>
                 <th scope="col">Cost</th>
                 <th scope="col">Status</th>
-                <th scope="col">Sales Channel</th>
+                <th scope="col">Channel Type</th>
               </tr>
             </thead>
             <tbody>
