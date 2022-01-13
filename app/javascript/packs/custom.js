@@ -336,8 +336,12 @@ $(document).on('turbolinks:load', function () {
   // })
 
   $('.OrderBatchSubmit').on('click', function () {
-    
-    $('.upload-trackings').modal('show')
+    var object_ids = $('input[name="object_ids[]"]:checked')
+    var rule = object_ids.map(function (i, e) { return e.dataset.courier }).toArray();
+    var same_rule = rule.every((val, i, arr) => val === arr[0]) && rule[0] == 'Manual Dispatch'
+    if (same_rule){
+      $('.upload-trackings').modal('show')
+    }
   })
 
   $('#q_sales_channel_eq').on('change', function () {
