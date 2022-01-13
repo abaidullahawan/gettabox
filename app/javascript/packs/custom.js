@@ -342,6 +342,9 @@ $(document).on('turbolinks:load', function () {
     if (same_rule){
       $('.upload-trackings').modal('show')
     }
+    else {
+      window.location.reload()
+    }
   })
 
   $('#q_sales_channel_eq').on('change', function () {
