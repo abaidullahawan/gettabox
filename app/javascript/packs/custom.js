@@ -347,6 +347,16 @@ $(document).on('turbolinks:load', function () {
     }
   })
 
+  $('.upload-trackings').on('shown.bs.modal', function () {
+    var object_ids = $('input[name="object_ids[]"]:checked')
+    var order_ids = object_ids.map(function (i, e) { return e.value }).toArray();
+    var count = 0
+    object_ids.map(function (i, e) { return count = count + parseInt(e.dataset.item) })
+    var export_ids = object_ids.map(function (i, e) { return e.dataset.export }).toArray();
+    $('#tracking_orders').val(order_ids)
+    $('#export_id').val(export_ids[0])
+  })
+
   $('#q_sales_channel_eq').on('change', function () {
     $('.customer_ransack_submit').trigger('click')
   })
