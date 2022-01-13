@@ -242,7 +242,7 @@ class OrderDispatchesController < ApplicationController
 
   def order_dispatches_params
     params.require(:channel_order)
-          .permit(:buyer_name, :system_user_id, :channel_type, :order_status,
+          .permit(:buyer_name, :system_user_id, :channel_type, :order_status, :order_id,
                   channel_order_items_attributes:
                   %i[sku ordered product_id _destroy])
   end
