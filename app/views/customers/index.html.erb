@@ -54,12 +54,21 @@
                 <a class="dropdown-item" href="#" data-toggle="modal" data-target='#archive-modal'>Archive</a>
               </div>
             </div>
-            <div class="col-md-3"><br>
-              <div class="dropdown form-group">
-                <%= f.search_field :name_or_email_or_phone_number_or_sales_channel_or_addresses_address_or_addresses_postcode_or_channel_orders_order_id_cont, class: 'form-control dropdown-toggle', placeholder:"Please Search", title: "Search in Name, Email, Phone, Postcode, OrderID and Sales Channel" %>
+            <div class="col-md-5"><br>
+              <div class="row">
+                <div class="col-4 form-group">
+                  <%= f.search_field :name_or_email_or_phone_number_or_sales_channel_or_addresses_address_or_addresses_postcode_or_channel_orders_order_id_or_channel_orders_order_status_cont, class: 'form-control dropdown-toggle', placeholder:"Please Search", title: "Search in Name, Email, Phone, Postcode, OrderID, Order Status and Sales Channel" %>
+                </div>
+                <div class="col-4 form-group">
+                  <%= f.search_field :channel_orders_order_id_i_cont_any, class: 'form-control dropdown-toggle', placeholder:"Bulk Search" %>
+                </div>
+                <div class="col-4 form-group">
+                  <%= f.select :sales_channel_eq, options_for_select(SystemUser.sales_channels.map { |key, value| [key.humanize, value]}, f.object.sales_channel_eq), {include_blank: "Please select Channel", hide_label:true, required: true }, class:"form-control product-mapping-select", title: 'Select Status' %>
+                </div>
               </div>
             </div>
-            <div class='col-1 offset-7'>
+            <%= f.submit 'Submit', class: 'customer_ransack_submit d-none'%>
+            <div class='col-1 offset-5'>
               <label for="inputState">Per Page</label>
               <%= select_tag :limit, options_for_select([10, 50, 100, 500, 1000], selected: params[:limit] || 10), id: 'change_per_page', class: 'form-control' %>
               <button type="submit" id="per_page_submit" hidden="hidden"></button>
@@ -84,13 +93,13 @@
                     </div>
                   </div>
                 </th>
-                <th class="text-center">Name</th>
                 <th class="text-center">Type</th>
-                <th class="text-center">Address</th>
+                <th class="text-center">Sales Channel</th>
+                <th class="text-center">Order ID</th>
+                <th class="text-center">Name</th>
+                <th class="text-center">Post Code</th>
                 <th class="text-center">Last Order</th>
                 <th class="text-center">Order Status</th>
-                <th class="text-center">Order ID</th>
-                <th class="text-center">Sales Channel</th>
                 <th colspan="3" class="text-center">Actions</th>
               </tr>
               <% @customers&.each&.with_index(1) do |customer, index| %>
@@ -108,13 +117,13 @@
                       </div>
                     </div>
                   </td>
-                  <td class="text-center"><%= customer.name %></td>
                   <td class="text-center"><%= 'Retail' %></td>
-                  <td class="text-center"><%= customer.addresses.find_by(address_title: 'delivery')&.address %></td>
+                  <td class="text-center"><%= customer.sales_channel %></td>
+                  <td class="text-center"><%= customer.channel_orders.last&.order_id if customer.channel_orders.present?%></td>
+                  <td class="text-center"><%= customer.name %></td>
+                  <td class="text-center"><%= customer.addresses.find_by(address_title: 'delivery')&.postcode %></td>
                   <td class="text-center"><%= time_ago_in_words(customer.channel_orders.last&.created_at) + ' ago' if customer.channel_orders.present? %></td>
                   <td class="text-center"><%= customer.channel_orders.last&.order_status if customer.channel_orders.present?%>
-                  <td class="text-center"><%= customer.channel_orders.last&.order_id if customer.channel_orders.present?%></td>
-                  <td class="text-center"><%= customer.sales_channel %></td>
                   <td class="text-center">
                     <div class="dropdown dropleft">
                       <button class="btn btn-primary" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Actions">

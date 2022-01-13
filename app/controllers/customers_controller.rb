@@ -12,6 +12,7 @@ class CustomersController < ApplicationController
   before_action :fetch_field_names, only: %i[new create show index update]
 
   def index
+    params[:q][:channel_orders_order_id_i_cont_any] = params[:q][:channel_orders_order_id_i_cont_any].split(',') if params[:q].present?
     @q = SystemUser.where(user_type: 0).ransack(params[:q])
     @customers = @q.result(distinct: true).order(created_at: :desc).page(params[:page]).per(params[:limit])
     export_csv(@customers) if params[:export_csv].present?

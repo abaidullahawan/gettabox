@@ -92,7 +92,7 @@ class AmazonOrderJob < ApplicationJob
     add_customer_address(customer, address, 'admin')
     # delivery_address = order['ShippingAddress']
     add_customer_address(customer, address, 'delivery')
-    customer.sales_channel = 'Amazon UK'
+    customer.sales_channel = 'amazon'
     customer.name = 'Amazon User'
     customer.save
     order.update(system_user_id: customer.id)
