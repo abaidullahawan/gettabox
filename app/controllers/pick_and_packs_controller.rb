@@ -21,8 +21,8 @@ class PickAndPacksController < ApplicationController
     end
   end
 
-  def show_order 
-    @order_batch = OrderBatch.find(params[:id])
+  def show_order
+    @order_batch = ChannelOrder.find(params[:id])
   end
   # GET /services/new
   def new
