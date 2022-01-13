@@ -1,0 +1,6 @@
+$('.show_orders').append("<%= escape_javascript(render partial: 'pick_and_packs/show_order_modal', locals: { orders: @orders }) %>");
+$('#orders-modal').show();
+
+$('.pick_and_pack_modal_close').on('click', function(){
+  $('.show_orders').children().remove();
+})

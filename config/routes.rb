@@ -157,6 +157,7 @@ Rails.application.routes.draw do
     collection do
       post 'import', to: 'pick_and_packs#import'
       post 'bulk_method', to: 'pick_and_packs#bulk_method'
+      get 'show_order', to: 'pick_and_packs#show_order'
       get 'archive', to: 'pick_and_packs#archive'
       post 'restore', to: 'pick_and_packs#restore'
       post 'permanent_delete', to: 'pick_and_packs#permanent_delete'

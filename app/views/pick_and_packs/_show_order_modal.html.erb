@@ -1,0 +1,39 @@
+<div class="modal" id="orders-modal" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Orders</h5>
+        <button type="button" class="close pick_and_pack_modal_close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <table class="table m-0 table-hover">
+              <tr>
+                <th class="text-center">Name</th>
+                <th class="text-center">Order No.</th>
+                <th class="text-center">Items</th>
+                <th class="text-center">Actions</th>
+              </tr>
+              <% @orders&.each do |order| %>
+                  <tr>
+                    <td class="text-center"><%= order.buyer_name %></td>
+                    <td class="text-center"><%= order.order_id %></td>
+                    <td class="text-center"><%= order.channel_order_items.count %></td>
+                    <td>
+                      <a href="<%= show_order_pick_and_packs_path(id: order)%>">
+                        <button class="btn btn-primary" type="button">
+                          <i data-feather='bell' class='icon wh-15 mt-minus-3'>Show</i>
+                        </button>
+                      </a>
+                    </td>
+                  </tr>
+              <% end %>
+            </table>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default pick_and_pack_modal_close" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
