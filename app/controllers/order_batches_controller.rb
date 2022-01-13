@@ -8,7 +8,7 @@ class OrderBatchesController < ApplicationController
     @order_batch = OrderBatch.new(order_batch_params)
     if @order_batch.save
       orders = ChannelOrder.where(id: params[:order_ids].split(','))
-      courier_csv_export(orders) if @order_batch.print_courier_labels
+      courier_csv_export(orders) if @order_batch.print_courier_labels && check_rule(orders.first)
       orders.update_all(ready_to_print: true)
     else
       params[:alert] = @order_batch.errors.full_messages
@@ -74,5 +74,11 @@ class OrderBatchesController < ApplicationController
       flash[:alert] = 'Please select order with same template'
       redirect_to order_dispatches_path(order_filter: 'ready')
     end
+  end
+
+  def check_rule(order)
+    return false unless order.assign_rule.mail_service_rule.courier.name.eql? 'Manual Dispatch'
+
+    true
   end
 end

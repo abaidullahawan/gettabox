@@ -1,4 +1,2 @@
-<%= form_tag multi_file_path, local:true, multipart: true, method: :post do%>
-  <%= file_field_tag "file_1", :accept => 'csv', required: true%>
-  <%= submit_tag 'Create Mapping', class:"btn btn-primary"%>
-<% end %>
+<%= select_tag :mapping_type,options_for_select(ImportMapping.where(table_name: 'Tracking').collect{ |u| [u.sub_type, u.sub_type]}), include_blank: 'Please Select Template', required: true, class: 'form-control'%>
+<%= file_field_tag :file, required: true %>
