@@ -17,6 +17,6 @@ class SettingsController < ApplicationController
                       mail_service_rule: MailServiceRule.count,
                       export_mapping: ExportMapping.count,
                       customer: SystemUser.where(user_type: 'customer').count,
-                      packer: SystemUser.where(user_type: 'packer').count }
+                      pick_and_pack: OrderBatch.count }
   end
 end

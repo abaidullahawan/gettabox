@@ -5,6 +5,7 @@ class ChannelOrder < ApplicationRecord
   has_many :channel_order_items, dependent: :destroy
   has_many :trackings
   has_one :mail_service_rule, dependent: :destroy
+  belongs_to :order_batch, optional: true
   belongs_to :assign_rule, optional: true
   belongs_to :channel_order, optional: true
   belongs_to :system_user, optional: true

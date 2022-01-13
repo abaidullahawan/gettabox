@@ -2,6 +2,7 @@
 
 # personal detail have all relvent infotmation about user
 class OrderBatch < ApplicationRecord
+  has_many :channel_orders
   enum print_packing_list_options: {
     orders: 'Orders',
     products: 'Products'
