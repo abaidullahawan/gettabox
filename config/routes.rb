@@ -153,15 +153,14 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :packers do
+  resources :pick_and_packs do
     collection do
-      get 'packers', to: 'packers#index'
-      post 'import', to: 'packers#import'
-      post 'bulk_method', to: 'packers#bulk_method'
-      get 'archive', to: 'packers#archive'
-      post 'restore', to: 'packers#restore'
-      post 'permanent_delete', to: 'packers#permanent_delete'
-      post 'season_by_name', to: 'packers#search_season_by_name'
+      post 'import', to: 'pick_and_packs#import'
+      post 'bulk_method', to: 'pick_and_packs#bulk_method'
+      get 'archive', to: 'pick_and_packs#archive'
+      post 'restore', to: 'pick_and_packs#restore'
+      post 'permanent_delete', to: 'pick_and_packs#permanent_delete'
+      post 'season_by_name', to: 'pick_and_packs#search_season_by_name'
     end
   end
 

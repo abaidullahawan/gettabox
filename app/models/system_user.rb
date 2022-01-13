@@ -19,7 +19,6 @@ class SystemUser < ApplicationRecord
   enum user_type: {
     customer: 0,
     supplier: 1,
-    packer: 2
   }, _prefix: true
 
   enum payment_method: {

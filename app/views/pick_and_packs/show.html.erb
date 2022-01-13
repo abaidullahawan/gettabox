@@ -1,0 +1,93 @@
+<!-- Main Content Header -->
+<div class="main-content-header">
+  <h1>Packers</h1>
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item">
+      <a href="<%= home_path %>">Dashboard</a>
+    </li>
+    <li class="breadcrumb-item">
+      <a href="<%= settings_path %>">Settings</a>
+    </li>
+    <li class="breadcrumb-item active">
+      <a href="<%= pick_and_packs_path %>">Packers</a>
+    </li>
+    <li class="breadcrumb-item active">
+      <span class="active">Show</span>
+    </li>
+  </ol>
+</div>
+<!-- End Main Content Header -->
+<div class="row">
+  <div class="col-xl-12">
+    <div class="card mb-30">
+      <div class="card-body">
+        <div class="table-responsive">
+        <table class="table m-0 table-hover">
+          <tr>
+            <td class="text-left">Customer Name</td>
+            <td> <%= @pick_and_pack.channel_orders.last.buyer_name %></td>
+          </tr>
+          <tr>
+            <td class="text-left">Delivery address</td>
+            <td> <%= @pick_and_pack.channel_orders.last.system_user.addresses.last.address %> </td>
+          </tr>
+          <tr>
+            <td class="text-left">Order ID</td>
+            <td><%= @pick_and_pack.channel_orders.last.order_id %></td>
+          </tr>
+          <tr>
+            <td class="text-left">Order reference</td>
+            <td><%= @pick_and_pack.channel_orders.last.id %></td>
+          </tr>
+          <tr>
+            <td class="text-left">Order date</td>
+            <td><%= @pick_and_pack.channel_orders.last.created_at.to_date %></td>
+          </tr>
+          <tr>
+            <td class="text-left">Delivery date</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="text-left">Courier service</td>
+            <td> <%= @pick_and_pack.channel_orders.last.assign_rule.mail_service_rule.courier.name %> </td>
+          </tr>
+          <tr> 
+            <td class="text-left">Courier rule</td>
+            <td><%= @pick_and_pack.channel_orders.last.assign_rule.mail_service_rule.rule_name %></td>
+          </tr>
+          <tr>
+            <td class="text-left">Total order weight</td>
+            <td><%= @pick_and_pack.channel_orders.last.assign_rule.mail_service_labels.last.weight %></td>
+          </tr>
+        </table>
+      </div>
+        <div class="card-footer bg-transparent d-flex">
+          <button class="ml-auto btn btn-primary">ADD TO CONTAINER</button>
+          <button class="ml-1 btn btn-primary">EDIT ADDRESS</button>
+          <button class="ml-1 btn btn-primary">CHANGE COURIER</button>
+          <button class="ml-1 btn btn-primary">PICK ALL ITEMS</button>
+        </div>
+      </div>
+      <div>
+      <div class="table-responsive">
+        <table class="table m-0 table-hover">
+          <tr>
+            <th class="text-center">Image</th>
+            <th class="text-center">Available</th>
+            <th class="text-center">Dispatched</th>
+            <th class="text-center">Allocated</th>
+            <th class="text-center">Ordered</th>
+          </tr>
+          <tr>
+            <td class="text-center">Image</td>
+            <td class="text-center">1</td>
+            <td class="text-center">1</td>
+            <td class="text-center">1</td>
+            <td class="text-center"><%= @pick_and_pack.channel_orders.last.channel_order_items.last.ordered %></td>
+          </tr>
+        </table>
+      </div>
+      </div>
+    </div>
+  </div>
+</div>
