@@ -1,2 +1,4 @@
 <%= select_tag :mapping_type,options_for_select(ImportMapping.where(table_name: 'Tracking').collect{ |u| [u.sub_type, u.sub_type]}), include_blank: 'Please Select Template', required: true, class: 'form-control'%>
 <%= file_field_tag :file, required: true %>
+<%= hidden_field_tag :tracking_orders %>
+<%= hidden_field_tag :export_id %>
