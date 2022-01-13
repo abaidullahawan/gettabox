@@ -54,9 +54,13 @@
               <div class='col-2 d-flex align-items-center'>
                 <%= f.check_box :print_courier_labels, class: 'form-control form-control-checkbox' %>
               </div>
-              <div class='col-10'>
+              <div class='col-10 order_batch_print_courier_labels '>
                 <%= f.label :print_courier_labels, class: 'h5 font-weight-bold' %>
                 <p>Request shipping labels from the courier(s) for your orders.</p>
+              </div>
+              <div class='col-10 manual-dispatch-csv  d-none'>
+                <label class='h5 font-weight-bold' for='order_batch_print_courier_labels'>CSV Export</label>
+                <p>Export CSV for tracking from your orders. </p>
               </div>
             </div>
           </div>

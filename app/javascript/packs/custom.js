@@ -296,8 +296,18 @@ $(document).on('turbolinks:load', function () {
     var count = 0
     object_ids.map(function (i, e) { return count = count + parseInt(e.dataset.item) })
     var export_ids = object_ids.map(function (i, e) { return e.dataset.export }).toArray();
-    var same_rule = export_ids.every((val, i, arr) => val === arr[0])
-    if (!same_rule) {
+    var same_export = export_ids.every((val, i, arr) => val === arr[0])
+    var rule = object_ids.map(function (i, e) { return e.dataset.courier }).toArray();
+    var same_rule = rule.every((val, i, arr) => val === arr[0]) && rule[0] == 'Manual Dispatch'
+    if (same_rule) {
+      $('.order_batch_print_courier_labels').addClass('d-none')
+      $('.manual-dispatch-csv').removeClass('d-none')
+    }
+    else {
+      $('.order_batch_print_courier_labels').removeClass('d-none')
+      $('.manual-dispatch-csv').addClass('d-none')
+    }
+    if (!same_export) {
       $('.jquery-selected-alert').html('Please select orders with same rule and export')
       $('.jquery-selected-alert').addClass('bg-danger').removeClass('d-none').removeClass('bg-success')
       $(".jquery-selected-alert").fadeTo(4000, 500).slideUp(500, function () {
@@ -319,10 +329,15 @@ $(document).on('turbolinks:load', function () {
     }
   })
 
-  $('.OrderBatchModal').on('hidden.bs.modal', function () {
-    if ($('.OrderBatchSubmit').is(":disabled")) {
-      window.location.reload()
-    }
+  // $('.OrderBatchModal').on('hidden.bs.modal', function () {
+  //   if ($('.OrderBatchSubmit').is(":disabled")) {
+  //     window.location.reload()
+  //   }
+  // })
+
+  $('.OrderBatchSubmit').on('click', function () {
+    
+    $('.upload-trackings').modal('show')
   })
 
 });

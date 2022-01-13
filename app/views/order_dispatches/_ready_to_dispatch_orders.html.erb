@@ -49,8 +49,8 @@
                 <tbody>
                   <tr>
                     <td>
-                      <div id="<%=order.id%>" class= 'orders-switch customSwitch1' name="orders-switch">
-                        <input id="object_ids[]" class="ml-2 form_field_questions" type="checkbox" data-export="<%= order.assign_rule&.mail_service_rule&.export_mapping_id %>" data-item="<%= order.channel_order_items.count %>" value="<%=order.id%>" name="object_ids[]">
+                      <div id="<%=order.id%>" class= 'orders-switch' name="orders-switch">
+                        <input id="object_ids[]" class="ml-2 form_field_questions" type="checkbox" data-courier="<%= order.assign_rule&.mail_service_rule&.courier&.name %>" data-export="<%= order.assign_rule&.mail_service_rule&.export_mapping_id %>" data-item="<%= order.channel_order_items.count %>" value="<%=order.id%>" name="object_ids[]">
                         <%# f.check_box 'object_ids[]', {'data-item': order.channel_order_items.count}, order.id %>
                       </div>
                     </td>
@@ -331,24 +331,26 @@
   </div>
 <% end %>
 
-<div class="modal fade upload-trackings" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Upload Trackings</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
+<%= form_tag import_trackings_path, multipart: true, method: :post do %>
+  <div class="modal fade upload-trackings" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Upload Trackings</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
 
-      <div class="modal-body">
-        <%= render partial: 'upload_trackings' %>
-      </div>
+        <div class="modal-body">
+          <%= render partial: 'upload_trackings' %>
+        </div>
 
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Upload Trackings</button>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <%= submit_tag("Upload Trackings", id: "button", class: "btn btn-primary", name: "submit") %>
+        </div>
       </div>
     </div>
   </div>
-</div>
+<% end %>
