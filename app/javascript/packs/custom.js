@@ -360,6 +360,14 @@ $(document).on('turbolinks:load', function () {
   $('#q_sales_channel_eq').on('change', function () {
     $('.customer_ransack_submit').trigger('click')
   })
+
+  $('.assign_user').on('click', function(){
+    var batchId = this.dataset.id;
+    $('#batch_id').val(batchId);
+    $('#packer-modal').modal('show');
+  })
+
+
 });
 
 // Preloader JS

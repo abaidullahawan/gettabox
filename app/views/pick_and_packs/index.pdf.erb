@@ -1,0 +1,77 @@
+
+<style>
+  .table-responsive{
+      display: block;
+      width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+  }
+
+  *, ::before, ::after {
+    box-sizing: border-box;
+  }
+
+  .table{
+    width: 100%;
+    margin-bottom: 1rem;
+    color: #212529;
+    border-collapse: collapse;
+  }
+
+  .m-0 {
+    margin: 0 !important;
+  }
+
+  .table th, .table td {
+    border-bottom: 1px solid #f6f6f7;
+    border-top: 1px solid #f6f6f7;
+    padding: 15px;
+  }
+
+  .table th {
+    font-size: 14px;
+  }
+
+  .table th, .table td {
+    padding: 0.75rem;
+    vertical-align: top;
+    border-top: 1px solid #dee2e6;
+  }
+
+  th {
+    text-align: inherit;
+    text-align: -webkit-match-parent;
+  }
+
+  .table td {
+    color: #686c71;
+  }
+</style>
+
+
+<%= form_with url: bulk_method_pick_and_packs_path, method: :post do |f| %>
+  <div class="table-responsive">
+    <table class="table m-0 table-hover">
+      <tr>
+        <th>Image</th>
+        <th>Name</th>
+        <th class="text-center">SKU</th>
+        <th class="text-center">Quantity (Total)</th>
+      </tr>
+      <% @pick_and_packs&.each&.with_index(1) do |batch, index| %>
+        <% batch.channel_orders&.each do |order| %>
+          <% order.channel_order_items&.each do |item| %>
+            <tr class=''>
+              <td>
+                <img alt="No image" href="<%= item&.channel_product&.item_image %>" />
+              </td>
+              <td><%= item&.channel_product&.item_name %></td>
+              <td class="text-center font-weight-bold"><%= item&.channel_product&.item_sku %></td>
+              <td><%= item&.channel_product&.item_quantity %></td>
+            </tr>
+          <% end %>
+        <% end %>
+      <% end %>
+    </table>
+  </div>
+<% end %>

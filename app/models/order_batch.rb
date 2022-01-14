@@ -2,6 +2,8 @@
 
 # personal detail have all relvent infotmation about user
 class OrderBatch < ApplicationRecord
+  acts_as_paranoid
+  belongs_to :user, optional: true
   has_many :channel_orders
   enum print_packing_list_options: {
     orders: 'Orders',
