@@ -54,7 +54,7 @@
                 <a class="dropdown-item" href="#" data-toggle="modal" data-target='#archive-modal'>Archive</a>
               </div>
             </div>
-            <div class="col-md-5"><br>
+            <div class="col-md-7"><br>
               <div class="row">
                 <div class="col-3 form-group">
                   <%= f.search_field :name_or_email_or_phone_number_or_sales_channel_or_addresses_address_or_addresses_postcode_or_channel_orders_order_id_or_channel_orders_order_status_cont, class: 'form-control dropdown-toggle', placeholder:"Please Search", title: "Search in Name, Email, Phone, Postcode, OrderID, Order Status and Sales Channel" %>
@@ -70,7 +70,7 @@
                 </div>
               </div>
             </div>
-            <div class='col-1 offset-5'>
+            <div class='col-1 offset-3'>
               <label for="inputState">Per Page</label>
               <%= select_tag :limit, options_for_select([10, 50, 100, 500, 1000], selected: params[:limit] || 10), id: 'change_per_page', class: 'form-control' %>
               <button type="submit" id="per_page_submit" hidden="hidden"></button>
