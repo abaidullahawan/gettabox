@@ -74,7 +74,7 @@
         <td class="text-center"><%= order&.channel_order_items&.last.channel_product&.item_sku %></td>
         <td class="text-center" ><%= order&.system_user&.addresses&.last&.city %></td>
         <td class="text-center" ><%= order&.system_user&.addresses&.last&.address %></td>
-        <td class="text-center" ><%= order&.channel_order_items&.last.channel_product&.product_mapping&.product&.barcodes %></td>
+        <td class="text-center" ><%= order&.channel_order_items&.last.channel_product&.product_mapping&.product&.barcodes.last.title %></td>
       </tr>
     <% end %>
   </table>
