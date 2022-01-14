@@ -1,6 +1,6 @@
 <!-- Main Content Header -->
 <div class="main-content-header">
-  <h1>Packers</h1>
+  <h1>Packing Station</h1>
   <ol class="breadcrumb">
     <li class="breadcrumb-item">
       <a href="<%= home_path %>">Dashboard</a>
@@ -9,7 +9,7 @@
       <a href="<%= settings_path %>">Settings</a>
     </li>
     <li class="breadcrumb-item active">
-      <a href="<%= packers_path %>">Packers</a>
+      <a href="<%= pick_and_packs_path %>">Packing Station</a>
     </li>
     <li class="breadcrumb-item active">
       <span class="active">Archive</span>
@@ -24,11 +24,11 @@
       <div class="card-body">
         <div class="card-header">
           <div class='mr-1 float-right'>
-            <%= link_to 'Packers', packers_path, class: 'btn btn-outline-info' %>
+            <%= link_to 'Packing Station', pick_and_packs_path, class: 'btn btn-outline-info' %>
           </div>
           <h5 class="card-title"> Data</h5>
         </div>
-        <%= search_form_for @q, url: archive_packers_path, method: :get do |f| %>
+        <%= search_form_for @q, url: archive_pick_and_packs_path, method: :get do |f| %>
           <div class='row'>
             <div class="col-md-1"><br>
               <button class="btn btn-outline-info" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="height: 42px;">
@@ -40,7 +40,7 @@
               </div>
             </div>
             <div class="col-md-2"><br>
-              <%= f.search_field :name_cont, class:"form-control", placeholder:"Search in Name" %>
+              <%= f.search_field :batch_name_cont, class:"form-control", placeholder:"Search in Name" %>
             </div>
             <div class='col-1 offset-8'>
               <label for="inputState">Per Page</label>
@@ -50,18 +50,28 @@
           </div>
         <% end %>
         <br>
-        <%= form_with url: restore_packers_path , method: :post do |f| %>
+        <%= form_with url: restore_pick_and_packs_path , method: :post do |f| %>
           <div class="table-responsive">
             <table class="table m-0 table-hover">
               <tr>
-                <th><input type="checkbox" id="" name="" value="" class='select-all-checkbox'></th>
+                <th>
+                  <div class='row' style='max-width: 65px'>
+                    <div class='col-6 p-0  mt-1'>
+                      <input type="checkbox" id="" name="" value="" class='col-6 select-all-checkbox'>
+                    </div>
+                  </div>
+                </th>
                 <th class="text-center">Name</th>
+                <th class="text-center">Status</th>
+                <th class="text-center">Packer</th>
                 <th colspan="3" class="text-center">Actions</th>
               </tr>
-              <% @packers&.each&.with_index(1) do |season, index| %>
+              <% @packers&.each&.with_index(1) do |packer, index| %>
                 <tr class=''>
-                  <td><%= f.check_box 'object_ids[]', {}, season.id %></td>
-                  <td class="text-center"><%= season.name %></td>
+                  <td><%= f.check_box 'object_ids[]', {}, packer.id %></td>
+                  <td class="text-center"><%= packer.batch_name %></td>
+                  <td class="text-center">Status</td>
+                  <td class="text-center"><%= packer&.user&.personal_detail&.full_name %></td>
                   <td class="text-center">
                     <div class="dropdown dropleft">
                       <button class="btn btn-primary" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -69,8 +79,8 @@
                         Actions
                       </button>
                       <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                        <%# link_to 'Restore', restore_packers_path(object_id: season), method: :post, data: {confirm: "Are you sure you want to restore"}, class: "dropdown-item"%>
-                        <%= link_to 'Permanent Delete', permanent_delete_packers_path(object_id: season), method: :post, data: {confirm: "Are you sure you want to parmanent delete"}, class: "dropdown-item"%>
+                        <%= link_to 'Restore', restore_pick_and_packs_path(object_id: packer), method: :post, data: {confirm: "Are you sure you want to restore"}, class: "dropdown-item"%>
+                        <%= link_to 'Permanent Delete', permanent_delete_pick_and_packs_path(object_id: packer), method: :post, data: {confirm: "Are you sure you want to parmanent delete"}, class: "dropdown-item"%>
                       </div>
                     </div>
                   </td>

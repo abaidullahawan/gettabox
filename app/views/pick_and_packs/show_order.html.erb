@@ -1,6 +1,6 @@
 <!-- Main Content Header -->
 <div class="main-content-header">
-  <h1>Pick and Packs</h1>
+  <h1>Packing Station</h1>
   <ol class="breadcrumb">
     <li class="breadcrumb-item">
       <a href="<%= home_path %>">Dashboard</a>
@@ -9,7 +9,7 @@
       <a href="<%= settings_path %>">Settings</a>
     </li>
     <li class="breadcrumb-item active">
-      <a href="<%= pick_and_packs_path %>">Pick and Packs</a>
+      <a href="<%= pick_and_packs_path %>">Packing Station</a>
     </li>
     <li class="breadcrumb-item active">
       <span class="active">Show</span>
@@ -25,23 +25,23 @@
         <table class="table m-0 table-hover">
           <tr>
             <td class="text-left">Customer Name</td>
-            <td> <%= @order_batch.buyer_name %></td>
+            <td> <%= @batch_order.buyer_name %></td>
           </tr>
           <tr>
             <td class="text-left">Delivery address</td>
-            <td> <%= @order_batch.system_user&.addresses&.last&.address %> </td>
+            <td> <%= @batch_order.system_user&.addresses&.last&.address %> </td>
           </tr>
           <tr>
             <td class="text-left">Order ID</td>
-            <td><%= @order_batch.order_id %></td>
+            <td><%= @batch_order.order_id %></td>
           </tr>
           <tr>
             <td class="text-left">Order reference</td>
-            <td><%= @order_batch.id %></td>
+            <td><%= @batch_order.id %></td>
           </tr>
           <tr>
             <td class="text-left">Order date</td>
-            <td><%= @order_batch.created_at.to_date %></td>
+            <td><%= @batch_order.created_at.to_date %></td>
           </tr>
           <tr>
             <td class="text-left">Delivery date</td>
@@ -49,15 +49,15 @@
           </tr>
           <tr>
             <td class="text-left">Courier service</td>
-            <td> <%= @order_batch.assign_rule.mail_service_rule.courier.name %> </td>
+            <td> <%= @batch_order.assign_rule.mail_service_rule.courier.name %> </td>
           </tr>
           <tr> 
             <td class="text-left">Courier rule</td>
-            <td><%= @order_batch.assign_rule.mail_service_rule.rule_name %></td>
+            <td><%= @batch_order.assign_rule.mail_service_rule.rule_name %></td>
           </tr>
           <tr>
             <td class="text-left">Total order weight</td>
-            <td><%= @order_batch.assign_rule.mail_service_labels.last.weight %></td>
+            <td><%= @batch_order.assign_rule.mail_service_labels.last.weight %></td>
           </tr>
         </table>
       </div>
@@ -73,18 +73,30 @@
         <table class="table m-0 table-hover">
           <tr>
             <th class="text-center">Image</th>
+            <th class="text-center">Price</th>
             <th class="text-center">Available</th>
             <th class="text-center">Dispatched</th>
             <th class="text-center">Allocated</th>
             <th class="text-center">Ordered</th>
           </tr>
-          <tr>
-            <td class="text-center">Image</td>
-            <td class="text-center">1</td>
-            <td class="text-center">1</td>
-            <td class="text-center">1</td>
-            <td class="text-center"><%= @order_batch.channel_order_items.last.ordered %></td>
-          </tr>
+          <% @batch_order.channel_order_items.each do |item| %>
+            <tr>
+              <td class="text-center"><img alt="No image" href="<%= item&.channel_product&.item_image %>"></td>
+              <td class="text-center"><%= @batch_order.total_amount %></td>
+              <% if item&.channel_product&.product_mapping&.product&.product_type_multiple? %>
+                <td class="text-center">
+                  <% item&.channel_product&.product_mapping&.product&.multipack_products&.each do |product| %>
+                    <%= product.total_stock %>
+                  <% end %>
+                </td>
+              <% else %>
+                <td class="text-center"><%= item&.channel_product&.product_mapping&.product&.total_stock %></td>
+              <% end %>
+              <td class="text-center"><%=  %></td>
+              <td class="text-center"><%=  %></td>
+              <td class="text-center"><%= item.ordered %></td>
+            </tr>
+          <% end %>
         </table>
       </div>
       </div>

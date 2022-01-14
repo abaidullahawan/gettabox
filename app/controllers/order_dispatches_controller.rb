@@ -17,6 +17,13 @@ class OrderDispatchesController < ApplicationController
     @assign_rule = AssignRule.new
     @assign_rule.mail_service_labels.build
     @order_batch = OrderBatch.new
+    respond_to do |format|
+      format.html
+      format.csv
+      format.pdf do
+        render pdf: 'file.pdf', viewport_size: '1280x1024', template: 'order_dispatches/index.pdf.erb'
+      end
+    end
   end
 
   def show; end
