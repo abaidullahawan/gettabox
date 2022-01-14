@@ -67,10 +67,19 @@ class CustomersController < ApplicationController
   end
 
   def export_csv(customers)
-    customers = Customers.where(selected: true) if params[:selected]
+    customers = SystemUser.where(user_type: 'customer', selected: true) if params[:selected]
+    attributes = SystemUser.column_names.excluding('user_type', 'delivery_method', 'payment_method', 'days_for_payment',
+                                                   'days_for_order_to_completion', 'days_for_completion_to_delivery',
+                                                   'currency_symbol', 'exchange_rate', 'deleted_at', 'created_at', 'updated_at')
+    @csv = CSV.generate(headers: true) do |csv|
+      csv << attributes
+      customers.each do |system_user|
+        csv << attributes.map { |attr| system_user.send(attr) }
+      end
+    end
     request.format = 'csv'
     respond_to do |format|
-      format.csv { send_data customers.to_csv, filename: "customers-#{Date.today}.csv" }
+      format.csv { send_data @csv, filename: "customers-#{Date.today}.csv" }
     end
   end
 
