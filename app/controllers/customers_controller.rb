@@ -12,7 +12,7 @@ class CustomersController < ApplicationController
   before_action :fetch_field_names, only: %i[new create show index update]
 
   def index
-    params[:q][:channel_orders_order_id_i_cont_any] = params[:q][:channel_orders_order_id_i_cont_any].split("\r\n") if params[:q].present?
+    params[:q][:name_or_email_or_phone_number_or_sales_channel_or_addresses_address_or_addresses_postcode_or_channel_orders_order_id_or_channel_orders_order_status_i_cont_any] = params[:q][:name_or_email_or_phone_number_or_sales_channel_or_addresses_address_or_addresses_postcode_or_channel_orders_order_id_or_channel_orders_order_status_i_cont_any].split("\r\n") if params[:q].present?
     @q = SystemUser.where(user_type: 0).ransack(params[:q])
     @customers = @q.result(distinct: true).order(created_at: :desc).page(params[:page]).per(params[:limit])
     export_csv(@customers) if params[:export_csv].present?
@@ -70,11 +70,17 @@ class CustomersController < ApplicationController
     customers = SystemUser.where(user_type: 'customer', selected: true) if params[:selected]
     attributes = SystemUser.column_names.excluding('user_type', 'delivery_method', 'payment_method', 'days_for_payment',
                                                    'days_for_order_to_completion', 'days_for_completion_to_delivery',
-                                                   'currency_symbol', 'exchange_rate', 'deleted_at', 'created_at', 'updated_at')
+                                                   'currency_symbol', 'exchange_rate', 'deleted_at', 'created_at',
+                                                   'updated_at')
+    order_item = ['sku', 'ordered']
+    tracking = ['tracking_no']
     @csv = CSV.generate(headers: true) do |csv|
-      csv << attributes
+      csv << attributes + order_item + tracking
       customers.each do |system_user|
-        csv << attributes.map { |attr| system_user.send(attr) }
+        sys_user_data = attributes.map { |attr| system_user.send(attr) }
+        order_item_data = order_item.map { |attr| system_user.channel_orders.last.channel_order_items.last.send(attr) }
+        tracking_data = tracking.map { |attr| system_user.channel_orders.last.trackings.last.send(attr) } if system_user.channel_orders.last.trackings.present?
+        csv << sys_user_data + order_item_data
       end
     end
     request.format = 'csv'

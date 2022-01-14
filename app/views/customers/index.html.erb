@@ -57,13 +57,10 @@
             <div class="col-md-7"><br>
               <div class="row">
                 <div class="col-3 form-group">
-                  <%= f.search_field :name_or_email_or_phone_number_or_sales_channel_or_addresses_address_or_addresses_postcode_or_channel_orders_order_id_or_channel_orders_order_status_cont, class: 'form-control dropdown-toggle', placeholder:"Please Search", title: "Search in Name, Email, Phone, Postcode, OrderID, Order Status and Sales Channel" %>
+                  <%= f.select :sales_channel_eq, options_for_select(SystemUser.sales_channels.map { |key, value| [key.humanize, value]}, f.object.sales_channel_eq), {include_blank: "Please select Channel", hide_label:true, required: true }, class:"form-control product-mapping-select", title: "Search in Name, Email, Phone, Postcode, OrderID, Order Status and Sales Channel" %>
                 </div>
                 <div class="col-3 form-group">
-                  <%= f.select :sales_channel_eq, options_for_select(SystemUser.sales_channels.map { |key, value| [key.humanize, value]}, f.object.sales_channel_eq), {include_blank: "Please select Channel", hide_label:true, required: true }, class:"form-control product-mapping-select", title: 'Select Status' %>
-                </div>
-                <div class="col-3 form-group">
-                  <%= f.text_area :channel_orders_order_id_i_cont_any, class: 'form-control dropdown-toggle', placeholder:"Bulk Search" %>
+                  <%= f.text_area :name_or_email_or_phone_number_or_sales_channel_or_addresses_address_or_addresses_postcode_or_channel_orders_order_id_or_channel_orders_order_status_i_cont_any, class: 'form-control dropdown-toggle', placeholder:"Bulk Search" %>
                 </div>
                 <div class="col-3 form-group">
                   <%= f.submit 'Search', class: 'customer_ransack_submit btn btn-primary'%>
