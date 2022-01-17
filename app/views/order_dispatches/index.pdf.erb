@@ -52,30 +52,28 @@
 <div class="table-responsive">
   <table class="table m-0 table-hover">
     <tr>
-      <th class="text-center">ID</th>
       <th class="text-center">image</th>
       <th class="text-center">Product Name</th>
       <th class="text-center">Product SKU</th>
-      <th class="text-center" >City</th>
+      <th class="text-center" >Quantity</th>
       <th class="text-center" >Location</th>
-      <th class="text-center" >Barcode</th>
     </tr>
     <% @not_started_orders.each do |order| %>
-      <tr>
-        <td class="text-center"><%= order.id %></td>
-        <td class="text-center">
-          <% if order&.channel_order_items&.last.channel_product&.item_image.present? %>
-            <%= image_tag image_url(order&.channel_order_items&.last.channel_product&.item_image ), height: '50px', width: '50px' %>
-          <% else %>
-            <%= image_tag('user/1.jpg', width: "50", height: "50", class: 'mr-3 img-thumbnail', alt: 'User Image') %>
-          <% end %>
-        </td>
-        <td class="text-center"><%= order&.channel_order_items&.last.channel_product&.item_name %></td>
-        <td class="text-center"><%= order&.channel_order_items&.last.channel_product&.item_sku %></td>
-        <td class="text-center" ><%= order&.system_user&.addresses&.last&.city %></td>
-        <td class="text-center" ><%= order&.system_user&.addresses&.last&.address %></td>
-        <td class="text-center" ><%= order&.channel_order_items&.last.channel_product&.product_mapping&.product&.barcodes&.last&.title %></td>
-      </tr>
+      <% order.channel_order_items.each do | item | %>
+        <tr>
+          <td class="text-center">
+            <% if item&.channel_product&.item_image.present? %>
+              <%= image_tag image_url(item&.channel_product&.item_image ), height: '50px', width: '50px' %>
+            <% else %>
+              <%= image_tag('user/1.jpg', width: "50", height: "50", class: 'mr-3 img-thumbnail', alt: 'User Image') %>
+            <% end %>
+          </td>
+          <td class="text-center"><%= item&.channel_product&.item_name %></td>
+          <td class="text-center"><%= item&.channel_product&.item_sku %></td>
+          <td class="text-center" ><%= item&.ordered %></td>
+          <td class="text-center" ><%= item&.channel_product&.product_mapping&.product&.location %></td>
+        </tr>
+      <% end %>
     <% end %>
   </table>
 </div>
