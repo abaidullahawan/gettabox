@@ -367,6 +367,11 @@ $(document).on('turbolinks:load', function () {
     $('#packer-modal').modal('show');
   })
 
+  $('.add-flagging-button').on('click', function() {
+    var customer_id = this.dataset.id
+    $('#customer_id_for_flagging').val(customer_id)
+    $('#add-flagging-date-modal').modal('show');
+  })
 
 });
 
