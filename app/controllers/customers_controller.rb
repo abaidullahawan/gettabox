@@ -66,6 +66,13 @@ class CustomersController < ApplicationController
     end
   end
 
+  def flagging_date
+    customer = SystemUser.find(params[:customer_id_for_flagging])
+    customer.update(flagging_date: params[:flagging_date]) if customer
+    redirect_to customers_path
+    flash[:notice] = 'Flagging Date Updated'
+  end
+
   def export_csv(customers)
     customers = SystemUser.where(user_type: 'customer', selected: true) if params[:selected]
     attributes = SystemUser.column_names.excluding('user_type', 'delivery_method', 'payment_method', 'days_for_payment',

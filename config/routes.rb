@@ -145,6 +145,7 @@ Rails.application.routes.draw do
 
   resources :customers do
     collection do
+      post 'add_flagging', to: 'customers#flagging_date'
       post 'import', to: 'couriers#import'
       post 'bulk_method', to: 'couriers#bulk_method'
       get 'archive', to: 'couriers#archive'
