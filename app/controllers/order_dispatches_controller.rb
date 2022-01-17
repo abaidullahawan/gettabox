@@ -387,11 +387,11 @@ class OrderDispatchesController < ApplicationController
         .includes(channel_order_items: [channel_product: :product_mapping], assign_rule: [mail_service_rule: :service])
         .where('mail_service_rules.rule_name LIKE ? OR services.name LIKE ? and order_status = ?',
                "%#{params['assign_rule_name']}%", "%#{params['assign_rule_name']}%", 'NOT_STARTED')
-        .where('channel_order_items.sku': [@product_data]) - @un_matched_product_order).uniq
+        where.not('channel_order_items.sku': [nil, @unmatch_product_data]) - @un_matched_product_order).uniq
     else
       @not_started_orders = (@channel_orders
         .joins(:channel_order_items).where(order_status: 'NOT_STARTED', ready_to_print: nil)
-        .where('channel_order_items.sku': [@product_data]) - @un_matched_product_order).uniq
+        .where.not('channel_order_items.sku': [nil, @unmatch_product_data]) - @un_matched_product_order).uniq
     end
     @not_started_orders = @not_started_orders.sort_by(&:created_at).reverse!
     @not_started_order_data = Kaminari
