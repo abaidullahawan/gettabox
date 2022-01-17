@@ -18,7 +18,7 @@ class CreateChannelProductJob < ApplicationJob
 
   def create_or_update_product(item)
     picture = item['PictureDetails'].present? ? item['PictureDetails']['GalleryURL'] : nil
-    return multi_product(item, item['Variations']['Variation'], picture) if item['Variations'].present?
+    return multi_product(item, item['Variations']['Variation'], picture) if item['Variations'] > 1
 
     product = ChannelProduct
               .create_with(channel_type: 'ebay', item_id: item['ItemID'].to_i,
