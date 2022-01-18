@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
 class ApplicationMailer < ActionMailer::Base # :nodoc:
-  default from: 'munchionclick@gmail.com'
+  default from: 'email.from.devbox@gmail.com'
   layout 'mailer'
 end
