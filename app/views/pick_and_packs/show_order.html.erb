@@ -5,9 +5,6 @@
     <li class="breadcrumb-item">
       <a href="<%= home_path %>">Dashboard</a>
     </li>
-    <li class="breadcrumb-item">
-      <a href="<%= settings_path %>">Settings</a>
-    </li>
     <li class="breadcrumb-item active">
       <a href="<%= pick_and_packs_path %>">Packing Station</a>
     </li>
@@ -63,8 +60,8 @@
       </div>
         <div class="card-footer bg-transparent d-flex">
           <button class="ml-auto btn btn-primary">ADD TO CONTAINER</button>
-          <button class="ml-1 btn btn-primary">EDIT ADDRESS</button>
-          <button class="ml-1 btn btn-primary">CHANGE COURIER</button>
+          <button class="ml-1 btn btn-primary" data-toggle="modal" data-target='#address-edit-modal'>EDIT ADDRESS</button>
+          <button class="ml-1 btn btn-primary" data-toggle="modal" data-target='#courier-edit-modal'>CHANGE COURIER</button>
           <button class="ml-1 btn btn-primary">PICK ALL ITEMS</button>
         </div>
       </div>
@@ -103,3 +100,55 @@
     </div>
   </div>
 </div>
+
+<%= form_with url: courier_edit_pick_and_packs_path, method: :post do |f| %>
+  <div class="modal" id="courier-edit-modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Change Courier</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group row">
+             <div class="form-group col-md-6">
+              <%= f.label :courier_id %>
+              <%= f.select :courier_id, options_for_select(Courier.all.collect { | c | [c.name, c.id] }), {include_blank: 'Select Courier'}, class: "form-control" %>
+            </div>
+
+            <div class="form-group col-md-6">
+              <%= f.label 'Service' %>
+              <%= f.select :service_id, options_for_select([]), {include_blank: 'Please select courier first'}, class: "form-control" %>
+            </div>
+
+            <%# text_field_tag :order_id,{}, autofocus: true, required: true, class: 'form-control col-11 mx-auto', placeholder: 'Enter Order ID' %>
+          </div>
+          <%= submit_tag 'check', class: 'd-none'%>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>
+
+<%= form_tag(address_edit_pick_and_packs_path, method: :post) do |f| %>
+  <div class="modal" id="address-edit-modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Change Address</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group row">
+            <%= text_field_tag :order_id,{}, autofocus: true, required: true, class: 'form-control col-11 mx-auto', placeholder: 'Enter Address' %>
+          </div>
+          <%= submit_tag 'check', class: 'd-none'%>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>

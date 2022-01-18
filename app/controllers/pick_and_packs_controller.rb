@@ -37,6 +37,22 @@ class PickAndPacksController < ApplicationController
     @packer = OrderBatch.new
   end
 
+  def start_packing
+    @order = ChannelOrder.find_by(order_id: params[:order_id]) if params[:order_id].present?
+    @batches = OrderBatch.all
+    @q = OrderBatch.ransack(params[:q])
+    @pick_and_packs = @q.result(distinct: true).order(created_at: :desc).page(params[:page]).per(params[:limit])
+    if params[:q].present?.present?
+      @orders = @pick_and_packs.last.channel_orders
+    end
+  end
+
+  def courier_edit
+  end
+
+  def address_edit
+  end
+
   def assign_user
     @batch = OrderBatch.find(params[:batch_id])
     flash[:notice] = if @batch.update(user_id: params[:user_id])

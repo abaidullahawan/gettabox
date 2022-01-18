@@ -93,6 +93,35 @@
                     <span class="title">Order Dispatch</span>
                 </a>
 
+                <div class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <div class="dropdown-title">
+                            <i data-feather="grid" class="icon"></i>
+                            <span class="title">
+                                Packing Station
+                                <i data-feather="chevron-right" class="icon fr"></i>
+                            </span>
+                        </div>
+                    </a>
+
+                    <div class="dropdown-menu">
+                        <a
+                            class="dropdown-item <%= active_klass( start_packing_pick_and_packs_path ) %>"
+                            href="<%=  start_packing_pick_and_packs_path  %>"
+                        >
+                            <i data-feather="chevron-right" class="icon"></i>
+                            Start Packing
+                        </a>
+
+                        <a
+                            class="dropdown-item <%= active_klass(pick_and_packs_path) %>"
+                            href="<%= pick_and_packs_path %>"
+                        >
+                            <i data-feather="chevron-right" class="icon"></i>
+                            View Batches
+                        </a>
+                </div>
+
                 <a
                     class="nav-link <%= active_klass(discussions_chat_path) %>"
                     href="<%= discussions_chat_path %>"

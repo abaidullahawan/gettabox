@@ -10,11 +10,11 @@
 a.link_tag {
   text-decoration: none;
   color: inherit;
-};
+}
 a.link_tag:hover {
   text-decoration: none;
   color: inherit;
-};
+}
 .switch {
   position: relative;
   display: inline-block;
@@ -22,7 +22,7 @@ a.link_tag:hover {
   height: 20px;
 }
 
-.switch input { 
+.switch input {
   opacity: 0;
   width: 0;
   height: 0;
@@ -36,8 +36,8 @@ a.link_tag:hover {
   right: 0;
   bottom: 0;
   background-color: #ccc;
-  -webkit-transition: .4s;
-  transition: .4s;
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
 }
 
 .slider:before {
@@ -48,16 +48,16 @@ a.link_tag:hover {
   left: 4px;
   bottom: 4px;
   background-color: white;
-  -webkit-transition: .4s;
-  transition: .4s;
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
 }
 
 input:checked + .slider {
-  background-color: #2196F3;
+  background-color: #2196f3;
 }
 
 input:focus + .slider {
-  box-shadow: 0 0 1px #2196F3;
+  box-shadow: 0 0 1px #2196f3;
 }
 
 input:checked + .slider:before {
@@ -97,11 +97,11 @@ input:checked + .slider:before {
   cursor: pointer;
 }
 
-.width-inherit{
+.width-inherit {
   width: inherit;
 }
 
-.order-listing{
+.order-listing {
   float: left;
   height: 34px;
   display: block;
@@ -114,30 +114,30 @@ input:checked + .slider:before {
   margin: 10px 5px 0px 0px;
 }
 
-.truncate{
+.truncate {
   width: 150px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.sku-width{
+.sku-width {
   width: 140px;
 }
 
-.img-height{
+.img-height {
   height: 60px !important;
   width: 50px !important;
 }
 
-.card-style{
-  background: #5CACDF;
+.card-style {
+  background: #5cacdf;
   padding: 15px 0px;
   color: white;
   border-radius: 10px;
 }
 
-.card-style2{
+.card-style2 {
   background: #8cb225;
   color: white !important;
   font-size: 15px;
@@ -146,11 +146,11 @@ input:checked + .slider:before {
   border-radius: 10px;
 }
 
-.col-padding{
+.col-padding {
   padding: 2px !important;
 }
 
-.heading-table{
+.heading-table {
   background: #354700;
   color: white;
   text-align: center;
@@ -161,7 +161,7 @@ input:checked + .slider:before {
   font-weight: bold;
 }
 
-.table-value{
+.table-value {
   text-align: center;
   background: #547200;
   color: white;
@@ -169,10 +169,24 @@ input:checked + .slider:before {
   border-bottom-left-radius: 6px;
 }
 
-.click_able_cursor{ 
+.click_able_cursor {
   cursor: pointer;
 }
 
-.form-control-checkbox{
+.form-control-checkbox {
   height: 28px;
+}
+
+.red-dot {
+  height: 20px;
+  width: 20px;
+  border-radius: 50%;
+  background-color: red;
+}
+
+.green-dot {
+  height: 20px;
+  width: 20px;
+  border-radius: 50%;
+  background-color: green;
 }
