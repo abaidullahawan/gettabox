@@ -14,6 +14,7 @@ class SystemUser < ApplicationRecord
   validates :phone_number, presence: true, if: -> { user_type_supplier? }
   has_one_attached :photo
   has_many :addresses, as: :addressable
+  has_many :notes, as: :reference
   accepts_nested_attributes_for :addresses
   accepts_nested_attributes_for :extra_field_value
   enum user_type: {

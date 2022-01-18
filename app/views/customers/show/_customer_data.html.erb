@@ -74,6 +74,18 @@
               <h3 class="fs-14 col-6"><%#= @customer.name %></h3>
             </div>
           </div>
+          <div class='container border-bottom mt-3'>
+            <div class='row'>
+              <h3 class="fs-14 mb-1 col-6">Flagging Date:</h3>
+              <h3 class="fs-14 col-4"><%= @customer.flagging_date&.strftime('%Y-%m-%d') %></h3>
+              <a class="add-flagging-button text-info mr-2" href="" data-id= "<%= @customer.id %>" data-toggle="modal">
+                <i data-feather="edit-2" class="icon wh-15"></i>
+              </a>
+              <!--a class="text-danger" href="" data-id= "<%= @customer.id %>">
+                <i data-feather="trash" class="icon wh-15"></i>
+              </a-->
+            </div>
+          </div>
           <br>
           <br>
           <!-- Delivery Data -->
@@ -97,6 +109,7 @@
                 <th scope="col">Cost</th>
                 <th scope="col">Status</th>
                 <th scope="col">Channel Type</th>
+                <th scope="col">Tracking</th>
               </tr>
             </thead>
             <tbody>
@@ -115,6 +128,7 @@
                   <td><%= order.total_amount%></td>
                   <td><span class="badge badge_success py-1"><%= order.order_status %></span></td>
                   <td><%= order.channel_type %></td>
+                  <td><%= order.trackings&.first&.tracking_no %></td>
                 </tr>
               <% end %>
             </tbody>
@@ -123,6 +137,10 @@
       </div>
     </div>
     <!-- Orders Table Data End -->
+
+    <!-- Notes -->
+      <%= render 'customers/show/notes' %>
+    <!-- Notes End -->
   </div>
 
   <div class='col-4'>
@@ -239,6 +257,30 @@
         <div class="modal-footer">
           <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
           <%= f.submit 'Create', class: 'btn btn-info'%>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>
+
+<%= form_for @customer, url: add_flagging_customers_path, method: :post do |f| %>
+  <div class="modal fade" id="add-flagging-date-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
+    <div class="modal-dialog  modal-dialog-scrollable modal-md" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Add Flagging Date</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+         <%= hidden_field_tag("customer_id_for_flagging", "") %>
+         <%= f.label :flagging_date %>
+         <%= f.date_field :flagging_date, class: 'form-control'%>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+          <%= f.submit 'Add', class: 'btn btn-info'%>
         </div>
       </div>
     </div>

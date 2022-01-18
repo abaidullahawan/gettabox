@@ -1,0 +1,6 @@
+<div class="form-group">
+  <%= f.label :message %>
+  <%= f.text_field :message, class: "form-control", placeholder: 'Please enter a note' %>
+</div>
+<%= f.hidden_field :reference_type, value: f.object.reference_type%>
+<%= f.hidden_field :reference_id, value: f.object.reference_id %>
