@@ -56,7 +56,7 @@ class OrderBatchesController < ApplicationController
         orders.each do |order|
           next unless order.assign_rule.mail_service_rule.export_mapping_id == rule
 
-          # order.update(ready_to_print: true)
+          order.update(ready_to_print: true)
           order_csv = channel_order_data.values.map { |attr| order.send(attr) }
           item_csv = channel_order_item_data.values.map { |attr| order.channel_order_items.first.send(attr) }
           address_csv = address_data.values.map { |attr| order.system_user&.addresses&.find_by(address_title: 'delivery')&.send(attr) }
