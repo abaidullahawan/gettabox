@@ -86,7 +86,7 @@ class TrackingsController < ApplicationController
     attributes = channel_order_data.keys + channel_order_item_data.keys + system_user_data.keys + address_data.keys + mail_service_label_data.keys + ['Tracking']
     tracking_csv.each do |row|
       order_id = row['order_id'].nil? ? row['channel_order_id'] : ChannelOrder.find_by(order_id: row['order_id'])&.id
-      next unless order_ids.include?(order_id)
+      next unless order_ids.include?(order_id.to_s)
 
       tracking_numbers = row['tracking_no'].split(',')
       message = []
@@ -109,7 +109,7 @@ class TrackingsController < ApplicationController
     if rows.empty?
       flash[:alert] = "Selected order's tracking not found"
       redirect_to order_dispatches_path(order_filter: 'ready')
-    else
+    elsif rows.flatten.any? { |a| a.to_s.include?('must') }
       generate_csv(rows, attributes)
     end
     # @csv = CSV.generate(headers: true) do |csv|

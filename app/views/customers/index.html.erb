@@ -54,20 +54,26 @@
                 <a class="dropdown-item" href="#" data-toggle="modal" data-target='#archive-modal'>Archive</a>
               </div>
             </div>
-            <div class="col-md-7"><br>
+            <div class="col-md-8"><br>
               <div class="row">
-                <div class="col-3 form-group">
+                <div class="col-2 form-group">
                   <%= f.select :sales_channel_eq, options_for_select(SystemUser.sales_channels.map { |key, value| [key.humanize, value]}, f.object.sales_channel_eq), {include_blank: "Please select Channel", hide_label:true, required: true }, class:"form-control product-mapping-select", title: "Search in Name, Email, Phone, Postcode, OrderID, Order Status and Sales Channel" %>
+                </div>
+                <div class="col-3 form-group">
+                  <%= f.date_field :flagging_date_gteq, class:"form-control product-mapping-select", title: "Select flagging date" %>
+                </div>
+                <div class="col-3 form-group">
+                  <%= f.date_field :flagging_date_lteq, class:"form-control product-mapping-select", title: "Select flagging date" %>
                 </div>
                 <div class="col-3 form-group">
                   <%= f.text_area :name_or_email_or_phone_number_or_sales_channel_or_addresses_address_or_addresses_postcode_or_channel_orders_order_id_or_channel_orders_order_status_i_cont_any, class: 'form-control dropdown-toggle', placeholder:"Bulk Search" %>
                 </div>
-                <div class="col-3 form-group">
+                <div class="col-1 form-group">
                   <%= f.submit 'Search', class: 'customer_ransack_submit btn btn-primary'%>
                 </div>
               </div>
             </div>
-            <div class='col-1 offset-3'>
+            <div class='col-1 offset-2  '>
               <label for="inputState">Per Page</label>
               <%= select_tag :limit, options_for_select([10, 50, 100, 500, 1000], selected: params[:limit] || 10), id: 'change_per_page', class: 'form-control' %>
               <button type="submit" id="per_page_submit" hidden="hidden"></button>
@@ -124,7 +130,7 @@
                   <td class="text-center"><%= customer.addresses.find_by(address_title: 'delivery')&.postcode %></td>
                   <td class="text-center"><%= time_ago_in_words(customer.channel_orders.last&.created_at) + ' ago' if customer.channel_orders.present? %></td>
                   <td class="text-center"><%= customer.channel_orders.last&.order_status if customer.channel_orders.present?%>
-                  <td class="text-center"><%= customer.flagging_date&.strftime('%Y %m %d') %></td>
+                  <td class="text-center"><%= customer.flagging_date&.strftime('%Y-%m-%d') %></td>
                   <td class="text-center">
                     <div class="dropdown dropleft">
                       <button class="btn btn-primary" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Actions">

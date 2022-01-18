@@ -14,7 +14,7 @@ class CustomersController < ApplicationController
   def index
     params[:q][:name_or_email_or_phone_number_or_sales_channel_or_addresses_address_or_addresses_postcode_or_channel_orders_order_id_or_channel_orders_order_status_i_cont_any] = params[:q][:name_or_email_or_phone_number_or_sales_channel_or_addresses_address_or_addresses_postcode_or_channel_orders_order_id_or_channel_orders_order_status_i_cont_any].split("\r\n") if params[:q].present?
     @q = SystemUser.where(user_type: 0).ransack(params[:q])
-    @customers = @q.result(distinct: true).order(created_at: :desc).page(params[:page]).per(params[:limit])
+    @customers = @q.result(distinct: true).order(flagging_date: :asc).page(params[:page]).per(params[:limit])
     export_csv(@customers) if params[:export_csv].present?
     @customer = SystemUser.new
     @customer.addresses.build
@@ -28,6 +28,8 @@ class CustomersController < ApplicationController
     @product_sku = Product.pluck(:sku)
     @order = ChannelOrder.new
     @order.channel_order_items.build
+    @notes = @customer.notes
+    @note = @customer.notes.build
   end
 
   def new
@@ -68,9 +70,10 @@ class CustomersController < ApplicationController
 
   def flagging_date
     customer = SystemUser.find(params[:customer_id_for_flagging])
-    customer.update(flagging_date: params[:flagging_date]) if customer
-    redirect_to customers_path
+    flagging_date = params[:flagging_date] || params[:system_user][:flagging_date]
+    customer&.update(flagging_date: flagging_date)
     flash[:notice] = 'Flagging Date Updated'
+    redirect_to request.referrer
   end
 
   def export_csv(customers)
