@@ -12,7 +12,9 @@
               <tr>
                 <th class="text-center">Name</th>
                 <th class="text-center">Order No.</th>
-                <th class="text-center">Items</th>
+                <th class="text-center">Listing Items</th>
+                <th class="text-center">SKU</th>
+                <th class="text-center">Order QTY</th>
                 <th class="text-center">Actions</th>
               </tr>
               <% @orders&.each do |order| %>
@@ -20,6 +22,16 @@
                     <td class="text-center"><%= order.buyer_name %></td>
                     <td class="text-center"><%= order.order_id %></td>
                     <td class="text-center"><%= order.channel_order_items.count %></td>
+                    <td class="text-center">
+                      <% order.channel_order_items&.each do |item| %>
+                        <%= item.sku %><br>
+                      <% end %>
+                    </td>
+                    <td class="text-center">
+                      <% order.channel_order_items&.each do |item| %>
+                        <%= item.ordered %><br>
+                      <% end %>
+                    </td>
                     <td>
                       <a href="<%= show_order_pick_and_packs_path(id: order)%>">
                         <button class="btn btn-primary" type="button">

@@ -1,8 +1,7 @@
 import $ from 'jquery'
 
 $(document).on('turbolinks:load', function () {
-
-  $('#mail_service_rule_courier_id').on('change', function () {
+  $('#mail_service_rule_courier_id, #courier_id').on('change', function () {
     var a = this.value
     var courier_name = $("option:selected", this).text()
     $.ajax({
@@ -12,22 +11,22 @@ $(document).on('turbolinks:load', function () {
       dataType: "json",
       success: function (response) {
         var courier = courier_name;
-        $("#mail_service_rule_service_id").html('')
+        $("#mail_service_rule_service_id, #service_id").html('')
         if (response == null) {
-          $("#mail_service_rule_service_id").append('<option>-- Please select courier first --</option>')
+          $("#mail_service_rule_service_id, #service_id").append('<option>-- Please select courier first --</option>')
           $('#mail_service_rule_tracking_import').closest('div').addClass('d-none')
         }
         else if(courier == 'Manual Dispatch'){
-          $('#mail_service_rule_service_id').closest('div').addClass('d-none')
+          $('#mail_service_rule_service_id, #service_id').closest('div').addClass('d-none')
           $('#mail_service_rule_export_mapping_id').closest('div').removeClass('d-none')
           $('#mail_service_rule_tracking_import').closest('div').removeClass('d-none')
         }
         else {
-          $('#mail_service_rule_service_id').closest('div').removeClass('d-none')
+          $('#mail_service_rule_service_id, #service_id').closest('div').removeClass('d-none')
           $('#mail_service_rule_export_mapping_id').closest('div').addClass('d-none')
-          $("#mail_service_rule_service_id").append('<option>-- Select One --</option>')
+          $("#mail_service_rule_service_id, #service_id").append('<option>-- Select One --</option>')
           for (var i = 0; i < response.length; i++) {
-            $("#mail_service_rule_service_id").append('<option value="' + response[i]["id"] + '">' + response[i]["name"] + '</option>');
+            $("#mail_service_rule_service_id, #service_id").append('<option value="' + response[i]["id"] + '">' + response[i]["name"] + '</option>');
           }
           $('#mail_service_rule_tracking_import').closest('div').addClass('d-none')
         }

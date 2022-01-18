@@ -335,6 +335,10 @@ $(document).on('turbolinks:load', function () {
   //   }
   // })
 
+  $('.batches-select').on('change', function(){
+    $('.batches-button-submit').trigger('click');
+  })
+
   $('.OrderBatchSubmit').on('click', function () {
     var object_ids = $('input[name="object_ids[]"]:checked')
     var rule = object_ids.map(function (i, e) { return e.dataset.courier }).toArray();

@@ -5,9 +5,6 @@
     <li class="breadcrumb-item">
       <a href="<%= home_path %>">Dashboard</a>
     </li>
-    <li class="breadcrumb-item">
-      <a href="<%= settings_path %>">Settings</a>
-    </li>
     <li class="breadcrumb-item active">
       <span class="active">Packing Station</span>
     </li>
@@ -76,7 +73,7 @@
                     </div>
                   </td>
                   <td class="text-center"><%= pick_and_pack.batch_name %></td>
-                  <td class="text-center">Status</td>
+                  <td class="text-center"><%= pick_and_pack&.status %></td>
                   <td class="text-center"><%= pick_and_pack&.user&.personal_detail&.full_name %></td>
                   <td class="text-center">
                     <div class="dropdown dropleft">
@@ -86,8 +83,11 @@
                       <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                         <%= link_to 'Orders', pick_and_pack_path(pick_and_pack), class: 'dropdown-item', remote: true %>
                         <a class="trigger_orders_modal_<%= pick_and_pack.id %> d-none" data-toggle="modal" data-target='#orders-modal'>Orders</a>
+                        <%= link_to 'Start Packing', show_order_pick_and_packs_path(id: pick_and_pack.channel_orders.first.id), class: 'dropdown-item' %>
                         <a class="dropdown-item assign_user" data-id="<%= pick_and_pack.id %>">Assign Packer</a>
-                        <%= link_to 'Archive', pick_and_pack_path(pick_and_pack), method: 'delete', data: {confirm: "Are you sure you want to archive"}, class: "dropdown-item"%>
+                        <% if pick_and_pack.channel_orders.count == 0 %>
+                          <%= link_to 'Archive', pick_and_pack_path(pick_and_pack), method: 'delete', data: {confirm: "Are you sure you want to archive"}, class: "dropdown-item"%>
+                        <% end %>
                       </div>
                     </div>
                   </td>
