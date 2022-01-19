@@ -42,11 +42,11 @@ class PickAndPacksController < ApplicationController
   end
 
   def start_packing
-    @batches = OrderBatch.all
+    @batches = OrderBatch.joins(:channel_orders).uniq
     @q = OrderBatch.ransack(params[:q])
     @pick_and_packs = @q.result(distinct: true).order(created_at: :desc).page(params[:page]).per(params[:limit])
     if params[:q].present?
-      @orders = @pick_and_packs.last.channel_orders
+      @orders = @pick_and_packs.last&.channel_orders
       @tracking_order = @orders.joins(:trackings).find_by('trackings.tracking_no': params[:order_id]) if params[:order_id].present?
     end
   end
