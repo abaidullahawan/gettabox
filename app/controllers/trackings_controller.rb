@@ -111,6 +111,14 @@ class TrackingsController < ApplicationController
       redirect_to order_dispatches_path(order_filter: 'ready')
     elsif rows.flatten.any? { |a| a.to_s.include?('must') }
       generate_csv(rows, attributes)
+    else
+      @pdf_order_items = ChannelOrderItem.where(channel_order_id: order_ids).group_by(&:sku)
+      request.format = 'pdf'
+      respond_to do |format|
+        format.pdf do
+          render pdf: 'file.pdf', viewport_size: '1280x1024', template: 'order_dispatches/channel_product.pdf.erb'
+        end
+      end
     end
     # @csv = CSV.generate(headers: true) do |csv|
     #   csv << attributes

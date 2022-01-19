@@ -254,6 +254,10 @@ $(document).on('turbolinks:load', function () {
     window.location = $(this).data("link")
   })
 
+  $("td[data-link]").click(function () {
+    window.location = $(this).data("link")
+  })
+
   $('.new-service-rule-modal').on('click', function () {
     var courier = this.dataset.courier
     var service = this.dataset.service

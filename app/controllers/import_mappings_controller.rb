@@ -208,7 +208,7 @@ class ImportMappingsController < ApplicationController
   end
 
   def symbol_case(record1, record2, matched, mapping)
-    true unless mapping.mapping_rule.include? ('symbol_case')
+    true unless mapping.mapping_rule.include?('symbol_case')
 
     if record1[matched[0].gsub('_',' ')]&.gsub(/[^0-9A-Za-z]/, '')== record2[matched[1].gsub('_',' ')]&.gsub(/[^0-9A-Za-z]/, '')
       true
@@ -218,7 +218,7 @@ class ImportMappingsController < ApplicationController
   end
 
   def space_case(record1, record2, matched, mapping)
-    true unless mapping.mapping_rule.include? ('space_case')
+    true unless mapping.mapping_rule.include?('space_case')
 
     if record1[matched[0].gsub('_',' ')]&.delete(' ') == record2[matched[1].gsub('_', ' ')]&.delete(' ')
       true
@@ -228,9 +228,9 @@ class ImportMappingsController < ApplicationController
   end
 
   def upper_case(record1, record2, matched, mapping)
-    true unless mapping.mapping_rule.include? ('upper_case')
+    true unless mapping.mapping_rule.include?('upper_case')
 
-    if record1[matched[0].gsub('_',' ')]&.casecmp(record2[matched[1].gsub('_', ' ')])&.zero?
+    if record1[matched[0].gsub('_', ' ')]&.casecmp(record2[matched[1].gsub('_', ' ')])&.zero?
       true
     else
       false
