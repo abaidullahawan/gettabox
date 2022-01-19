@@ -42,27 +42,51 @@ class PickAndPacksController < ApplicationController
   end
 
   def start_packing
-    @order = ChannelOrder.find_by(order_id: params[:order_id]) if params[:order_id].present?
     @batches = OrderBatch.all
     @q = OrderBatch.ransack(params[:q])
     @pick_and_packs = @q.result(distinct: true).order(created_at: :desc).page(params[:page]).per(params[:limit])
-    if params[:q].present?.present?
+    if params[:q].present?
       @orders = @pick_and_packs.last.channel_orders
+      @tracking_order = @orders.joins(:trackings).find_by('trackings.tracking_no': params[:order_id]) if params[:order_id].present?
     end
   end
 
   def courier_edit
-  end
+    @mailRule = AssignRule.find_by(id: params[:assign_rule_id])
+    if @mailRule.save_later
+      @newRule = AssignRule.create(mail_service_rule_id: params[:mail_service_rule])
+      if @newRule.present?
+        ChannelOrder.find_by(id: params[:batch_order_id]).update(assign_rule_id: @newRule.id)
+        flash[:notice] = 'Service Rule successfully updated.'
+      else
+        flash[:alert] = @batch.errors.full_messages
+      end
+    else
+      if @mailRule.update(mail_service_rule_id: params[:mail_service_rule])
+        flash[:notice] = 'Service Rule successfully updated.'
+      else
+        flash[:alert] = @batch.errors.full_messages
+      end
+    end
+    redirect_to request.referrer
+  end 
 
   def address_edit
+    @address = Address.where(id: params[:address_id].split(" "), address_title: "delivery")
+    if @address.update(address: params[:new_address])
+      flash[:notice] = 'Address successfully updated.'
+    else
+      flash[:alert] = @batch.errors.full_messages
+    end
+    redirect_to request.referrer
   end
 
   def assign_user
     @batch = OrderBatch.find(params[:batch_id])
-    flash[:notice] = if @batch.update(user_id: params[:user_id])
-      'User assigned to batch successfully created.'
+    if @batch.update(user_id: params[:user_id])
+      flash[:notice] = 'User assigned to batch successfully created.'
     else
-      @batch.errors.full_messages
+      flash[:alert] = @batch.errors.full_messages
     end
     redirect_to pick_and_packs_path
   end

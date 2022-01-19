@@ -18,7 +18,7 @@
       <div class="card-body">
         <div class="d-flex mb-2">
           <%= search_form_for @q, url: start_packing_pick_and_packs_path, method: :get, class: 'ml-auto' do |f| %>
-            <%= f.select :batch_name_eq, options_for_select(@batches.collect { | batch | [batch.batch_name, batch.batch_name] }),{include_blank: 'Please select batch'}, class: 'form-control ml-auto batches-select' %>
+            <%= f.select :batch_name_eq, options_for_select(@batches.collect { | batch | [batch.batch_name, batch.batch_name] }, f.object.batch_name_eq),{include_blank: 'Please select batch'}, class: 'form-control ml-auto batches-select' %>
             <%= f.submit 'check', class: 'batches-button-submit d-none'%>
           <% end %>
         </div>
@@ -28,108 +28,29 @@
               <tr>
                 <th class="text-center">Name</th>
                 <th class="text-center">Order No.</th>
+                <th class="text-center">Tracking No.</th>
                 <th class="text-center">Items</th>
               </tr>
               <% @orders&.each do |order|%>
                 <tr>
                   <td class="text-center"><%= order.buyer_name%></td>
                   <td class="text-center"><%= order.order_id%></td>
+                  <td class="text-center">
+                    <% order.trackings&.each do |item| %>
+                      <%= item.tracking_no %><br>
+                    <% end %>
+                  </td>
                   <td class="text-center"><%= order.channel_order_items&.count%></td>
                 </tr>
               <% end %>
             </table>
           </div>
           <div class="col-6" style="background-color: #eeeef8;">
-          <% if @order.present? %>
-            <div class="row">
-              <div class="col-xl-12">
-                <div class="card mb-30 mt-4">
-                  <div class="card-body">
-                    <div class="table-responsive">
-                    <table class="table m-0 table-hover">
-                      <tr>
-                        <td class="text-left">Customer Name</td>
-                        <td> <%= @order.buyer_name %></td>
-                      </tr>
-                      <tr>
-                        <td class="text-left">Delivery address</td>
-                        <td> <%= @order.system_user&.addresses&.last&.address %> </td>
-                      </tr>
-                      <tr>
-                        <td class="text-left">Order ID</td>
-                        <td><%= @order.order_id %></td>
-                      </tr>
-                      <tr>
-                        <td class="text-left">Order reference</td>
-                        <td><%= @order.id %></td>
-                      </tr>
-                      <tr>
-                        <td class="text-left">Order date</td>
-                        <td><%= @order.created_at.to_date %></td>
-                      </tr>
-                      <tr>
-                        <td class="text-left">Delivery date</td>
-                        <td></td>
-                      </tr>
-                      <tr>
-                        <td class="text-left">Courier service</td>
-                        <td> <%= @order.assign_rule.mail_service_rule.courier.name %> </td>
-                      </tr>
-                      <tr> 
-                        <td class="text-left">Courier rule</td>
-                        <td><%= @order.assign_rule.mail_service_rule.rule_name %></td>
-                      </tr>
-                      <tr>
-                        <td class="text-left">Total order weight</td>
-                        <td><%= @order.assign_rule.mail_service_labels.last.weight %></td>
-                      </tr>
-                    </table>
-                  </div>
-                    <div class="card-footer bg-transparent d-flex">
-                      <button class="ml-auto btn btn-primary">ADD TO CONTAINER</button>
-                      <button class="ml-1 btn btn-primary" data-toggle="modal" data-target='#address-edit-modal'>EDIT ADDRESS</button>
-                      <button class="ml-1 btn btn-primary" data-toggle="modal" data-target='#courier-edit-modal'>CHANGE COURIER</button>
-                      <button class="ml-1 btn btn-primary">PICK ALL ITEMS</button>
-                    </div>
-                  </div>
-                  <div>
-                  <div class="table-responsive">
-                    <table class="table m-0 table-hover">
-                      <tr>
-                        <th class="text-center">Image</th>
-                        <th class="text-center">Price</th>
-                        <th class="text-center">Available</th>
-                        <th class="text-center">Dispatched</th>
-                        <th class="text-center">Allocated</th>
-                        <th class="text-center">Ordered</th>
-                      </tr>
-                      <% @order.channel_order_items.each do |item| %>
-                        <tr>
-                          <td class="text-center"><img alt="No image" href="<%= item&.channel_product&.item_image %>"></td>
-                          <td class="text-center"><%= @order.total_amount %></td>
-                          <% if item&.channel_product&.product_mapping&.product&.product_type_multiple? %>
-                            <td class="text-center">
-                              <% item&.channel_product&.product_mapping&.product&.multipack_products&.each do |product| %>
-                                <%= product.total_stock %>
-                              <% end %>
-                            </td>
-                          <% else %>
-                            <td class="text-center"><%= item&.channel_product&.product_mapping&.product&.total_stock %></td>
-                          <% end %>
-                          <td class="text-center"><%=  %></td>
-                          <td class="text-center"><%=  %></td>
-                          <td class="text-center"><%= item.ordered %></td>
-                        </tr>
-                      <% end %>
-                    </table>
-                  </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+          <% if @tracking_order&.present? %>
+            <%= render "information_show", batch_order: @tracking_order %>
           <% else %>
             <%= form_tag(start_packing_pick_and_packs_path(), method: :get) do |f| %>
-              <%= hidden_field_tag :"q[batch_name_cont]", params[:q].try(:[], :batch_name_eq) %>
+              <%= hidden_field_tag :"q[batch_name_eq]", params[:q].try(:[], :batch_name_eq) %>
               <div class="form-group row">
                 <%= text_field_tag :order_id,{}, autofocus: true, required: true, class: 'form-control col-6 mt-4 mx-auto', placeholder: 'Enter Order ID' %>
               </div>
