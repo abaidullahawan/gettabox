@@ -69,10 +69,14 @@ class CustomersController < ApplicationController
   end
 
   def flagging_date
-    customer = SystemUser.find(params[:customer_id_for_flagging])
-    flagging_date = params[:flagging_date] || params[:system_user][:flagging_date]
-    customer&.update(flagging_date: flagging_date)
-    flash[:notice] = 'Flagging Date Updated'
+    if params[:tracking].present?
+      update_tracking
+    else
+      customer = SystemUser.find(params[:customer_id_for_flagging])
+      flagging_date = params[:flagging_date] || params[:system_user][:flagging_date]
+      customer&.update(flagging_date: flagging_date)
+      flash[:notice] = 'Flagging Date Updated'
+    end
     redirect_to request.referrer
   end
 
@@ -89,7 +93,7 @@ class CustomersController < ApplicationController
       customers.each do |system_user|
         sys_user_data = attributes.map { |attr| system_user.send(attr) }
         order_item_data = order_item.map { |attr| system_user.channel_orders.last.channel_order_items.last.send(attr) }
-        tracking_data = tracking.map { |attr| system_user.channel_orders.last.trackings.last.send(attr) } if system_user.channel_orders.last.trackings.present?
+        # tracking_data = tracking.map { |attr| system_user.channel_orders.last.trackings.last.send(attr) } if system_user.channel_orders.last.trackings.present?
         csv << sys_user_data + order_item_data
       end
     end
@@ -150,5 +154,15 @@ class CustomersController < ApplicationController
   def fetch_field_names
     @field_names = []
     @field_names = ExtraFieldName.where(table_name: 'SystemUser').pluck(:field_name)
+  end
+
+  def update_tracking
+    order = ChannelOrder.find_by(id: params[:order_id])
+    if order.trackings.present?
+      order.trackings.last.update(tracking_no: params[:tracking][:tracking_no])
+    else
+      order.trackings.build(tracking_no: params[:tracking][:tracking_no]).save
+    end
+    flash[:notice] = 'Tracking Updated successfully'
   end
 end

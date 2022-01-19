@@ -58,22 +58,20 @@
       <th class="text-center" >Quantity</th>
       <th class="text-center" >Location</th>
     </tr>
-    <% @pdf_orders.each do |order| %>
-      <% order.channel_order_items.each do | item | %>
-        <tr>
-          <td class="text-center">
-            <% if item&.channel_product&.item_image.present? %>
-              <%= image_tag image_url(item&.channel_product&.item_image ), height: '50px', width: '50px' %>
-            <% else %>
-              <%= image_tag('user/1.jpg', width: "50", height: "50", class: 'mr-3 img-thumbnail', alt: 'User Image') %>
-            <% end %>
-          </td>
-          <td class="text-center"><%= item&.channel_product&.product_mapping&.product&.title %></td>
-          <td class="text-center"><%= item&.channel_product&.product_mapping&.product&.sku %></td>
-          <td class="text-center" ><%= item&.ordered %></td>
-          <td class="text-center" ><%= item&.channel_product&.product_mapping&.product&.location %></td>
-        </tr>
-      <% end %>
+    <% @pdf_order_items.each do |item| %>
+      <tr>
+        <td class="text-center">
+          <% if item&.last&.first&.channel_product&.item_image.present? %>
+            <%= image_tag image_url(item&.last&.first&.channel_product&.item_image ), height: '50px', width: '50px' %>
+          <% else %>
+            <%= image_tag('user/1.jpg', width: "50", height: "50", class: 'mr-3 img-thumbnail', alt: 'User Image') %>
+          <% end %>
+        </td>
+        <td class="text-center"><%= item&.last&.first&.channel_product&.item_name %></td>
+        <td class="text-center"><%= item&.last&.first&.channel_product&.item_sku %></td>
+        <td class="text-center" ><%= item&.last&.pluck(:ordered)&.sum() %></td>
+        <td class="text-center" ><%= item&.last&.first&.channel_product&.product_mapping&.product&.location %></td>
+      </tr>
     <% end %>
   </table>
 </div>
