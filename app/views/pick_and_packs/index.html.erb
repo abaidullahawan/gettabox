@@ -83,7 +83,7 @@
                       <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                         <%= link_to 'Orders', pick_and_pack_path(pick_and_pack), class: 'dropdown-item', remote: true %>
                         <a class="trigger_orders_modal_<%= pick_and_pack.id %> d-none" data-toggle="modal" data-target='#orders-modal'>Orders</a>
-                        <%= link_to 'Start Packing', show_order_pick_and_packs_path(id: pick_and_pack.channel_orders.first.id), class: 'dropdown-item' %>
+                        <%= link_to 'Start Packing', show_order_pick_and_packs_path(id: pick_and_pack.channel_orders&.first&.id), class: 'dropdown-item' %>
                         <a class="dropdown-item assign_user" data-id="<%= pick_and_pack.id %>">Assign Packer</a>
                         <% if pick_and_pack.channel_orders.count == 0 %>
                           <%= link_to 'Archive', pick_and_pack_path(pick_and_pack), method: 'delete', data: {confirm: "Are you sure you want to archive"}, class: "dropdown-item"%>

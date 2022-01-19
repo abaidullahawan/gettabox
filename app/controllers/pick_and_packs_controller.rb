@@ -30,7 +30,11 @@ class PickAndPacksController < ApplicationController
   end
 
   def show_order
-    @batch_order = ChannelOrder.find(params[:id])
+    @batch_order = ChannelOrder.find_by(id: params[:id])
+    return if @batch_order.present?
+
+    flash[:alert] = 'Orders not found'
+    redirect_to pick_and_packs_path
   end
   # GET /services/new
   def new
