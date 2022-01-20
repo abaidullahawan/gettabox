@@ -73,10 +73,19 @@ class PickAndPacksController < ApplicationController
 
   def address_edit
     @address = Address.where(id: params[:address_id].split(" "), address_title: "delivery")
-    if @address.update(address: params[:new_address])
-      flash[:notice] = 'Address successfully updated.'
+    if @address.present?
+      if @address.update(address: params[:new_address])
+        flash[:notice] = 'Address successfully updated.'
+      else
+        flash[:alert] = @batch.errors.full_messages
+      end
     else
-      flash[:alert] = @batch.errors.full_messages
+      @newAddress = SystemUser.find_by(id: params[:system_user_id]).addresses.build(address_title: 'delivery', address: params[:new_address])
+      if @newAddress.save
+        flash[:notice] = 'Address successfully updated.'
+      else
+        flash[:alert] = @batch.errors.full_messages
+      end
     end
     redirect_to request.referrer
   end
