@@ -394,6 +394,10 @@ $(document).on('turbolinks:load', function () {
     $('.edit-tracking-field').val(tracking_value)
     $('#edit-tracking').modal('show');
   })
+  
+  $('.loader-button').on('click', function(){
+    $('.cover-spin, .loading').removeClass('d-none')
+  })
 
 });
 

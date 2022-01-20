@@ -29,6 +29,7 @@
         <% if (controller_name === 'auth') || current_user == nil %>
             <%= yield %>
         <% else %>
+            <%= render partial: "layouts/loader" %>
             <%= render partial: "layouts/navbar" %>
             <%= render partial: "layouts/sidebar" %>
             <!-- Main Content Wrapper -->
