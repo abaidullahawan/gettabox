@@ -349,7 +349,7 @@
         <div class="modal-footer">
           <%#= link_to 'PDF', order_dispatches_path(format: :pdf), class:"btn btn-primary float-right ml-1", type:"button"%>
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <%= submit_tag("Upload Trackings", id: "button", class: "btn btn-primary", name: "submit") %>
+          <%= submit_tag("Upload Trackings", id: "button", class: "btn btn-primary", name: "submit", data: {disable_with: false}) %>
         </div>
       </div>
     </div>
