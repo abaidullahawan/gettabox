@@ -381,6 +381,10 @@ $(document).on('turbolinks:load', function () {
     $('#add-flagging-date-modal').modal('show');
   })
 
+  $('.loader-button').on('click', function(){
+    $('.cover-spin, .loading').removeClass('d-none')
+  })
+
 });
 
 // Preloader JS
