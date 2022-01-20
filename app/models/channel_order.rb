@@ -10,6 +10,7 @@ class ChannelOrder < ApplicationRecord
   belongs_to :channel_order, optional: true
   belongs_to :system_user, optional: true
   accepts_nested_attributes_for :channel_order_items
+  accepts_nested_attributes_for :trackings
   enum channel_type: {
     ebay: 0,
     amazon: 1,

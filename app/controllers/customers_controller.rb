@@ -69,7 +69,14 @@ class CustomersController < ApplicationController
   end
 
   def flagging_date
-    if params[:tracking].present?
+    if params[:commit].eql? 'Add Tracking'
+      @tracking = Tracking.create(tracking_no: params[:tracking_no], channel_order_id:params[:order_id_for_tracking])
+        if @tracking.save
+          flash[:notice] = 'Tracking Added'
+        else
+          flash[:alert] = @tracking.errors.full_messages
+        end
+    elsif params[:commit].eql? 'Update tracking'
       update_tracking
     else
       customer = SystemUser.find(params[:customer_id_for_flagging])
@@ -157,12 +164,8 @@ class CustomersController < ApplicationController
   end
 
   def update_tracking
-    order = ChannelOrder.find_by(id: params[:order_id])
-    if order.trackings.present?
-      order.trackings.last.update(tracking_no: params[:tracking][:tracking_no])
-    else
-      order.trackings.build(tracking_no: params[:tracking][:tracking_no]).save
-    end
+    tracking = Tracking.find_by(id: params[:tracking_id_for_edit])
+    tracking.update(tracking_no: params[:tracking_no])
     flash[:notice] = 'Tracking Updated successfully'
   end
 end

@@ -381,6 +381,20 @@ $(document).on('turbolinks:load', function () {
     $('#add-flagging-date-modal').modal('show');
   })
 
+  $('.add-tracking-button').on('click', function() {
+    var order_id = this.dataset.id
+    $('#order_id_for_tracking').val(order_id)
+    $('#add-tracking-modal').modal('show');
+  })
+
+  $('.edit-tracking').on('click', function() {
+    var tracking_id = this.dataset.id
+    var tracking_value = this.dataset.value
+    $('#tracking_id_for_edit').val(tracking_id)
+    $('.edit-tracking-field').val(tracking_value)
+    $('#edit-tracking').modal('show');
+  })
+  
   $('.loader-button').on('click', function(){
     $('.cover-spin, .loading').removeClass('d-none')
   })

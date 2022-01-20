@@ -140,35 +140,19 @@
                   <td style='cursor: pointer;' data-link="<%= order_dispatches_path(order_filter: 'unprocessed', q:{order_id_or_order_status_or_buyer_name_cont: order.order_id}) %>">
                     <%= order.channel_type %>
                   </td>
-                  <td><%= order.trackings&.first&.tracking_no %>
-                    <a class="edit-tracking text-info mr-2" href="#" data-id= "<%= order.id %>" data-toggle="modal" data-target="#edit-tracking">
-                      <i data-feather="edit-2" class="icon wh-15"></i>
-                    </a>
+                  <td>
+                    <a class="add-tracking-button text-info mr-2" data-id= "<%= order.id %>" >
+                      <i data-feather="plus" class="icon wh-15"></i>
+                    </a><br>
+                    <% order.trackings&.each do |tracking| %>
+                      <%= tracking.tracking_no %>
+                      <a class="edit-tracking text-info mr-2" data-id= "<%= tracking.id %>" data-value= "<%= tracking.tracking_no %>" data-target="#edit-tracking">
+                        <i data-feather="edit-2" class="icon wh-15"></i>
+                      </a>
+                      <br>
+                    <% end %>
                   </td>
                 </tr>
-                <%= form_for order.trackings.first || order.trackings.build, url: add_flagging_customers_path, method: :post do |f| %>
-                  <div class="modal fade" id="edit-tracking" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
-                    <div class="modal-dialog  modal-dialog-scrollable modal-md" role="document">
-                      <div class="modal-content">
-                        <div class="modal-header">
-                          <h5 class="modal-title">Update Tracking</h5>
-                          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                          </button>
-                        </div>
-                        <div class="modal-body">
-                        <%= hidden_field_tag :order_id, order.id %>
-                        <%= f.label :tracking_no %>
-                        <%= f.text_field :tracking_no,value: order.trackings&.last&.tracking_no, class: 'form-control'%>
-                        </div>
-                        <div class="modal-footer">
-                          <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
-                          <%= f.submit 'Update tracking', class: 'btn btn-info', data: { disable_with: false } %>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                <% end %>
               <% end %>
             </tbody>
           </table>
@@ -320,6 +304,54 @@
         <div class="modal-footer">
           <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
           <%= f.submit 'Add', class: 'btn btn-info'%>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>
+
+<%= form_with url: add_flagging_customers_path, method: :post do |f| %>
+  <div class="modal fade" id="add-tracking-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
+    <div class="modal-dialog  modal-dialog-scrollable modal-md" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Add Tracking</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+         <%= hidden_field_tag("order_id_for_tracking", "") %>
+         <%= f.label :tracking_no %>
+         <%= f.text_field :tracking_no, class: 'form-control'%>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+          <%= f.submit 'Add Tracking', class: 'btn btn-info'%>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>
+
+<%= form_with url: add_flagging_customers_path, method: :post do |f| %>
+  <div class="modal fade" id="edit-tracking" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
+    <div class="modal-dialog  modal-dialog-scrollable modal-md" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Update Tracking</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+        <%= hidden_field_tag("tracking_id_for_edit", "") %>
+        <%= f.label :tracking_no %>
+        <%= f.text_field :tracking_no, class: 'edit-tracking-field form-control'%>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+          <%= f.submit 'Update tracking', class: 'btn btn-info'%>
         </div>
       </div>
     </div>
