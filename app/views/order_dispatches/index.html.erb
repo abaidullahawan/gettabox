@@ -103,22 +103,22 @@
       <div class="tabs-style-two">
         <ul class="nav nav-tabs">
           <li class="nav-item">
-            <a class="nav-link <%= 'active' if params[:order_filter].eql? 'unprocessed' %>" href=<%= order_dispatches_path(order_filter: 'unprocessed', q: { channel_type_eq: params[:q].try(:[], :channel_type_eq), order_id_or_order_status_or_buyer_name_cont: params[:q].try(:[], :order_id_or_order_status_or_buyer_name_cont)})%>><%= "Unprocessed Orders (#{@unmatched_sku_count.to_i + @un_matched_orders_count.to_i})" %></a>
+            <a class="nav-link loader-button <%= 'active' if params[:order_filter].eql? 'unprocessed' %>" href=<%= order_dispatches_path(order_filter: 'unprocessed', q: { channel_type_eq: params[:q].try(:[], :channel_type_eq), order_id_or_order_status_or_buyer_name_cont: params[:q].try(:[], :order_id_or_order_status_or_buyer_name_cont)})%>><%= "Unprocessed Orders (#{@unmatched_sku_count.to_i + @un_matched_orders_count.to_i})" %></a>
           </li>
           <li class="nav-item">
-            <a class="nav-link <%= 'active' if params[:order_filter].eql? 'ready' %>" href=<%= order_dispatches_path(order_filter: 'ready', q: { channel_type_eq: params[:q].try(:[], :channel_type_eq), order_id_or_order_status_or_buyer_name_cont: params[:q].try(:[], :order_id_or_order_status_or_buyer_name_cont)})%>><%= "Ready to Dispatch(#{@not_started_orders&.count})" %></a>
+            <a class="nav-link loader-button <%= 'active' if params[:order_filter].eql? 'ready' %>" href=<%= order_dispatches_path(order_filter: 'ready', q: { channel_type_eq: params[:q].try(:[], :channel_type_eq), order_id_or_order_status_or_buyer_name_cont: params[:q].try(:[], :order_id_or_order_status_or_buyer_name_cont)})%>><%= "Ready to Dispatch(#{@not_started_orders&.count})" %></a>
           </li>
           <li class="nav-item">
-            <a class="nav-link <%= 'active' if params[:order_filter].eql? 'assignment' %>" href=<%= order_dispatches_path(order_filter: 'assignment', q: { channel_type_eq: params[:q].try(:[], :channel_type_eq), order_id_or_order_status_or_buyer_name_cont: params[:q].try(:[], :order_id_or_order_status_or_buyer_name_cont)})%>><%= "Ready to Pack(#{@ready_to_pack_count})" %></a>
+            <a class="nav-link loader-button <%= 'active' if params[:order_filter].eql? 'assignment' %>" href=<%= order_dispatches_path(order_filter: 'assignment', q: { channel_type_eq: params[:q].try(:[], :channel_type_eq), order_id_or_order_status_or_buyer_name_cont: params[:q].try(:[], :order_id_or_order_status_or_buyer_name_cont)})%>><%= "Ready to Pack(#{@ready_to_pack_count})" %></a>
           </li>
           <li class="nav-item">
-            <a class="nav-link <%= 'active' if params[:order_filter].eql? 'issue' %>" href=<%= order_dispatches_path(order_filter: 'issue', q: { channel_type_eq: params[:q].try(:[], :channel_type_eq), order_id_or_order_status_or_buyer_name_cont: params[:q].try(:[], :order_id_or_order_status_or_buyer_name_cont)})%>><%= "Issue Orders (#{@issue_orders_count.to_i})"%></a>
+            <a class="nav-link loader-button <%= 'active' if params[:order_filter].eql? 'issue' %>" href=<%= order_dispatches_path(order_filter: 'issue', q: { channel_type_eq: params[:q].try(:[], :channel_type_eq), order_id_or_order_status_or_buyer_name_cont: params[:q].try(:[], :order_id_or_order_status_or_buyer_name_cont)})%>><%= "Issue Orders (#{@issue_orders_count.to_i})"%></a>
           </li>
           <li class="nav-item">
-            <a class="nav-link <%= 'active' if params[:order_filter].eql? 'completed' %>" href=<%= order_dispatches_path(order_filter: 'completed', q: { channel_type_eq: params[:q].try(:[], :channel_type_eq), order_id_or_order_status_or_buyer_name_cont: params[:q].try(:[], :order_id_or_order_status_or_buyer_name_cont)})%>><%= "Completed Orders (#{@completed_count.to_i})"%></a>
+            <a class="nav-link loader-button <%= 'active' if params[:order_filter].eql? 'completed' %>" href=<%= order_dispatches_path(order_filter: 'completed', q: { channel_type_eq: params[:q].try(:[], :channel_type_eq), order_id_or_order_status_or_buyer_name_cont: params[:q].try(:[], :order_id_or_order_status_or_buyer_name_cont)})%>><%= "Completed Orders (#{@completed_count.to_i})"%></a>
           </li>
           <li class="nav-item">
-            <a class="nav-link <%= 'active' if params[:order_filter].eql? 'unpaid' %>" href=<%= order_dispatches_path(order_filter: 'unpaid', q: { channel_type_eq: params[:q].try(:[], :channel_type_eq), order_id_or_order_status_or_buyer_name_cont: params[:q].try(:[], :order_id_or_order_status_or_buyer_name_cont)})%>><%= "Unpaid Orders (#{@unpaid_orders_count.to_i})"%></a>
+            <a class="nav-link loader-button <%= 'active' if params[:order_filter].eql? 'unpaid' %>" href=<%= order_dispatches_path(order_filter: 'unpaid', q: { channel_type_eq: params[:q].try(:[], :channel_type_eq), order_id_or_order_status_or_buyer_name_cont: params[:q].try(:[], :order_id_or_order_status_or_buyer_name_cont)})%>><%= "Unpaid Orders (#{@unpaid_orders_count.to_i})"%></a>
           </li>
         </ul>
         <div class="tab-content">
