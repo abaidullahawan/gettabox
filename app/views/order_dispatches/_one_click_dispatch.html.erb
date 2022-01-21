@@ -126,9 +126,18 @@
                 <%= f.label :batch_name, class: 'h5 font-weight-bold' %>
                 <p>Set a distinct name for the batch to recall at a later date or use an existing batch. Type below to search through your recent batches</p>
               </div>
-              <div class='col-4'>
+              <div class='col-4 select-batch d-none'>
                 <%= f.label :batch_name %>
-                <%= f.text_field :batch_name, class: 'form-control' %>
+                <%= f.select :batch_name, options_for_select(OrderBatch.all.collect { |c| [c.batch_name, c.id]}), {include_blank: 'Please Select Batch'}, class: 'form-control' %>
+              </div>
+              <div class="col-4"><br>
+                <div class="dropdown">
+                  <%= f.search_field :batch_name, class: 'form-control dropdown-toggle', id: 'batch-name-search', data: {toggle: 'dropdown'}, area: {haspopup: true, expanded: 'false'}, autocomplete: 'off', placeholder:"Search in Batch Name", onkeyup: "dropdown_search( '/order_batches/search_batch', 'batch-dropdown-list', 'batch-list-item', event)", onclick: "dropdown_search( '/order_batches/search_batch', 'batch-dropdown-list', 'batch-list-item', event)" %>
+                  <span class="searchclear">@@</span>
+                  <ul class="dropdown-menu batch-dropdown-list search-list" aria-labelledby="batch-name-search">
+                    <li><a href="#" class="dropdown-item batch-list-item">Select Batch</a></li>
+                  </ul>
+                </div>
               </div>
             </div>
           </div>

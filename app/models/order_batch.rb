@@ -6,8 +6,8 @@ class OrderBatch < ApplicationRecord
   belongs_to :user, optional: true
   has_many :channel_orders
   enum print_packing_list_options: {
-    orders: 'Orders',
-    products: 'Products'
+    products: 'Products',
+    orders: 'Orders'
   }, _prefix: true
   enum pick_preset: {
     original: 'Orginal',

@@ -104,8 +104,20 @@ $(document).on('turbolinks:load', function () {
   $('.season-dropdown-list').on('focus', '.season-list-item', function () {
     $('#season-name-search').val(this.outerText)
   })
-  //-------------------SystemUsers------------------
 
+  //-------------------OrderBatches------------------
+  $('.batch-dropdown-list').on('click', '.batch-list-item', function () {
+    $('#batch-name-search').val(this.outerText)
+    $('.batch-dropdown-list').hide()
+    $('#batch-name-search').focus()
+    return false
+  })
+
+  $('.batch-dropdown-list').on('focus', '.batch-list-item', function () {
+    $('#batch-name-search').val(this.outerText)
+  })
+
+  //-------------------SystemUsers------------------
   $('.supplier-name-dropdown-list').on('click', '.supplier-name-list-item', function () {
     $('#supplier-name-search').val(this.outerText)
     $('.supplier-name-dropdown-list').hide();

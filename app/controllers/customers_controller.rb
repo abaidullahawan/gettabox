@@ -13,7 +13,7 @@ class CustomersController < ApplicationController
 
   def index
     params[:q][:name_or_email_or_phone_number_or_sales_channel_or_addresses_address_or_addresses_postcode_or_channel_orders_order_id_or_channel_orders_order_status_i_cont_any] = params[:q][:name_or_email_or_phone_number_or_sales_channel_or_addresses_address_or_addresses_postcode_or_channel_orders_order_id_or_channel_orders_order_status_i_cont_any].split("\r\n") if params[:q].present?
-    @q = SystemUser.where(user_type: 0).ransack(params[:q])
+    @q = SystemUser.customers.ransack(params[:q])
     @customers = @q.result(distinct: true).order(flagging_date: :asc).page(params[:page]).per(params[:limit])
     export_csv(@customers) if params[:export_csv].present?
     @customer = SystemUser.new
@@ -88,7 +88,7 @@ class CustomersController < ApplicationController
   end
 
   def export_csv(customers)
-    customers = SystemUser.where(user_type: 'customer', selected: true) if params[:selected]
+    customers = SystemUser.customers.where(selected: true) if params[:selected]
     attributes = SystemUser.column_names.excluding('user_type', 'delivery_method', 'payment_method', 'days_for_payment',
                                                    'days_for_order_to_completion', 'days_for_completion_to_delivery',
                                                    'currency_symbol', 'exchange_rate', 'deleted_at', 'created_at',
@@ -126,7 +126,7 @@ class CustomersController < ApplicationController
   end
 
   def archive
-    @q = SystemUser.only_deleted.ransack(params[:q])
+    @q = SystemUser.customers.only_deleted.ransack(params[:q])
     @customers = @q.result(distinct: true).page(params[:page]).per(params[:limit])
   end
 

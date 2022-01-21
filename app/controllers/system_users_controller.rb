@@ -108,7 +108,7 @@ class SystemUsersController < ApplicationController
   end
 
   def archive
-    @q = SystemUser.only_deleted.ransack(params[:q])
+    @q = SystemUser.suppliers.only_deleted.ransack(params[:q])
     @system_users = @q.result(distinct: true).page(params[:page]).per(params[:limit])
   end
 
@@ -117,7 +117,7 @@ class SystemUsersController < ApplicationController
   end
 
   def search_system_user_by_name
-    @searched_supplier_by_name = SystemUser.ransack('name_cont': params[:search_value].downcase.to_s)
+    @searched_supplier_by_name = SystemUser.suppliers.ransack('name_cont': params[:search_value].downcase.to_s)
                                            .result.limit(20).pluck(:id, :name)
     respond_to do |format|
       format.json { render json: @searched_supplier_by_name }
@@ -145,7 +145,7 @@ class SystemUsersController < ApplicationController
   end
 
   def ransack_system_users
-    @q = SystemUser.where(user_type: 'supplier').ransack(params[:q])
+    @q = SystemUser.suppliers.ransack(params[:q])
     @system_users = @q.result(distinct: true).order(created_at: :desc).page(params[:page]).per(params[:limit])
   end
 

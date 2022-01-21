@@ -339,7 +339,7 @@ $(document).on('turbolinks:load', function () {
   //   }
   // })
 
-  $('.batches-select').on('change', function(){
+  $('.batches-select').on('change', function () {
     $('.batches-button-submit').trigger('click');
   })
 
@@ -347,7 +347,7 @@ $(document).on('turbolinks:load', function () {
     var object_ids = $('input[name="object_ids[]"]:checked')
     var rule = object_ids.map(function (i, e) { return e.dataset.courier }).toArray();
     var same_rule = rule.every((val, i, arr) => val === arr[0]) && rule[0] == 'Manual Dispatch'
-    if (same_rule){
+    if (same_rule) {
       $('.upload-trackings').modal('show')
     }
     else {
@@ -369,25 +369,25 @@ $(document).on('turbolinks:load', function () {
     $('.customer_ransack_submit').trigger('click')
   })
 
-  $('.assign_user').on('click', function(){
+  $('.assign_user').on('click', function () {
     var batchId = this.dataset.id;
     $('#batch_id').val(batchId);
     $('#packer-modal').modal('show');
   })
 
-  $('.add-flagging-button').on('click', function() {
+  $('.add-flagging-button').on('click', function () {
     var customer_id = this.dataset.id
     $('#customer_id_for_flagging').val(customer_id)
     $('#add-flagging-date-modal').modal('show');
   })
 
-  $('.add-tracking-button').on('click', function() {
+  $('.add-tracking-button').on('click', function () {
     var order_id = this.dataset.id
     $('#order_id_for_tracking').val(order_id)
     $('#add-tracking-modal').modal('show');
   })
 
-  $('.edit-tracking').on('click', function() {
+  $('.edit-tracking').on('click', function () {
     var tracking_id = this.dataset.id
     var tracking_value = this.dataset.value
     $('#tracking_id_for_edit').val(tracking_id)
@@ -395,8 +395,9 @@ $(document).on('turbolinks:load', function () {
     $('#edit-tracking').modal('show');
   })
 
-  $('body').on("click", "input[type=submit]", function() {
-      $('.cover-spin, .loading').removeClass('d-none')
+  // loader remove
+  $('.showLoader').on('click', function () {
+    $('.cover-spin, .loading').removeClass('d-none')
   });
 
 });
@@ -406,9 +407,9 @@ $(window).on('turbolinks:load', function () {
   $('.preloader').fadeOut();
 });
 
-$(document).on('turbolinks:click', function() {
+$(document).on('turbolinks:click', function () {
   $('.cover-spin, .loading').removeClass('d-none')
 });
-$(document).on('turbolinks:render', function() {
+$(document).on('turbolinks:render', function () {
   $('.cover-spin, .loading').addClass('d-none')
 });

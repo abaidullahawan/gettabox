@@ -16,7 +16,7 @@ class HomeController < ApplicationController
   end
 
   def load_suppliers
-    @suppliers = SystemUser.ransack(params[:q]).result(distinct: true)
+    @suppliers = SystemUser.suppliers.ransack(params[:q]).result(distinct: true)
                            .order(created_at: :desc).page(params[:supplier_page]).per(5)
   end
 
