@@ -66,19 +66,23 @@
                     <td style="width: 320px">
                       <% order.channel_order_items&.each do |product|%>
                         <%= link_to product_mappings_path(q:{item_sku_or_item_id_cont: product.sku}) do %>
-                          <div class="card-style">
-                            <div class="col-12 d-flex">
+                          <div class="card-style px-3 mt-1">
+                            <div>
                               <span class="order-listing order-quantity"><%= product.ordered %></span>
                               <div class="d-flex">
-                              <% if product.channel_product&.item_image.present?%>
-                                  <%= image_tag(product.channel_product.item_image, width: '55px', height: '80px', class: 'mr-3')%>
-                              <% else %>
-                                <%= image_tag('user/1.jpg', width: "50px", height: "50px", class: 'mr-3 img-thumbnail img-height', alt: 'User Image') %>
-                              <% end %>
-                              <div>
-                              <span class="truncate text-white" title="<%= product.item_data['title'] %>"><%= product.item_data['title'] if product.item_data['title'].present?%></span><br>
-                              <b class = "text-white"><%= product.item_data['legacyItemId'] if product.item_data['legacyItemId'].present? %></b><br>
-                              <div class="sku-width text-white"><%= product&.sku if product&.sku.present? %></div>
+                                <div>
+                                  <% if product.channel_product&.item_image.present?%>
+                                      <%= image_tag(product.channel_product.item_image, width: '55px', height: '80px', class: 'mr-3')%>
+                                  <% else %>
+                                    <%= image_tag('user/1.jpg', width: "50px", height: "50px", class: 'mr-3 img-thumbnail img-height', alt: 'User Image') %>
+                                  <% end %>
+                                </div>
+                                <div>
+                                  <span class="truncate text-white" title="<%= product.item_data['title'] %>"><%= product.item_data['title'] if product.item_data['title'].present?%></span><br>
+                                  <b class = "text-white"><%= product.item_data['legacyItemId'] if product.item_data['legacyItemId'].present? %></b><br>
+                                  <div class="sku-width text-white"><%= product&.sku if product&.sku.present? %></div>
+                                </div>
+                              </div>
                             </div>
                           </div>
                         <% end %>
