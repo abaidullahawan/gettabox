@@ -16,12 +16,12 @@
       <%= f.number_field :product_cost, step: :any, placeholde: 'Please enter product cost', class: 'form-control' %>
     </div>
     <div class="col-4">
-      <%= f.label  'Product SKU' %>
+      <%= f.label  'Supplier SKU' %>
       <%= f.text_field :product_sku, placeholde: 'Please enter product sku', class: 'form-control' %>
     </div>
     <div class="col-4">
       <%= f.label  'Product Vat' %>
-      <%= f.text_field :product_vat, placeholde: 'Please enter product vat', class: 'form-control' %>
+      <%= f.select :product_vat, options_for_select(Product.vats.map { |key, value| [key.humanize, value] }, f.object.product_vat.to_i), {}, class: 'form-control' %>
     </div>
   </div>
 </div>

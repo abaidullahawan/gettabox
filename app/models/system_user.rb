@@ -19,7 +19,7 @@ class SystemUser < ApplicationRecord
   accepts_nested_attributes_for :extra_field_value
   enum user_type: {
     customer: 0,
-    supplier: 1,
+    supplier: 1
   }, _prefix: true
 
   enum sales_channel: {
@@ -40,6 +40,9 @@ class SystemUser < ApplicationRecord
     local_pickup: 2,
     self_pickup: 3
   }, _prefix: true
+
+  scope :suppliers, -> { where(user_type: 'supplier') }
+  scope :customers, -> { where(user_type: 'customer') }
 
   def self.to_csv
     attributes = all.column_names.excluding('user_type')

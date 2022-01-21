@@ -80,7 +80,7 @@
                                     <%= f.number_field :product_id, value: f.object.product.id, class: 'form-control d-none' %>
                                   </td>
                                   <td>
-                                    <%= f.number_field :vat, value: f.object.vat, class: 'form-control order_item_vat', placeholder: 'Vat' %>
+                                    <%= f.select :vat, options_for_select(Product.vats.map { |key, value| [key.humanize, value] }, f.object.vat.to_i), {}, class: 'form-control order_item_vat' %>
                                   </td>
                                   <td>
                                     <%= f.number_field :cost_price, value: f.object.cost_price, class: 'form-control order_item_price', placeholder: 'Price' %>

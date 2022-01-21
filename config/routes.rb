@@ -170,7 +170,11 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :order_batches
+  resources :order_batches do
+    collection do
+      post 'search_batch', to: 'order_batches#search_batch'
+    end
+  end
   resources :mails
   resources :notes
 

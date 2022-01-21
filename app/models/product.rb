@@ -28,6 +28,17 @@ class Product < ApplicationRecord
     multiple: 1
   }, _prefix: true
 
+  enum vat: {
+    zero_rate: 0,
+    reduced_rate: 1,
+    extra_reduced_rate: 2,
+    super_reduced_rate: 3,
+    flat_rate: 4,
+    standard_rate: 5,
+    ecg_exempt: 10,
+    vat_exempt: 20
+  }, _prefix: true
+
   accepts_nested_attributes_for :barcodes, allow_destroy: true
   accepts_nested_attributes_for :product_suppliers, allow_destroy: true
   accepts_nested_attributes_for :multipack_products, allow_destroy: true

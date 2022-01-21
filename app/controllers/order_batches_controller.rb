@@ -5,7 +5,7 @@ class OrderBatchesController < ApplicationController
   def new; end
 
   def create
-    @order_batch = OrderBatch.new(order_batch_params)
+    @order_batch = OrderBatch.find_or_initialize_by(batch_name: params[:order_batch][:batch_name])
     if @order_batch.save
       orders = ChannelOrder.where(id: params[:order_ids].split(','))
       courier_csv_export(orders) if @order_batch.print_courier_labels && check_rule(orders.first)
@@ -13,6 +13,13 @@ class OrderBatchesController < ApplicationController
     else
       params[:alert] = @order_batch.errors.full_messages
       redirect_to order_dispatches_path(order_filter: 'ready')
+    end
+  end
+
+  def search_batch
+    batches = OrderBatch.where('lower(batch_name) LIKE ?', "%#{params[:search_value]}%").pluck(:id, :batch_name)
+    respond_to do |format|
+      format.json { render json: batches }
     end
   end
 
