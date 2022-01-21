@@ -394,14 +394,21 @@ $(document).on('turbolinks:load', function () {
     $('.edit-tracking-field').val(tracking_value)
     $('#edit-tracking').modal('show');
   })
-  
-  $('.loader-button').on('click', function(){
-    $('.cover-spin, .loading').removeClass('d-none')
-  })
+
+  $('body').on("click", "input[type=submit]", function() {
+      $('.cover-spin, .loading').removeClass('d-none')
+  });
 
 });
 
 // Preloader JS
 $(window).on('turbolinks:load', function () {
   $('.preloader').fadeOut();
+});
+
+$(document).on('turbolinks:click', function() {
+  $('.cover-spin, .loading').removeClass('d-none')
+});
+$(document).on('turbolinks:render', function() {
+  $('.cover-spin, .loading').addClass('d-none')
 });
