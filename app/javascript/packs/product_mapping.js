@@ -56,7 +56,6 @@ $(document).on('turbolinks:load', function () {
   $('.shipment_modal').on('click', function () {
     var parent = $(this).parent()
     var quantity = $(this.closest('tr')).find('.order-quantity')[0].innerHTML
-    debugger
     var length = $(parent).find('.length-value').val() || 0
     var width = $(parent).find('.width-value').val() || 0
     var height = $(parent).find('.height-value').val() || 0
