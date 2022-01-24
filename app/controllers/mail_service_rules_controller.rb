@@ -26,6 +26,10 @@ class MailServiceRulesController < ApplicationController
     @mail_service_rule = MailServiceRule.new
   end
 
+  def version
+    @versions = MailServiceRule.find_by(id: params[:id])&.versions
+  end
+
   # GET /mail_service_rules/1/edit
   def edit; end
 

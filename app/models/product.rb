@@ -3,7 +3,6 @@
 # system products
 class Product < ApplicationRecord
   acts_as_paranoid
-  has_paper_trail
   has_one :extra_field_value, as: :fieldvalueable
   after_create :re_modulate_dimensions
   after_update :re_modulate_dimensions

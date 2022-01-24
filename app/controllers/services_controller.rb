@@ -28,6 +28,10 @@ class ServicesController < ApplicationController
     @service = Service.new
   end
 
+  def version
+    @versions = Service.find_by(id: params[:id])&.versions
+  end
+
   # GET /services/1/edit
   def edit; end
 
@@ -84,11 +88,13 @@ class ServicesController < ApplicationController
   def csv_create_records(csv)
     csv.each do |row|
       service = Service.with_deleted.create_with(name: row['name'], courier_id: row['courier_id'])
-      .find_or_create_by(name: row['name'], courier_id: row['courier_id'])
-      flash[:alert] = "#{service.errors.full_messages} at ID: #{service.id} , Try again " unless update_service(service, row)
+                       .find_or_create_by(name: row['name'], courier_id: row['courier_id'])
+      flash[:alert] = "#{service.errors.full_messages} at ID: #{service.id} , Try again " unless update_service(
+        service, row
+      )
     end
   end
-  
+
   def update_service(service, row)
     service.update(row.to_hash)
   end

@@ -2,7 +2,6 @@
 
 # orders from api
 class ChannelOrder < ApplicationRecord
-  has_paper_trail
   has_many :channel_order_items, dependent: :destroy
   has_many :trackings
   has_one :mail_service_rule, dependent: :destroy

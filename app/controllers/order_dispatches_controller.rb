@@ -83,7 +83,7 @@ class OrderDispatchesController < ApplicationController
       rule = @rules.first
       @export_mapping = ExportMapping.find_by(id: rule)
       rule_name = @export_mapping.sub_type
-      to_be_ignored = ['id', 'user_type', 'selected','created_at', 'updated_at']
+      to_be_ignored = %w[id user_type selected created_at updated_at]
       channel_order_data = {}
       channel_order_item_data = {}
       address_data = {}
@@ -91,10 +91,16 @@ class OrderDispatchesController < ApplicationController
       mail_service_label_data = {}
       @export_mapping.mapping_data.compact_blank.each do |key, attribute|
         channel_order_data[key] = attribute if ChannelOrder.column_names.include? attribute
-        channel_order_item_data[key] = attribute if ChannelOrderItem.column_names.excluding(to_be_ignored).include? attribute
+        if ChannelOrderItem.column_names.excluding(to_be_ignored).include? attribute
+          channel_order_item_data[key] =
+            attribute
+        end
         address_data[key] = attribute if Address.column_names.excluding(to_be_ignored).include? attribute
         system_user_data[key] = attribute if SystemUser.column_names.excluding(to_be_ignored).include? attribute
-        mail_service_label_data[key] = attribute if MailServiceLabel.column_names.excluding(to_be_ignored).include? attribute
+        if MailServiceLabel.column_names.excluding(to_be_ignored).include? attribute
+          mail_service_label_data[key] =
+            attribute
+        end
       end
       attributes = channel_order_data.keys + channel_order_item_data.keys + system_user_data.keys + address_data.keys + mail_service_label_data.keys
       @csv = CSV.generate(headers: true) do |csv|
@@ -105,9 +111,13 @@ class OrderDispatchesController < ApplicationController
           order.update(ready_to_print: true)
           order_csv = channel_order_data.values.map { |attr| order.send(attr) }
           item_csv = channel_order_item_data.values.map { |attr| order.channel_order_items.first.send(attr) }
-          address_csv = address_data.values.map { |attr| order.system_user&.addresses&.find_by(address_title: 'delivery')&.send(attr) }
+          address_csv = address_data.values.map do |attr|
+            order.system_user&.addresses&.find_by(address_title: 'delivery')&.send(attr)
+          end
           system_user_csv = system_user_data.values.map { |attr| order.system_user&.send(attr) }
-          label_csv = mail_service_label_data.values.map { |attr| order.assign_rule.mail_service_labels.first.send(attr) }
+          label_csv = mail_service_label_data.values.map do |attr|
+            order.assign_rule.mail_service_labels.first.send(attr)
+          end
           csv << order_csv + item_csv + system_user_csv + address_csv + label_csv
         end
       end
@@ -140,7 +150,8 @@ class OrderDispatchesController < ApplicationController
       courier_csv_export(@orders)
     else
       @assign_rule = AssignRule.create(mail_service_rule_id: params[:rule_id], save_later: true)
-      @service_label = MailServiceLabel.create(height: params[:height], weight: params[:weight], length: params[:length], width: params[:width], assign_rule_id: @assign_rule.id)
+      @service_label = MailServiceLabel.create(height: params[:height], weight: params[:weight],
+                                               length: params[:length], width: params[:width], assign_rule_id: @assign_rule.id)
       order_ids = params[:object_ids].excluding('0')
       order_ids.each do |order|
         channel_order = ChannelOrder.find(order)
@@ -215,7 +226,7 @@ class OrderDispatchesController < ApplicationController
     if file.present? && file.path.split('.').last.to_s.downcase == 'csv'
       csv_text = File.read(file).force_encoding('ISO-8859-1').encode('utf-8', replace: nil)
       convert = ImportMapping.where(sub_type: params[:mapping_type]).last.mapping_data.compact_blank.invert
-      csv = CSV.parse(csv_text, headers: true, skip_blanks: true, header_converters: lambda { |name| convert[name] })
+      csv = CSV.parse(csv_text, headers: true, skip_blanks: true, header_converters: ->(name) { convert[name] })
     else
       flash[:alert] = 'File format no matched! Please change file'
     end
@@ -246,7 +257,7 @@ class OrderDispatchesController < ApplicationController
   end
 
   def version
-    @versions = ChannelOrder.find(params[:id]).versions
+    @versions = ChannelOrder.find_by(id: params[:id])&.versions
   end
 
   private
@@ -269,7 +280,8 @@ class OrderDispatchesController < ApplicationController
 
   def open_spreadsheet(file)
     case File.extname(file.original_filename)
-    when '.csv' then CSV.parse(File.read(file.path).force_encoding('ISO-8859-1').encode('utf-8', replace: nil), headers: true)
+    when '.csv' then CSV.parse(File.read(file.path).force_encoding('ISO-8859-1').encode('utf-8', replace: nil),
+                               headers: true)
     when '.xls' then  Roo::Excel.new(file.path, packed: nil, file_warning: :ignore)
     when '.xlsx' then Roo::Excelx.new(file.path, packed: nil, file_warning: :ignore)
     else raise "Unknown file type: #{file.original_filename}"

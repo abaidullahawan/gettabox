@@ -112,6 +112,7 @@
                         <i data-feather='bell' class='icon wh-15 mt-minus-3'></i>
                       </button>
                       <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <%= link_to 'Logs', version_services_path(id: service.id), class: 'dropdown-item' %>
                         <a class="dropdown-item" href="<%= service_path(service)%>">Edit</a>
                         <a href="#" class="dropdown-item new-service-rule-modal" data-toggle="modal" data-target='#new-rule-modal' data-courier='<%= service.courier.id %>' data-service-name='<%= service.name %>' data-service='<%= service.id %>'>Create New Rule</a>
                         <%= link_to 'Archive', service_path(service), method: 'delete', data: {confirm: "Are you sure you want to archive"}, class: "dropdown-item"%>

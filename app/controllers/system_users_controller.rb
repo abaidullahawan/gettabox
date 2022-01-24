@@ -72,6 +72,10 @@ class SystemUsersController < ApplicationController
     end
   end
 
+  def version
+    @versions = SystemUser.find_by(id: params[:id])&.versions
+  end
+
   def export_csv(system_users)
     if params[:export_mapping].present?
       @export_mapping = ExportMapping.find(params[:export_mapping])

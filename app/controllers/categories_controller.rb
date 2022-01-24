@@ -48,6 +48,10 @@ class CategoriesController < ApplicationController
     end
   end
 
+  def version
+    @versions = Category.find_by(id: params[:id])&.versions
+  end
+
   def destroy
     if @category.destroy
       flash[:notice] = 'Category archive successfully.'

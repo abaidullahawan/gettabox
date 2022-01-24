@@ -12,7 +12,10 @@ class CustomersController < ApplicationController
   before_action :fetch_field_names, only: %i[new create show index update]
 
   def index
-    params[:q][:name_or_email_or_phone_number_or_sales_channel_or_addresses_address_or_addresses_postcode_or_channel_orders_order_id_or_channel_orders_order_status_i_cont_any] = params[:q][:name_or_email_or_phone_number_or_sales_channel_or_addresses_address_or_addresses_postcode_or_channel_orders_order_id_or_channel_orders_order_status_i_cont_any].split("\r\n") if params[:q].present?
+    if params[:q].present?
+      params[:q][:name_or_email_or_phone_number_or_sales_channel_or_addresses_address_or_addresses_postcode_or_channel_orders_order_id_or_channel_orders_order_status_i_cont_any] =
+        params[:q][:name_or_email_or_phone_number_or_sales_channel_or_addresses_address_or_addresses_postcode_or_channel_orders_order_id_or_channel_orders_order_status_i_cont_any].split("\r\n")
+    end
     @q = SystemUser.customers.ransack(params[:q])
     @customers = @q.result(distinct: true).order(flagging_date: :asc).page(params[:page]).per(params[:limit])
     export_csv(@customers) if params[:export_csv].present?
@@ -68,14 +71,18 @@ class CustomersController < ApplicationController
     end
   end
 
+  def version
+    @versions = SystemUser.find_by(id: params[:id])&.versions
+  end
+
   def flagging_date
     if params[:commit].eql? 'Add Tracking'
-      @tracking = Tracking.create(tracking_no: params[:tracking_no], channel_order_id:params[:order_id_for_tracking])
-        if @tracking.save
-          flash[:notice] = 'Tracking Added'
-        else
-          flash[:alert] = @tracking.errors.full_messages
-        end
+      @tracking = Tracking.create(tracking_no: params[:tracking_no], channel_order_id: params[:order_id_for_tracking])
+      if @tracking.save
+        flash[:notice] = 'Tracking Added'
+      else
+        flash[:alert] = @tracking.errors.full_messages
+      end
     elsif params[:commit].eql? 'Update tracking'
       update_tracking
     else
@@ -93,7 +100,7 @@ class CustomersController < ApplicationController
                                                    'days_for_order_to_completion', 'days_for_completion_to_delivery',
                                                    'currency_symbol', 'exchange_rate', 'deleted_at', 'created_at',
                                                    'updated_at')
-    order_item = ['sku', 'ordered']
+    order_item = %w[sku ordered]
     tracking = ['tracking_no']
     @csv = CSV.generate(headers: true) do |csv|
       csv << attributes + order_item + tracking
@@ -153,7 +160,7 @@ class CustomersController < ApplicationController
     params.require(:system_user)
           .permit(:user_type, :name, :photo, :payment_method, :days_for_payment, :days_for_order_to_completion,
                   :days_for_completion_to_delivery, :currency_symbol, :exchange_rate, :email, :phone_number, :sales_channel,
-                  addresses_attributes: %i[id company address city region postcode country address_title _destroy ],
+                  addresses_attributes: %i[id company address city region postcode country address_title _destroy],
                   extra_field_value_attributes:
                   %i[id field_value])
   end
