@@ -252,6 +252,7 @@ class OrderDispatchesController < ApplicationController
       product = ChannelProduct.find_by(item_sku: item.sku)
       item.update(channel_product_id: product&.id)
     end
+    update_order_stage
     flash[:notice] = 'Channel Order Items updated!'
     redirect_to order_dispatches_path(order_filter: params[:order_filter])
   end
@@ -310,7 +311,7 @@ class OrderDispatchesController < ApplicationController
   # end
 
   def ransack_params
-    @q = ChannelOrder.ransack(params[:q])
+    @q = ChannelOrder.includes(:channel_order_items).ransack(params[:q])
     @channel_orders = @q.result
     @channel_types = ChannelOrder.channel_types
     @mail_service_rules = MailServiceRule.all
@@ -320,9 +321,7 @@ class OrderDispatchesController < ApplicationController
     return unless params[:order_filter].eql? 'unprocessed'
 
     # @unmatched_sku = []
-    @unmatched_sku_body = @channel_orders.joins(:channel_order_items).includes(:channel_order_items)
-                                         .where.not('channel_order_items.sku': [nil, @data])
-                                         .where.not(order_status: %w[FULFILLED Shipped Pending])
+    @unmatched_sku_body = @channel_orders.where(stage: 'unable_to_find_sku')
                                          .order(created_at: :desc)
     @unmatched_sku = @unmatched_sku_body.page(params[:unmatched_page]).per(params[:limit])
     @matching_products = {}
@@ -346,8 +345,7 @@ class OrderDispatchesController < ApplicationController
   def completed_orders
     return unless params[:order_filter].eql? 'completed'
 
-    @completed = @channel_orders.joins(:channel_order_items).includes(:channel_order_items)
-                                .where('order_status in (?)', %w[FULFILLED Shipped])
+    @completed = @channel_orders.where(stage: 'completed')
     @completed_orders = @completed.order(created_at: :desc).page(params[:completed_page]).per(params[:limit])
     return unless params[:export]
 
@@ -362,9 +360,7 @@ class OrderDispatchesController < ApplicationController
   def no_sku
     return unless params[:order_filter].eql? 'issue'
 
-    @issue = @channel_orders.joins(:channel_order_items).includes(:channel_order_items)
-                            .where('channel_order_items.sku': nil)
-                            .where.not(order_status: %w[FULFILLED Shipped Pending])
+    @issue = @channel_orders.where(stage: 'issue')
     @issue_orders = @issue.order(created_at: :desc).page(params[:orders_page]).per(params[:limit])
     return unless params[:export]
 
@@ -379,10 +375,7 @@ class OrderDispatchesController < ApplicationController
   def unpaid_orders
     return unless params[:order_filter].eql? 'unpaid'
 
-    @unpaid_orders = @channel_orders.joins(:channel_order_items).includes(:channel_order_items)
-                                    .where(payment_status: 'UNPAID')
-                                    .or(@channel_orders.joins(:channel_order_items).includes(:channel_order_items)
-                                    .where(order_status: 'Pending'))
+    @unpaid_orders = @channel_orders.where(stage: %w[pending unpaid])
     @unpaid = @unpaid_orders.order(created_at: :desc).page(params[:unpaid_page]).per(params[:limit])
     return unless params[:export]
 
@@ -395,26 +388,26 @@ class OrderDispatchesController < ApplicationController
   end
 
   def not_started_orders
-    # return unless params[:order_filter].eql? 'ready'
+    return unless params[:order_filter].eql? 'ready'
 
-    if params['assign_rule_name'].present?
-      @not_started_orders = (@channel_orders
-        .joins(channel_order_items: [channel_product: :product_mapping], assign_rule: [mail_service_rule: :service])
-        .includes(channel_order_items: [channel_product: :product_mapping], assign_rule: [mail_service_rule: :service])
-        .where('mail_service_rules.rule_name LIKE ? OR services.name LIKE ? and order_status = ?',
-               "%#{params['assign_rule_name']}%", "%#{params['assign_rule_name']}%", 'NOT_STARTED')
-        .where('channel_order_items.sku': [@product_data]) - @un_matched_product_order).uniq
-    else
-      @not_started_orders = (@channel_orders
-        .joins(:channel_order_items).where(order_status: 'NOT_STARTED', ready_to_print: nil)
-        .where('channel_order_items.sku': [@product_data]) - @un_matched_product_order).uniq
-    end
-    @not_started_orders = @not_started_orders.sort_by(&:created_at).reverse!
-    @not_started_order_data = Kaminari
-                              .paginate_array(@not_started_orders).page(params[:not_started_page]).per(params[:limit])
+    # if params['assign_rule_name'].present?
+    #   @not_started_orders = (@channel_orders
+    #     .joins(channel_order_items: [channel_product: :product_mapping], assign_rule: [mail_service_rule: :service])
+    #     .includes(channel_order_items: [channel_product: :product_mapping], assign_rule: [mail_service_rule: :service])
+    #     .where('mail_service_rules.rule_name LIKE ? OR services.name LIKE ? and order_status = ? and stage = ?',
+    #            "%#{params['assign_rule_name']}%", "%#{params['assign_rule_name']}%", 'NOT_STARTED', 'ready_to_dispatch')
+    #     ).uniq
+    # else
+    #   @not_started_orders = @channel_orders.where(stage: 'ready_to_dispatch')
+    # end
+    # Need to be fixed
+    @not_started_orders = @channel_orders.where(stage: 'ready_to_dispatch')
+
+    @not_started_orders = @not_started_orders.order(created_at: :desc)
+    @not_started_order_data = @not_started_orders.page(params[:not_started_page]).per(params[:limit])
     return unless (params[:order_filter].eql? 'ready') && params[:export]
 
-    @not_started_orders = ChannelOrder.where(id: @not_started_orders.pluck(:id), selected: true) if params[:selected]
+    @not_started_orders = not_started_orders.where(selected: true) if params[:selected]
     export_csv(@not_started_orders)
     respond_to do |format|
       format.html
@@ -423,17 +416,15 @@ class OrderDispatchesController < ApplicationController
   end
 
   def unmatched_product_orders
-    # return unless params[:order_filter].eql? 'unprocessed'
+    return unless params[:order_filter].eql? 'unprocessed'
 
-    @un_matched_product_order_body = @channel_orders.joins(:channel_order_items)
-                                                    .where('channel_order_items.sku': @unmatch_product_data)
-                                                    .where.not(order_status: %w[FULFILLED Shipped Pending])
-                                                    .order(created_at: :desc).distinct
+    @un_matched_product_order_body = @channel_orders.where(stage: 'unmapped_product_sku')
+                                                    .order(created_at: :desc)
     @un_matched_product_order = @un_matched_product_order_body.page(params[:unmatched_product_page]).per(params[:limit])
   end
 
   def ready_to_print_orders
-    @orders = ChannelOrder.where(ready_to_print: true)
+    @orders = ChannelOrder.where(ready_to_print: true).order(created_at: :desc)
   end
 
   def csv_export(orders)
@@ -450,21 +441,33 @@ class OrderDispatchesController < ApplicationController
   def load_counts
     @total_products_count = ChannelProduct.count
     @issue_products_count = ChannelProduct.where(item_sku: nil).count
-    @unmatch_product_data = ChannelProduct.where(status: 'unmapped').pluck(:item_sku).compact
-    @product_data = ChannelProduct.where(status: 'mapped').pluck(:item_sku).compact
-    @data = ChannelProduct.pluck(:item_sku).compact
-    @today_orders = @channel_orders.where('Date(created_at) = ?', Date.today).distinct.count
-    @ready_to_pack_count = @channel_orders.where(ready_to_print: true).distinct.count
-    @issue_orders_count = @channel_orders.joins(:channel_order_items).where('channel_order_items.sku': nil)
-                                         .where.not(order_status: %w[FULFILLED Shipped]).distinct.count
-    @unpaid_orders_count = @channel_orders.where(payment_status: 'UNPAID')
-                                          .or(@channel_orders.where(order_status: 'Pending')).distinct.count
-    @completed_count = @channel_orders.where('order_status in (?)', %i[FULFILLED Shipped]).distinct.count
-    @un_matched_orders_count = @channel_orders.joins(:channel_order_items)
-                                              .where('channel_order_items.sku': @unmatch_product_data)
-                                              .where.not(order_status: %w[FULFILLED Shipped Pending]).distinct.count
-    @unmatched_sku_count = @channel_orders.joins(:channel_order_items)
-                                          .where.not('channel_order_items.sku': @data)
-                                          .where.not(order_status: %w[FULFILLED Shipped Pending]).distinct.count
+    @today_orders = @channel_orders.where('Date(channel_orders.created_at) = ?', Date.today).count
+    @ready_to_pack_count = @channel_orders.where(ready_to_print: true).count
+    @not_started_order_count = @channel_orders.where(stage: 'ready_to_dispatch').count
+    @issue_orders_count = @channel_orders.where(stage: 'issue').count
+    @unpaid_orders_count = @channel_orders.where(stage: %w[unpaid pending]).count
+    @completed_count = @channel_orders.where(stage: 'completed').count
+    @un_matched_orders_count = @channel_orders.where(stage: 'unmapped_product_sku').count
+    @unmatched_sku_count = @channel_orders.where(stage: 'unable_to_find_sku').count
+  end
+
+  def update_order_stage
+    ChannelOrder.where(order_status: %w[FULFILLED Shipped]).update_all(stage: 'completed')
+    ChannelOrder.where(order_status: 'Canceled').update_all(stage: 'canceled')
+    ChannelOrder.where(order_status: 'Pending').update_all(stage: 'pending')
+    ChannelOrder.where(order_status: %w[NOT_STARTED Unshipped]).each do |order|
+      extra_update_order_stage(order.channel_order_items.map { |i| i.channel_product&.status }, order)
+      order.update(stage: 'issue') if order.channel_order_items.map(&:sku).any? nil
+    end
+  end
+
+  def extra_update_order_stage(condition, order)
+    if condition.any?(nil)
+      order.update(stage: 'unable_to_find_sku')
+    elsif condition.any?('unmapped')
+      order.update(stage: 'unmapped_product_sku')
+    else
+      order.update(stage: 'ready_to_dispatch')
+    end
   end
 end

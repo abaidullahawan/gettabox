@@ -46,32 +46,36 @@ class AmazonOrderJob < ApplicationJob
         channel_order.order_data = order
         channel_order.created_at = order['PurchaseDate']
         channel_order.order_status = order['OrderStatus']
+        channel_order.stage = order_stage(order['OrderStatus'])
         amount = order['OrderTotal'].nil? ? nil : order['OrderTotal']['Amount']
         channel_order.total_amount = amount
         channel_order.fulfillment_instruction = order['FulfillmentChannel']
         customer_records(channel_order) if channel_order.save
-        add_product(channel_order.order_id, access_token, channel_order.id)
+        add_product(channel_order.order_id, access_token, channel_order)
         criteria = channel_order.channel_order_items.map { |h| [h[:sku], h[:ordered]] }
         assign_rules = AssignRule.where(criteria: criteria)&.last
         channel_order.update(assign_rule_id: assign_rules.id) if assign_rules.present?
+        update_order_stage(channel_order.channel_order_items.map { |i| i.channel_product&.status }, channel_order)
+        channel_order.update(stage: 'issue') if channel_order.channel_order_items.map(&:sku).any? nil
       end
       amazon_order.update(status: 'executed')
     end
   end
 
-  def add_product(amazon_order_id, access_token, channel_order_id)
+  def add_product(amazon_order_id, access_token, channel_order)
     url = "https://sellingpartnerapi-eu.amazon.com/orders/v0/orders/#{amazon_order_id}/orderItems"
     result = AmazonService.amazon_product_api(url, access_token)
-    update_channel_order(result, channel_order_id) if result[:status]
+    update_channel_order(result, channel_order) if result[:status]
   end
 
-  def update_channel_order(result, channel_order_id)
+  def update_channel_order(result, channel_order)
     result[:body]['payload']['OrderItems'].each do |item|
       channel_item = ChannelOrderItem.find_or_initialize_by(
-        channel_order_id: channel_order_id,
+        channel_order_id: channel_order.id,
         line_item_id: item['OrderItemId']
       )
       channel_item.sku = item['SellerSKU']
+      channel_item.ordered = item['ProductInfo']['NumberOfItems']
       channel_item.item_data = item
       channel_item.channel_product_id = ChannelProduct.find_by(item_sku: channel_item.sku)&.id
       channel_item.save
@@ -107,5 +111,26 @@ class AmazonOrderJob < ApplicationJob
                              postcode: address['PostalCode'],
                              country: address['CountryCode'],
                              region: address['StateOrRegion'])
+  end
+
+  def order_stage(order_status)
+    stages = {
+      'Shipped' => 'completed',
+      'Canceled' => 'canceled',
+      'Pending' => 'pending'
+    }
+    stages[order_status]
+  end
+
+  def update_order_stage(condition, order)
+    return unless order.order_status.eql? 'Unshipped'
+
+    if condition.any?(nil)
+      order.update(stage: 'unable_to_find_sku')
+    elsif condition.any?('unmapped')
+      order.update(stage: 'unmapped_product_sku')
+    else
+      order.update(stage: 'ready_to_dispatch')
+    end
   end
 end

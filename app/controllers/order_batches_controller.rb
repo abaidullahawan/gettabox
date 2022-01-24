@@ -9,7 +9,7 @@ class OrderBatchesController < ApplicationController
     if @order_batch.save
       orders = ChannelOrder.where(id: params[:order_ids].split(','))
       courier_csv_export(orders) if @order_batch.print_courier_labels && check_rule(orders.first)
-      orders.update_all(ready_to_print: true, order_batch_id: @order_batch.id)
+      orders.update_all(stage: 'ready_to_print', ready_to_print: true, order_batch_id: @order_batch.id)
     else
       params[:alert] = @order_batch.errors.full_messages
       redirect_to order_dispatches_path(order_filter: 'ready')

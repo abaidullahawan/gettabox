@@ -18,6 +18,18 @@ class ChannelOrder < ApplicationRecord
     manual_order: 4
   }, _prefix: true
 
+  enum stage: {
+    completed: 'Completed',
+    unpaid: 'Unpaid',
+    pending: 'Pending',
+    canceled: 'Canceled',
+    issue: 'Issue',
+    ready_to_dispatch: 'Ready to dispatch',
+    ready_to_print: 'Ready to print',
+    unable_to_find_sku: 'Unable to find SKU',
+    unmapped_product_sku: 'Unmapped product SKU'
+  }, _prefix: true
+
   def self.find_product(product)
     ChannelProduct.find_by(item_sku: product.sku)&.product_mapping&.product
   end
