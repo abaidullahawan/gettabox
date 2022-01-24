@@ -51,7 +51,7 @@ class AmazonOrderJob < ApplicationJob
         channel_order.total_amount = amount
         channel_order.fulfillment_instruction = order['FulfillmentChannel']
         customer_records(channel_order) if channel_order.save
-        add_product(channel_order.order_id, access_token, channel_order)
+        add_product(channel_order.order_id, access_token, channel_order.id)
         criteria = channel_order.channel_order_items.map { |h| [h[:sku], h[:ordered]] }
         assign_rules = AssignRule.where(criteria: criteria)&.last
         channel_order.update(assign_rule_id: assign_rules.id) if assign_rules.present?
@@ -62,16 +62,16 @@ class AmazonOrderJob < ApplicationJob
     end
   end
 
-  def add_product(amazon_order_id, access_token, channel_order)
+  def add_product(amazon_order_id, access_token, channel_order_id)
     url = "https://sellingpartnerapi-eu.amazon.com/orders/v0/orders/#{amazon_order_id}/orderItems"
     result = AmazonService.amazon_product_api(url, access_token)
-    update_channel_order(result, channel_order) if result[:status]
+    update_channel_order(result, channel_order_id) if result[:status]
   end
 
-  def update_channel_order(result, channel_order)
+  def update_channel_order(result, channel_order_id)
     result[:body]['payload']['OrderItems'].each do |item|
       channel_item = ChannelOrderItem.find_or_initialize_by(
-        channel_order_id: channel_order.id,
+        channel_order_id: channel_order_id,
         line_item_id: item['OrderItemId']
       )
       channel_item.sku = item['SellerSKU']

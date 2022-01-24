@@ -407,7 +407,7 @@ class OrderDispatchesController < ApplicationController
     @not_started_order_data = @not_started_orders.page(params[:not_started_page]).per(params[:limit])
     return unless (params[:order_filter].eql? 'ready') && params[:export]
 
-    @not_started_orders = not_started_orders.where(selected: true) if params[:selected]
+    @not_started_orders = @not_started_orders.where(selected: true) if params[:selected]
     export_csv(@not_started_orders)
     respond_to do |format|
       format.html
