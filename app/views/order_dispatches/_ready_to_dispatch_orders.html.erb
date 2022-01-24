@@ -78,8 +78,8 @@
                                   <% end %>
                                 </div>
                                 <div>
-                                  <span class="truncate text-white" title="<%= product.item_data['title'] %>"><%= product.item_data['title'] if product.item_data['title'].present?%></span><br>
-                                  <b class = "text-white"><%= product.item_data['legacyItemId'] if product.item_data['legacyItemId'].present? %></b><br>
+                                  <span class="truncate text-white" title="<%= product&.channel_product&.item_name %>"><%= product&.channel_product&.item_name%></span><br>
+                                  <b class = "text-white"><%= product.line_item_id if product.line_item_id.present? %></b><br>
                                   <div class="sku-width text-white"><%= product&.sku if product&.sku.present? %></div>
                                 </div>
                               </div>
@@ -221,6 +221,7 @@
                     <td><%= order.total_amount%></td>
                     <td>
                       <span class="badge badge_warning py-1"><%= order.order_status%></span><br>
+                      <button type='button' class='btn btn-danger mt-1'>Unallocate</button>
                       <%= link_to 'Logs', version_order_dispatches_path(id: order.id), class: ' mt-1 btn btn-sm btn-info text-white' %>
                     </td>
                   </tr>

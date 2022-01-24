@@ -6,19 +6,23 @@
   <div class="list-group">
     <div class="list-group-item">
       <div class='row'>
-        <div class='col-3'>
+        <div class='col-4'>
           <h5 class="fs-14 mb-1">Warehouse Stock</h5>
           <p class="m-0"><%= @product.total_stock %></p>
         </div>
-        <div class='col-3'>
+        <div class='col-4'>
+          <h5 class="fs-14 mb-1">Available Stock</h5>
+          <p class="m-0"><%= @product.available_stock %></p>
+        </div>
+        <div class='col-4'>
           <h5 class="fs-14 mb-1">Fake Stock</h5>
           <p class="m-0"><%= @product.fake_stock %></p>
         </div>
-        <div class='col-3'>
+        <div class='col-4'>
           <h5 class="fs-14 mb-1">Pending Orders</h5>
           <p class="m-0"><%= @product.pending_orders %></p>
         </div>
-        <div class='col-3'>
+        <div class='col-4'>
           <h5 class="fs-14 mb-1">Allocated Orders</h5>
           <p class="m-0"><%= @product.allocated_orders %></p>
         </div>

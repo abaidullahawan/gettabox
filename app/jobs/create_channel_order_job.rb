@@ -14,6 +14,7 @@ class CreateChannelOrderJob < ApplicationJob
         channel_order_record.order_data = order
         channel_order_record.created_at = creationdate
         channel_order_record.order_status = order['orderFulfillmentStatus']
+        channel_order_record.stage = 'completed' if order['orderFulfillmentStatus'].eql? 'FULFILLED'
         channel_order_record.payment_status = order['paymentSummary']['payments'].last['paymentStatus']
         channel_order_record.total_amount = order['lineItems'][0]['total']['value']
         channel_order_record.buyer_name = order['fulfillmentStartInstructions'][0]['shippingStep']['shipTo']['fullName']&.capitalize
@@ -32,6 +33,9 @@ class CreateChannelOrderJob < ApplicationJob
         criteria = channel_order_record.channel_order_items.map { |h| [h[:sku], h[:ordered]] }
         assign_rules = AssignRule.where(criteria: criteria)&.last
         channel_order_record.update(assign_rule_id: assign_rules.id) if assign_rules.present?
+        update_order_stage(channel_order_record.channel_order_items.map { |i| i.channel_product&.status }, channel_order_record)
+        channel_order_record.update(stage: 'unpaid') if channel_order_record.payment_status.eql? 'UNPAID'
+        channel_order_record.update(stage: 'issue') if channel_order_record.channel_order_items.map(&:sku).any? nil
       end
       response_order.status_executed!
       response_order.status_partial! if response_order.response['orders'].count < 200
@@ -62,5 +66,17 @@ class CreateChannelOrderJob < ApplicationJob
     customer.phone_number = order.order_data['fulfillmentStartInstructions'][0]['shippingStep']['shipTo']['primaryPhone']['phoneNumber']
     customer.email = order.order_data['fulfillmentStartInstructions'][0]['shippingStep']['shipTo']['email']
     order.update(system_user_id: customer.id) if customer.save
+  end
+
+  def update_order_stage(condition, order)
+    return unless order.order_status.eql? 'NOT_STARTED'
+
+    if condition.any?(nil)
+      order.update(stage: 'unable_to_find_sku')
+    elsif condition.any?('unmapped')
+      order.update(stage: 'unmapped_product_sku')
+    else
+      order.update(stage: 'ready_to_dispatch')
+    end
   end
 end

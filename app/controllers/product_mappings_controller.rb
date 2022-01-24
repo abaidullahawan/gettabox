@@ -56,6 +56,9 @@ class ProductMappingsController < ApplicationController
       @product_mapping = ProductMapping.create!(channel_product_id: params[:anything]['channel_product_id'],
                                                 product_id: @product_id)
       ChannelProduct.find(params[:anything]['channel_product_id']).status_mapped! if @product_mapping.present?
+      ChannelOrder.joins(:channel_order_items).includes(:channel_order_items)
+                  .where('channel_order_items.channel_product_id': params[:anything]['channel_product_id'])
+                  .update_all(stage: 'ready_to_dispatch')
       flash[:notice] = 'Product mapped successfully'
     else
       flash[:alert] = 'Please select product to map'
