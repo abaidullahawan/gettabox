@@ -146,7 +146,6 @@
                     <td class="text-center font-weight-bold"><%= product.sku %></td>
                     <td class="text-center"><%= product.total_stock%></td>
                     <td class="text-center"><%= product.product_type %></td>
-
                     <td class="text-center">
                       <div class="dropdown dropleft">
                         <button class="btn btn-primary" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Actions">
@@ -154,6 +153,7 @@
                         </button>
                         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                           <a class="dropdown-item" href="<%= product_path(product)%>">Show</a>
+                          <%= link_to 'Logs', version_products_path(id: product.id), class: 'dropdown-item' %>
                           <%= link_to 'Archive', product_path(product), method: 'delete', data: {confirm: "Are you sure you want to archive"}, class: "dropdown-item"%>
                         </div>
                       </div>

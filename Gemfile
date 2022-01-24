@@ -53,6 +53,8 @@ gem 'jquery-rails'
 # PDF
 gem 'wicked_pdf', github: 'mileszs/wicked_pdf'
 gem 'wkhtmltopdf-binary'
+# Paper Trail
+gem 'paper_trail'
 
 gem 'http'
 gem 'httparty'
