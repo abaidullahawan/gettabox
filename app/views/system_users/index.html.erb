@@ -140,6 +140,7 @@
                         </button>
                         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                           <a class="dropdown-item" href="<%= system_user_path(system_user)%>">Show</a>
+                          <%= link_to 'Logs', version_system_users_path(id: system_user.id), class: 'dropdown-item' %>
                           <%= link_to 'Archive', system_user_path(system_user), method: 'delete', data: {confirm: "Are you sure you want to archive"}, class: "dropdown-item"%>
                           <a href="<%= new_purchase_order_path(supplier: system_user) %>" class="dropdown-item">Place Order</a>
                         </div>

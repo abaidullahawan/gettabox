@@ -112,6 +112,7 @@
                         <i data-feather='bell' class='icon wh-15 mt-minus-3'></i>
                       </button>
                       <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <%= link_to 'Logs', version_mail_service_rules_path(id: rule.id), class: 'dropdown-item' %>
                         <a class="dropdown-item" href="<%= mail_service_rule_path(rule)%>">Show</a>
                         <%= link_to 'Archive', mail_service_rule_path(rule), method: 'delete', data: {confirm: "Are you sure you want to archive"}, class: "dropdown-item"%>
                       </div>

@@ -196,14 +196,15 @@ class ProductsController < ApplicationController
   end
 
   def version
-    @versions = Product.find(params[:id]).versions
+    @versions = Product.find_by(id: params[:id])&.versions
   end
 
   private
 
   def open_spreadsheet(file)
     case File.extname(file.original_filename)
-    when '.csv' then CSV.parse(File.read(file.path).force_encoding('ISO-8859-1').encode('utf-8', replace: nil), headers: true)
+    when '.csv' then CSV.parse(File.read(file.path).force_encoding('ISO-8859-1').encode('utf-8', replace: nil),
+                               headers: true)
     when '.xls' then  Roo::Excel.new(file.path, packed: nil, file_warning: :ignore)
     when '.xlsx' then Roo::Excelx.new(file.path, packed: nil, file_warning: :ignore)
     else raise "Unknown file type: #{file.original_filename}"

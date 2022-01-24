@@ -4,6 +4,7 @@ Rails.application.routes.draw do
   resources :services do
     collection do
       post 'import', to: 'services#import'
+      get 'version', to: 'services#version'
       post 'bulk_method', to: 'services#bulk_method'
       get 'archive', to: 'services#archive'
       post 'restore', to: 'services#restore'
@@ -41,6 +42,7 @@ Rails.application.routes.draw do
   resources :mail_service_rules do
     collection do
       post 'import', to: 'mail_service_rules#import'
+      get 'version', to: 'mail_service_rules#version'
       post 'bulk_method', to: 'mail_service_rules#bulk_method'
       get 'archive', to: 'mail_service_rules#archive'
       post 'restore', to: 'mail_service_rules#restore'
@@ -86,6 +88,7 @@ Rails.application.routes.draw do
   resources :categories do
     collection do
       post 'import', to: 'categories#import'
+      get 'version', to: 'categories#version'
       post 'bulk_method', to: 'categories#bulk_method'
       get 'archive', to: 'categories#archive'
       post 'restore', to: 'categories#restore'
@@ -117,6 +120,7 @@ Rails.application.routes.draw do
   resources :system_users do
     collection do
       post 'import', to: 'system_users#import'
+      get 'version', to: 'system_users#version'
       post 'bulk_method', to: 'system_users#bulk_method'
       get 'archive', to: 'system_users#archive'
       post 'restore', to: 'system_users#restore'
@@ -130,6 +134,7 @@ Rails.application.routes.draw do
   resources :product_mappings do
     collection do
       post 'import', to: 'product_mappings#import'
+      get 'version', to: 'product_mappings#version'
     end
   end
   resources :extra_field_names
@@ -147,6 +152,7 @@ Rails.application.routes.draw do
 
   resources :customers do
     collection do
+      get 'version', to: 'customers#version'
       post 'add_flagging', to: 'customers#flagging_date'
       post 'import', to: 'couriers#import'
       post 'bulk_method', to: 'couriers#bulk_method'
