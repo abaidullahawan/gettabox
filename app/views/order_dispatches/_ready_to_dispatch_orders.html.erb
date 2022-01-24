@@ -219,17 +219,10 @@
                     </td>
                     <td style="width: 100px;"><%= order.created_at.strftime("%m/%d/%Y %H:%M") %></td>
                     <td><%= order.total_amount%></td>
-                    <td><span class="badge badge_warning py-1"><%= order.order_status%></span></td>
-                    <!--td>
-                      <button class="btn btn-primary" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <i data-feather='refresh-ccw' class='icon wh-15 mt-minus-3'></i>
-                        Retry
-                      </button>
-                      <button class="btn btn-primary" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <i data-feather='x' class='icon wh-15 mt-minus-3'></i>
-                        Hide
-                      </button>
-                    </td-->
+                    <td>
+                      <span class="badge badge_warning py-1"><%= order.order_status%></span><br>
+                      <%= link_to 'Logs', version_order_dispatches_path(id: order.id), class: ' mt-1 btn btn-sm btn-info text-white' %>
+                    </td>
                   </tr>
                 </tbody>
               <% end %>

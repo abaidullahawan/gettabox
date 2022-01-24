@@ -71,6 +71,7 @@ Rails.application.routes.draw do
 
   resources :products do
     collection do
+      get 'version', to: 'products#version'
       post 'import', to: 'products#import'
       post 'bulk_method', to: 'products#bulk_method'
       get 'archive', to: 'products#archive'
@@ -134,6 +135,7 @@ Rails.application.routes.draw do
   resources :extra_field_names
   resources :order_dispatches do
     collection do
+      get 'version', to: 'order_dispatches#version'
       post 'import', to: 'order_dispatches#import'
       get 'bulk_method', to: 'order_dispatches#bulk_method'
       post 'assign_rule', to: 'order_dispatches#assign_rule'

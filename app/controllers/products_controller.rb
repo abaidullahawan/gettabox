@@ -195,6 +195,10 @@ class ProductsController < ApplicationController
     end
   end
 
+  def version
+    @versions = Product.find(params[:id]).versions
+  end
+
   private
 
   def open_spreadsheet(file)

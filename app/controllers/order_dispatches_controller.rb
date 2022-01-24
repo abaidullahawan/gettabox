@@ -245,6 +245,10 @@ class OrderDispatchesController < ApplicationController
     redirect_to order_dispatches_path(order_filter: params[:order_filter])
   end
 
+  def version
+    @versions = ChannelOrder.find(params[:id]).versions
+  end
+
   private
 
   def order_dispatches_params
