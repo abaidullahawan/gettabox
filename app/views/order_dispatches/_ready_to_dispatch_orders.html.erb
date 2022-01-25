@@ -66,7 +66,7 @@
                     <td style="width: 320px">
                       <% order.channel_order_items&.each do |product|%>
                         <%= link_to product_mappings_path(q:{item_sku_or_item_id_cont: product.sku}) do %>
-                          <div class="card-style px-3 mt-1">
+                          <div class="card-style px-3 mt-1 relative">
                             <div>
                               <span class="order-listing order-quantity"><%= product.ordered %></span>
                               <div class="d-flex">
@@ -85,6 +85,15 @@
                               </div>
                             </div>
                           </div>
+                          <% if product.allocated %>
+                            <div class="d-flex mt-2">
+                              <%= link_to 'Unallocate', allocations_order_dispatches_path(allocate: false, item_id: product.id, order_filter: params[:order_filter]), class: 'btn btn-danger mx-auto text-white' %>
+                            </div>
+                          <% else %>
+                            <div class="d-flex mt-2">
+                              <%= link_to 'Allocate', allocations_order_dispatches_path(allocate: true, item_id: product.id, order_filter: params[:order_filter]), class: 'btn btn-success mx-auto text-white' %>
+                            </div>
+                          <% end %>
                         <% end %>
                       <% end %>
                     </td>
@@ -93,32 +102,36 @@
                         <% if product.channel_product&.product_mapping.present? %>
                           <% if product.channel_product&.product_mapping&.product&.product_type_multiple? %>
                             <% product.channel_product&.product_mapping&.product&.multipack_products&.each do |record| %>
-                            <div class="card-style2">
+                            <% light_color = product.allocated ? 'bg-success-light' : 'bg-danger'%>
+                            <% dark_color = product.allocated ? 'bg-success-dark' : 'bg-danger-dark'%>
+                            <div class="card-style2 <%=light_color%>">
                               <%= link_to record.child.sku, product_path(record.child.id), target: 'blank' %>
                               <p style="color: white;">
                                 <b>Location:</b> <span><%= record.child.location %></span>
                               </p>
                               <p style="color: white;">
-                                <b>QTY:</b> <span><%= record.quantity*product.ordered %></span>
+                                <b>QTY:</b> <span><%= record.quantity*product.ordered.to_i %></span>
                               </p>
                               <div class="d-flex">
                                 <div class="col-4 col-padding">
-                                  <p class="heading-table">Avail</p>
-                                  <p class="table-value"><%= record.child.total_stock.to_i %></p>
+                                  <p class="heading-table <%=dark_color%>">Avail</p>
+                                  <p class="table-value <%=dark_color%>"><%= record.child.available_stock.to_i %></p>
                                 </div>
                                 <div class="col-4 col-padding">
-                                  <p class="heading-table">Alloc</p>
-                                  <p class="table-value"><%= product.ordered * record.quantity.to_i%></p>
+                                  <p class="heading-table <%=dark_color%>">Alloc</p>
+                                  <p class="table-value <%=dark_color%>"><%= record.child.allocated_orders.to_i  %></p>
                                 </div>
                                 <div class="col-4 col-padding">
-                                  <p class="heading-table">Disp</p>
-                                  <p class="table-value">0</p>
+                                  <p class="heading-table <%=dark_color%>">Disp</p>
+                                  <p class="table-value <%=dark_color%>">0</p>
                                 </div>
                               </div>
                             </div>
                             <% end %>
                           <% else %>
-                            <div class="card-style2">
+                            <% light_color = product.allocated ? 'bg-success-light' : 'bg-danger'%>
+                            <% dark_color = product.allocated ? 'bg-success-dark' : 'bg-danger-dark'%>
+                            <div class="card-style2 <%=light_color%>">
                               <%= link_to product.channel_product&.product_mapping&.product&.sku, product_path(product.channel_product&.product_mapping&.product&.id), target: 'blank', style: "color: white" %>
                               <p style="color: white;">
                                 <b>Location:</b> <span><%= product.channel_product&.product_mapping&.product&.location %></span>
@@ -128,16 +141,16 @@
                               </p>
                               <div class="d-flex">
                                 <div class="col-4 col-padding">
-                                  <p class="heading-table">Avail</p>
-                                  <p class="table-value"><%= product.channel_product&.product_mapping&.product&.total_stock&.to_i %></p>
+                                  <p class="heading-table <%=dark_color%>">Avail</p>
+                                  <p class="table-value <%=dark_color%>"><%= product.channel_product&.product_mapping&.product&.available_stock&.to_i %></p>
                                 </div>
                                 <div class="col-4 col-padding">
-                                  <p class="heading-table">Alloc</p>
-                                  <p class="table-value"><%= product.ordered%></p>
+                                  <p class="heading-table <%=dark_color%>">Alloc</p>
+                                  <p class="table-value <%=dark_color%>"><%= product.channel_product&.product_mapping&.product&.allocated_orders.to_i %></p>
                                 </div>
                                 <div class="col-4 col-padding">
-                                  <p class="heading-table">Disp</p>
-                                <p class="table-value">0</p>
+                                  <p class="heading-table <%=dark_color%>">Disp</p>
+                                <p class="table-value <%=dark_color%>">0</p>
                               </div>
                               </div>
                             </div>
@@ -221,7 +234,6 @@
                     <td><%= order.total_amount%></td>
                     <td>
                       <span class="badge badge_warning py-1"><%= order.order_status%></span><br>
-                      <button type='button' class='btn btn-danger mt-1'>Unallocate</button>
                       <%= link_to 'Logs', version_order_dispatches_path(id: order.id), class: ' mt-1 btn btn-sm btn-info text-white' %>
                     </td>
                   </tr>

@@ -131,6 +131,45 @@ class AmazonOrderJob < ApplicationJob
       order.update(stage: 'unmapped_product_sku')
     else
       order.update(stage: 'ready_to_dispatch')
+      allocate_or_unallocate(order.channel_order_items)
+    end
+  end
+
+  def allocate_or_unallocate(channel_items)
+    channel_items.each do |item|
+      product = item.channel_product.product_mapping.product
+      next multipack_product(item, product) unless product.product_type.eql? 'single'
+
+      available_stock = product.available_stock.to_f - item.ordered
+      update_available_stock(item, product, available_stock, item.ordered)
+    end
+  end
+
+  def multipack_product(item, product)
+    available = product.multipack_products.map { |m| m.child.available_stock.to_i }
+    required = product.multipack_products.map { |m| m.quantity.to_i * order_item.ordered }
+    check = available.zip(required).all? { |a, b| a >= b }
+    return unless check
+
+    multipack_allocation(item, product)
+  end
+
+  def multipack_allocation(item, product)
+    product.multipack_products.each do |multipack|
+      quantity = multipack.quantity
+      child = multipack.child
+
+      available_stock = child.available_stock.to_f - (item.ordered * quantity)
+      update_available_stock(item, child, available_stock, (item.ordered * quantity))
+    end
+  end
+
+  def update_available_stock(item, product, available_stock, ordered)
+    if product.available_stock >= item.ordered
+      product.update(available_stock: available_stock, allocated_orders: product.allocated_orders + ordered)
+      item.update(allocated: true)
+    else
+      item.update(allocated: false)
     end
   end
 end

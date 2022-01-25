@@ -257,6 +257,74 @@ class OrderDispatchesController < ApplicationController
     redirect_to order_dispatches_path(order_filter: params[:order_filter])
   end
 
+  def allocations
+    order_item = ChannelOrderItem.find_by(id: params[:item_id])
+    # return flash[:alert] = 'Item not Found' unless order_item.present?
+    return unallocate_item(order_item) unless params[:allocate].eql? 'true'
+
+    allocate_item(order_item)
+    redirect_to request.referrer
+  end
+
+  def unallocate_item(order_item)
+    product = order_item.channel_product.product_mapping.product
+    return multipack_unallocation(order_item, product) if product.product_type.eql? 'multiple'
+
+    product.update(available_stock: product.available_stock.to_f + order_item.ordered,
+                   allocated_orders: product.allocated_orders.to_f - order_item.ordered)
+    order_item.update(allocated: false)
+    flash[:notice] = 'Unallocation successful!'
+    redirect_to request.referrer
+  end
+
+  def allocate_item(order_item)
+    product = order_item.channel_product.product_mapping.product
+    return multipack_allocation(order_item, product) if product.product_type.eql? 'multiple'
+
+    if product.available_stock.to_i >= order_item.ordered
+      product.update(available_stock: product.available_stock.to_f - order_item.ordered,
+                     allocated_orders: product.allocated_orders.to_f + order_item.ordered)
+      order_item.update(allocated: true)
+    else
+      flash[:alert] = 'Available stock is not enough!'
+    end
+  end
+
+  def multipack_unallocation(order_item, product)
+    product.multipack_products.each do |multipack|
+      child = multipack.child
+      quantity = multipack.quantity
+      ordered = (order_item.ordered * quantity)
+      child.update(available_stock: child.available_stock.to_f + ordered,
+                   allocated_orders: child.allocated_orders.to_f - ordered)
+    end
+    order_item.update(allocated: false)
+    flash[:notice] = 'Unallocation successful!'
+    redirect_to request.referrer
+  end
+
+  def multipack_allocation(order_item, product)
+    available = product.multipack_products.map { |m| m.child.available_stock.to_i }
+    required = product.multipack_products.map { |m| m.quantity.to_i * order_item.ordered }
+    check = available.zip(required).all? { |a, b| a >= b }
+    if check
+      product.multipack_products.each do |multipack|
+        child = multipack.child
+        quantity = multipack.quantity
+        ordered = (order_item.ordered * quantity)
+        allocate(child, ordered)
+      end
+      order_item.update(allocated: true)
+    else
+      flash[:alert] = 'Available stock is not enough!'
+    end
+  end
+
+  def allocate(product, ordered)
+    product.update(available_stock: product.available_stock.to_f - ordered,
+                   allocated_orders: product.allocated_orders.to_f + ordered)
+  end
+
   def version
     @order = ChannelOrder.find_by(id: params[:id])
     @versions = @order&.versions
