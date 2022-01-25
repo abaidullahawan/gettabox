@@ -10,6 +10,8 @@ class User < ApplicationRecord
   has_one_attached :avatar
   has_many :order_batches
   accepts_nested_attributes_for :personal_detail
+  after_create :full_name_set
+  after_update :full_name_set
 
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
@@ -41,5 +43,10 @@ class User < ApplicationRecord
         csv << attributes.map { |attr| user.send(attr) }
       end
     end
+  end
+
+  def full_name_set
+    full_name = personal_detail.first_name + ' ' + personal_detail.last_name
+    personal_detail.update_columns(full_name: full_name)
   end
 end

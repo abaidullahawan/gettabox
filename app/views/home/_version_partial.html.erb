@@ -26,7 +26,9 @@
                   <td><span class="badge badge-primary py-1"><%= version.event %></span></td>
                   <td> <%= version.item_type %> </td>
                   <td><%= version.created_at %></td>
-                  <td><%= User.find(version.whodunnit)&.personal_detail&.full_name%></td>
+                  <td>
+                    <%= version.whodunnit.present? ? User.find_by(id: version.whodunnit)&.personal_detail&.full_name : 'N/A' %>
+                  </td>
                   <td>
                     <table class="table table-striped">
                       <thead>

@@ -258,7 +258,8 @@ class OrderDispatchesController < ApplicationController
   end
 
   def version
-    @versions = ChannelOrder.find_by(id: params[:id])&.versions
+    @order = ChannelOrder.find_by(id: params[:id])
+    @versions = @order&.versions
   end
 
   private
