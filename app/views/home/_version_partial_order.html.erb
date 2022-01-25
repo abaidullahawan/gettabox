@@ -47,12 +47,14 @@
                           </tr>
                         </thead>
                         <tbody>
-                          <% item.channel_product.product_mapping.product.versions.each do |change| %>
-                            <tr>
-                              <td><%= change[0] %></td>
-                              <td><%= change[1][0] == nil ? 'nill' : change[1][0] %></td>
-                              <td><%= change[1][1] %></td>
-                            </tr>
+                          <% item.channel_product.product_mapping.product.versions.each do |version| %>
+                            <% version.changeset.each do |change|%>
+                              <tr>
+                                <td><%= change[0] %></td>
+                                <td><%= change[1][0] == nil ? 'nill' : change[1][0] %></td>
+                                <td><%= change[1][1] %></td>
+                              </tr>
+                            <% end %>
                           <% end %>
                         </tbody>
                       </table>
