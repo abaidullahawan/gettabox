@@ -147,6 +147,7 @@ Rails.application.routes.draw do
       get 'update_selected', to: 'order_dispatches#update_selected'
       get 'bulk_update_selected', to: 'order_dispatches#bulk_update_selected'
       get 'refresh', to: 'order_dispatches#refresh'
+      get 'allocations', to: 'order_dispatches#allocations'
     end
   end
 
