@@ -138,7 +138,6 @@ input:checked + .slider:before {
 }
 
 .card-style2 {
-  background: #8cb225;
   color: white !important;
   font-size: 15px;
   padding: 10px;
@@ -150,8 +149,19 @@ input:checked + .slider:before {
   padding: 2px !important;
 }
 
-.heading-table {
+.bg-success-light {
+  background: #8cb225;
+}
+
+.bg-success-dark {
   background: #354700;
+}
+
+.bg-danger-dark {
+  background: #760611;
+}
+
+.heading-table {
   color: white;
   text-align: center;
   margin-bottom: 4px !important;
@@ -163,7 +173,6 @@ input:checked + .slider:before {
 
 .table-value {
   text-align: center;
-  background: #547200;
   color: white;
   border-bottom-right-radius: 6px;
   border-bottom-left-radius: 6px;
@@ -250,5 +259,28 @@ input:checked + .slider:before {
   80%,
   100% {
     opacity: 0;
+  }
+}
+
+.alocate-buttons {
+  position: absolute;
+  top: 0px;
+  right: -40px;
+  cursor: pointer;
+  display: none;
+}
+
+.alocate-buttons:hover {
+  display: block !important;
+}
+
+.buttons-container {
+  background-color: aqua;
+  border-radius: 50%;
+}
+
+.card-style:hover {
+  .alocate-buttons {
+    display: block !important;
   }
 }
