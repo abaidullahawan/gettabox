@@ -166,16 +166,16 @@
                       <% @height.push(record&.child&.height&.to_f)%>
                       <% @width.push(record&.child&.width&.to_f)%>
                     <% end %>
-                    <%= hidden_field_tag 'length',  @length, class: "length-value" %>
-                    <%= hidden_field_tag 'width',  @width.max, class: "width-value" %>
-                    <%= hidden_field_tag 'height',  @height.max, class: "height-value"%>
-                    <%= hidden_field_tag 'weight',  @weight, class: "weight-value"%>
                   <% else %>
-                    <%= hidden_field_tag 'length',  product.channel_product.product_mapping&.product&.length, class: "length-value" %>
-                    <%= hidden_field_tag 'width',  product.channel_product.product_mapping&.product&.width, class: "width-value" %>
-                    <%= hidden_field_tag 'height',  product.channel_product.product_mapping&.product&.height, class: "height-value"%>
-                    <%= hidden_field_tag 'weight',  product.channel_product.product_mapping&.product&.weight, class: "weight-value"%>
+                    <% @length += product.channel_product.product_mapping&.product&.length %>
+                    <% @weight += product.channel_product.product_mapping&.product&.width %>
+                    <% @height.push( product.channel_product.product_mapping&.product&.height)%>
+                    <% @width.push( product.channel_product.product_mapping&.product&.weight)%>
                   <% end %>
+                  <%= hidden_field_tag 'length',  @length, class: "length-value" %>
+                  <%= hidden_field_tag 'width',  @width.max, class: "width-value" %>
+                  <%= hidden_field_tag 'height',  @height.max, class: "height-value"%>
+                  <%= hidden_field_tag 'weight',  @weight, class: "weight-value"%>
                 <% end %>
               <% end %>
             </div>
