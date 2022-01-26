@@ -225,12 +225,12 @@
                     <td><%= order.total_amount%></td>
                     <td>
                       <span class="badge badge_warning py-1"><%= order.order_status%></span><br>
-                      <%= link_to 'Logs', version_order_dispatches_path(id: order.id), class: ' mt-1 btn btn-sm btn-info text-white' %>
                       <% if (order.channel_order_items.map{|i| i.allocated} & [true]).any? %>
-                        <%= link_to 'Unallocate', allocations_order_dispatches_path(allocate: false, item_id: order.id, order_filter: params[:order_filter]), class: 'btn btn-danger mt-1 text-white' %>
+                        <%= link_to 'Unallocate', allocations_order_dispatches_path(allocate: false, item_id: order.id, order_filter: params[:order_filter]), class: 'btn btn-info mt-1 text-white' %>
                       <% else %>
-                        <%= link_to 'Allocate', allocations_order_dispatches_path(allocate: true, item_id: order.id, order_filter: params[:order_filter]), class: 'btn btn-success mt-1 text-white' %>
+                        <%= link_to 'Allocate', allocations_order_dispatches_path(allocate: true, item_id: order.id, order_filter: params[:order_filter]), class: 'btn btn-info mt-1 text-white' %>
                       <% end %>
+                      <%= link_to 'Logs', version_order_dispatches_path(id: order.id), class: ' mt-1 btn btn-sm btn-primary mt-1 text-white' %>
                     </td>
                   </tr>
                 </tbody>
