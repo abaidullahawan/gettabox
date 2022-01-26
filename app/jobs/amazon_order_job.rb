@@ -166,7 +166,7 @@ class AmazonOrderJob < ApplicationJob
 
   def update_available_stock(item, product, available_stock, ordered)
     if product.available_stock >= item.ordered
-      product.update(available_stock: available_stock, allocated_orders: product.allocated_orders + ordered)
+      product.update(available_stock: available_stock, allocated_orders: product.allocated_orders.to_i + ordered)
       item.update(allocated: true)
     else
       item.update(allocated: false)
