@@ -64,6 +64,9 @@
           <div class='mr-1 float-right'>
             <%= link_to 'Fake Stock', products_path(fake_stock: true), class: 'btn btn-outline-info' %>
           </div>
+          <div class='mr-1 float-right'>
+            <%= link_to 'Inventory Logs', version_products_path(inventory_log: true), class: 'btn btn-outline-info' %>
+          </div>
           <h5 class="card-title"> Data</h5>
         </div>
         <%= search_form_for @q, url: products_path, method: :get do |f| %>
