@@ -2,16 +2,18 @@
 
 # dashboard
 class OrderBatchesController < ApplicationController
+  before_action :session_batch, only: %i[create]
+
   def new; end
 
   def create
-    @order_batch = OrderBatch.find_or_initialize_by(batch_name: params[:order_batch][:batch_name])
-    if @order_batch.save
-      orders = ChannelOrder.where(id: params[:order_ids].split(','))
-      courier_csv_export(orders) if @order_batch.print_courier_labels && check_rule(orders.first)
-      orders.update_all(stage: 'ready_to_print', ready_to_print: true, order_batch_id: @order_batch.id)
+    # @order_batch = OrderBatch.find_or_initialize_by(batch_name: params[:order_batch][:batch_name])
+    orders = ChannelOrder.where(id: params[:order_ids].split(','))
+    if order_batch_params[:print_courier_labels] && check_rule(orders.first)
+      courier_csv_export(orders)
+      # orders.update_all(stage: 'ready_to_print', ready_to_print: true, order_batch_id: @order_batch.id)
     else
-      params[:alert] = @order_batch.errors.full_messages
+      flash[:alert] = 'Only Manual Dispatch orders can be printed'
       redirect_to order_dispatches_path(order_filter: 'ready')
     end
   end
@@ -44,7 +46,7 @@ class OrderBatchesController < ApplicationController
       rule = @rules.first
       @export_mapping = ExportMapping.find_by(id: rule)
       rule_name = @export_mapping.sub_type
-      to_be_ignored = ['id', 'user_type', 'selected','created_at', 'updated_at']
+      to_be_ignored = %w[id user_type selected created_at updated_at]
       channel_order_data = {}
       channel_order_item_data = {}
       address_data = {}
@@ -63,7 +65,7 @@ class OrderBatchesController < ApplicationController
         orders.each do |order|
           next unless order.assign_rule.mail_service_rule.export_mapping_id == rule
 
-          order.update(ready_to_print: true)
+          # order.update(ready_to_print: true)
           order_csv = channel_order_data.values.map { |attr| order.send(attr) }
           item_csv = channel_order_item_data.values.map { |attr| order.channel_order_items.first.send(attr) }
           address_csv = address_data.values.map { |attr| order.system_user&.addresses&.find_by(address_title: 'delivery')&.send(attr) }
@@ -76,7 +78,7 @@ class OrderBatchesController < ApplicationController
       respond_to do |format|
         format.csv { send_data @csv, filename: "#{rule_name}.csv" }
       end
-      flash[:alert] = 'Courier CSV Export Done!'
+      # flash[:alert] = 'Courier CSV Export Done!'
     else
       flash[:alert] = 'Please select order with same template'
       redirect_to order_dispatches_path(order_filter: 'ready')
@@ -84,8 +86,13 @@ class OrderBatchesController < ApplicationController
   end
 
   def check_rule(order)
-    return false unless order.assign_rule.mail_service_rule.courier.name.eql? 'Manual Dispatch'
+    return false unless order.assign_rule&.mail_service_rule&.courier&.name.eql? 'Manual Dispatch'
 
     true
+  end
+
+  def session_batch
+    session[:order_ids] = params[:order_ids]
+    session[:batch_params] = order_batch_params.to_h
   end
 end
