@@ -85,15 +85,6 @@
                               </div>
                             </div>
                           </div>
-                          <% if product.allocated %>
-                            <div class="d-flex mt-2">
-                              <%= link_to 'Unallocate', allocations_order_dispatches_path(allocate: false, item_id: product.id, order_filter: params[:order_filter]), class: 'btn btn-danger mx-auto text-white' %>
-                            </div>
-                          <% else %>
-                            <div class="d-flex mt-2">
-                              <%= link_to 'Allocate', allocations_order_dispatches_path(allocate: true, item_id: product.id, order_filter: params[:order_filter]), class: 'btn btn-success mx-auto text-white' %>
-                            </div>
-                          <% end %>
                         <% end %>
                       <% end %>
                     </td>
@@ -235,6 +226,11 @@
                     <td>
                       <span class="badge badge_warning py-1"><%= order.order_status%></span><br>
                       <%= link_to 'Logs', version_order_dispatches_path(id: order.id), class: ' mt-1 btn btn-sm btn-info text-white' %>
+                      <% if (order.channel_order_items.map{|i| i.allocated} & [true]).any? %>
+                        <%= link_to 'Unallocate', allocations_order_dispatches_path(allocate: false, item_id: order.id, order_filter: params[:order_filter]), class: 'btn btn-danger mt-1 text-white' %>
+                      <% else %>
+                        <%= link_to 'Allocate', allocations_order_dispatches_path(allocate: true, item_id: order.id, order_filter: params[:order_filter]), class: 'btn btn-success mt-1 text-white' %>
+                      <% end %>
                     </td>
                   </tr>
                 </tbody>
