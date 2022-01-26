@@ -168,9 +168,9 @@
                     <% end %>
                   <% else %>
                     <% @length += product.channel_product.product_mapping&.product&.length %>
-                    <% @weight += product.channel_product.product_mapping&.product&.width %>
+                    <% @weight += product.channel_product.product_mapping&.product&.weight %>
                     <% @height.push( product.channel_product.product_mapping&.product&.height)%>
-                    <% @width.push( product.channel_product.product_mapping&.product&.weight)%>
+                    <% @width.push( product.channel_product.product_mapping&.product&.width)%>
                   <% end %>
                 <% end %>
               <% end %>
