@@ -38,7 +38,15 @@ class ProductMappingsController < ApplicationController
   end
 
   def version
-    @versions = ChannelProduct.find_by(id: params[:id])&.versions
+    @channel_product = ChannelProduct.find_by(id: params[:id])
+    @mappings = ProductMapping.where(channel_product_id: @channel_product.id)
+    @versions = if @mappings.present?
+                  @channel_product&.product_mapping&.versions
+                else
+                  Version.find_by(item_type: 'ChannelProduct',
+                                  item_id: @channel_product.id.to_s, object: nil)
+                end
+    @product = Product.find(@versions.object_changes) if @mappings.blank? && @versions.present?
   end
 
   def show; end
@@ -71,6 +79,8 @@ class ProductMappingsController < ApplicationController
       channel_product_id: params[:anything][:channel_product_id],
       product_id: @product_id
     )
+    Version.create(item_type: 'ChannelProduct', whodunnit: current_user.id,
+                   item_id: @product_mapping.channel_product_id, object_changes: @product_mapping.product_id, event: 'update')
     if @product_mapping&.destroy
       ChannelProduct.find(params[:anything][:channel_product_id]).status_unmapped!
       flash[:notice] = 'Product Un-mapped successfully'

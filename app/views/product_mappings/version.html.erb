@@ -1,1 +1,74 @@
-<%= render 'home/version_partial' %>
+<div class="row">
+  <div class="col-lg-12">
+    <div class="card mb-30">
+      <div class="card-body">
+        <div class="card-header">
+          <h5 class="card-title">
+            Logs
+          </h5>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-hover text-vertical-middle mb-0">
+            <thead class="bort-none borpt-0">
+              <tr>
+                <th scope="col">Date</th>
+                <th scope="col">Time</th>
+                <th scope="col">Action</th>
+                <th scope="col">Product SKU</th>
+                <th scope="col">Listing SKU</th>
+                <th scope="col">Channel Item ID</th>
+                <th scope="col" class="text-center">Result</th>
+                <th scope="col">Warehouse Quantity</th>
+                <th scope="col">User</th>
+              </tr>
+            </thead>
+            <tbody>
+            <% if @mappings.present? %>
+              <% @mappings&.each_with_index do |mapping| %>
+                <% mapping.versions.each do |version| %>
+                  <tr>
+                    <td><%= version.created_at&.strftime('%m/%d/%Y') %></td>
+                    <td><%= version.created_at&.strftime('%I:%M %p') %></td>
+                    <td><%= @channel_product.status %></td>
+                    <td><strong><%= @channel_product.item_sku %></strong></td>
+                    <td><%= @channel_product&.product_mapping&.product&.sku %></td>
+                    <td>
+                        <%= @channel_product.item_id %>,
+                    </td>
+                    <td>
+                      <% @channel_product.product_mapping.versions.each do |version| %>
+                          <% if version.changeset['product_id'].present? %>
+                              <%= Product.find_by(id: version.changeset['product_id'][1])&.title %>
+                          <% end %>
+                      <% end %>
+                    </td>
+                    <td>
+                      <%= @channel_product.product_mapping.product.total_stock.to_i %>
+                    </td>
+                    <td>
+                      <%= version.whodunnit.present? ? User.find_by(id: version.whodunnit)&.personal_detail&.full_name : @channel_product.channel_type %>
+                    </td>
+                  </tr>
+                <% end %>
+              <% end %>
+            <% elsif @versions.present? %>
+              <tr>
+                <td><%= @versions.created_at&.strftime('%m/%d/%Y') %></td>
+                <td><%= @versions.created_at&.strftime('%I:%M %p') %></td>
+                <td><%= @channel_product.status %></td>
+                <td><strong><%= @channel_product.item_sku %></strong></td>
+                <td><%= @product&.sku %></td>
+                <td><%= @channel_product.item_id %>,</td>
+                <td><%= @product&.title %></td>
+                <td><%= @product.total_stock.to_i %></td>
+                <td><%= User.find_by(id: @versions.whodunnit)&.personal_detail&.full_name %></td>
+              </tr>
+            <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+,
