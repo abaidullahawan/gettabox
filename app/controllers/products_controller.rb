@@ -196,7 +196,13 @@ class ProductsController < ApplicationController
   end
 
   def version
-    @versions = Product.find_by(id: params[:id])&.versions
+    if params[:inventory_log].present?
+      @products = Product.joins(:versions)
+      @channel_orders = ChannelOrder.joins(:versions)
+      @channel_products = ChannelProduct.joins(:versions)
+    else
+      @versions = Product.find_by(id: params[:id])&.versions
+    end
   end
 
   private

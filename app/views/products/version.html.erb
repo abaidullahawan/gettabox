@@ -1,1 +1,127 @@
-<%= render 'home/version_partial' %>
+<% if params[:inventory_log].present? %>
+  <div class="faq-accordion mb-30">
+    <ul class="accordion">
+      <li class="accordion-item">
+        <a class="accordion-title" href="javascript:void(0)">
+          <i class="lni-plus"></i>
+          Product Logs
+        </a>
+        <div class="accordion-content">
+          <div class="row">
+            <div class="col-lg-12">
+              <div class="card mb-30">
+                <div class="card-body">
+                  <div class="card-header">
+                    <h5 class="card-title">
+                      Logs
+                    </h5>
+                  </div>
+                  <div class="table-responsive">
+                    <table class="table table-striped">
+                      <thead>
+                        <tr>
+                          <th scope="col">Case</th>
+                          <th scope="col">Date</th>
+                          <th scope="col">Time</th>
+                          <th scope="col">Action</th>
+                          <th scope="col">Sku</th>
+                          <th scope="col">Product ID</th>
+                          <th scope="col" class="text-center">Result</th>
+                          <th scope="col">User</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <% index = 0%>
+                        <% @products.each do |product| %>
+                          <% product.versions.each do |version| %>
+                            <% if version.changeset.include? 'available_stock' %>
+                              <tr>
+                                <td><%= index+=1 %></td>
+                                <td><%= version.created_at&.strftime('%m/%d/%Y') %></td>
+                                <td><%= version.created_at&.strftime('%I:%M %p') %></td>
+                                <td>Manual Edit</td>
+                                <td><strong><%= product.sku %></strong></td>
+                                <td><%= product.id %></td>
+                                <td><%= version.changeset["available_stock"][1].to_i - version.changeset["available_stock"][0].to_i %></td>
+                                <td><%= version.whodunnit.present? ? User.find_by(id: version.whodunnit)&.personal_detail&.full_name : 'Developer' %></td>
+                              </tr>
+                            <% end %>
+                          <% end %>
+                        <% end %>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+  <!--  Channel Order Accordian  -->
+
+  <div class="faq-accordion mb-30">
+    <ul class="accordion">
+      <li class="accordion-item">
+        <a class="accordion-title" href="javascript:void(0)">
+          <i class="lni-plus"></i>
+          Channel Order Logs
+        </a>
+        <div class="accordion-content">
+          <div class="row">
+            <div class="col-lg-12">
+              <div class="card mb-30">
+                <div class="card-body">
+                  <div class="card-header">
+                    <h5 class="card-title">
+                      Logs
+                    </h5>
+                  </div>
+                  <div class="table-responsive">
+                    <table class="table table-striped">
+                      <thead>
+                        <tr>
+                          <th scope="col">Case</th>
+                          <th scope="col">Date</th>
+                          <th scope="col">Time</th>
+                          <th scope="col">Action</th>
+                          <th scope="col">Sku</th>
+                          <th scope="col">Product ID</th>
+                          <th scope="col" class="text-center">Result</th>
+                          <th scope="col">User</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <% index = 0%>
+                        <% @products.each do |product| %>
+                          <% product.versions.each do |version| %>
+                            <% if version.changeset.include? 'available_stock' %>
+                              <tr>
+                                <td><%= index+=1 %></td>
+                                <td><%= version.created_at&.strftime('%m/%d/%Y') %></td>
+                                <td><%= version.created_at&.strftime('%I:%M %p') %></td>
+                                <td>Manual Edit</td>
+                                <td><strong><%= product.sku %></strong></td>
+                                <td><%= product.id %></td>
+                                <td><%= version.changeset["available_stock"][1].to_f - version.changeset["available_stock"][0].to_f %></td>
+                                <td><%= version.whodunnit.present? ? User.find_by(id: version.whodunnit)&.personal_detail&.full_name : 'Developer' %></td>
+                              </tr>
+                            <% end %>
+                          <% end %>
+                        <% end %>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </li>
+    </ul>
+  </div>
+<% else %>
+  <%= render 'home/version_partial' %>
+<% end %>
