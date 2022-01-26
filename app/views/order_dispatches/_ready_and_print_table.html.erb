@@ -172,12 +172,12 @@
                     <% @height.push( product.channel_product.product_mapping&.product&.height)%>
                     <% @width.push( product.channel_product.product_mapping&.product&.weight)%>
                   <% end %>
-                  <%= hidden_field_tag 'length',  @length, class: "length-value" %>
-                  <%= hidden_field_tag 'width',  @width.max, class: "width-value" %>
-                  <%= hidden_field_tag 'height',  @height.max, class: "height-value"%>
-                  <%= hidden_field_tag 'weight',  @weight, class: "weight-value"%>
                 <% end %>
               <% end %>
+              <%= hidden_field_tag 'length',  @length, class: "length-value" %>
+              <%= hidden_field_tag 'width',  @width.max, class: "width-value" %>
+              <%= hidden_field_tag 'height',  @height.max, class: "height-value"%>
+              <%= hidden_field_tag 'weight',  @weight, class: "weight-value"%>
             </div>
           <% end %>
         </td>
