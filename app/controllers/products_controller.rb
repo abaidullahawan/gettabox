@@ -201,7 +201,8 @@ class ProductsController < ApplicationController
       @channel_orders = ChannelOrder.joins(:versions)
       @channel_products = ChannelProduct.joins(:versions)
     else
-      @versions = Product.find_by(id: params[:id])&.versions
+      @product = Product.find_by(id: params[:id])
+      @versions = @product&.versions
     end
   end
 

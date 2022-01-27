@@ -51,10 +51,13 @@ class ProductMappingsController < ApplicationController
 
   def map_product
     @product_id = params[:anything][:searched_product_id].presence || params[:anything][:mapped_product_id]
-    @product_id = Product.find_by(title: @product_id)&.id if @product_id.to_i.to_s != @product_id
+    @product = Product.find_by(id: @product_id)
+    @channel_product = ChannelProduct.find_by(id: params[:anything]['channel_product_id'])
+    @product_id = @product&.id if @product_id.to_i.to_s != @product_id
     if @product_id.present?
-      @product_mapping = ProductMapping.create!(channel_product_id: params[:anything]['channel_product_id'],
+      @product_mapping = ProductMapping.create!(channel_product_id: @channel_product.id,
                                                 product_id: @product_id)
+      @product.update(change_log: "Product Mapped, #{@product.sku}, #{@channel_product.item_sku}, Mapped, #{@channel_product.item_id}")
       ChannelProduct.find(params[:anything]['channel_product_id']).status_mapped! if @product_mapping.present?
       ChannelOrder.joins(:channel_order_items).includes(:channel_order_items)
                   .where('channel_order_items.channel_product_id': params[:anything]['channel_product_id'])
@@ -66,13 +69,16 @@ class ProductMappingsController < ApplicationController
   end
 
   def unmap_product
-    @product_id = params[:anything][:mapped_product_id] || params[:mapped_product_id]
+    @product = Product.find_by(id: params[:anything][:mapped_product_id] || params[:mapped_product_id])
+    @channel_product = ChannelProduct.find(params[:anything][:channel_product_id])
+    @product_id = @product.id
     @product_mapping = ProductMapping.find_by(
-      channel_product_id: params[:anything][:channel_product_id],
+      channel_product_id: @channel_product.id,
       product_id: @product_id
     )
+    @product.update(change_log: "Product UnMapped, #{@product.sku}, #{@channel_product.item_sku}, UnMapped, #{@channel_product.item_id}")
     if @product_mapping&.destroy
-      ChannelProduct.find(params[:anything][:channel_product_id]).status_unmapped!
+      @channel_product.status_unmapped!
       flash[:notice] = 'Product Un-mapped successfully'
     else
       flash[:notice] = 'Product cannot be Un-mapped'
