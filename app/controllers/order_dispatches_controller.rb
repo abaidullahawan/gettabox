@@ -258,11 +258,17 @@ class OrderDispatchesController < ApplicationController
   end
 
   def allocations
-    order_item = ChannelOrderItem.find_by(id: params[:item_id])
+    order_items = ChannelOrder.find_by(id: params[:item_id]).channel_order_items
     # return flash[:alert] = 'Item not Found' unless order_item.present?
-    return unallocate_item(order_item) unless params[:allocate].eql? 'true'
-
-    allocate_item(order_item)
+    if params[:allocate].eql? 'true'
+      order_items.each do |item|
+        allocate_item(item)
+      end
+    else
+      order_items.each do |item|
+        unallocate_item(item)
+      end
+    end
     redirect_to request.referrer
   end
 
@@ -275,7 +281,7 @@ class OrderDispatchesController < ApplicationController
                    change_log: "#{order_item.channel_order.channel_type} API, #{order_item.channel_order.id}, #{order_item.channel_order.order_id}, UnAllocate, #{order_item.channel_product.item_id}")
     order_item.update(allocated: false)
     flash[:notice] = 'Unallocation successful!'
-    redirect_to request.referrer
+    # redirect_to request.referrer
   end
 
   def allocate_item(order_item)
@@ -303,7 +309,7 @@ class OrderDispatchesController < ApplicationController
     end
     order_item.update(allocated: false)
     flash[:notice] = 'Unallocation successful!'
-    redirect_to request.referrer
+    # redirect_to request.referrer
   end
 
   def multipack_allocation(order_item, product)

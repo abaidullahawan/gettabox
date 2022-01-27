@@ -38,7 +38,15 @@ class ProductMappingsController < ApplicationController
   end
 
   def version
-    @versions = ChannelProduct.find_by(id: params[:id])&.versions
+    @channel_product = ChannelProduct.find_by(id: params[:id])
+    @mappings = ProductMapping.where(channel_product_id: @channel_product.id)
+    @versions = if @mappings.present?
+                  @channel_product&.product_mapping&.versions
+                else
+                  Version.find_by(item_type: 'ChannelProduct',
+                                  item_id: @channel_product.id.to_s, object: nil)
+                end
+    @product = Product.find(@versions.object_changes) if @mappings.blank? && @versions.present?
   end
 
   def show; end

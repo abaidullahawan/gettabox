@@ -66,7 +66,7 @@ class TrackingsController < ApplicationController
 
   def courier_csv_export(tracking_csv)
     rows = []
-    order_ids = params[:tracking_orders].split(',')
+    order_ids = session[:order_ids].split(',')
     # @export_mapping = ExportMapping.find_by(id: params[:export_id])
     # return redirect_response if @export_mapping.nil?
 
@@ -115,6 +115,7 @@ class TrackingsController < ApplicationController
     elsif rows.flatten.any? { |a| a.to_s.include?('must') || a.to_s.include?('not found') }
       generate_csv(rows)
     else
+      update_batch(order_ids)
       @pdf_order_items = ChannelOrderItem.where(channel_order_id: order_ids).group_by(&:sku)
       request.format = 'pdf'
       respond_to do |format|
@@ -142,6 +143,13 @@ class TrackingsController < ApplicationController
     #   format.csv { send_data @csv, filename: "#{rule_name}.csv" }
     # end
     # flash[:alert] = 'Courier CSV Export Done!'
+  end
+
+  def update_batch(order_ids)
+    batch = OrderBatch.find_or_initialize_by(session[:batch_params]['batch_name'])
+    batch.update(session[:batch_params])
+    ChannelOrder.where(id: order_ids)
+                .update_all(stage: 'ready_to_print', ready_to_print: true, order_batch_id: @order_batch.id)
   end
 
   def redirect_response

@@ -348,11 +348,19 @@ $(document).on('turbolinks:load', function () {
     var rule = object_ids.map(function (i, e) { return e.dataset.courier }).toArray();
     var same_rule = rule.every((val, i, arr) => val === arr[0]) && rule[0] == 'Manual Dispatch'
     if (same_rule) {
+      var dispatch_button = $('.one-click-dispatch')
+      dispatch_button.toggleClass('one-click-dispatch upload_trackings')
+      dispatch_button.attr('data-toggle', 'modal')
+      dispatch_button.attr('data-target', '.upload-trackings')
       $('.upload-trackings').modal('show')
     }
     else {
       window.location.reload()
     }
+  })
+
+  $('.upload_trackings').on('click', function () {
+    $('.upload-trackings').modal('show')
   })
 
   $('.upload-trackings').on('shown.bs.modal', function () {
