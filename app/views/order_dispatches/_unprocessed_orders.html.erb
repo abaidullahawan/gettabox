@@ -45,15 +45,17 @@ Unable to Find SKU's
           <td><%= order.total_amount%></td>
           <td><span class="badge badge_warning py-1"><%= order.order_status%></span></td>
           <td>
+            <div class="dropdown dropleft">
+              <button class="btn btn-primary" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Actions">
+                <i data-feather='bell' class='icon wh-15 mt-minus-3'></i>
+              </button>
+              <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                <a class="dropdown-item" href="<%= order_dispatch_path(order)%>" >Show</a>
+                <a class="dropdown-item">Retry</a>
+                <a class="dropdown-item">Hide</a>
+              </div>
+            </div>
             <%#= link_to 'Logs',  version_order_dispatches_path(id: order.id), class: 'btn btn-primary text-white' %>
-            <button class="btn btn-primary" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              <i data-feather='refresh-ccw' class='icon wh-15 mt-minus-3'></i>
-              Retry
-            </button>
-            <button class="btn btn-primary" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              <i data-feather='x' class='icon wh-15 mt-minus-3'></i>
-              Hide
-            </button>
           </td>
         </tr>
       </tbody>
