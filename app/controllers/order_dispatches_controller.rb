@@ -31,9 +31,14 @@ class OrderDispatchesController < ApplicationController
   end
 
   def create
-    @order = ChannelOrder.new(order_dispatches_params)
-    @order.channel_order_items.build
+    @order = ChannelOrder.create(order_dispatches_params)
     if @order.save
+      @order.channel_order_items.each do |item|
+        if item.product.present?
+          item.product.update(available_stock: item.product.available_stock - item.ordered.to_i,
+                              change_log: "Manual Order, #{@order.id}, #{@order.order_id}, Manual Order, #{params[:channel_order][:buyer_name]}")
+        end
+      end
       flash[:notice] = 'Order Created!'
     else
       flash[:alert] = @order.errors.full_messages
