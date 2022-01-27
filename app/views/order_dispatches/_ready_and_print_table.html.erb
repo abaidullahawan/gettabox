@@ -196,12 +196,20 @@
         <td><%= order.total_amount%></td>
         <td>
           <span class="badge badge_warning py-1"><%= order.order_status%></span><br>
-          <% if (order.channel_order_items.map{|i| i.allocated} & [true]).any? %>
-            <%= link_to 'Unallocate', allocations_order_dispatches_path(allocate: false, item_id: order.id, order_filter: params[:order_filter]), class: 'btn btn-info mt-1 text-white' %>
-          <% else %>
-            <%= link_to 'Allocate', allocations_order_dispatches_path(allocate: true, item_id: order.id, order_filter: params[:order_filter]), class: 'btn btn-info mt-1 text-white' %>
-          <% end %>
-          <%= link_to 'Logs', version_order_dispatches_path(id: order.id), class: ' mt-1 btn btn-sm btn-primary mt-1 text-white' %>
+            <div class="dropdown dropleft">
+              <button class="btn btn-primary" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Actions">
+                <i data-feather='bell' class='icon wh-15 mt-minus-3'></i>
+              </button>
+              <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                <a class="dropdown-item" href="<%= order_dispatch_path(order)%>" >Show</a>
+                <% if (order.channel_order_items.map{|i| i.allocated} & [true]).any? %>
+                  <%= link_to 'Unallocate', allocations_order_dispatches_path(allocate: false, item_id: order.id, order_filter: params[:order_filter]), class: 'dropdown-item' %>
+                <% else %>
+                  <%= link_to 'Allocate', allocations_order_dispatches_path(allocate: true, item_id: order.id, order_filter: params[:order_filter]), class: 'dropdown-item' %>
+                <% end %>
+                <%= link_to 'Logs', version_order_dispatches_path(id: order.id), class: 'dropdown-item' %>
+              </div>
+            </div>
         </td>
       </tr>
     </tbody>

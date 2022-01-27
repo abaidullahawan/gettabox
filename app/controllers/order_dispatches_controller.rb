@@ -26,7 +26,9 @@ class OrderDispatchesController < ApplicationController
     end
   end
 
-  def show; end
+  def show
+    @order = ChannelOrder.find(params[:id])
+  end
 
   def create
     @order = ChannelOrder.new(order_dispatches_params)

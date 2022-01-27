@@ -1,0 +1,101 @@
+<!-- Main Content Header -->
+<div class="main-content-header">
+  <h1>Order Dispatch</h1>
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item">
+      <a href="<%= home_path %>">Dashboard</a>
+    </li>
+    <li class="breadcrumb-item">
+      <a href="<%= order_dispatches_path %>">Order Dispatch</a>
+    </li>
+    <li class="breadcrumb-item active">
+      <span class="active">Show</span>
+    </li>
+  </ol>
+</div>
+<!-- End Main Content Header -->
+<div class="row">
+  <div class="col-xl-12">
+    <div class="card mb-30">
+      <div class="card-body">
+        <div class="card-header">
+          <h5 class="card-title">
+            Show
+          </h5>
+        </div>
+          <table class="table table-hover text-vertical-middle mb-0">
+            <thead class="bort-none borpt-0">
+              <tr>
+                <th scope="col">Order Number</th>
+                <th scope="col">Customer Name</th>
+                <th scope="col">External Reference</th>
+                <th scope="col">Order Date</th>
+                <th scope="col">Delivery Date</th>
+                <th scope="col">Order Status</th>
+                <th scope="col">Sales Channel</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td scope="col"><%= @order.id %></td>
+                <td scope="col"><%= @order.system_user.name %></td>
+                <td scope="col"><%= @order.order_id %></td>
+                <td scope="col"><%= @order.created_at.strftime('%m/%d/%Y') %></td>
+                <td scope="col"></td>
+                <td scope="col"><%= @order.order_status %></td>
+                <td scope="col"><%= @order.system_user.sales_channel %></td>
+              </tr>
+            </tbody>
+          </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="row">
+  <div class="col-xl-12">
+    <div class="card mb-30">
+      <div class="card-body">
+          <table class="table table-hover text-vertical-middle mb-0">
+            <thead class="bort-none borpt-0">
+              <tr>
+                <th scope="col"></th>
+                <th scope="col"></th>
+                <th scope="col" colspan="3" class="text-center">Quantity</th>
+                <th scope="col" colspan="2" class="text-center">Item Price</th>
+                <th scope="col"></th>
+                <th scope="col">Row Total</th>
+              </tr>
+              <tr>
+                <th scope="col">Product</th>
+                <th scope="col">SKU</th>
+                <th scope="col">Avail</th>
+                <th scope="col">Alloc</th>
+                <th scope="col">Disp</th>
+                <th scope="col">Net.</th>
+                <th scope="col">Gross</th>
+                <th scope="col">VAT</th>
+                <th scope="col">Gross</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @order.channel_order_items.each do |product| %>
+                <tr>
+                  <td scope="col"><%= product.channel_product&.product_mapping&.product&.title %></td>
+                  <td scope="col"><%= product.channel_product&.product_mapping&.product.sku %> </td>
+                  <td scope="col"><%= product.channel_product&.product_mapping&.product&.available_stock.to_i %></td>
+                  <td scope="col"><%= product.channel_product&.product_mapping&.product&.allocated_orders.to_i %></td>
+                  <td scope="col">0</td>
+                  <td scope="col"><%= product.item_data['total']['value'] %></td>
+                  <td scope="col"><%= @order.total_amount %></td>
+                  <td scope="col"><%= percent  =  Product.vats[product.channel_product&.product_mapping&.product&.vat].to_i%>%</td>
+                  <td scope="col"><% totalvalue = @order.total_amount.to_f+product&.item_data['total']['value'].to_f %> <%= (totalvalue/100)*percent+totalvalue %></td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+      </div>
+    </div>
+  </div>
+</div>
