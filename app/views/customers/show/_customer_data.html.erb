@@ -200,8 +200,11 @@
           <h4 class='col-10'>Delivery</h4>
         </div>
         <h5 class='ml-4 mt-3'><%= @delivery_address&.address%></h5>
+        <h5 class='ml-4 mt-3'><%= @delivery_address&.city%></h5>
+        <h5 class='ml-4 mt-3'><%= @delivery_address&.region%></h5>
         <h5 class='ml-4'><%= @delivery_address&.country%></h5>
         <h5 class='ml-4'><%= @delivery_address&.postcode%></h5>
+        <h5 class="col-8"><%= @delivery_address&.company %></h5>
         <div class='row ml-2'>
           <h5 class="fs-14 mb-1 col-4">Email</h5>
           <p class="col-8"><%= @customer&.email %></p>

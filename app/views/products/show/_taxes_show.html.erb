@@ -7,7 +7,7 @@
     <div class="list-group-item"><br>
       <div class='row'>
         <h5 class="fs-14 mb-1 col-4">Sales VAT</h5>
-        <p class="m-0 col-8"><%= @product.vat %></p>
+        <p class="m-0 col-8"><%= @product.vat&.humanize %></p>
       </div>
     </div>
   </div>

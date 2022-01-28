@@ -6,8 +6,9 @@ class OrderDispatchesController < ApplicationController
   before_action :authenticate_user!
   # before_action :refresh_token, :refresh_token_amazon, only: %i[index all_order_data]
   before_action :check_status, only: %i[index fetch_response_orders]
-  before_action :ransack_params, :load_counts, :unmatched_product_orders, :completed_orders, :no_sku,
-                :not_started_orders, :unpaid_orders, :unmatched_sku, :ready_to_print_orders, only: %i[index]
+  before_action :ransack_params, :load_counts, :unmatched_product_orders, :completed_orders,
+                :no_sku, :not_started_orders, :unpaid_orders, :unmatched_sku, :ready_to_print_orders,
+                :customer_info, only: %i[index]
   before_action :new_product, :product_load_resources, :first_or_create_category, only: %i[index]
 
   def index
@@ -349,6 +350,34 @@ class OrderDispatchesController < ApplicationController
     @versions = @order&.versions
   end
 
+  def import_customer
+    file = params[:file]
+    if file.present? && file.path.split('.').last.to_s.downcase == 'csv'
+      csv_text = File.read(file)
+      csv = CSV.parse(csv_text, headers: true)
+      csv.each do |row|
+        order = ChannelOrder.find_by(stage: 'ready_to_dispatch', order_id: row['order-id'])
+        next unless order.present?
+
+        order.build_system_user(user_type: 'customer', sales_channel: 'amazon', name: row['buyer-name'],
+                                email: row['buyer-email'], phone_number: row['buyer-phone-number'],
+                                days_for_order_to_completion: row['promise-date'].to_date - Date.today)
+        order
+          .system_user
+          .addresses
+          .build(address_title: 'delivery', company: row['recipient-name'],
+                 address: row['ship-address-1'].to_s + row['ship-address-2'].to_s + row['ship-address-3'].to_s,
+                 city: row['ship-city'], region: row['ship-state'], postcode: row['ship-postal-code'],
+                 country: row['ship-country'])
+        order.save
+      end
+      flash[:notice] = 'Customer imported successfuly'
+    else
+      flash[:alert] = 'File format no matched! Please change file'
+    end
+    redirect_to request.referrer
+  end
+
   private
 
   def order_dispatches_params
@@ -490,6 +519,7 @@ class OrderDispatchesController < ApplicationController
     # end
     # Need to be fixed
     @not_started_orders = @channel_orders.where(stage: 'ready_to_dispatch')
+                                         .where.not(channel_type: 'amazon', system_user_id: nil)
 
     @not_started_orders = @not_started_orders.order(created_at: :desc)
     @not_started_order_data = @not_started_orders.page(params[:not_started_page]).per(params[:limit])
@@ -515,6 +545,14 @@ class OrderDispatchesController < ApplicationController
     @orders = ChannelOrder.where(ready_to_print: true).order(created_at: :desc)
   end
 
+  def customer_info
+    return unless params[:order_filter].eql? 'customer_info'
+
+    @missing_customer_detail = ChannelOrder.where(channel_type: 'amazon', stage: 'ready_to_dispatch', system_user_id: nil)
+                                           .order(created_at: :desc)
+    @missing_customer_orders = @missing_customer_detail.page(params[:unmatched_product_page]).per(params[:limit])
+  end
+
   def csv_export(orders)
     attributes = ChannelOrder.column_names.excluding('created_at', 'updated_at')
     CSV.generate(headers: true) do |csv|
@@ -531,12 +569,15 @@ class OrderDispatchesController < ApplicationController
     @issue_products_count = ChannelProduct.where(item_sku: nil).count
     @today_orders = @channel_orders.where('Date(channel_orders.created_at) = ?', Date.today).count
     @ready_to_pack_count = @channel_orders.where(ready_to_print: true).count
-    @not_started_order_count = @channel_orders.where(stage: 'ready_to_dispatch').count
+    @not_started_order_count = @channel_orders.where(stage: 'ready_to_dispatch')
+                                              .where.not(channel_type: 'amazon', system_user_id: nil).count
     @issue_orders_count = @channel_orders.where(stage: 'issue').count
     @unpaid_orders_count = @channel_orders.where(stage: %w[unpaid pending]).count
     @completed_count = @channel_orders.where(stage: 'completed').count
     @un_matched_orders_count = @channel_orders.where(stage: 'unmapped_product_sku').count
     @unmatched_sku_count = @channel_orders.where(stage: 'unable_to_find_sku').count
+    @miss_customer_count = ChannelOrder.where(channel_type: 'amazon', stage: 'ready_to_dispatch', system_user_id: nil)
+                                       .count
   end
 
   def update_order_stage
