@@ -1,6 +1,6 @@
 <div class="form-row">
   <div class="form-group col-md-12">
       <%= f.label :vat, 'Sales Vat' %>
-      <%= f.select :vat, options_for_select(Product.vats.map { |key, value| [key.humanize, value] }, f.object.vat.to_i), {}, class: 'form-control' %>
+      <%= f.select :vat, options_for_select(Product.vats.map { |key, value| [key.humanize, key] }, f.object.vat.to_i), {}, class: 'form-control' %>
   </div>
 </div>

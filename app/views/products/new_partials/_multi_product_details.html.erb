@@ -25,7 +25,7 @@
   </div>
   <div class="form-group col-md-12 required">
     <%= f.label :vat %>
-    <%= f.select :vat, options_for_select(Product.vats.map { |key, value| [key.humanize, value] }, f.object.vat.to_i), {}, class: 'form-control', required: true %>
+    <%= f.select :vat, options_for_select(Product.vats.map { |key, value| [key.humanize, key] }, f.object.vat.to_i), {}, class: 'form-control', required: true %>
   </div>
 </div>
 <div class="form-row">
