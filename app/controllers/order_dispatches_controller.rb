@@ -520,8 +520,7 @@ class OrderDispatchesController < ApplicationController
     # Need to be fixed
     @not_started_orders = @channel_orders.where(stage: 'ready_to_dispatch')
                                          .where.not(channel_type: 'amazon', system_user_id: nil)
-
-    @not_started_orders = @not_started_orders.order(created_at: :desc)
+    @not_started_orders = @not_started_orders.order(:order_type, created_at: :desc)
     @not_started_order_data = @not_started_orders.page(params[:not_started_page]).per(params[:limit])
     return unless (params[:order_filter].eql? 'ready') && params[:export]
 

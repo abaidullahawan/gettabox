@@ -47,6 +47,7 @@ class AmazonOrderJob < ApplicationJob
         channel_order.created_at = order['PurchaseDate']
         channel_order.order_status = order['OrderStatus']
         channel_order.stage = order_stage(order['OrderStatus'])
+        channel_order.order_type = order['OrderType']
         amount = order['OrderTotal'].nil? ? nil : order['OrderTotal']['Amount']
         channel_order.total_amount = amount
         channel_order.fulfillment_instruction = order['FulfillmentChannel']
@@ -168,7 +169,7 @@ class AmazonOrderJob < ApplicationJob
     if product.available_stock >= item.ordered
       product.update(available_stock: available_stock, allocated_orders: product.allocated_orders.to_i + ordered,
                      change_log: "API, #{item.channel_order.id},
-                                  #{item.channel_order.order_id}, Order Paid, #{item.channel_product.item_id}")
+                                  #{item.channel_order.order_id}, Allocated, #{item.channel_product.item_id}")
       item.update(allocated: true)
     else
       item.update(allocated: false)
