@@ -148,6 +148,7 @@ Rails.application.routes.draw do
       get 'bulk_update_selected', to: 'order_dispatches#bulk_update_selected'
       get 'refresh', to: 'order_dispatches#refresh'
       get 'allocations', to: 'order_dispatches#allocations'
+      post 'import_customer', to: 'order_dispatches#import_customer'
     end
   end
 

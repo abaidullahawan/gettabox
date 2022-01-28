@@ -146,10 +146,10 @@ class TrackingsController < ApplicationController
   end
 
   def update_batch(order_ids)
-    batch = OrderBatch.find_or_initialize_by(session[:batch_params]['batch_name'])
+    batch = OrderBatch.find_or_initialize_by(batch_name: session[:batch_params]['batch_name'])
     batch.update(session[:batch_params])
     ChannelOrder.where(id: order_ids)
-                .update_all(stage: 'ready_to_print', ready_to_print: true, order_batch_id: @order_batch.id)
+                .update_all(stage: 'ready_to_print', ready_to_print: true, order_batch_id: batch.id)
   end
 
   def redirect_response
