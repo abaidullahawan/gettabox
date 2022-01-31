@@ -47,6 +47,35 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-outline-primary reason-get-button">Save Changes</button>
+          <%#= f.submit(@product.new_record? ? "Create" : "Save changes", class: 'btn btn-outline-primary') %>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>
+
+<%= form_for(@product, url: product_path) do |f| %>
+  <!-- Reason Modal -->
+  <div class="modal fade reason-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Reason</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <%= f.hidden_field :total_stock, class: 'update_stock' %>
+          <%= f.hidden_field :fake_stock, class: 'update_fake_stock' %>
+          <%= label_tag :reason %>
+          <%= select_tag :reason, options_for_select(['PO Stock Amendments', 'Misplaced Stock', 'Stock Available Warehouse', 'Other']), class: 'form-control', prompt: 'Please select reason' %>
+          <%= label_tag :description %>
+          <%= text_area_tag :description, '', class: 'form-control' %>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
           <%= f.submit(@product.new_record? ? "Create" : "Save changes", class: 'btn btn-outline-primary') %>
         </div>
       </div>

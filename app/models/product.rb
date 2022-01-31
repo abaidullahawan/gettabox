@@ -57,6 +57,6 @@ class Product < ApplicationRecord
   def re_modulate_dimensions
     max = [length, height].max
     min = [length, height].min
-    update_columns(length: max, height: product_mappings)
+    update_columns(length: max, height: min)
   end
 end

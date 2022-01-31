@@ -267,4 +267,10 @@ $(document).on('turbolinks:load', function () {
     }
   }
 
+  $('.reason-get-button').on('click', function () {
+    $('.update_fake_stock').val($('.updating_fake_stock').val());
+    $('.update_stock').val($('.updating_stock').val());
+    $('.reason-modal').modal('show');
+  })
+
 })
