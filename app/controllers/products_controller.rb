@@ -269,7 +269,6 @@ class ProductsController < ApplicationController
   end
 
   def update_log
-    byebug
     @product.update(available_stock: @product.total_stock.to_f - @product.allocated_orders.to_f, change_log: "Manual Edit, Reason, #{@product.total_stock}, Manual Edit, #{@product.description}")
   end
 end
