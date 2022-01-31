@@ -57,7 +57,7 @@ class ProductsController < ApplicationController
     if params[:product][:extra_field_value_attributes].present?
       update_extra_fields
     elsif @product.update(product_params)
-      @product.update(change_log: "Manual Edit, Reason, #{@order.total_stock}, Manual Edit, #{@product.description}")
+      update_log if product_params[:total_stock].present?
       flash[:notice] = 'Updated successfully.'
       redirect_to product_path(@product)
     else
@@ -266,5 +266,10 @@ class ProductsController < ApplicationController
       row.delete(nil)
       product.update!(row)
     end
+  end
+
+  def update_log
+    byebug
+    @product.update(available_stock: @product.total_stock.to_f - @product.allocated_orders.to_f, change_log: "Manual Edit, Reason, #{@product.total_stock}, Manual Edit, #{@product.description}")
   end
 end
