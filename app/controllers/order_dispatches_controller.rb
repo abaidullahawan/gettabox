@@ -541,14 +541,14 @@ class OrderDispatchesController < ApplicationController
   end
 
   def ready_to_print_orders
-    @orders = ChannelOrder.where(ready_to_print: true).order(created_at: :desc)
+    @orders = @channel_orders.where(ready_to_print: true).order(created_at: :desc)
   end
 
   def customer_info
     return unless params[:order_filter].eql? 'customer_info'
 
-    @missing_customer_detail = ChannelOrder.where(channel_type: 'amazon', stage: 'ready_to_dispatch', system_user_id: nil)
-                                           .order(created_at: :desc)
+    @missing_customer_detail = @channel_orders.where(channel_type: 'amazon', stage: 'ready_to_dispatch', system_user_id: nil)
+                                              .order(created_at: :desc)
     @missing_customer_orders = @missing_customer_detail.page(params[:unmatched_product_page]).per(params[:limit])
   end
 
@@ -575,8 +575,8 @@ class OrderDispatchesController < ApplicationController
     @completed_count = @channel_orders.where(stage: 'completed').count
     @un_matched_orders_count = @channel_orders.where(stage: 'unmapped_product_sku').count
     @unmatched_sku_count = @channel_orders.where(stage: 'unable_to_find_sku').count
-    @miss_customer_count = ChannelOrder.where(channel_type: 'amazon', stage: 'ready_to_dispatch', system_user_id: nil)
-                                       .count
+    @miss_customer_count = @channel_orders.where(channel_type: 'amazon', stage: 'ready_to_dispatch', system_user_id: nil)
+                                          .count
   end
 
   def update_order_stage
