@@ -100,7 +100,6 @@
                     <b>Location:</b> <span><%= local_product&.location %></span>
                   </p>
                   <p style="color: white;">
-                  <% byebug %>
                     <b>QTY:</b> <span><%= (local_product.pack_quantity.nil? ? 1 : local_product.pack_quantity ).to_i * product.ordered.to_i %></span>
                   </p>
                   <div class="d-flex">
