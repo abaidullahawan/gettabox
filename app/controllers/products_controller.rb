@@ -57,6 +57,7 @@ class ProductsController < ApplicationController
     if params[:product][:extra_field_value_attributes].present?
       update_extra_fields
     elsif @product.update(product_params)
+      @product.update(change_log: "Manual Edit, Reason, #{@order.total_stock}, Manual Edit, #{@product.description}")
       flash[:notice] = 'Updated successfully.'
       redirect_to product_path(@product)
     else
