@@ -116,7 +116,25 @@ class TrackingsController < ApplicationController
       generate_csv(rows)
     else
       update_batch(order_ids)
-      @pdf_order_items = ChannelOrderItem.where(channel_order_id: order_ids).group_by(&:sku)
+      multiple_products = ChannelOrderItem.where(channel_order_id: order_ids).joins(channel_product: [product_mapping: :product]).where("products.product_type": "multiple").uniq
+      single_products = ChannelOrderItem.where(channel_order_id: order_ids).joins(channel_product: [product_mapping: :product]).where("products.product_type": "single").uniq
+
+      products = []
+      multiple_products.each do |multiple_product|
+        multiple_product.channel_product.product_mapping.product.multipack_products.each do |multi|
+          product = multi.child
+          quantity = multi.quantity.to_f * (product.pack_quantity.nil? ? 1 : product.pack_quantity.to_f)
+          products << { sku: product.sku, product: product, quantity: quantity * multiple_product.ordered }
+        end
+      end
+
+      single_products.each do |single_product|
+        product = single_product.channel_product.product_mapping.product
+        quantity = single_product.ordered * (product.pack_quantity.nil? ? 1 : product.pack_quantity.to_f)
+        products << { sku: product.sku, product: product, quantity: quantity }
+      end
+
+      @products_group = products.group_by { |d| d[:sku] }
       request.format = 'pdf'
       respond_to do |format|
         format.pdf do
