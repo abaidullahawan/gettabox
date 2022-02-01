@@ -3,10 +3,8 @@
     <div class="card mb-30">
       <div class="card-body">
         <div class="bg-transparent d-flex mb-4">
-          <button class="ml-auto btn btn-primary">ADD TO CONTAINER</button>
-          <button class="ml-1 btn btn-primary" data-toggle="modal" data-target='#address-edit-modal'>EDIT ADDRESS</button>
+          <button class="ml-auto btn btn-primary" data-toggle="modal" data-target='#address-edit-modal'>EDIT ADDRESS</button>
           <button class="ml-1 btn btn-primary" data-toggle="modal" data-target='#courier-edit-modal'>CHANGE RULE</button>
-          <button class="ml-1 btn btn-primary">PICK ALL ITEMS</button>
         </div>
         <div class="row">
           <div class="table-responsive col-6 border-right">
@@ -44,7 +42,7 @@
                 <td class="text-left">Courier service</td>
                 <td> <%= batch_order.assign_rule.mail_service_rule.courier.name %> </td>
               </tr>
-              <tr> 
+              <tr>
                 <td class="text-left">Courier rule</td>
                 <td><%= batch_order.assign_rule.mail_service_rule.rule_name %></td>
               </tr>
@@ -64,20 +62,21 @@
                 <th class="text-center">Allocated</th>
                 <th class="text-center">Ordered</th>
               </tr>
-              <% batch_order.channel_order_items.each do |item| %>
+              <% @products_group.each do |group| %>
+                <% product = group.last.first[:product] %>
                 <tr>
-                  <td class="text-center"><img alt="No image" href="<%= item&.channel_product&.item_image %>"></td>
+                  <td class="text-center">
+                    <% if product.photo.attached? %>
+                      <%= image_tag product.photo&.service_url, height: '50px', width: '50px' %>
+                    <% else %>
+                      <%= image_tag('user/1.jpg', width: "50", height: "50", class: 'mr-3 img-thumbnail', alt: 'User Image') %>
+                    <% end %>
+                  </td>
                   <td class="text-center"><%= batch_order.total_amount %></td>
-                  <% if item&.channel_product&.product_mapping&.product&.product_type_multiple? %>
-                    <td class="text-center">
-                      <%= (item&.channel_product&.product_mapping&.product&.multipack_products&.map { |pack| pack.child&.total_stock.to_i }).sum %>
-                    </td>
-                  <% else %>
-                    <td class="text-center"><%= item&.channel_product&.product_mapping&.product&.total_stock %></td>
-                  <% end %>
-                  <td class="text-center"><%=  %></td>
-                  <td class="text-center"><%=  %></td>
-                  <td class="text-center"><%= item.ordered %></td>
+                  <td class="text-center"><%= product.available_stock %></td>
+                  <td class="text-center"><%= 0 %></td>
+                  <td class="text-center"><%= product.allocated_orders %></td>
+                  <td class="text-center" ><%= group.last.pluck(:quantity)&.sum() %></td>
                 </tr>
               <% end %>
             </table>
