@@ -33,7 +33,9 @@ class CreateChannelOrderJob < ApplicationJob
         criteria = channel_order_record.channel_order_items.map { |h| [h[:sku], h[:ordered]] }
         assign_rules = AssignRule.where(criteria: criteria)&.last
         channel_order_record.update(assign_rule_id: assign_rules.id) if assign_rules.present?
-        update_order_stage(channel_order_record.channel_order_items.map { |i| i.channel_product&.status }, channel_order_record)
+        update_order_stage(channel_order_record.channel_order_items.map do |i|
+                             i.channel_product&.status
+                           end, channel_order_record)
         channel_order_record.update(stage: 'unpaid') if channel_order_record.payment_status.eql? 'UNPAID'
         channel_order_record.update(stage: 'issue') if channel_order_record.channel_order_items.map(&:sku).any? nil
       end
@@ -93,7 +95,7 @@ class CreateChannelOrderJob < ApplicationJob
 
   def multipack_product(item, product)
     available = product.multipack_products.map { |m| m.child.available_stock.to_i }
-    required = product.multipack_products.map { |m| m.quantity.to_i * order_item.ordered.to_i }
+    required = product.multipack_products.map { |m| m.quantity.to_i * item.ordered.to_i }
     check = available.zip(required).all? { |a, b| a >= b }
     return unless check
 
