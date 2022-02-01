@@ -83,10 +83,10 @@
                                     <%= f.select :vat, options_for_select(Product.vats.map { |key, value| [key.humanize, key] }, f.object.vat.to_i), {}, class: 'form-control order_item_vat' %>
                                   </td>
                                   <td>
-                                    <%= f.number_field :cost_price, value: f.object.cost_price, class: 'form-control order_item_price', placeholder: 'Price' %>
+                                    <%= f.number_field :cost_price, step: :any, value: f.object.cost_price, class: 'form-control order_item_price', placeholder: 'Price' %>
                                   </td>
                                   <td>
-                                    <%= f.number_field :quantity, class: 'form-control order_item_quantity', placeholder: 'Quantity' %>
+                                    <%= f.number_field :quantity, step: :any, class: 'form-control order_item_quantity', placeholder: 'Quantity' %>
                                   </td>
                                   <td>
                                     <input class="form-control order_item_total" type="text" placeholder="Total" style="width: 70px;">

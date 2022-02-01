@@ -1,3 +1,22 @@
+<div class="main-content-header">
+  <h1> <%= @product.present? ? 'Products' : 'Inventory' %></h1>
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item">
+      <a href="<%= home_path %>" role="button">Dashboard</a>
+    </li>
+    <li class="breadcrumb-item">
+      <a href="<%= products_path %>">Products</a>
+    </li>
+    <li class="breadcrumb-item active">
+      <span class="active">Versions</span>
+    </li>
+    <% if @product.present? %>
+      <li class="ml-auto">
+        <%= link_to @product.sku, product_path(@product), class: 'btn btn-primary text-white' %>
+      </li>
+    <% end %>
+  </ol>
+</div>
 <% if params[:inventory_log].present? %>
   <div class="faq-accordion mb-30">
     <ul class="accordion">
