@@ -29,22 +29,22 @@
 <div class="form-row">
   <div class="form-group col-md-3">
     <%= f.label :public_cost, 'Service Cost' %>
-    <%= f.number_field :public_cost, class: 'form-control', placeholder: '0.0 £' %>
+    <%= f.number_field :public_cost, step: :any, class: 'form-control', placeholder: '0.0 £' %>
   </div>
 
   <div class="form-group col-md-3">
     <%= f.label :initial_weight %>
-    <%= f.number_field :initial_weight, class: 'form-control', placeholder: '0.0 kg' %>
+    <%= f.number_field :initial_weight, step: :any, class: 'form-control', placeholder: '0.0 kg' %>
   </div>
 
   <div class="form-group col-md-3">
     <%= f.label :additonal_cost_per_kg %>
-    <%= f.number_field :additonal_cost_per_kg, class: 'form-control', placeholder: '0.0 $' %>
+    <%= f.number_field :additonal_cost_per_kg, step: :any, class: 'form-control', placeholder: '0.0 $' %>
   </div>
 
   <div class="form-group col-md-3">
     <%= f.label :vat_percentage %>
-    <%= f.number_field :vat_percentage, class: 'form-control', placeholder: '0.00' %>
+    <%= f.number_field :vat_percentage, step: :any, class: 'form-control', placeholder: '0.00' %>
   </div>
 </div>
 
@@ -61,12 +61,12 @@
 
   <div class="form-group col-md-3">
     <%= f.label :base_weight %>
-    <%= f.number_field :base_weight, class: 'form-control', placeholder: '0.0 kg' %>
+    <%= f.number_field :base_weight, step: :any, class: 'form-control', placeholder: '0.0 kg' %>
   </div>
 
   <div class="form-group col-md-3">
     <%= f.label :base_weight_max %>
-    <%= f.number_field :base_weight_max, class: 'form-control', placeholder: '0.0 kg' %>
+    <%= f.number_field :base_weight_max, step: :any, class: 'form-control', placeholder: '0.0 kg' %>
   </div>
 </div>
 

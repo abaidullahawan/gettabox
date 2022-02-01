@@ -66,10 +66,10 @@
                           <td>0/0</td>
                           <td><%= f.object.product.total_stock %></td>
                           <td>
-                            <%= f.number_field :cost_price, class: 'form-control order_item_price', placeholder: 'Price' %>
+                            <%= f.number_field :cost_price, step: :any, class: 'form-control order_item_price', placeholder: 'Price' %>
                           </td>
                           <td>
-                            <%= f.number_field :quantity, class: 'form-control order_item_quantity', placeholder: 'Quantity' %>
+                            <%= f.number_field :quantity, step: :any, class: 'form-control order_item_quantity', placeholder: 'Quantity' %>
                             <%= f.number_field :product_id, value: f.object.product.id, class: 'form-control d-none' %>
                           </td>
                           <td>
