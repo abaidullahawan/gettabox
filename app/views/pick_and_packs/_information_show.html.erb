@@ -19,9 +19,9 @@
                 <td class="text-left">Delivery address</td>
                 <td>
                   <% batch_order.system_user&.addresses&.each do |address| %>
-                    <% @delivery_address = address&.address if address&.address_title == 'delivery' %>
+                    <% @delivery_address = address if address&.address_title == 'delivery' %>
                   <% end %>
-                  <%= @delivery_address %>
+                  <%= @delivery_address&.address %>
                 </td>
               </tr>
               <tr>
@@ -117,7 +117,7 @@
   </div>
 <% end %>
 
-<%= form_with url: address_edit_pick_and_packs_path, method: :post do |f| %>
+<%= form_for @delivery_address || Address.new, url: address_edit_pick_and_packs_path, method: :post do |f| %>
   <div class="modal" id="address-edit-modal" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
@@ -129,7 +129,14 @@
         </div>
         <div class="modal-body">
           <div class="form-group row">
-            <%= f.text_field :new_address,value: @delivery_address, required: true, class: 'form-control col-11 mx-auto', placeholder: 'Enter Address' %>
+            <%= f.label :address %>
+            <%= f.text_field :address, class: 'form-control mb-1'  %>
+            <%= f.label :city %>
+            <%= f.text_field :city, class: 'form-control mb-1'  %>
+            <%= f.label :region %>
+            <%= f.text_field :region, class: 'form-control mb-1'  %>
+            <%= f.label :postcode %>
+            <%= f.text_field :postcode, class: 'form-control mb-1'  %>
             <%= f.hidden_field :address_id, value: batch_order.system_user&.addresses&.ids %>
             <%= f.hidden_field :system_user_id, value: batch_order.system_user&.id %>
           </div>
