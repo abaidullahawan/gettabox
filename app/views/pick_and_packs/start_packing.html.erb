@@ -22,8 +22,20 @@
             <%= f.submit 'check', class: 'batches-button-submit d-none'%>
           <% end %>
         </div>
+        <%= form_tag(start_packing_pick_and_packs_path(), method: :get) do |f| %>
+          <%= hidden_field_tag :"q[batch_name_eq]", params[:q].try(:[], :batch_name_eq) %>
+          <div class="form-group row">
+            <%= text_field_tag :order_id,{}, autofocus: true, required: true, class: 'form-control col-3 mt-4 mx-auto', placeholder: 'Please Scan...' %>
+          </div>
+          <%= submit_tag 'check', class: 'd-none'%>
+        <% end %>
         <div class="row">
-          <div class="col-6 border-top-0 border-bottom-0 border-left-0">
+          <div class="col-12 border-top-0 border-bottom-0 border-left-0">
+          </div>
+          <div class="col-12">
+          <% if @tracking_order&.present? %>
+            <%= render "information_show", batch_order: @tracking_order %>
+          <% else %>
             <table class="table m-0 table-hover">
               <tr>
                 <th class="text-center">Name</th>
@@ -44,18 +56,6 @@
                 </tr>
               <% end %>
             </table>
-          </div>
-          <div class="col-6" style="background-color: #eeeef8;">
-          <% if @tracking_order&.present? %>
-            <%= render "information_show", batch_order: @tracking_order %>
-          <% else %>
-            <%= form_tag(start_packing_pick_and_packs_path(), method: :get) do |f| %>
-              <%= hidden_field_tag :"q[batch_name_eq]", params[:q].try(:[], :batch_name_eq) %>
-              <div class="form-group row">
-                <%= text_field_tag :order_id,{}, autofocus: true, required: true, class: 'form-control col-6 mt-4 mx-auto', placeholder: 'Enter Order ID' %>
-              </div>
-              <%= submit_tag 'check', class: 'd-none'%>
-            <% end %>
           <% end %>
           </div>
         <div>
