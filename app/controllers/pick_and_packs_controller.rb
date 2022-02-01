@@ -1,5 +1,4 @@
 class PickAndPacksController < ApplicationController
-
   include ImportExport
 
   before_action :set_packer, only: %i[show edit update destroy]
@@ -36,6 +35,7 @@ class PickAndPacksController < ApplicationController
     flash[:alert] = 'Orders not found'
     redirect_to pick_and_packs_path
   end
+
   # GET /services/new
   def new
     @packer = OrderBatch.new
@@ -47,7 +47,9 @@ class PickAndPacksController < ApplicationController
     @pick_and_packs = @q.result(distinct: true).order(created_at: :desc).page(params[:page]).per(params[:limit])
     if params[:q].present?
       @orders = @pick_and_packs.last&.channel_orders
-      @tracking_order = @orders.joins(:trackings).find_by('trackings.tracking_no': params[:order_id]) if params[:order_id].present?
+      if params[:order_id].present?
+        @tracking_order = @orders.joins(:trackings).find_by('trackings.tracking_no': params[:order_id])
+      end
     end
   end
 
@@ -61,26 +63,27 @@ class PickAndPacksController < ApplicationController
       else
         flash[:alert] = @batch.errors.full_messages
       end
+    elsif @mailRule.update(mail_service_rule_id: params[:mail_service_rule])
+      flash[:notice] = 'Service Rule successfully updated.'
     else
-      if @mailRule.update(mail_service_rule_id: params[:mail_service_rule])
-        flash[:notice] = 'Service Rule successfully updated.'
-      else
-        flash[:alert] = @batch.errors.full_messages
-      end
+      flash[:alert] = @batch.errors.full_messages
     end
     redirect_to request.referrer
-  end 
+  end
 
   def address_edit
-    @address = Address.where(id: params[:address_id].split(" "), address_title: "delivery")
+    @address = Address.where(id: params[:address][:address_id].split(' '), address_title: 'delivery')
     if @address.present?
-      if @address.update(address: params[:new_address])
+      if @address.update(address: params[:address][:address], city: params[:address][:city],
+                         region: params[:address][:region], postcode: params[:address][:postcode])
         flash[:notice] = 'Address successfully updated.'
       else
         flash[:alert] = @batch.errors.full_messages
       end
     else
-      @newAddress = SystemUser.find_by(id: params[:system_user_id]).addresses.build(address_title: 'delivery', address: params[:new_address])
+      @newAddress = SystemUser.find_by(id: params[:address][:system_user_id]).addresses.build(
+        address_title: 'delivery', address: params[:address][:address], city: params[:address][:city], region: params[:address][:region], postcode: params[:address][:postcode]
+      )
       if @newAddress.save
         flash[:notice] = 'Address successfully updated.'
       else
@@ -157,11 +160,12 @@ class PickAndPacksController < ApplicationController
   def csv_create_records(csv)
     csv.each do |row|
       packer = OrderBatch.with_deleted.create_with(name: row['name'])
-      .find_or_create_by(name: row['name'])
-      flash[:alert] = "#{packer.errors.full_messages} at ID: #{packer.id} , Try again " unless update_packer(packer, row)
+                         .find_or_create_by(name: row['name'])
+      flash[:alert] = "#{packer.errors.full_messages} at ID: #{packer.id} , Try again " unless update_packer(packer,
+                                                                                                             row)
     end
   end
-  
+
   def update_pakcer(packer, row)
     packer.update(row.to_hash)
   end
@@ -176,14 +180,14 @@ class PickAndPacksController < ApplicationController
   end
 
   def restore
-      object_ids = params[:object_ids]
-      object_id = params[:object_id]
-      commit = params[:commit]
-      if object_id.present? && klass_single_restore(object_id)
-        flash[:notice] = 'Batch restore successfully'
-      else
-        restore_or_delete(commit, object_ids, name)
-      end
+    object_ids = params[:object_ids]
+    object_id = params[:object_id]
+    commit = params[:commit]
+    if object_id.present? && klass_single_restore(object_id)
+      flash[:notice] = 'Batch restore successfully'
+    else
+      restore_or_delete(commit, object_ids, name)
+    end
     redirect_to archive_pick_and_packs_path
   end
 
@@ -216,5 +220,4 @@ class PickAndPacksController < ApplicationController
   def packer_params
     params.require(:system_user).permit(:name)
   end
-
 end
