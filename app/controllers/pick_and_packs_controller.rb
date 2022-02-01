@@ -50,7 +50,11 @@ class PickAndPacksController < ApplicationController
       return unless params[:order_id].present?
 
       @tracking_order = @orders.joins(:trackings).find_by('trackings.tracking_no': params[:order_id])
-      local_products(@tracking_order)
+      local_products(@tracking_order) if @tracking_order.present?
+      return unless params[:barcode].present?
+
+      product = Product.joins(:barcodes).find_by('barcodes.title': params[:barcode])
+      flash[:alert] = 'Product not found' unless product.present?
     end
   end
 
