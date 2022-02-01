@@ -71,7 +71,7 @@
               <td class="text-center"><%= batch_order.total_amount %></td>
               <% if item&.channel_product&.product_mapping&.product&.product_type_multiple? %>
                 <td class="text-center">
-                  <%= (item&.channel_product&.product_mapping&.product&.multipack_products&.map { |pack| pack.child.total_stock }).sum %>
+                  <%= (item&.channel_product&.product_mapping&.product&.multipack_products&.map { |pack| pack.child&.total_stock.to_i }).sum %>
                 </td>
               <% else %>
                 <td class="text-center"><%= item&.channel_product&.product_mapping&.product&.total_stock %></td>
