@@ -50,7 +50,7 @@
                       <%= pd.fields_for :purchase_delivery_details do |f| %>
                         <tr>
                           <td>
-                            <%= f.number_field :id, step: :any, class: 'form-control d-none' %>
+                            <%= f.number_field :id, class: 'form-control d-none' %>
                             <% if f.object.product.photo.attached? %>
                               <%= image_tag(f.object.product.photo&.service_url, width: "100", height: "100", class: 'mr-3 img-thumbnail', alt: 'User Image') %>
                             <% else %>

@@ -78,7 +78,7 @@
                             <td>
                               <%#= f.label :quantity, "#{p_order.quantity}", class: 'text-muted'%>
                               <%= f.number_field :quantity, step: :any, class: 'form-control order_item_quantity', placeholder: 'Quantity', value: p_order.quantity %>
-                              <%= f.number_field :product_id, step: :any, value: p_order.product.id, class: 'form-control d-none' %>
+                              <%= f.number_field :product_id, value: p_order.product.id, class: 'form-control d-none' %>
                             </td>
                             <td>
                               <%#= f.label :demaged, "#{p_order.demaged}", class: 'text-muted'%>
