@@ -47,33 +47,51 @@ class PickAndPacksController < ApplicationController
     @pick_and_packs = @q.result(distinct: true).order(created_at: :desc).page(params[:page]).per(params[:limit])
     if params[:q].present?
       @orders = @pick_and_packs.last&.channel_orders
-      return unless params[:order_id].present?
+      return unless params[:tracking_no].present?
 
-      @tracking_order = @orders.joins(:trackings).find_by('trackings.tracking_no': params[:order_id])
+      @tracking_order = @orders.joins(:trackings).find_by('trackings.tracking_no': params[:tracking_no])
       local_products(@tracking_order) if @tracking_order.present?
-      return unless params[:barcode].present?
-
-      product_skus = @products_group.map { |d| d.first }
-      product = Product.where(sku: product_skus).joins(:barcodes).find_by('barcodes.title': params[:barcode])
-      if product.present?
-        product_scan = @tracking_order.product_scan
-        if product_scan[product.id.to_s].nil?
-          product_scan[product.id.to_s] = 1
-          @tracking_order.update(product_scan: product_scan)
-        else
-          ordered_quantity = @products_group[product.sku].pluck(:quantity)&.sum()
-          if ordered_quantity > product_scan[product.id.to_s].to_f
-            product_scan[product.id.to_s] = product_scan[product.id.to_s] + 1
-            @tracking_order.update(product_scan: product_scan)
-            flash[:notice] = 'Product has been scanned.'
-          else
-            flash[:alert] = 'All products scanned'
-          end
-        end
-      else
-        flash[:alert] = 'Product not found'
-      end
     end
+  end
+
+  def scan_barcode
+    pick_and_packs = OrderBatch.ransack(params[:q]).result(distinct: true)
+    orders = pick_and_packs.last&.channel_orders
+    tracking_order = orders.joins(:trackings).find_by('trackings.tracking_no': params[:tracking_no])
+    local_products(tracking_order)
+
+    product_skus = @products_group.map { |d| d.first }
+    product = Product.where(sku: product_skus).joins(:barcodes).find_by('barcodes.title': params[:barcode])
+    if product.present?
+      product_scan = tracking_order.product_scan
+      if product_scan.nil?
+        tracking_order.update(product_scan: {"#{product.id}": 1})
+        flash[:notice] = 'Product scaned successfully'
+      else
+        ordered_quantity = @products_group[product.sku].pluck(:quantity)&.sum()
+        if ordered_quantity > product_scan[product.id.to_s].to_i
+          product_scan[product.id.to_s] = product_scan[product.id.to_s].to_i + 1
+          tracking_order.update(product_scan: product_scan)
+          flash[:notice] = 'Product scaned successfully'
+        else
+          flash[:alert] = 'All products already scanned'
+        end
+      end
+    else
+      flash[:alert] = 'Product not found'
+    end
+    redirect_to start_packing_pick_and_packs_path(q: {batch_name_eq: params[:q][:batch_name_eq]}, tracking_no: params[:tracking_no])
+  end
+
+  def pick_all_items
+    pick_and_packs = OrderBatch.ransack(params[:q]).result(distinct: true)
+    orders = pick_and_packs.last&.channel_orders
+    tracking_order = orders.joins(:trackings).find_by('trackings.tracking_no': params[:tracking_no])
+    local_products(tracking_order)
+    product_scan = @products_group.map{|g| {"#{g.last.first[:product].id}"=> g.last.pluck(:quantity).sum.to_i}}
+    tracking_order.update(product_scan: product_scan, stage: 'completed', order_batch_id: nil)
+    flash[:notice] = 'Order completed successfully'
+    redirect_to start_packing_pick_and_packs_path(q: {batch_name_eq: params[:q][:batch_name_eq]})
   end
 
   def courier_edit

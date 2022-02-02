@@ -11,7 +11,7 @@ class OrderBatchesController < ApplicationController
     orders = ChannelOrder.where(id: params[:order_ids].split(','))
     if order_batch_params[:print_courier_labels] && check_rule(orders.first)
       courier_csv_export(orders)
-      # orders.update_all(stage: 'ready_to_print', ready_to_print: true, order_batch_id: @order_batch.id)
+      # orders.update_all(stage: 'ready_to_print', order_batch_id: @order_batch.id)
     else
       flash[:alert] = 'Only Manual Dispatch orders can be printed'
       redirect_to order_dispatches_path(order_filter: 'ready')
@@ -65,7 +65,7 @@ class OrderBatchesController < ApplicationController
         orders.each do |order|
           next unless order.assign_rule.mail_service_rule.export_mapping_id == rule
 
-          # order.update(ready_to_print: true)
+          # order.update(stage: 'ready_to_print')
           order_csv = channel_order_data.values.map { |attr| order.send(attr) }
           item_csv = channel_order_item_data.values.map { |attr| order.channel_order_items.first.send(attr) }
           address_csv = address_data.values.map { |attr| order.system_user&.addresses&.find_by(address_title: 'delivery')&.send(attr) }

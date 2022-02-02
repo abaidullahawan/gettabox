@@ -27,10 +27,10 @@
           </div>
           <div class="col-12">
           <% if @tracking_order&.present? %>
-            <%= form_tag(start_packing_pick_and_packs_path(), method: :get) do |f| %>
+            <%= form_tag(scan_barcode_pick_and_packs_path(), method: :get) do |f| %>
               <%= hidden_field_tag :"q[batch_name_eq]", params[:q].try(:[], :batch_name_eq) %>
+              <%= hidden_field_tag :tracking_no, params[:tracking_no] %>
               <div class="form-group row">
-                <%= hidden_field_tag :order_id, params[:order_id] %>
                 <%= text_field_tag :barcode,{}, autofocus: true, required: true, class: 'form-control col-3 mt-4 mx-auto', placeholder: 'Please scan barcode' %>
               </div>
               <%= submit_tag 'check', class: 'd-none'%>
@@ -40,7 +40,7 @@
             <%= form_tag(start_packing_pick_and_packs_path(), method: :get) do |f| %>
               <%= hidden_field_tag :"q[batch_name_eq]", params[:q].try(:[], :batch_name_eq) %>
               <div class="form-group row">
-                <%= text_field_tag :order_id,{}, autofocus: true, required: true, class: 'form-control col-3 mt-4 mx-auto', placeholder: 'Please scan or enter tracking' %>
+                <%= text_field_tag :tracking_no, {}, autofocus: true, required: true, class: 'form-control col-3 mt-4 mx-auto', placeholder: 'Please scan or enter tracking' %>
               </div>
               <%= submit_tag 'check', class: 'd-none'%>
             <% end %>

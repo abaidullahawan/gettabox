@@ -147,7 +147,7 @@ class TrackingsController < ApplicationController
     #   orders.each do |order|
     #     next unless order.assign_rule.mail_service_rule.export_mapping_id == rule
 
-    #     order.update(ready_to_print: true)
+    #     order.update(stage: 'ready_to_print')
     #     order_csv = channel_order_data.values.map { |attr| order.send(attr) }
     #     item_csv = channel_order_item_data.values.map { |attr| order.channel_order_items.first.send(attr) }
     #     address_csv = address_data.values.map { |attr| order.system_user&.addresses&.find_by(address_title: 'delivery')&.send(attr) }
@@ -167,7 +167,7 @@ class TrackingsController < ApplicationController
     batch = OrderBatch.find_or_initialize_by(batch_name: session[:batch_params]['batch_name'])
     batch.update(session[:batch_params])
     ChannelOrder.where(id: order_ids)
-                .update_all(stage: 'ready_to_print', ready_to_print: true, order_batch_id: batch.id)
+                .update_all(stage: 'ready_to_print', order_batch_id: batch.id)
   end
 
   def redirect_response

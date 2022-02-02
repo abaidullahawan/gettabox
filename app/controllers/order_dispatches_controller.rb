@@ -116,7 +116,7 @@ class OrderDispatchesController < ApplicationController
         orders.each do |order|
           next unless order.assign_rule.mail_service_rule.export_mapping_id == rule
 
-          order.update(ready_to_print: true)
+          order.update(stage: 'ready_to_print')
           order_csv = channel_order_data.values.map { |attr| order.send(attr) }
           item_csv = channel_order_item_data.values.map { |attr| order.channel_order_items.first.send(attr) }
           address_csv = address_data.values.map do |attr|
@@ -541,7 +541,7 @@ class OrderDispatchesController < ApplicationController
   end
 
   def ready_to_print_orders
-    @orders = @channel_orders.where(ready_to_print: true).order(created_at: :desc)
+    @orders = @channel_orders.where(stage: 'ready_to_print').order(created_at: :desc)
   end
 
   def customer_info
@@ -567,7 +567,7 @@ class OrderDispatchesController < ApplicationController
     @total_products_count = ChannelProduct.count
     @issue_products_count = ChannelProduct.where(item_sku: nil).count
     @today_orders = @channel_orders.where('Date(channel_orders.created_at) = ?', Date.today).count
-    @ready_to_pack_count = @channel_orders.where(ready_to_print: true).count
+    @ready_to_pack_count = @channel_orders.where(stage: 'ready_to_print').count
     @not_started_order_count = @channel_orders.where(stage: 'ready_to_dispatch')
                                               .where.not(channel_type: 'amazon', system_user_id: nil).count
     @issue_orders_count = @channel_orders.where(stage: 'issue').count
