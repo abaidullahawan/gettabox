@@ -177,6 +177,8 @@ Rails.application.routes.draw do
       post 'restore', to: 'pick_and_packs#restore'
       post 'permanent_delete', to: 'pick_and_packs#permanent_delete'
       post 'season_by_name', to: 'pick_and_packs#search_season_by_name'
+      get 'pick_all_items', to: 'pick_and_packs#pick_all_items'
+      get 'scan_barcode', to: 'pick_and_packs#scan_barcode'
     end
   end
 

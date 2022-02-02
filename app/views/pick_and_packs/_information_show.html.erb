@@ -3,9 +3,9 @@
     <div class="card mb-30">
       <div class="card-body">
         <div class="bg-transparent d-flex mb-4">
-          <button class="ml-auto btn btn-primary" data-toggle="modal" data-target='#address-edit-modal'>EDIT ADDRESS</button>
-          <button class="ml-1 btn btn-primary" data-toggle="modal" data-target='#courier-edit-modal'>CHANGE RULE</button>
-          <button class="ml-1 btn btn-primary">Pick all items</button>
+          <button class="ml-auto btn btn-primary" data-toggle="modal" data-target='#address-edit-modal'>Edit address</button>
+          <button class="ml-1 btn btn-primary" data-toggle="modal" data-target='#courier-edit-modal'>Change rule</button>
+          <%= link_to 'Pick all items', pick_all_items_pick_and_packs_path(tracking_no: params[:tracking_no], q: { batch_name_eq: params[:q][:batch_name_eq] }), class: 'ml-1 btn btn-primary' %>
         </div>
         <div class="row">
           <div class="table-responsive col-6 border-right">
