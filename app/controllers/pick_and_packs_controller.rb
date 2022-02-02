@@ -53,8 +53,26 @@ class PickAndPacksController < ApplicationController
       local_products(@tracking_order) if @tracking_order.present?
       return unless params[:barcode].present?
 
-      product = Product.joins(:barcodes).find_by('barcodes.title': params[:barcode])
-      flash[:alert] = 'Product not found' unless product.present?
+      product_skus = @products_group.map { |d| d.first }
+      product = Product.where(sku: product_skus).joins(:barcodes).find_by('barcodes.title': params[:barcode])
+      if product.present?
+        product_scan = @tracking_order.product_scan
+        if product_scan[product.id.to_s].nil?
+          product_scan[product.id.to_s] = 1
+          @tracking_order.update(product_scan: product_scan)
+        else
+          ordered_quantity = @products_group[product.sku].pluck(:quantity)&.sum()
+          if ordered_quantity > product_scan[product.id.to_s].to_f
+            product_scan[product.id.to_s] = product_scan[product.id.to_s] + 1
+            @tracking_order.update(product_scan: product_scan)
+            flash[:notice] = 'Product has been scanned.'
+          else
+            flash[:alert] = 'All products scanned'
+          end
+        end
+      else
+        flash[:alert] = 'Product not found'
+      end
     end
   end
 
@@ -227,8 +245,8 @@ class PickAndPacksController < ApplicationController
   end
 
   def local_products(order)
-    multiple_products = ChannelOrderItem.where(channel_order_id: order.id).joins(channel_product: [product_mapping: :product]).where("products.product_type": "multiple").uniq
-    single_products = ChannelOrderItem.where(channel_order_id: order.id).joins(channel_product: [product_mapping: :product]).where("products.product_type": "single").uniq
+    multiple_products = ChannelOrderItem.where(channel_order_id: order.id).joins(channel_product: [product_mapping: :product]).where("products.product_type": 'multiple').uniq
+    single_products = ChannelOrderItem.where(channel_order_id: order.id).joins(channel_product: [product_mapping: :product]).where("products.product_type": 'single').uniq
 
     products = []
     multiple_products.each do |multiple_product|
