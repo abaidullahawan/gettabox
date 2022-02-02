@@ -175,25 +175,35 @@ class ImportMappingsController < ApplicationController
       matchable = mapping.mapping_data.select { |_, v| v.present? && v != '' }
       @csv = CSV.generate(headers: true) do |csv|
         csv << attributes
-        spreadsheet1.each do |record1|
-          spreadsheet2.each do |record2|
+        non_matching1 = []
+        non_matching2 = []
+        matching1 = []
+        matching = []
+        if mapping.mapping_rule.present?
+          case_sensitivity(spreadsheet1, spreadsheet2, matchable, mapping, csv, attribute_data)
+        else
+          spreadsheet1.each do |record1|
             matchable.each do |matched|
-              if mapping.mapping_rule.present?
-                if symbol_case(record1, record2, matched, mapping) || space_case(record1, record2, matched, mapping) || upper_case(record1, record2, matched, mapping)
-                  row1 = record1.values_at(*attribute_data).compact
-                  row2 = record2.values_at(*attribute_data).compact
-                  row = row1 + row2
-                  csv << row
-                end
+              matching = spreadsheet2.select { |row| row if record1[matched[0].gsub('_', ' ')] == row[matched[1].gsub('_', ' ')]}
+              if matching.present?
+                row1 = record1.values_at(*attribute_data).compact
+                row2 = matching.first.values_at(*attribute_data).compact
+                row = row1 + row2
+                csv << row
+                matching1 << matching
               else
-                if record1[matched[0].gsub('_',' ')] == record2[matched[1].gsub('_', ' ')]
-                  row1 = record1.values_at(*attribute_data).compact
-                  row2 = record2.values_at(*attribute_data).compact
-                  row = row1 + row2
-                  csv << row
-                end
+                non_matching1 << [record1]
               end
             end
+          end
+          spreadsheet2.each do |record2|
+            matching1.each do |row|
+              non_matching2 << [record2] if record2 != row
+            end
+          end
+          unmatched = (non_matching2 + non_matching1 - matching1).uniq
+          unmatched.each do |un|
+            csv << un.first.values_at(*attribute_data)
           end
         end
       end
@@ -204,6 +214,40 @@ class ImportMappingsController < ApplicationController
     else
       flash[:alert] = 'Try again file not match'
       redirect_to import_mappings_path
+    end
+  end
+
+  def case_sensitivity(spreadsheet1, spreadsheet2, matchable, mapping, csv, attribute_data)
+    matching = []
+    non_matching1 = []
+    non_matching2 = []
+    spreadsheet1.each do |record1|
+      spreadsheet2.each do |record2|
+        matchable.each do |matched|
+          if symbol_case(record1, record2, matched, mapping) || space_case(record1, record2, matched, mapping) || upper_case(record1, record2, matched, mapping)
+            row1 = record1.values_at(*attribute_data).compact
+            row2 = record2.values_at(*attribute_data).compact
+            matching << [record1]
+            matching << [record2]
+            row = row1 + row2
+            csv << row
+          end
+        end
+      end
+    end
+    spreadsheet1.each do |record1|
+      matching.each do |row|
+        non_matching1 << [record1] if record1 != row
+      end
+    end
+    spreadsheet2.each do |record2|
+      matching.each do |row|
+        non_matching2 << [record2] if record2 != row
+      end
+    end
+    unmatched = (non_matching2 + non_matching1 - matching).uniq
+    unmatched.each do |un|
+      csv << un.first.values_at(*attribute_data)
     end
   end
 
