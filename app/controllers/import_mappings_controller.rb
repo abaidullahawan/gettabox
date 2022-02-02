@@ -185,26 +185,16 @@ class ImportMappingsController < ApplicationController
           spreadsheet1.each do |record1|
             matchable.each do |matched|
               matching = spreadsheet2.select { |row| row if record1[matched[0].gsub('_', ' ')] == row[matched[1].gsub('_', ' ')]}
-              if matching.present?
-                row1 = record1.values_at(*attribute_data).compact
-                row2 = matching.first.values_at(*attribute_data).compact
-                row = row1 + row2
-                csv << row
-                matching1 << matching
-              else
-                non_matching1 << [record1]
-              end
+              next non_matching1 << [record1] unless matching.present?
+
+              row1 = record1.values_at(*attribute_data).compact
+              row2 = matching.first.values_at(*attribute_data).compact
+              row = row1 + row2
+              csv << row
+              matching1 << matching
             end
           end
-          spreadsheet2.each do |record2|
-            matching1.each do |row|
-              non_matching2 << [record2] if record2 != row
-            end
-          end
-          unmatched = (non_matching2 + non_matching1 - matching1).uniq
-          unmatched.each do |un|
-            csv << un.first.values_at(*attribute_data)
-          end
+          unmatch_csv_data(spreadsheet2, matching1, non_matching2, non_matching1, csv, attribute_data)
         end
       end
       request.format = 'csv'
@@ -235,20 +225,8 @@ class ImportMappingsController < ApplicationController
         end
       end
     end
-    spreadsheet1.each do |record1|
-      matching.each do |row|
-        non_matching1 << [record1] if record1 != row
-      end
-    end
-    spreadsheet2.each do |record2|
-      matching.each do |row|
-        non_matching2 << [record2] if record2 != row
-      end
-    end
-    unmatched = (non_matching2 + non_matching1 - matching).uniq
-    unmatched.each do |un|
-      csv << un.first.values_at(*attribute_data)
-    end
+    unmatch_csv_data_spreadsheat1(spreadsheet1, matching, non_matching1)
+    unmatch_csv_data(spreadsheet2, matching, non_matching2, non_matching1, csv, attribute_data)
   end
 
   def symbol_case(record1, record2, matched, mapping)
@@ -341,5 +319,25 @@ class ImportMappingsController < ApplicationController
   # Only allow a list of trusted parameters through.
   def import_mapping_params
     params.require(:import_mapping).permit(:table_name, :mapping_data, :sub_type)
+  end
+
+  def unmatch_csv_data(spreadsheet2, matching1, non_matching2, non_matching1, csv, attribute_data)
+    spreadsheet2.each do |record2|
+      matching1.each do |row|
+        non_matching2 << [record2] if record2 != row
+      end
+    end
+    unmatched = (non_matching2 + non_matching1 - matching1).uniq
+    unmatched.each do |un|
+      csv << un.first.values_at(*attribute_data)
+    end
+  end
+
+  def unmatch_csv_data_spreadsheat1(spreadsheet1, matching, non_matching1)
+    spreadsheet1.each do |record1|
+      matching.each do |row|
+        non_matching1 << [record1] if record1 != row
+      end
+    end
   end
 end
