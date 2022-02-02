@@ -185,15 +185,13 @@ class ImportMappingsController < ApplicationController
           spreadsheet1.each do |record1|
             matchable.each do |matched|
               matching = spreadsheet2.select { |row| row if record1[matched[0].gsub('_', ' ')] == row[matched[1].gsub('_', ' ')]}
-              if matching.present?
-                row1 = record1.values_at(*attribute_data).compact
-                row2 = matching.first.values_at(*attribute_data).compact
-                row = row1 + row2
-                csv << row
-                matching1 << matching
-              else
-                non_matching1 << [record1]
-              end
+              next non_matching1 << [record1] unless matching.present?
+
+              row1 = record1.values_at(*attribute_data).compact
+              row2 = matching.first.values_at(*attribute_data).compact
+              row = row1 + row2
+              csv << row
+              matching1 << matching
             end
           end
           unmatch_csv_data(spreadsheet2, matching1, non_matching2, non_matching1, csv, attribute_data)
