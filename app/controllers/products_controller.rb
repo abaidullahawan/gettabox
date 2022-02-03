@@ -263,6 +263,6 @@ class ProductsController < ApplicationController
   end
 
   def update_log
-    @product.update(available_stock: @product.total_stock.to_f - @product.allocated_orders.to_f, change_log: "Manual Edit, #{params[:reason]}, #{@product.total_stock}, Manual Edit, #{params[:description]}")
+    @product.update(available_stock: @product.total_stock.to_f - @product.allocated_orders.to_f, change_log: "Manual Edit, #{params[:reason]}, #{@product.manual_edit_stock}, Manual Edit, #{params[:description]}")
   end
 end

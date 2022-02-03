@@ -6,6 +6,7 @@ class Product < ApplicationRecord
   has_one :extra_field_value, as: :fieldvalueable
   after_create :re_modulate_dimensions
   after_update :re_modulate_dimensions
+  before_update :update_manual_edit
 
   validates :sku, presence: true, uniqueness: { case_sensitive: false }
   validates :title, presence: true
@@ -58,5 +59,14 @@ class Product < ApplicationRecord
     max = [length, height].max
     min = [length, height].min
     update_columns(length: max, height: min)
+  end
+
+  def update_manual_edit
+    if changes[:total_stock].present?
+      difference = changes[:total_stock].last.to_i - changes[:total_stock].first.to_i
+      stock = manual_edit_stock.to_i
+      stock +=difference
+      update_columns(manual_edit_stock: stock)
+    end
   end
 end
