@@ -60,37 +60,33 @@ class PickAndPacksController < ApplicationController
     tracking_order = orders.joins(:trackings).find_by('trackings.tracking_no': params[:tracking_no])
     local_products(tracking_order)
 
-    product_skus = @products_group.map { |d| d.first }
+    product_skus = @products_group.map(&:first)
     product = Product.where(sku: product_skus).joins(:barcodes).find_by('barcodes.title': params[:barcode])
     if product.present?
       product_scan = tracking_order.product_scan
       if product_scan.nil?
-        tracking_order.update(product_scan: {"#{product.id}": 1})
+        tracking_order.update(product_scan: { "#{product.id}": 1 })
         flash[:notice] = 'Product scaned successfully'
-        redirect_to start_packing_pick_and_packs_path(q: {batch_name_eq: params[:q][:batch_name_eq]}, tracking_no: params[:tracking_no])
       else
         ordered_quantity = @products_group[product.sku].pluck(:quantity)&.sum()
         if ordered_quantity > product_scan[product.id.to_s].to_i
           product_scan[product.id.to_s] = product_scan[product.id.to_s].to_i + 1
           tracking_order.update(product_scan: product_scan)
-          total_product_scan = @products_group.map{|g| {"#{g.last.first[:product].id}"=> g.last.pluck(:quantity).sum.to_i}}.reduce(:merge)
-          if total_product_scan == product_scan
-            tracking_order.update(product_scan: total_product_scan, stage: 'completed', order_batch_id: nil)
-            flash[:notice] = 'Order completed successfully'
-            redirect_to start_packing_pick_and_packs_path(q: { batch_name_eq: params[:q][:batch_name_eq] })
-          else
-            flash[:notice] = 'Product scaned successfully'
-            redirect_to start_packing_pick_and_packs_path(q: {batch_name_eq: params[:q][:batch_name_eq]}, tracking_no: params[:tracking_no])
-          end
+          total_product_scan = @products_group.map { |g| { g.last.first[:product].id.to_s => g.last.pluck(:quantity).sum.to_i }}.reduce(:merge)
+          return product_scan_successfully unless total_product_scan == product_scan
+
+          tracking_order.update(product_scan: total_product_scan, stage: 'completed', order_batch_id: nil)
+          flash[:notice] = 'Order completed successfully'
         else
           flash[:alert] = 'All products already scanned'
-          redirect_to start_packing_pick_and_packs_path(q: {batch_name_eq: params[:q][:batch_name_eq]}, tracking_no: params[:tracking_no])
         end
       end
     else
       flash[:alert] = 'Product not found'
-      redirect_to start_packing_pick_and_packs_path(q: {batch_name_eq: params[:q][:batch_name_eq]}, tracking_no: params[:tracking_no])
     end
+    redirect_to start_packing_pick_and_packs_path(
+      q: { batch_name_eq: params[:q][:batch_name_eq] }, tracking_no: params[:tracking_no]
+    )
   end
 
   def pick_all_items
@@ -292,5 +288,13 @@ class PickAndPacksController < ApplicationController
     end
 
     @products_group = products.group_by { |d| d[:sku] }
+  end
+
+  def product_scan_successfully
+    flash[:notice] = 'Product scaned successfully.'
+    redirect_to start_packing_pick_and_packs_path(
+      q: { batch_name_eq: params[:q][:batch_name_eq] },
+      tracking_no: params[:tracking_no]
+    )
   end
 end
