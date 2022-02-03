@@ -251,7 +251,7 @@ class ProductMappingsController < ApplicationController
   end
 
   def calculate_available_stock(product)
-    pack_quantity = product.pack_quantity&.to_i
+    pack_quantity = product.pack_quantity.to_i
     quantity = pack_quantity.nil? || pack_quantity&.zero? ? 1 : pack_quantity
     stock = ((product.total_stock.to_i + product.fake_stock.to_i - 10) / 2) / quantity
     if stock > 2

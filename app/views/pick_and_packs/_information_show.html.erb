@@ -72,7 +72,7 @@
                     <% end %>
                   </td>
                   <td class="text-center" ><%= product.sku %></td>
-                  <td class="text-center" ><%= group.last.pluck(:quantity)&.sum() %></td>
+                  <td class="text-center" ><%= group.last.pluck(:quantity)&.sum().to_i %></td>
                   <td><%= @tracking_order.product_scan["#{product.id}"] unless @tracking_order.product_scan.nil? %></td>
                 </tr>
               <% end %>
