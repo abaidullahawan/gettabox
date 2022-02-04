@@ -87,7 +87,6 @@
                   <td scope="col"><%= product.channel_product&.product_mapping&.product&.available_stock.to_i %></td>
                   <td scope="col"><%= product.channel_product&.product_mapping&.product&.allocated_orders.to_i %></td>
                   <td scope="col">0</td>
-                  <% byebug %>
                   <td scope="col"><%= item_data_value = product.item_data['total'].present? ? product.item_data['total']['value'] : product.item_data['ItemPrice']['Amount'] %></td>
                   <td scope="col"><%= @order.total_amount %></td>
                   <td scope="col"><%= percent  =  Product.vats[product.channel_product&.product_mapping&.product&.vat].to_i%>%</td>
