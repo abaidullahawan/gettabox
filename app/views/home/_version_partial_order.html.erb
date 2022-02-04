@@ -17,8 +17,6 @@
                 <th scope="col">Action</th>
                 <th scope="col">System ID</th>
                 <th scope="col">Channel order Id</th>
-                <th scope="col">Channel Item ID</th>
-                <th scope="col" class="text-center">Result</th>
                 <th scope="col">User</th>
               </tr>
             </thead>
@@ -31,35 +29,6 @@
                   <td><%= @order.order_status %></td>
                   <td><strong><%= @order.id %></strong></td>
                   <td><%= @order.order_id %></td>
-                  <td>
-                    <% @order.channel_order_items.each do |item| %>
-                      <%= item.line_item_id %>,
-                    <% end %>
-                  </td>
-                  <td>
-                    <% @order.channel_order_items.each do |item| %>
-                      <table class="table table-striped">
-                        <thead>
-                          <tr>
-                            <th scope="col">Field Name</th>
-                            <th scope="col">From</th>
-                            <th scope="col">To</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <% item.channel_product.product_mapping.product.versions.each do |version| %>
-                            <% version.changeset.each do |change|%>
-                              <tr>
-                                <td><%= change[0] %></td>
-                                <td><%= change[1][0] == nil ? 'nill' : change[1][0] %></td>
-                                <td><%= change[1][1] %></td>
-                              </tr>
-                            <% end %>
-                          <% end %>
-                        </tbody>
-                      </table>
-                    <% end %>
-                  </td>
                   <td>
                     <%= version.whodunnit.present? ? User.find_by(id: version.whodunnit)&.personal_detail&.full_name : @order.channel_type %>
                   </td>

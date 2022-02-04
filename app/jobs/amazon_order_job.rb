@@ -52,6 +52,8 @@ class AmazonOrderJob < ApplicationJob
         channel_order.total_amount = amount
         channel_order.fulfillment_instruction = order['FulfillmentChannel']
         # customer_records(channel_order) if channel_order.save
+        return unless channel_order.save
+
         add_product(channel_order.order_id, access_token, channel_order.id)
         criteria = channel_order.channel_order_items.map { |h| [h[:sku], h[:ordered]] }
         assign_rules = AssignRule.where(criteria: criteria)&.last
