@@ -66,10 +66,8 @@ class ProductMappingsController < ApplicationController
       @product_mapping = ProductMapping.create!(channel_product_id: @channel_product.id,
                                                 product_id: @product_id)
       @product.update(change_log: "Product Mapped, #{@product.sku}, #{@channel_product.item_sku}, Mapped, #{@channel_product.item_id}")
-      ChannelProduct.find(params[:anything]['channel_product_id']).status_mapped! if @product_mapping.present?
-      ChannelOrder.joins(:channel_order_items).includes(:channel_order_items)
-                  .where('channel_order_items.channel_product_id': params[:anything]['channel_product_id'])
-                  .update_all(stage: 'ready_to_dispatch')
+      @channel_product.status_mapped! if @product_mapping.present?
+      update_order_stage(@channel_product)
       flash[:notice] = 'Product mapped successfully'
     else
       flash[:alert] = 'Please select product to map'
@@ -112,6 +110,7 @@ class ProductMappingsController < ApplicationController
     if @product&.save
       ProductMapping.create(channel_product_id: cd.id, product_id: @product.id)
       cd.status_mapped!
+      update_order_stage(cd)
       attach_photo(cd) unless @product.photo.attached? || cd.product_data['PictureDetails'].nil?
     else
       flash[:alert] = @product.errors.full_messages
@@ -366,5 +365,11 @@ class ProductMappingsController < ApplicationController
       access_token_expiry: DateTime.now + body['expires_in'].to_i.seconds
     )
     flash[:notice] = 'Refresh Token and Access Token created successfully'
+  end
+
+  def update_order_stage(channel_product)
+    ChannelOrder.joins(:channel_order_items).includes(:channel_order_items)
+                .where('channel_order_items.channel_product_id': channel_product.id)
+                .update_all(stage: 'ready_to_dispatch')
   end
 end
