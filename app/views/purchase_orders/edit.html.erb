@@ -30,7 +30,7 @@
               <h5 class='float-right pt-2'>Total Price</h5>
             </div>
             <div class='col-3'>
-              <%= pd.number_field :total_bill, class: 'form-control order_total', placeholder: 'Total' %>
+              <%= pd.number_field :total_bill, step: :any, min: 0, class: 'form-control order_total', placeholder: 'Total' %>
               <%= pd.number_field :supplier_id, value: @supplier, class: 'form-control d-none' %>
             </div>
           </div><br>
