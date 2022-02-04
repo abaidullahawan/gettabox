@@ -54,10 +54,15 @@ class ProductsController < ApplicationController
   end
 
   def update
+    if product_params[:total_stock].present?
+      difference = product_params[:total_stock].to_i - @product.total_stock.to_i
+      stock = @product.manual_edit_stock.to_i
+      stock += difference
+    end
     if params[:product][:extra_field_value_attributes].present?
       update_extra_fields
     elsif @product.update(product_params)
-      update_log if product_params[:total_stock].present?
+      update_log(stock) if product_params[:total_stock].present?
       flash[:notice] = 'Updated successfully.'
       redirect_to product_path(@product)
     else
@@ -262,7 +267,7 @@ class ProductsController < ApplicationController
     end
   end
 
-  def update_log
-    @product.update(available_stock: @product.total_stock.to_f - @product.allocated_orders.to_f, change_log: "Manual Edit, #{params[:reason]}, #{@product.manual_edit_stock}, Manual Edit, #{params[:description]}")
+  def update_log(stock)
+    @product.update(manual_edit_stock: stock, available_stock: @product.total_stock.to_f - @product.allocated_orders.to_f, change_log: "Manual Edit, #{params[:reason]}, #{stock}, Manual Edit, #{params[:description]}")
   end
 end
