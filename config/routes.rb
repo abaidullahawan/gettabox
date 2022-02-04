@@ -82,6 +82,7 @@ Rails.application.routes.draw do
       post 'products_by_title', to: 'products#search_products_by_title'
       post 'products_by_sku', to: 'products#search_products_by_sku'
       post 'check_category', to: 'products#search_category'
+      get 'export', to: 'products#export_logs'
     end
   end
 
