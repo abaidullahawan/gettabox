@@ -43,7 +43,7 @@ function purchaseOrderTotal() {
     var sum = 0;
     $('.order_item_total').each(function () {
       var value = (isNaN(this.value)) ? 0 : this.value;
-      sum += parseFloat(value);  // Or this.innerHTML, this.innerText
+      sum += parseFloat(value).toFixed(2) * 1 ;  // Or this.innerHTML, this.innerText
     });
     $('.order_total').val(sum)
   }
