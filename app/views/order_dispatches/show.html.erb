@@ -87,10 +87,11 @@
                   <td scope="col"><%= product.channel_product&.product_mapping&.product&.available_stock.to_i %></td>
                   <td scope="col"><%= product.channel_product&.product_mapping&.product&.allocated_orders.to_i %></td>
                   <td scope="col">0</td>
-                  <td scope="col"><%= product.item_data['total']['value'] %></td>
+                  <% byebug %>
+                  <td scope="col"><%= item_data_value = product.item_data['total'].present? ? product.item_data['total']['value'] : product.item_data['ItemPrice']['Amount'] %></td>
                   <td scope="col"><%= @order.total_amount %></td>
                   <td scope="col"><%= percent  =  Product.vats[product.channel_product&.product_mapping&.product&.vat].to_i%>%</td>
-                  <td scope="col"><% totalvalue = @order.total_amount.to_f+product&.item_data['total']['value'].to_f %> <%= (totalvalue/100)*percent+totalvalue %></td>
+                  <td scope="col"><% totalvalue = @order.total_amount.to_f+item_data_value.to_f %> <%= (totalvalue/100)*percent+totalvalue %></td>
                 </tr>
               <% end %>
             </tbody>
