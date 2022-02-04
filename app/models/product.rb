@@ -5,6 +5,7 @@ class Product < ApplicationRecord
   acts_as_paranoid
   has_one :extra_field_value, as: :fieldvalueable
   after_create :re_modulate_dimensions
+  after_create :available_stock_change
   after_update :re_modulate_dimensions
 
   validates :sku, presence: true, uniqueness: { case_sensitive: false }
@@ -58,5 +59,10 @@ class Product < ApplicationRecord
     max = [length, height].max
     min = [length, height].min
     update_columns(length: max, height: min)
+  end
+
+  def available_stock_change
+    byebug
+    update_columns(available_stock: total_stock)
   end
 end
