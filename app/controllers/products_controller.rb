@@ -70,6 +70,31 @@ class ProductsController < ApplicationController
     end
   end
 
+  def export_logs
+    product = Product.find_by(id: params[:product_id])
+    versions = product&.versions
+    headers = ['Date', 'Time', 'Action', 'System ID', 'Channel ID', 'Channel Item ID', 'Changed', 'Result', 'User']
+    csv_data = CSV.generate(headers: true) do |csv|
+      csv << headers
+      versions.each do |version|
+        if version.changeset.include? 'change_log'
+          csv << [
+            version.created_at&.strftime('%m/%d/%Y'),
+            version.created_at&.strftime('%I:%M %p'),
+            version.changeset["change_log"][1].split(',')[3],
+            version.changeset["change_log"][1].split(',')[1],
+            version.changeset["change_log"][1].split(',')[2],
+            version.changeset["change_log"][1].split(',')[4],
+            version.changeset["available_stock"][1].to_i - version.changeset["available_stock"][0].to_i,
+            version.changeset["available_stock"][1].to_i,
+            version.whodunnit.present? ? User.find_by(id: version.whodunnit)&.personal_detail&.full_name : 'Developer'
+          ]
+        end
+      end
+    end
+    send_data csv_data, filename: "product-logs-#{Date.today}.csv", disposition: :attachment
+  end
+
   def show
     @product.build_extra_field_value if @product.extra_field_value.nil?
   end
