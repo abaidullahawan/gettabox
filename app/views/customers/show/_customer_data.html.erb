@@ -113,7 +113,7 @@
               </tr>
             </thead>
             <tbody>
-              <% @customer.channel_orders.each do |order| %>
+              <% @orders.each do |order| %>
                 <tr>
                   <td style='cursor: pointer;' data-link="<%= order_dispatches_path(order_filter: 'unprocessed', q:{order_id_or_order_status_or_buyer_name_cont: order.order_id}) %>">
                     <%= order.created_at.strftime('%d-%m-%y') %>

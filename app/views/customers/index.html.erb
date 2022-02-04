@@ -125,11 +125,11 @@
                   </td>
                   <td class="text-center"><%= 'Retail' %></td>
                   <td class="text-center"><%= customer.sales_channel %></td>
-                  <td class="text-center"><%= customer.channel_orders.last&.order_id if customer.channel_orders.present?%></td>
+                  <td class="text-center"><%= unmap_customer_order(customer)&.order_id if unmap_customer_order(customer).present?%></td>
                   <td class="text-center"><%= customer.name %></td>
                   <td class="text-center"><%= customer.addresses.find_by(address_title: 'delivery')&.postcode %></td>
-                  <td class="text-center"><%= time_ago_in_words(customer.channel_orders.last&.created_at) + ' ago' if customer.channel_orders.present? %></td>
-                  <td class="text-center"><%= customer.channel_orders.last&.order_status if customer.channel_orders.present?%>
+                  <td class="text-center"><%= time_ago_in_words(unmap_customer_order(customer)&.created_at) + ' ago' if unmap_customer_order(customer).present? %></td>
+                  <td class="text-center"><%= unmap_customer_order(customer)&.order_status if unmap_customer_order(customer).present?%>
                   <td class="text-center"><%= customer.flagging_date&.strftime('%Y-%m-%d') %></td>
                   <td class="text-center">
                     <div class="dropdown dropleft">
