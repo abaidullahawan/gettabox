@@ -62,7 +62,6 @@ class Product < ApplicationRecord
   end
 
   def available_stock_change
-    byebug
     update_columns(available_stock: total_stock)
   end
 end
