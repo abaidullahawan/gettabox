@@ -21,7 +21,7 @@
     </div>
     <div class="col-4">
       <%= f.label  'Product Vat' %>
-      <%= f.select :product_vat, options_for_select(Product.vats.map { |key, value| [key.humanize, key] }, f.object.product_vat.to_i), {}, class: 'form-control' %>
+      <%= f.select :product_vat, options_for_select(Product.vats.map { |key, value| [key.humanize, key] }, f.object.product_vat.to_i), {include_blank: "Please Select VAT"}, class: 'form-control' %>
     </div>
   </div>
 </div>
