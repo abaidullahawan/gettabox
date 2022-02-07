@@ -39,12 +39,14 @@ class OrderDispatchesController < ApplicationController
           item.product.update(available_stock: item.product.available_stock - item.ordered.to_i,
                               change_log: "Manual Order, #{@order.id}, #{@order.order_id}, Manual Order, #{params[:channel_order][:buyer_name]}")
         end
+        @order.update(change_log: 'Order Paid')
+        @order.update(change_log: 'Replacement')
       end
       flash[:notice] = 'Order Created!'
     else
       flash[:alert] = @order.errors.full_messages
     end
-    redirect_to customer_path(@order.system_user)
+    redirect_to request.referrer
   end
 
   def all_order_data

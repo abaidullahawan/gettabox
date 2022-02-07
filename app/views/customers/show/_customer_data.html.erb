@@ -8,9 +8,6 @@
           <div class="card-header d-flex">
             <h5 class="card-title"> Show</h5>
             <div class='mr-1 ml-auto'>
-            <button type="button" class="btn btn-primary float-right" data-toggle="modal" data-target="#create-order-modal">
-              Replacement Order
-            </button>
           </div>
           </div>
           <div class='container border-bottom border-dark'>
@@ -259,30 +256,6 @@
         <div class="modal-footer">
           <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
           <%= f.submit 'Update', class: 'btn btn-info'%>
-        </div>
-      </div>
-    </div>
-  </div>
-<% end %>
-
-<%= form_for @order, url: order_dispatches_path(@order), method: :post do |f| %>
-  <div class="modal fade" id="create-order-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
-    <div class="modal-dialog  modal-dialog-scrollable modal-lg" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Create Order</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <%= f.hidden_field :buyer_name, value: @customer.name %>
-          <%= f.hidden_field :system_user_id, value: @customer.id %>
-          <%= render 'order_form', f: f %>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
-          <%= f.submit 'Create', class: 'btn btn-info'%>
         </div>
       </div>
     </div>
