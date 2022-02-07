@@ -29,6 +29,8 @@ class OrderDispatchesController < ApplicationController
 
   def show
     @order = ChannelOrder.find(params[:id])
+    @new_order = ChannelOrder.new
+    @new_order.channel_order_items.build
   end
 
   def create
@@ -39,7 +41,7 @@ class OrderDispatchesController < ApplicationController
           item.product.update(available_stock: item.product.available_stock - item.ordered.to_i,
                               change_log: "Manual Order, #{@order.id}, #{@order.order_id}, Manual Order, #{params[:channel_order][:buyer_name]}")
         end
-        @order.update(change_log: 'Order Paid')
+        @order.update(change_log: 'Order Paid', stage: 'ready_to_dispatch')
         @order.update(change_log: 'Replacement')
       end
       flash[:notice] = 'Order Created!'

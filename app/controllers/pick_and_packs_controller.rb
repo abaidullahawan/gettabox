@@ -75,7 +75,7 @@ class PickAndPacksController < ApplicationController
           total_product_scan = @products_group.map { |g| { g.last.first[:product].id.to_s => g.last.pluck(:quantity).sum.to_i }}.reduce(:merge)
           return product_scan_successfully unless total_product_scan == product_scan
 
-          tracking_order.update(product_scan: total_product_scan, stage: 'completed', order_batch_id: nil)
+          tracking_order.update(product_scan: total_product_scan, stage: 'completed', order_batch_id: nil, change_log: 'Order Completed')
           flash[:notice] = 'Order completed successfully'
         else
           flash[:alert] = 'All products already scanned'
@@ -95,7 +95,7 @@ class PickAndPacksController < ApplicationController
     tracking_order = orders.joins(:trackings).find_by('trackings.tracking_no': params[:tracking_no])
     local_products(tracking_order)
     product_scan = @products_group.map{|g| {"#{g.last.first[:product].id}"=> g.last.pluck(:quantity).sum.to_i}}.reduce(:merge)
-    tracking_order.update(product_scan: product_scan, stage: 'completed', order_batch_id: nil)
+    tracking_order.update(product_scan: product_scan, stage: 'completed', order_batch_id: nil, change_log: 'Order Completed')
     flash[:notice] = 'Order completed successfully'
     redirect_to start_packing_pick_and_packs_path(q: {batch_name_eq: params[:q][:batch_name_eq]})
   end
