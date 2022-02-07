@@ -5,10 +5,10 @@
 <div class="form-row">
   <div class="form-group col-md-12">
   <div class='links add_fields_div text-right'>
-    <%= link_to_add_association '+', f, :channel_order_items, partial: 'product_fields', class: 'nested_fields_btn btn btn-outline-primary rounded'%>
+    <%= link_to_add_association '+', f, :channel_order_items, partial: 'customers/product_fields', class: 'nested_fields_btn btn btn-outline-primary rounded'%>
   </div>
     <%= f.fields_for :channel_order_items do |item|%>
-      <%= render 'product_fields', f: item %>
+      <%= render 'customers/product_fields', f: item %>
     <% end %>
   </div>
 </div>
