@@ -33,6 +33,7 @@ class CustomersController < ApplicationController
     @order.channel_order_items.build
     @notes = @customer.notes
     @note = @customer.notes.build
+    @orders = @customer.channel_orders.where.not(stage: %w[unable_to_find_sku unmapped_product_sku])
   end
 
   def new
