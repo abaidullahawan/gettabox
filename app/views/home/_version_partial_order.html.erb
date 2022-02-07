@@ -11,7 +11,6 @@
           <table class="table table-hover text-vertical-middle mb-0">
             <thead class="bort-none borpt-0">
               <tr>
-                <th scope="col">Case</th>
                 <th scope="col">Date</th>
                 <th scope="col">Time</th>
                 <th scope="col">Action</th>
@@ -21,18 +20,19 @@
               </tr>
             </thead>
             <tbody>
-              <% @versions&.each_with_index do |version, index| %>
-                <tr>
-                  <td><%= index+1 %></td>
-                  <td><%= version.created_at&.strftime('%m/%d/%Y') %></td>
-                  <td><%= version.created_at&.strftime('%I:%M %p') %></td>
-                  <td><%= @order.order_status %></td>
-                  <td><strong><%= @order.id %></strong></td>
-                  <td><%= @order.order_id %></td>
-                  <td>
-                    <%= version.whodunnit.present? ? User.find_by(id: version.whodunnit)&.personal_detail&.full_name : @order.channel_type %>
-                  </td>
-                </tr>
+              <% @versions&.each_with_index do |version| %>
+                <% if version.changeset.include? 'change_log' %>
+                  <tr>
+                    <td><%= version.created_at&.strftime('%m/%d/%Y') %></td>
+                    <td><%= version.created_at&.strftime('%I:%M %p') %></td>
+                    <td><%= version.changeset["change_log"].last %></td>
+                    <td><strong><%= @order.id %></strong></td>
+                    <td><%= @order.order_id %></td>
+                    <td>
+                      <%= version.whodunnit.present? ? User.find_by(id: version.whodunnit)&.personal_detail&.full_name : @order.channel_type %>
+                    </td>
+                  </tr>
+                <% end %>
               <% end %>
             </tbody>
           </table>
