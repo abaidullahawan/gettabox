@@ -38,6 +38,9 @@ class CreateChannelOrderJob < ApplicationJob
                            end, channel_order_record)
         channel_order_record.update(stage: 'unpaid') if channel_order_record.payment_status.eql? 'UNPAID'
         channel_order_record.update(stage: 'issue') if channel_order_record.channel_order_items.map(&:sku).any? nil
+        if channel_order_record.payment_status == 'PAID'
+          channel_order_record.update(change_log: 'Order Paid')
+        end
       end
       response_order.status_executed!
       response_order.status_partial! if response_order.response['orders'].count < 200
