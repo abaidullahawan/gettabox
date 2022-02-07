@@ -54,7 +54,7 @@
                 </div>
                 <div class="col-3 form-group">
                   <%= f.label :supplier, "Supplier"%>
-                  <%= f.select :supplier, options_for_select(["supplier", "supplier"]), {}, class:"form-control" %>
+                  <%= f.select :supplier, SystemUser.suppliers.map{|s| [s.name, s.id]}, {}, class:"form-control" %>
                 </div>
               </div>
             </div>
@@ -84,71 +84,68 @@
   <div class="col-xl-12">
     <div class="card mb-30">
       <div class="card-body">
-        <%= form_with url: inventory_reports_path, method: :post do |f| %>
-          <div class="table-responsive">
-            <table class="table m-0 table-hover">
-              <tr>
-                <th class="text-center">#</th>
-                <th class="text-center">Product SKU</th>
-                <th class="text-center">Sales Units</th>
-                <th class="text-center">Sales £</th>
-                <th class="text-center">Weekly Sales</th>
-                <th class="text-center">Purchased Qty</th>
-                <th class="text-center">Stock</th>
-                <th class="text-center">Cover(days)</th>
-              </tr>
-              <% @inventory_products&.each&.with_index(1) do |product, index| %>
-                <% if product&.versions&.last&.changeset[:change_log].present?%>
-                  <tr class='<%= (product.minimum.to_i > product.total_stock.to_i ) ? 'table-danger' : '' %>'>
-                    <td class="text-center"><%= product.id %></td>
-                    <td class="text-center font-weight-bold"><%= product.sku %></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td class="text-center"><%= product.allocated_orders %></td>
-                    <td class="text-center"><%= product.total_stock %></td>
-                    <td></td>
-                  </tr>
-                  <tr style="background-color:#D3D3D3">
-                    <th class="col-1 text-center">Date</th>
-                    <th class="col-1 text-center">Time</th>
-                    <th class="col-1 text-center">Action</th>
-                    <th class="col-1 text-center">System ID</th>
-                    <th class="col-1 text-center">Channel ID</th>
-                    <th class="col-1 text-center">Channel Item ID</th>
-                    <th class="col-1 text-center">Changed</th>
-                    <th class="col-1 text-center">Result</th>
-                    <th class="col-1 text-center">User</th>
-                  </tr>
-                  <% product&.versions.each do |version| %>
-                    <% if version.changeset.include? 'change_log' %>
-                      <tr style="background-color:#D3D3D3">
-                        <td class="col-1 text-center"><%= version.created_at&.strftime('%m/%d/%Y') %></td>
-                        <td class="col-1 text-center"><%= version.created_at&.strftime('%I:%M %p') %></td>
-                        <td class="col-1 text-center">
-                          <%= version.changeset["change_log"][1].split(',')[3] %>
-                        </td>
-                        <td class="col-1 text-center">
-                          <%= version.changeset["change_log"][1].split(',')[1] %>
-                        </td>
-                        <td class="col-1 text-center">
-                          <%= version.changeset["change_log"][1].split(',')[2] %>
-                        </td>
-                        <td class="col-1 text-center">
-                          <%= version.changeset["change_log"][1].split(',')[4] %>
-                        </td>
-                        <td class="col-1 text-center"><%= version.changeset["available_stock"][1].to_i - version.changeset["available_stock"][0].to_i if version.changeset.include? 'available_stock'  %></td>
-                        <td class="col-1 text-center"><%= version.changeset["available_stock"][1].to_i if version.changeset.include? 'available_stock' %></td>
-                        <td class="col-1 text-center"><%= version.whodunnit.present? ? User.find_by(id: version.whodunnit)&.personal_detail&.full_name : 'Developer' %></td>
-                      </tr>
-                    <% end %>
+        <div class="table-responsive">
+          <table class="table m-0 table-hover">
+            <tr>
+              <th class="text-center">#</th>
+              <th class="text-center">Product SKU</th>
+              <th class="text-center">Sales Units</th>
+              <th class="text-center">Sales £</th>
+              <th class="text-center">Weekly Sales</th>
+              <th class="text-center">Purchased Qty</th>
+              <th class="text-center">Stock</th>
+              <th class="text-center">Cover(days)</th>
+            </tr>
+            <% @inventory_products&.each&.with_index(1) do |product, index| %>
+              <% if product&.versions&.last&.changeset.try(:[], 'change_log').present?%>
+                <tr>
+                  <td class="text-center"><%= product.id %></td>
+                  <td class="text-center font-weight-bold"><%= product.sku %></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td class="text-center"><%= product.allocated_orders %></td>
+                  <td class="text-center"><%= product.total_stock %></td>
+                  <td></td>
+                </tr>
+                <tr style="background-color:#D3D3D3">
+                  <th class="col-1 text-center">Date</th>
+                  <th class="col-1 text-center">Time</th>
+                  <th class="col-1 text-center">Action</th>
+                  <th class="col-1 text-center">System ID</th>
+                  <th class="col-1 text-center">Channel ID</th>
+                  <th class="col-1 text-center">Channel Item ID</th>
+                  <th class="col-1 text-center">Changed</th>
+                  <th class="col-1 text-center">Result</th>
+                  <th class="col-1 text-center">User</th>
+                </tr>
+                <% product&.versions.each do |version| %>
+                  <% if version.changeset.include? 'change_log' %>
+                    <tr style="background-color:#D3D3D3">
+                      <td class="col-1 text-center"><%= version.created_at&.strftime('%m/%d/%Y') %></td>
+                      <td class="col-1 text-center"><%= version.created_at&.strftime('%I:%M %p') %></td>
+                      <td class="col-1 text-center">
+                        <%= version.changeset["change_log"][1].split(',')[3] %>
+                      </td>
+                      <td class="col-1 text-center">
+                        <%= version.changeset["change_log"][1].split(',')[1] %>
+                      </td>
+                      <td class="col-1 text-center">
+                        <%= version.changeset["change_log"][1].split(',')[2] %>
+                      </td>
+                      <td class="col-1 text-center">
+                        <%= version.changeset["change_log"][1].split(',')[4] %>
+                      </td>
+                      <td class="col-1 text-center"><%= version.changeset["available_stock"][1].to_i - version.changeset["available_stock"][0].to_i if version.changeset.include? 'available_stock'  %></td>
+                      <td class="col-1 text-center"><%= version.changeset["available_stock"][1].to_i if version.changeset.include? 'available_stock' %></td>
+                      <td class="col-1 text-center"><%= version.whodunnit.present? ? User.find_by(id: version.whodunnit)&.personal_detail&.full_name : 'Developer' %></td>
+                    </tr>
                   <% end %>
                 <% end %>
               <% end %>
-              <%= f.submit '', class: 'bulk-method-delete-objects d-none'%>
-            </table>
-          </div>
-        <% end %>
+            <% end %>
+          </table>
+        </div>
       </div>
     </div>
   </div>
