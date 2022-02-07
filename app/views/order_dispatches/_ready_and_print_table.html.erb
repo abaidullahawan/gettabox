@@ -49,7 +49,8 @@
                       <% end %>
                     </div>
                     <div>
-                      <span class="truncate text-white" title="<%= product&.channel_product&.item_name %>"><%= product&.channel_product&.item_name%></span><br>
+                      <% title = product.channel_product.present? ? product.channel_product.item_name : product.product.title %>
+                      <span class="truncate text-white" title="<%= title %>"><%= title %></span><br>
                       <b class = "text-white"><%= product.line_item_id if product.line_item_id.present? %></b><br>
                       <div class="sku-width text-white"><%= product&.sku if product&.sku.present? %></div>
                     </div>
@@ -61,7 +62,7 @@
         </td>
         <td style="width: 250px;">
           <% order.channel_order_items.each do |product|%>
-            <% if product.channel_product&.product_mapping.present? %>
+            <% if product.channel_product&.product_mapping.present? || product.product.present?  %>
               <% if product.channel_product&.product_mapping&.product&.product_type_multiple? %>
                 <% product.channel_product&.product_mapping&.product&.multipack_products&.each do |record| %>
                 <% light_color = product.allocated ? 'bg-success-light' : 'bg-danger'%>
@@ -91,7 +92,7 @@
                 </div>
                 <% end %>
               <% else %>
-                <% local_product = product.channel_product&.product_mapping&.product %>
+                <% local_product = product.channel_product&.product_mapping&.product || product.product %>
                 <% light_color = product.allocated ? 'bg-success-light' : 'bg-danger'%>
                 <% dark_color = product.allocated ? 'bg-success-dark' : 'bg-danger-dark'%>
                 <div class="card-style2 <%=light_color%>">
