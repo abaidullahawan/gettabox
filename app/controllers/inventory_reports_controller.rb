@@ -4,6 +4,6 @@
 class InventoryReportsController < ApplicationController
 
   def index
-    @inventory_products = Product.all
+    @inventory_products = Product.last(20)
   end
 end
