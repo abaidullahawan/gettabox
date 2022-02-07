@@ -190,6 +190,7 @@ Rails.application.routes.draw do
   end
   resources :mails
   resources :notes
+  resources :inventory_reports
 
   post 'product_file', to: 'products#import_product_file'
   post 'channel_product_file', to: 'product_mappings#import_product_file'

@@ -1,0 +1,155 @@
+<div class="main-content-header mt-3">
+  <h1>Inventory Reports</h1>
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item">
+      <a href="<%= home_path %>">Dashboard</a>
+    </li>
+    <li class="breadcrumb-item active">
+      <span class="active">Inventory Reports</span>
+    </li>
+  </ol>
+</div>
+<!-- End Main Content Header -->
+<div class="alert alert-dismissible fade show text-white jquery-selected-alert d-none " style="position: fixed; width:93%; z-index:99999;" role="alert"></div>
+<div class="row">
+  <div class="col-xl-12">
+    <div class="card mb-30">
+      <div class="card-body">
+        <div class="card-header">
+          <h5 class="card-title"> Data</h5>
+        </div>
+        <%= form_with url: '\search', method: :get do |f| %>
+          <div class='row'>
+            <div class="col-md-8"><br>
+              <div class="row">
+                <div class="col-3 form-group">
+                  <%= f.label :date_from, "Date From"%>
+                  <%= f.date_field :date_from, title: "Select Date From", class:"form-control" %>
+                </div>
+                <div class="col-3 form-group">
+                  <%= f.label :date_to, "Date To"%>
+                  <%= f.date_field :date_to, title: "Select Date To", class:"form-control" %>
+                </div>
+                <div class="col-3 form-group">
+                  <%= f.label :date_range, "Date Range"%>
+                  <%= f.select :date_range, options_for_select(["Today", "Last Week", "This Week", "This Month", "Last Month", "This Year", "Last Year"]), {}, class:"form-control" %>
+                </div>
+                <div class="col-3 form-group">
+                  <%= f.label :order_by, "Order By"%>
+                  <%= f.select :order_by, options_for_select(["Cover", "Stock", "Sales", "Sales Unit"]), {}, class:"form-control" %>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-3 form-group">
+                  <%= f.label :asc_desc, "Asc/Desc"%>
+                  <%= f.select :asc_desc, options_for_select(["Ascending", "Descending"]), {}, class:"form-control" %>
+                </div>
+                <div class="col-3 form-group">
+                  <%= f.label :arrival, "Pending Arrival"%>
+                  <%= f.select :arrival, options_for_select(["Pending Arrival", "Exclude Pending Arrival"]), {}, class:"form-control" %>
+                </div>
+                <div class="col-3 form-group">
+                  <%= f.label :channels, "Channels"%>
+                  <%= f.select :channels, options_for_select(["Amazon", "Ebay"]), {}, class:"form-control" %>
+                </div>
+                <div class="col-3 form-group">
+                  <%= f.label :supplier, "Supplier"%>
+                  <%= f.select :supplier, options_for_select(["supplier", "supplier"]), {}, class:"form-control" %>
+                </div>
+              </div>
+            </div>
+            <div class='col-1 offset-2  '>
+              <label for="inputState">Per Page</label>
+              <%= select_tag :limit, options_for_select([10, 50, 100, 500, 1000], selected: params[:limit] || 10), id: 'change_per_page', class: 'form-control' %>
+              <button type="submit" id="per_page_submit" hidden="hidden"></button>
+            </div>
+          </div>
+        <% end %>
+        <div class="row float-right">
+          <button type="button" class="btn btn-primary mr-3">
+            View Reports
+          </button>
+          <button type="button" class="btn btn-primary mr-3">
+            Export Reports
+          </button>
+          <button type="button" class="btn btn-primary mr-3">
+            Download Reports
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-xl-12">
+    <div class="card mb-30">
+      <div class="card-body">
+        <%= form_with url: inventory_reports_path, method: :post do |f| %>
+          <div class="table-responsive">
+            <table class="table m-0 table-hover">
+              <tr>
+                <th class="text-center">#</th>
+                <th class="text-center">Product SKU</th>
+                <th class="text-center">Sales Units</th>
+                <th class="text-center">Sales £</th>
+                <th class="text-center">Weekly Sales</th>
+                <th class="text-center">Purchased Qty</th>
+                <th class="text-center">Stock</th>
+                <th class="text-center">Cover(days)</th>
+              </tr>
+              <% @inventory_products&.each&.with_index(1) do |product, index| %>
+                <% if product&.versions&.last&.changeset[:change_log].present?%>
+                  <tr class='<%= (product.minimum.to_i > product.total_stock.to_i ) ? 'table-danger' : '' %>'>
+                    <td class="text-center"><%= product.id %></td>
+                    <td class="text-center font-weight-bold"><%= product.sku %></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td class="text-center"><%= product.allocated_orders %></td>
+                    <td class="text-center"><%= product.total_stock %></td>
+                    <td></td>
+                  </tr>
+                  <tr style="background-color:#D3D3D3">
+                    <th class="col-1 text-center">Date</th>
+                    <th class="col-1 text-center">Time</th>
+                    <th class="col-1 text-center">Action</th>
+                    <th class="col-1 text-center">System ID</th>
+                    <th class="col-1 text-center">Channel ID</th>
+                    <th class="col-1 text-center">Channel Item ID</th>
+                    <th class="col-1 text-center">Changed</th>
+                    <th class="col-1 text-center">Result</th>
+                    <th class="col-1 text-center">User</th>
+                  </tr>
+                  <% product&.versions.each do |version| %>
+                    <% if version.changeset.include? 'change_log' %>
+                      <tr style="background-color:#D3D3D3">
+                        <td class="col-1 text-center"><%= version.created_at&.strftime('%m/%d/%Y') %></td>
+                        <td class="col-1 text-center"><%= version.created_at&.strftime('%I:%M %p') %></td>
+                        <td class="col-1 text-center">
+                          <%= version.changeset["change_log"][1].split(',')[3] %>
+                        </td>
+                        <td class="col-1 text-center">
+                          <%= version.changeset["change_log"][1].split(',')[1] %>
+                        </td>
+                        <td class="col-1 text-center">
+                          <%= version.changeset["change_log"][1].split(',')[2] %>
+                        </td>
+                        <td class="col-1 text-center">
+                          <%= version.changeset["change_log"][1].split(',')[4] %>
+                        </td>
+                        <td class="col-1 text-center"><%= version.changeset["available_stock"][1].to_i - version.changeset["available_stock"][0].to_i if version.changeset.include? 'available_stock'  %></td>
+                        <td class="col-1 text-center"><%= version.changeset["available_stock"][1].to_i if version.changeset.include? 'available_stock' %></td>
+                        <td class="col-1 text-center"><%= version.whodunnit.present? ? User.find_by(id: version.whodunnit)&.personal_detail&.full_name : 'Developer' %></td>
+                      </tr>
+                    <% end %>
+                  <% end %>
+                <% end %>
+              <% end %>
+              <%= f.submit '', class: 'bulk-method-delete-objects d-none'%>
+            </table>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

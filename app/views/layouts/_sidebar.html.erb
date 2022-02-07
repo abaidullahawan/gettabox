@@ -120,7 +120,16 @@
                             <i data-feather="chevron-right" class="icon"></i>
                             View Batches
                         </a>
+                    </div>
                 </div>
+
+                <a
+                    class="nav-link <%= active_klass(inventory_reports_path) %>"
+                    href="<%= inventory_reports_path %>"
+                >
+                    <i data-feather="list" class="icon"></i>
+                    <span class="title">Inventory Report</span>
+                </a>
 
                 <a
                     class="nav-link <%= active_klass(discussions_chat_path) %>"
