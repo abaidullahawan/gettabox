@@ -25,7 +25,7 @@ class CreateChannelProductJob < ApplicationJob
     product = ChannelProduct
               .create_with(channel_type: 'ebay', item_id: item['ItemID'].to_i,
                            product_data: item, item_sku: item['SKU'], item_quantity: item['Quantity'],
-                           item_image: picture, item_name: item['Title'])
+                           item_image: picture, item_name: item['Title'], item_price: item['BuyItNowPrice'])
               .find_or_create_by(channel_type: 'ebay', item_id: item['ItemID'].to_i)
     ChannelOrderItem.where(sku: product.item_sku)&.update_all(channel_product_id: product.id)
   end
@@ -35,7 +35,7 @@ class CreateChannelProductJob < ApplicationJob
       product = ChannelProduct
                 .create_with(channel_type: 'ebay', item_id: item['ItemID'].to_i, product_data: item,
                              item_sku: variation['SKU'], item_quantity: variation['Quantity'],
-                             item_image: picture, item_name: variation['VariationTitle'])
+                             item_image: picture, item_name: variation['VariationTitle'], item_price: item['BuyItNowPrice'])
                 .find_or_create_by(channel_type: 'ebay', item_id: item['ItemID'].to_i, item_sku: variation['SKU'])
       ChannelOrderItem.where(sku: product.item_sku)&.update_all(channel_product_id: product.id)
     end

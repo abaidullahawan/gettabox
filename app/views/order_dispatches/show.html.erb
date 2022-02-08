@@ -52,8 +52,8 @@
   </div>
 </div>
 <div>
-  <button type="button" class="btn btn-primary mb-4 float-right">Refund</button>
-  <button type="button" class="btn btn-primary float-right mr-2" data-toggle="modal" data-target="#create-order-modal">
+  <button type="button" class="btn btn-primary mb-4 float-right" data-toggle="modal" data-target="#refund-order-modal">Refund</button>
+  <button type="button" class="btn btn-primary float-right mr-2" data-toggle="modal" data-target="#create-replacement-order-modal">
     Replacement Order
   </button>
 </div>
@@ -65,23 +65,14 @@
           <table class="table table-hover text-vertical-middle mb-0">
             <thead class="bort-none borpt-0">
               <tr>
-                <th scope="col"></th>
-                <th scope="col"></th>
-                <th scope="col" colspan="3" class="text-center">Quantity</th>
-                <th scope="col" colspan="2" class="text-center">Item Price</th>
-                <th scope="col"></th>
-                <th scope="col">Row Total</th>
-              </tr>
-              <tr>
                 <th scope="col">Product</th>
                 <th scope="col">SKU</th>
-                <th scope="col">Avail</th>
-                <th scope="col">Alloc</th>
-                <th scope="col">Disp</th>
-                <th scope="col">Net.</th>
-                <th scope="col">Gross</th>
+                <th scope="col">Item price</th>
+                <th scope="col">Quantity</th>
+                <th scope="col">Sub Total</th>
                 <th scope="col">VAT</th>
-                <th scope="col">Gross</th>
+                <th scope="col">Total Vat</th>
+                <th scope="col">Total</th>
               </tr>
             </thead>
             <tbody>
@@ -89,13 +80,13 @@
                 <tr>
                   <td scope="col"><%= product.channel_product&.product_mapping&.product&.title %></td>
                   <td scope="col"><%= product.channel_product&.product_mapping&.product.sku %> </td>
-                  <td scope="col"><%= product.channel_product&.product_mapping&.product&.available_stock.to_i %></td>
-                  <td scope="col"><%= product.channel_product&.product_mapping&.product&.allocated_orders.to_i %></td>
-                  <td scope="col">0</td>
-                  <td scope="col"><%= item_data_value = product.item_data['total'].present? ? product.item_data['total']['value'] : product.item_data['ItemPrice']['Amount'] %></td>
+                  <td scope="col"><%= product.channel_product&.item_price %> </td>
+                  <td scope="col"><%= product.ordered %></td>
                   <td scope="col"><%= @order.total_amount %></td>
                   <td scope="col"><%= percent  =  Product.vats[product.channel_product&.product_mapping&.product&.vat].to_i%>%</td>
-                  <td scope="col"><% totalvalue = @order.total_amount.to_f+item_data_value.to_f %> <%= (totalvalue/100)*percent+totalvalue %></td>
+                  <% totalvalue = @order.total_amount.to_f %>
+                  <td scope="col"><%= (totalvalue/100)*percent %></td>
+                  <td scope="col"><%= (totalvalue/100)*percent+totalvalue %></td>
                 </tr>
               <% end %>
             </tbody>
@@ -106,11 +97,11 @@
 </div>
 
 <%= form_for @new_order, url: order_dispatches_path(@order), method: :post do |f| %>
-  <div class="modal fade" id="create-order-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
+  <div class="modal fade" id="create-replacement-order-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
     <div class="modal-dialog  modal-dialog-scrollable modal-lg" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">Create Order</h5>
+          <h5 class="modal-title">Create Replacement Order</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
@@ -118,7 +109,37 @@
         <div class="modal-body">
           <%= f.hidden_field :buyer_name, value: @order.system_user&.name %>
           <%= f.hidden_field :system_user_id, value: @order.system_user&.id %>
+          <%= f.hidden_field :order_id, value: @order.order_id %>
+          <%= f.hidden_field :id, value: @order.id %>
           <%= render 'customers/order_form', f: f %>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+          <%= f.submit 'Create', class: 'btn btn-info'%>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>
+
+<%= form_for @new_order, url: order_dispatch_path(), method: :put do |f| %>
+  <div class="modal fade" id="refund-order-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
+    <div class="modal-dialog  modal-dialog-scrollable modal-md" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Refund Order</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </div>
+        <div class="modal-body">
+          <%= f.label :refund_amount %>
+          <%= f.number_field :refund_amount, step: 0.01, min: 1, max: @order.total_amount, class: 'form-control refund-field' %>
+          <%= f.label :concession_amount %>
+          <%= f.number_field :concession_amount, class: 'form-control' %>
+          <%= f.hidden_field :id, value: @order.id %>
+          <p class="mt-4"><b>Order Value:</b> £<span class="total-order-value"><%= @order.total_amount%></span></p>
+          <p class="mt-1"><b>Refund:</b> £<span class="refund-value">0</span></p>
+          <p class="mt-1"><b>Total:</b> £<span class="total-value">0</span></p>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>

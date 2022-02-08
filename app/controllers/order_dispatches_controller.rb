@@ -41,8 +41,11 @@ class OrderDispatchesController < ApplicationController
           item.product.update(available_stock: item.product.available_stock - item.ordered.to_i,
                               change_log: "Manual Order, #{@order.id}, #{@order.order_id}, Manual Order, #{params[:channel_order][:buyer_name]}")
         end
-        @order.update(change_log: 'Order Paid', stage: 'ready_to_dispatch')
-        @order.update(change_log: 'Replacement')
+        @order.update(change_log: "Order Paid, #{@order.id}, #{@order.order_id}, #{current_user.personal_detail.full_name}", stage: 'ready_to_dispatch')
+        current_order = ChannelOrder.find_by(id: params[:channel_order]['id'])
+        replacement_id = "R#{current_order.order_replacements.count+1}-#{current_order.id}"
+        OrderReplacement.create(channel_order_id: current_order.id, order_replacement_id: @order.id, order_id: replacement_id)
+        current_order.update(change_log: "Replacement, #{replacement_id}, #{current_order.order_id}, #{current_user.personal_detail.full_name}")
       end
       flash[:notice] = 'Order Created!'
     else
@@ -60,6 +63,17 @@ class OrderDispatchesController < ApplicationController
       flash[:notice] = 'CALL sent to eBay API'
     end
     redirect_to order_dispatches_path(order_filter: 'unprocessed')
+  end
+
+  def update
+    order = ChannelOrder.find_by(id: params[:channel_order]['id'])
+    if order.update(order_dispatches_params)
+      order.update(change_log: "Refund, #{params[:channel_order]['refund_amount']}, #{order.order_id}, #{current_user.personal_detail.full_name}")
+      flash[:notice] = 'Order refunded successfuly'
+    else
+      flash[:alert] = @order.errors.full_messages
+    end
+    redirect_to request.referrer
   end
 
   def export_csv(orders)
@@ -386,7 +400,7 @@ class OrderDispatchesController < ApplicationController
 
   def order_dispatches_params
     params.require(:channel_order)
-          .permit(:buyer_name, :system_user_id, :channel_type, :order_status, :order_id,
+          .permit(:buyer_name, :system_user_id, :channel_type, :order_status, :order_id, :refund_amount, :concession_amount,
                   channel_order_items_attributes:
                   %i[sku ordered product_id _destroy])
   end

@@ -61,7 +61,7 @@ class AmazonOrderJob < ApplicationJob
         update_order_stage(channel_order.channel_order_items.map { |i| i.channel_product&.status }, channel_order)
         channel_order.update(stage: 'issue') if channel_order.channel_order_items.map(&:sku).any? nil
         if channel_order.stage == 'unable_to_find_sku' || channel_order.stage == 'unmapped_product_sku' || channel_order.stage == 'ready_to_dispatch'
-          channel_order.update(change_log: 'Order Paid')
+          channel_order.update(change_log: "Order Paid, #{channel_order.id}, #{channel_order.order_id}, amazon")
         end
       end
       amazon_order.update(status: 'executed')
