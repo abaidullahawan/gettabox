@@ -1,0 +1,39 @@
+<% if @product.product_type_single? %>
+  <div class="notifications-card mb-30">
+    <h5 class="noti-card-title">
+      Channel Listing
+      <%# <button type='button' data-toggle="modal" data-target='#product-supplier-modal' class='btn btn-outline-success btn-sm float-right' style='margin:-10px;'>Edit</button> %>
+    </h5>
+    <div class="list-group">
+      <div class="list-group-item">
+        <% if @product.product_mappings.present? %>
+          <div class='row'>
+            <div class='col-12'>
+              <div class='row'>
+                <h5 class="fs-14 mb-1 col-2">Channel</h5>
+                <h5 class="fs-14 mb-1 col-2">Listing SKU</h5>
+                <h5 class="fs-14 mb-1 col-2">Deduction Unit</h5>
+                <h5 class="fs-14 mb-1 col-2">Listing Id</h5>
+                <h5 class="fs-14 mb-1 col-2">Channel Quantity</h5>
+                <h5 class="fs-14 mb-1 col-2">Buffer Rule</h5>
+              </div><hr>
+              <% @product.product_mappings.each.with_index(1) do |mapping, index| %>
+                <% product = mapping.channel_product %>
+                <a href="<%= product_mappings_path(q: {item_sku_or_item_id_cont: product.item_id}) %>" class='link_tag' style="text-decoration: none;">
+                  <div class='row'>
+                    <p class="mb-1 fs-14 col-2"><%= product.channel_type %></p>
+                    <p class="mb-1 fs-14 col-2"><%= product.item_sku %></p>
+                    <p class="mb-1 fs-14 col-2"></p>
+                    <p class="mb-1 fs-14 col-2"><%= product.item_id %></p>
+                    <p class="mb-1 fs-14 col-2"><%= product.item_quantity.to_i %></p>
+                    <p class="mb-1 fs-14 col-2"><%=  %></p>
+                  </div><hr>
+                </a>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+<% end %>
