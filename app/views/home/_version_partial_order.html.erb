@@ -23,13 +23,14 @@
               <% @versions&.each_with_index do |version| %>
                 <% if version.changeset.include? 'change_log' %>
                   <tr>
+                    <% change_log = version.changeset["change_log"][1].split(',')%>
                     <td><%= version.created_at&.strftime('%m/%d/%Y') %></td>
                     <td><%= version.created_at&.strftime('%I:%M %p') %></td>
-                    <td><%= version.changeset["change_log"].last %></td>
-                    <td><strong><%= @order.id %></strong></td>
-                    <td><%= @order.order_id %></td>
+                    <td><%= change_log[0] %></td>
+                    <td><%= change_log[1] %></td>
+                    <td><%= change_log[2] %></td>
                     <td>
-                      <%= version.whodunnit.present? ? User.find_by(id: version.whodunnit)&.personal_detail&.full_name : @order.channel_type %>
+                      <%= change_log[3] %>
                     </td>
                   </tr>
                 <% end %>

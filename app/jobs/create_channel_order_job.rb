@@ -39,7 +39,7 @@ class CreateChannelOrderJob < ApplicationJob
         channel_order_record.update(stage: 'unpaid') if channel_order_record.payment_status.eql? 'UNPAID'
         channel_order_record.update(stage: 'issue') if channel_order_record.channel_order_items.map(&:sku).any? nil
         if channel_order_record.payment_status == 'PAID'
-          channel_order_record.update(change_log: 'Order Paid')
+          channel_order_record.update(change_log: "Order Paid, #{channel_order_record.id}, #{channel_order_record.order_id}, ebay")
         end
       end
       response_order.status_executed!
