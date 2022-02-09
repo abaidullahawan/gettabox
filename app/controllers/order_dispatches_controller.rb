@@ -31,6 +31,8 @@ class OrderDispatchesController < ApplicationController
     @order = ChannelOrder.find(params[:id])
     @new_order = ChannelOrder.new
     @new_order.channel_order_items.build
+    @notes = @order.notes
+    @note = @order.notes.build
   end
 
   def create
