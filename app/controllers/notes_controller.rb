@@ -17,7 +17,7 @@ class NotesController < ApplicationController
     note.user_id = current_user.id
     if note.save
       if params[:note]["reference_type"] == "ChannelOrder"
-        order.update(change_log: "#{note.message}, #{order.id}, #{order.order_id}, #{current_user.personal_detail.full_name}")
+        order.update(change_log: "#{note.message}, #{order.id}, #{order.order_id}, #{current_user.personal_detail&.full_name}")
       end
       flash[:notice] = 'Note added successfully'
     else

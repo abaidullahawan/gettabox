@@ -169,7 +169,7 @@ class TrackingsController < ApplicationController
     order_ids.each do |id|
       order = ChannelOrder.find_by(id: id)
       order.update(stage: 'ready_to_print', order_batch_id: batch.id, change_log: "Order Exported, #{order.id}, #{order.order_id}, #{current_user.personal_detail.full_name}")
-      order.update(change_log: "Channel Updated, #{order.id}, #{order.order_id}, #{current_user.personal_detail.full_name}") if batch.update_channels
+      order.update(change_log: "Channel Updated, #{order.id}, #{order.order_id}, #{current_user.personal_detail&.full_name}") if batch.update_channels
     end
   end
 
