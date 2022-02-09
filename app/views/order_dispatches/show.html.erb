@@ -41,7 +41,7 @@
             <tbody>
               <tr>
                 <td scope="col"><%= @order.id %></td>
-                <td scope="col"><%= @order.system_user&.name %></td>
+                <td scope="col" class="btn" data-link="<%= customer_path(@order.system_user.id) %>" ><%= @order.system_user&.name %></td>
                 <td scope="col"><%= @order.order_id %></td>
                 <td scope="col"><%= @order.created_at&.strftime('%m/%d/%Y') %></td>
                 <td scope="col"></td>
@@ -76,20 +76,27 @@
                 <th scope="col">VAT</th>
                 <th scope="col">Total Vat</th>
                 <th scope="col">Total</th>
+                <% if @order.refund_amount.present? %>
+                  <th scope="col">Refund</th>
+                <% end %>
               </tr>
             </thead>
             <tbody>
               <% @order.channel_order_items.each do |product| %>
                 <tr>
-                  <td scope="col"><%= product.channel_product&.product_mapping&.product&.title %></td>
-                  <td scope="col"><%= product.channel_product&.product_mapping&.product&.sku %> </td>
+                  <% local_product = product.channel_product.present? ? product.channel_product.product_mapping&.product : product.product %>
+                  <td scope="col"><%= local_product.title %></td>
+                  <td scope="col"><%= local_product.sku %> </td>
                   <td scope="col"><%= product.channel_product&.item_price %> </td>
                   <td scope="col"><%= product.ordered %></td>
                   <td scope="col"><%= @order.total_amount %></td>
-                  <td scope="col"><%= percent  =  Product.vats[product.channel_product&.product_mapping&.product&.vat].to_i%>%</td>
+                  <td scope="col"><%= percent  =  Product.vats[local_product.vat].to_i%>%</td>
                   <% totalvalue = @order.total_amount.to_f %>
                   <td scope="col"><%= (totalvalue/100)*percent %></td>
                   <td scope="col"><%= (totalvalue/100)*percent+totalvalue %></td>
+                  <% if @order.refund_amount.present? %>
+                    <td><%= @order.refund_amount.to_f+@order.concession_amount.to_f %></td>
+                  <% end %>
                 </tr>
               <% end %>
             </tbody>
@@ -170,12 +177,13 @@
           <%= f.hidden_field :buyer_name, value: @order.system_user&.name %>
           <%= f.hidden_field :system_user_id, value: @order.system_user&.id %>
           <%= f.hidden_field :order_id, value: @order.order_id %>
+          <%= f.hidden_field :total_amount, value: @order.total_amount %>
           <%= f.hidden_field :id, value: @order.id %>
           <%= render 'customers/order_form', f: f %>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
-          <%= f.submit 'Create', class: 'btn btn-info'%>
+          <%= f.submit 'Create Replacement', class: 'btn btn-info'%>
         </div>
       </div>
     </div>
@@ -190,6 +198,7 @@
           <h5 class="modal-title">Refund Order</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
+          </button>
         </div>
         <div class="modal-body">
           <%= f.label :refund_amount %>
@@ -203,7 +212,7 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
-          <%= f.submit 'Create', class: 'btn btn-info'%>
+          <%= f.submit 'Refund Order', class: 'btn btn-info'%>
         </div>
       </div>
     </div>

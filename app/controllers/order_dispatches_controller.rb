@@ -40,12 +40,13 @@ class OrderDispatchesController < ApplicationController
     if @order.save
       @order.channel_order_items.each do |item|
         if item.product.present?
+          item.update(sku: item.product.sku)
           item.product.update(available_stock: item.product.available_stock - item.ordered.to_i,
                               change_log: "Manual Order, #{@order.id}, #{@order.order_id}, Manual Order, #{params[:channel_order][:buyer_name]}")
         end
-        @order.update(change_log: "Order Paid, #{@order.id}, #{@order.order_id}, #{current_user.personal_detail.full_name}", stage: 'ready_to_dispatch')
         current_order = ChannelOrder.find_by(id: params[:channel_order]['id'])
-        replacement_id = "R#{current_order.order_replacements.count+1}-#{current_order.id}"
+        replacement_id = "R#{current_order.order_replacements.count + 1}-#{current_order.id}"
+        @order.update(replacement_id: replacement_id, change_log: "Order Paid, #{@order.id}, #{@order.order_id}, #{current_user.personal_detail.full_name}", stage: 'ready_to_dispatch')
         OrderReplacement.create(channel_order_id: current_order.id, order_replacement_id: @order.id, order_id: replacement_id)
         current_order.update(change_log: "Replacement, #{replacement_id}, #{current_order.order_id}, #{current_user.personal_detail.full_name}")
       end
@@ -70,7 +71,7 @@ class OrderDispatchesController < ApplicationController
   def update
     order = ChannelOrder.find_by(id: params[:channel_order]['id'])
     if order.update(order_dispatches_params)
-      order.update(change_log: "Refund, #{params[:channel_order]['refund_amount']}, #{order.order_id}, #{current_user.personal_detail.full_name}")
+      order.update(change_log: "Refund, #{params[:channel_order]['refund_amount'].to_f+params[:channel_order]['concession_amount'].to_f}, #{order.order_id}, #{current_user.personal_detail.full_name}")
       flash[:notice] = 'Order refunded successfuly'
     else
       flash[:alert] = @order.errors.full_messages
@@ -402,7 +403,9 @@ class OrderDispatchesController < ApplicationController
 
   def order_dispatches_params
     params.require(:channel_order)
-          .permit(:buyer_name, :system_user_id, :channel_type, :order_status, :order_id, :refund_amount, :concession_amount,
+          .permit(:buyer_name, :system_user_id, :channel_type, :order_status, :order_id, :refund_amount,
+                  :concession_amount, :total_amount, :payment_status, :buyer_name, :channel_order_id,
+                  :assign_rule_id, :system_user_id, :order_batch_id, :stage, :order_type,
                   channel_order_items_attributes:
                   %i[sku ordered product_id _destroy])
   end
