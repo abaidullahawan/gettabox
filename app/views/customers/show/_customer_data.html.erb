@@ -112,29 +112,33 @@
             <tbody>
               <% @orders.each do |order| %>
                 <tr>
-                  <td style='cursor: pointer;' data-link="<%= order_dispatches_path(order_filter: 'unprocessed', q:{order_id_or_order_status_or_buyer_name_cont: order.order_id}) %>">
+                  <td style='cursor: pointer;' data-link="<%= order_dispatch_path(order.id) %>" data-target= '_blank'>
                     <%= order.created_at.strftime('%d-%m-%y') %>
                   </td>
-                  <td style='cursor: pointer;' data-link="<%= order_dispatches_path(order_filter: 'unprocessed', q:{order_id_or_order_status_or_buyer_name_cont: order.order_id}) %>">
-                    <strong><%= order.id %></strong>
+                  <td style='cursor: pointer;' data-link="<%= order_dispatch_path(order.id) %>" data-target= '_blank'>
+                    <%if order.replacement_id.present? %>
+                      <strong><%= order.replacement_id %></strong>
+                    <% else %>
+                      <strong><%= order.id %></strong>
+                    <% end %>
                   </td>
-                  <td style='cursor: pointer;' data-link="<%= order_dispatches_path(order_filter: 'unprocessed', q:{order_id_or_order_status_or_buyer_name_cont: order.order_id}) %>">
+                  <td style='cursor: pointer;' data-link="<%= order_dispatch_path(order.id) %>" data-target= '_blank'>
                     <%= order.order_id %>
                   </td>
-                  <td style='cursor: pointer;' data-link="<%= order_dispatches_path(order_filter: 'unprocessed', q:{order_id_or_order_status_or_buyer_name_cont: order.order_id}) %>">
+                  <td style='cursor: pointer;' data-link="<%= order_dispatch_path(order.id) %>" data-target= '_blank'>
                     <% @total_ordered = 0 %>
                     <% order.channel_order_items.each do |item| %>
                       <% @total_ordered += item.ordered.to_i %>
                     <% end %>
                     <%= @total_ordered %>
                   </td>
-                  <td style='cursor: pointer;' data-link="<%= order_dispatches_path(order_filter: 'unprocessed', q:{order_id_or_order_status_or_buyer_name_cont: order.order_id}) %>">
+                  <td style='cursor: pointer;' data-link="<%= order_dispatch_path(order.id) %>" data-target= '_blank'>
                     <%= order.total_amount%>
                   </td>
-                  <td style='cursor: pointer;' data-link="<%= order_dispatches_path(order_filter: 'unprocessed', q:{order_id_or_order_status_or_buyer_name_cont: order.order_id}) %>">
+                  <td style='cursor: pointer;' data-link="<%= order_dispatch_path(order.id) %>" data-target= '_blank'>
                     <span class="badge badge_success py-1"><%= order.order_status %></span>
                   </td>
-                  <td style='cursor: pointer;' data-link="<%= order_dispatches_path(order_filter: 'unprocessed', q:{order_id_or_order_status_or_buyer_name_cont: order.order_id}) %>">
+                  <td style='cursor: pointer;' data-link="<%= order_dispatch_path(order.id) %>" data-target= '_blank'>
                     <%= order.channel_type %>
                   </td>
                   <td>
