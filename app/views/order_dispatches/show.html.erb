@@ -41,12 +41,12 @@
             <tbody>
               <tr>
                 <td scope="col"><%= @order.id %></td>
-                <td scope="col"><%= @order.system_user.name %></td>
+                <td scope="col"><%= @order.system_user&.name %></td>
                 <td scope="col"><%= @order.order_id %></td>
-                <td scope="col"><%= @order.created_at.strftime('%m/%d/%Y') %></td>
+                <td scope="col"><%= @order.created_at&.strftime('%m/%d/%Y') %></td>
                 <td scope="col"></td>
                 <td scope="col"><%= @order.order_status %></td>
-                <td scope="col"><%= @order.system_user.sales_channel %></td>
+                <td scope="col"><%= @order.system_user&.sales_channel %></td>
               </tr>
             </tbody>
           </table>
@@ -82,7 +82,7 @@
               <% @order.channel_order_items.each do |product| %>
                 <tr>
                   <td scope="col"><%= product.channel_product&.product_mapping&.product&.title %></td>
-                  <td scope="col"><%= product.channel_product&.product_mapping&.product.sku %> </td>
+                  <td scope="col"><%= product.channel_product&.product_mapping&.product&.sku %> </td>
                   <td scope="col"><%= product.channel_product&.item_price %> </td>
                   <td scope="col"><%= product.ordered %></td>
                   <td scope="col"><%= @order.total_amount %></td>
