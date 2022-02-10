@@ -16,65 +16,28 @@
     <div class="card mb-30">
       <div class="card-body">
         <div class="card-header">
-          <h5 class="card-title"> Data</h5>
+          <h5 class="card-title"> Reports</h5>
         </div>
-        <%= form_with url: '\search', method: :get do |f| %>
-          <div class='row'>
-            <div class="col-md-8"><br>
-              <div class="row">
-                <div class="col-3 form-group">
-                  <%= f.label :date_from, "Date From"%>
-                  <%= f.date_field :date_from, title: "Select Date From", class:"form-control" %>
-                </div>
-                <div class="col-3 form-group">
-                  <%= f.label :date_to, "Date To"%>
-                  <%= f.date_field :date_to, title: "Select Date To", class:"form-control" %>
-                </div>
-                <div class="col-3 form-group">
-                  <%= f.label :date_range, "Date Range"%>
-                  <%= f.select :date_range, options_for_select(["Today", "Last Week", "This Week", "This Month", "Last Month", "This Year", "Last Year"]), {}, class:"form-control" %>
-                </div>
-                <div class="col-3 form-group">
-                  <%= f.label :order_by, "Order By"%>
-                  <%= f.select :order_by, options_for_select(["Cover", "Stock", "Sales", "Sales Unit"]), {}, class:"form-control" %>
-                </div>
+        <div class='row'>
+          <div class="col-md-12"><br>
+            <div class="row">
+              <div class="col-3">
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#filterModal">
+                  Filter Reports
+                </button>
               </div>
-              <div class="row">
-                <div class="col-3 form-group">
-                  <%= f.label :asc_desc, "Asc/Desc"%>
-                  <%= f.select :asc_desc, options_for_select(["Ascending", "Descending"]), {}, class:"form-control" %>
-                </div>
-                <div class="col-3 form-group">
-                  <%= f.label :arrival, "Pending Arrival"%>
-                  <%= f.select :arrival, options_for_select(["Pending Arrival", "Exclude Pending Arrival"]), {}, class:"form-control" %>
-                </div>
-                <div class="col-3 form-group">
-                  <%= f.label :channels, "Channels"%>
-                  <%= f.select :channels, options_for_select(["Amazon", "Ebay"]), {}, class:"form-control" %>
-                </div>
-                <div class="col-3 form-group">
-                  <%= f.label :supplier, "Supplier"%>
-                  <%= f.select :supplier, SystemUser.suppliers.map{|s| [s.name, s.id]}, {}, class:"form-control" %>
-                </div>
+              <div class="col-3">
+                <button type="button" class="btn btn-primary">
+                    Export Reports
+                </button>
               </div>
-            </div>
-            <div class='col-1 offset-2  '>
-              <label for="inputState">Per Page</label>
-              <%= select_tag :limit, options_for_select([10, 50, 100, 500, 1000], selected: params[:limit] || 10), id: 'change_per_page', class: 'form-control' %>
-              <button type="submit" id="per_page_submit" hidden="hidden"></button>
+              <div class="col-3">
+                <button type="button" class="btn btn-primary">
+                  Download Reports
+                </button>
+              </div>
             </div>
           </div>
-        <% end %>
-        <div class="row float-right">
-          <button type="button" class="btn btn-primary mr-3">
-            View Reports
-          </button>
-          <button type="button" class="btn btn-primary mr-3">
-            Export Reports
-          </button>
-          <button type="button" class="btn btn-primary mr-3">
-            Download Reports
-          </button>
         </div>
       </div>
     </div>
@@ -145,8 +108,35 @@
               <% end %>
             <% end %>
           </table>
+          <% if  @inventory_products.present?%>
+            <div class="pagination justify-content-center mt-3">
+              <%= paginate @inventory_products,theme: "twitter-bootstrap-4",pagination_class: "pagination-sm",nav_class: "d-inline-b" %>
+            </div>
+          <% end %>
         </div>
       </div>
     </div>
   </div>
 </div>
+<%= form_for inventory_reports_path, method: :get do |f| %>
+  <!-- Modal -->
+  <div class="modal fade" id="filterModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="filterModal">Report Filters</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <%= render 'filter_report_form', f: f %>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <%= f.submit "View Reports", class:"btn btn-primary" %>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>
