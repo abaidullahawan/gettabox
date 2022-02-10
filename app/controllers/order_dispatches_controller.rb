@@ -35,6 +35,29 @@ class OrderDispatchesController < ApplicationController
     @note = @order.notes.build
   end
 
+  def export_logs
+    order = ChannelOrder.find_by(id: params[:order_id])
+    versions = order&.versions
+    headers = ['Date', 'Time', 'Action', 'System ID', 'Channel order Id', 'User']
+    csv_data = CSV.generate(headers: true) do |csv|
+      csv << headers
+      versions.each do |version|
+        if version.changeset.include? 'change_log'
+          change_log = version.changeset["change_log"][1].split(',')
+          csv << [
+            version.created_at&.strftime('%m/%d/%Y'),
+            version.created_at&.strftime('%I:%M %p'),
+            change_log[0],
+            change_log[1],
+            change_log[2],
+            change_log[3]
+          ]
+        end
+      end
+    end
+    send_data csv_data, filename: "order-logs-#{Date.today}.csv", disposition: :attachment
+  end
+
   def create
     @order = ChannelOrder.create(order_dispatches_params)
     if @order.save

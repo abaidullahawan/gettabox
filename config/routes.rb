@@ -150,6 +150,7 @@ Rails.application.routes.draw do
       get 'refresh', to: 'order_dispatches#refresh'
       get 'allocations', to: 'order_dispatches#allocations'
       post 'import_customer', to: 'order_dispatches#import_customer'
+      get 'export', to: 'order_dispatches#export_logs'
     end
   end
 
