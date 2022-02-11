@@ -26,6 +26,7 @@ class ImportMappingsController < ApplicationController
     @system_user_export_mappings = ExportMapping.where(table_name: 'SystemUser')
     @courier_csv_exports = ExportMapping.where(table_name: 'Courier csv export')
     @consolidations = ImportMapping.where(table_name: 'consolidation')
+    @multifile_mapping = MultifileMapping.all
   end
 
   # GET /import_mappings/1 or /import_mappings/1.json
@@ -219,111 +220,25 @@ class ImportMappingsController < ApplicationController
   end
 
   def multi_file_mapping
-    return unless params[:file_1].present? && params[:file_2].present?
-
     file1 = params[:file_1]
     file2 = params[:file_2]
     file_type1 = file1.present? ? file1.path.split('.').last.to_s.downcase : ''
     file_type2 = file2.present? ? file2.path.split('.').last.to_s.downcase : ''
     mapping = ImportMapping.find(params[:mapping_id])
-    attributes = mapping.data_to_print
-    attribute_data = []
-    attributes.each do |attribute|
-      attribute_data.push(attribute.gsub('_',' '))
-    end
     if file1.present? && file2.present? && (file_type1.include? 'csv') && (file_type2.include? 'csv')
       spreadsheet1 = open_spreadsheet(file1)
       spreadsheet2 = open_spreadsheet(file2)
-      matchable = mapping.mapping_data.select { |_, v| v.present? && v != '' }
-      @csv = CSV.generate(headers: true) do |csv|
-        csv << attributes
-        non_matching1 = []
-        non_matching2 = []
-        matching1 = []
-        matching = []
-        if mapping.mapping_rule.present?
-          case_sensitivity(spreadsheet1, spreadsheet2, matchable, mapping, csv, attribute_data)
-        else
-          spreadsheet1.each do |record1|
-            matchable.each do |matched|
-              matching = spreadsheet2.select { |row| row if record1[matched[0].gsub('_', ' ')] == row[matched[1].gsub('_', ' ')]}
-              next non_matching1 << [record1] unless matching.present?
-
-              row1 = record1.values_at(*attribute_data).compact
-              row2 = matching.first.values_at(*attribute_data).compact
-              row = row1 + row2
-              csv << row
-              matching1 << matching
-            end
-          end
-          unmatch_csv_data(spreadsheet2, matching1, non_matching2, non_matching1, csv, attribute_data)
-        end
-      end
-      request.format = 'csv'
-      respond_to do |format|
-        format.csv { send_data @csv, filename: "Mapped-File-#{Date.today}.csv" }
-      end
+      @multifile_mapping = MultifileMapping.create(file1: file1.original_filename, file2: file2.original_filename, download: 0)
+      MultiFileMappingJob.perform_now(spreadsheet1: spreadsheet1, spreadsheet2: spreadsheet2, mapping: mapping, multifile_mapping: @multifile_mapping)
     else
       flash[:alert] = 'Try again file not match'
       redirect_to import_mappings_path
     end
   end
 
-  def case_sensitivity(spreadsheet1, spreadsheet2, matchable, mapping, csv, attribute_data)
-    matching = []
-    non_matching1 = []
-    non_matching2 = []
-    spreadsheet1.each do |record1|
-      spreadsheet2.each do |record2|
-        matchable.each do |matched|
-          if symbol_case(record1, record2, matched, mapping) || space_case(record1, record2, matched, mapping) || upper_case(record1, record2, matched, mapping)
-            row1 = record1.values_at(*attribute_data).compact
-            row2 = record2.values_at(*attribute_data).compact
-            matching << [record1]
-            matching << [record2]
-            row = row1 + row2
-            csv << row
-          end
-        end
-      end
-    end
-    unmatch_csv_data_spreadsheat1(spreadsheet1, matching, non_matching1)
-    unmatch_csv_data(spreadsheet2, matching, non_matching2, non_matching1, csv, attribute_data)
-  end
-
-  def symbol_case(record1, record2, matched, mapping)
-    true unless mapping.mapping_rule.include?('symbol_case')
-
-    if record1[matched[0].gsub('_',' ')]&.gsub(/[^0-9A-Za-z]/, '')== record2[matched[1].gsub('_',' ')]&.gsub(/[^0-9A-Za-z]/, '')
-      true
-    else
-      false
-    end
-  end
-
-  def space_case(record1, record2, matched, mapping)
-    true unless mapping.mapping_rule.include?('space_case')
-
-    if record1[matched[0].gsub('_',' ')]&.delete(' ') == record2[matched[1].gsub('_', ' ')]&.delete(' ')
-      true
-    else
-      false
-    end
-  end
-
-  def upper_case(record1, record2, matched, mapping)
-    true unless mapping.mapping_rule.include?('upper_case')
-
-    if record1[matched[0].gsub('_', ' ')]&.casecmp(record2[matched[1].gsub('_', ' ')])&.zero?
-      true
-    else
-      false
-    end
-  end
-
   def open_spreadsheet(file)
     case File.extname(file.original_filename)
-    when '.csv' then CSV.parse(File.read(file.path).force_encoding('ISO-8859-1').encode('utf-8', replace: nil), headers: true)
+    when '.csv' then  File.read(file).force_encoding('ISO-8859-1').encode('utf-8', replace: nil)
     when '.xls' then  Roo::Excel.new(file.path, packed: nil, file_warning: :ignore)
     when '.xlsx' then Roo::Excelx.new(file.path, packed: nil, file_warning: :ignore)
     else raise "Unknown file type: #{file.original_filename}"
@@ -398,25 +313,5 @@ class ImportMappingsController < ApplicationController
   # Only allow a list of trusted parameters through.
   def import_mapping_params
     params.require(:import_mapping).permit(:table_name, :mapping_data, :sub_type)
-  end
-
-  def unmatch_csv_data(spreadsheet2, matching1, non_matching2, non_matching1, csv, attribute_data)
-    spreadsheet2.each do |record2|
-      matching1.each do |row|
-        non_matching2 << [record2] if record2 != row
-      end
-    end
-    unmatched = (non_matching2 + non_matching1 - matching1).uniq
-    unmatched.each do |un|
-      csv << un.first.values_at(*attribute_data)
-    end
-  end
-
-  def unmatch_csv_data_spreadsheat1(spreadsheet1, matching, non_matching1)
-    spreadsheet1.each do |record1|
-      matching.each do |row|
-        non_matching1 << [record1] if record1 != row
-      end
-    end
   end
 end
