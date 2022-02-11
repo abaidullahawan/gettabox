@@ -94,8 +94,11 @@
     <div class="col-xl-12">
       <div class="card mb-30">
         <div class="card-body">
-          <div class="card-header">
+          <div class="card-header d-flex">
             <h5 class="card-title">Edit Import Mappings</h5>
+            <div class="ml-auto">
+              <%= link_to 'Destroy', @import_mapping, method: :delete, data: { confirm: 'Are you sure?' }, class: "text-white btn btn-danger" %>
+            </div>
           </div>
           <%= form_for @import_mapping do |f| %>
             <div class="form-group">
