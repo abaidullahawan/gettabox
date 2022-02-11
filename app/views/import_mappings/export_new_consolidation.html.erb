@@ -1,0 +1,37 @@
+<div class="row">
+  <div class="col-xl-12">
+    <div class="card mb-30">
+      <div class="card-body">
+        <div class="card-header">
+            <h5 class="card-title">Create Consolidation Mapping</h5>
+        </div>
+        <%= form_with url: export_new_consolidation_path, remote: true do |f| %>
+          <div class="form-group">
+            <%= f.label :consolidation_field %>
+            <%= f.select :consolidation_field, params[:db_columns], {include_blank: 'Please Select'}, class: 'form-control'%>
+          </div>
+          <div class="form-group">
+            <%= f.label :description %>
+            <%= f.text_field :description, class: 'form-control'%>
+          </div>
+          <% arr = '' %>
+          <% params[:db_columns].each do |col_name| %>
+          <div class="d-flex">
+            <div class="form-group">
+              <%= label_tag :"#{col_name}" %>
+              <%= select_tag :"#{col_name}",  options_for_select(params[:header]), class: 'chosen-select form-control', prompt: "Select Header"%>
+            </div>
+            <% arr = arr + "_" + col_name %>
+          </div>
+          <% end %>
+          <%= f.hidden_field :header_data, value: params[:header] %>
+          <%= f.hidden_field :table_data, value: arr %>
+          <%= f.hidden_field :mapping_type, value: 'single' %>
+          <div class="form-group">
+            <%= f.button :Create, class: 'btn btn-outline-primary' %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

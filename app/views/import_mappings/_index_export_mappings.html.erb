@@ -9,52 +9,6 @@
     <li class="accordion-item">
       <a class="accordion-title" href="javascript:void(0)">
         <i class="lni-plus"></i>
-        Manual Dispatch CSV Template
-      </a>
-      <div class="accordion-content">
-        <h4 class='mb-3'>Mappings</h4>
-           <div class= "mb-4 border">
-            <%= form_for @courier_csv_export, url: courier_csv_export_path, method: :post do |f| %>
-              <%= f.file_field :file, style:"width:240px;", class: 'btn', accept: ".csv",required: true %>
-              <%= f.submit 'Create Mapping', class:"btn btn-primary"%>
-            <% end %>
-          </div>
-          <table class="table m-0 table-hover">
-            <tr>
-                <th>Table Name</th>
-                <th class="text-center">Description Name</th>
-                <th>Columns Added</th>
-                <th>Actions</th>
-            </tr>
-            <% @courier_csv_exports&.each do |import_mapping| %>
-              <tr>
-              <td><%= import_mapping.table_name %></td>
-              <td class="text-center font-weight-bold"><%= import_mapping.sub_type %></td>
-              <td>
-                <% import_mapping.mapping_data.each do |data| %>
-                  <%= data %><br>
-                <% end %>
-              </td>
-              <td>
-                <div class= 'd-flex'>
-                  <%= link_to 'Destroy', import_mapping, method: :delete, data: { confirm: 'Are you sure?' }, class: "text-white btn btn-danger" %>
-                  <%#= link_to 'Edit', edit_export_mapping_path(import_mapping), class: "text-white btn btn-info ml-3 mr-3" %>
-                </div>
-              </td>
-              </tr>
-            <% end %>
-          </table>
-      </div>
-    </li>
-  </ul>
-</div>
-<!-- Product Accordion End -->
-<!-- Product Accordion -->
-<div class="faq-accordion mb-30">
-  <ul class="accordion">
-    <li class="accordion-item">
-      <a class="accordion-title" href="javascript:void(0)">
-        <i class="lni-plus"></i>
         Product Export
       </a>
       <div class="accordion-content">

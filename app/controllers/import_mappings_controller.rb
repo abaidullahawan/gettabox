@@ -16,6 +16,7 @@ class ImportMappingsController < ApplicationController
     @channel_product_mappings = ImportMapping.where(table_name: 'Channel Product')
     @multi_mappings = ImportMapping.where(mapping_type: 'dual')
     @tracking_mappings = ImportMapping.where(table_name: 'Tracking')
+    @consolidation = ImportMapping.new
     # index export_mapping
     @product_export_mappings = ExportMapping.where(table_name: 'Product')
     @channel_order_export_mappings = ExportMapping.where(table_name: 'ChannelOrder')
@@ -24,6 +25,7 @@ class ImportMappingsController < ApplicationController
     @category_export_mappings = ExportMapping.where(table_name: 'Category')
     @system_user_export_mappings = ExportMapping.where(table_name: 'SystemUser')
     @courier_csv_exports = ExportMapping.where(table_name: 'Courier csv export')
+    @consolidations = ImportMapping.where(table_name: 'consolidation')
   end
 
   # GET /import_mappings/1 or /import_mappings/1.json
@@ -33,6 +35,20 @@ class ImportMappingsController < ApplicationController
   def new
     @import_mapping = ImportMapping.new
     @table_names = ['Product', 'Channel Order', 'Channel Product', 'Tracking']
+  end
+
+  def export_new_consolidation
+    @import_mapping = ImportMapping.new
+  end
+
+  def export_consolidation
+    params_data = params[:table_data].split('_')
+    data_arr = []
+    params_data.each do |data|
+      data_arr.push( data => params[data] )
+    end
+    ImportMapping.create(header_data: params_data, mapping_type: params[:consolidation_field], table_name: 'consolidation', data_to_print: data_arr, sub_type: params[:description])
+    redirect_to import_mappings_path
   end
 
   # GET /import_mappings/1/edit
@@ -153,6 +169,52 @@ class ImportMappingsController < ApplicationController
     respond_to do |format|
       format.html { redirect_to import_mappings_url, notice: 'Import mapping was successfully destroyed.' }
       format.json { head :no_content }
+    end
+  end
+
+  def consolidation_mapping
+    mapping = ImportMapping.find_by(id: params[:import_mapping][:consolidation_id])
+    file = params[:import_mapping][:file]
+    mapping_hash = []
+    if file.present? && file.path.split('.').last.to_s.downcase == 'csv'
+      to_be_ignored = ['id', 'user_type', 'selected','created_at', 'updated_at']
+      csv_text = File.read(file)
+      csv_headers = CSV.parse(csv_text, headers: true).headers
+      csv_data = CSV.parse(csv_text, headers: true)
+      csv_data.each do |data|
+        mapping_hash << data.to_h
+      end
+
+      headers = []
+      mapping[:data_to_print].each do |val|
+        if(val.values[0] != nil)
+          headers << val.keys[0]
+        end
+      end
+      csv_data_export = CSV.generate(headers: true) do |csv|
+        csv << headers
+        mapping_hash.group_by{|h| h[mapping[:mapping_type]]}.values.each do |value|
+          row = []
+          mapping[:data_to_print].each do |val|
+            case val.to_a[0][1]
+            when "Merge"
+              row << value.map{ |a| a[val.to_a[0][0]]}
+            when "Sum"
+              row << value.map{ |a| a[val.to_a[0][0]].to_i}.sum
+            when "Consolidation"
+              row << value.map{ |a| a[val.to_a[0][0]]}.uniq.first
+            end
+          end
+          csv << row
+        end
+      end
+      request.format = "csv"
+      respond_to do |format|
+        format.csv {send_data csv_data_export, filename: "Consolidation-#{Date.today}.csv"}
+      end
+    else
+      flash[:alert] = 'Please use csv file'
+      redirect_to import_mappings_path
     end
   end
 
@@ -306,6 +368,23 @@ class ImportMappingsController < ApplicationController
     else
       flash[:alert] = 'Please use csv file'
       redirect_to import_mappings_path
+    end
+  end
+
+  def consolidation_tool
+
+    file = params[:file]
+    file_type = file.present? ? file.path.split('.').last.to_s.downcase : ''
+    if file.present? && (file_type.include? 'csv') || (file_type.include? 'xlsx')
+      spreadsheet = open_spreadsheet(file)
+      @header = spreadsheet.headers
+      @data = []
+      @import_mapping = ImportMapping.new
+
+      @db_names = ['Consolidation', 'Merge', 'Sum']
+      redirect_to export_new_consolidation_path(db_columns: @header, header: @db_names, import_mapping: @import_mapping)
+    else
+      flash[:alert] = 'Try again file not match'
     end
   end
 
