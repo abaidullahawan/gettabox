@@ -18,9 +18,11 @@ class MultiFileMappingJob < ApplicationJob
     end
     matchable = mapping.mapping_data.select { |_, v| v.present? && v != '' }
 
-    file = Tempfile.new(['Mapped-File', '.csv'])
-    begin
-      @csv = CSV.generate(headers: true) do |csv|
+    # file = Tempfile.new(['Mapped-File', '.csv'])
+    # begin
+      # @csv = CSV.generate(headers: true) do |csv|
+      name = "multi-mapping--#{DateTime.now.strftime('%d-%m-%Y @ %H:%M:%S')}"
+      csv = CSV.open(Rails.root.join('tmp', 'csv_cache', "#{name}"), "wb") do |csv|
         csv << attributes
         non_matching1 = []
         non_matching2 = []
@@ -44,12 +46,19 @@ class MultiFileMappingJob < ApplicationJob
           unmatch_csv_data(spreadsheet2, matching1, non_matching2, non_matching1, csv, attribute_data)
         end
       end
-    ensure
-      file.close
-    end
-    @multifile_mapping.attach_csv.attach = file.path
-    @multifile_mapping.save
-    @multifile_mapping.update(download: true)
+    # ensure
+    #   file.close
+    # end
+    # byebug
+    # @multifile_mapping.update(
+    #   attach_csv: ActionDispatch::Http::UploadedFile.new(
+    #     tempfile: File.open("tmp/csv_cache/#{name}"),
+    #     filename: "#{name}",content_type: '.csv'
+    #   )
+    # )
+    # @multifile_mapping.attach_csv.attach = file.path
+    # @multifile_mapping.save
+    # @multifile_mapping.update(download: true)
 
   end
 

@@ -202,6 +202,7 @@ Rails.application.routes.draw do
   get 'export_new_consolidation', to: 'import_mappings#export_new_consolidation'
   post 'export_new_consolidation', to: 'import_mappings#export_consolidation'
   post 'consolidation_mapping', to: 'import_mappings#consolidation_mapping'
+  get 'download', to: 'import_mappings#download'
 
 
   # Order Dispatch Routes
