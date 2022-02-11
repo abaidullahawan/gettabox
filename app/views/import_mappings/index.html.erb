@@ -543,6 +543,108 @@
             </ul>
           </div>
           <!-- Multi File Accordion End -->
+          <!-- Product Accordion -->
+          <div class="faq-accordion mb-30">
+            <ul class="accordion">
+              <li class="accordion-item">
+                <a class="accordion-title" href="javascript:void(0)">
+                  <i class="lni-plus"></i>
+                  Manual Dispatch CSV Template
+                </a>
+                <div class="accordion-content">
+                  <h4 class='mb-3'>New Mapping</h4>
+                    <div class= "mb-4 border">
+                      <%= form_for @courier_csv_export, url: courier_csv_export_path, method: :post do |f| %>
+                        <%= f.file_field :file, style:"width:240px;", class: 'btn', accept: ".csv",required: true %>
+                        <%= f.submit 'Create Mapping', class:"btn btn-primary"%>
+                      <% end %>
+                    </div>
+                    <div class="faq-accordion mb-30">
+                      <ul class="accordion">
+                        <li class="accordion-item">
+                          <a class="accordion-title" href="javascript:void(0)">
+                            <i class="lni-plus"></i>
+                            Mappings
+                          </a>
+                          <div class="accordion-content">
+                            <table class="table m-0 table-hover">
+                              <tr>
+                                  <th>Table Name</th>
+                                  <th class="text-center">Description Name</th>
+                                  <th>Columns Added</th>
+                                  <th>Actions</th>
+                              </tr>
+                              <% @courier_csv_exports&.each do |import_mapping| %>
+                                <tr>
+                                <td><%= import_mapping.table_name %></td>
+                                <td class="text-center font-weight-bold"><%= import_mapping.sub_type %></td>
+                                <td>
+                                  <% import_mapping.mapping_data.each do |data| %>
+                                    <%= data %><br>
+                                  <% end %>
+                                </td>
+                                <td>
+                                  <div class= 'd-flex'>
+                                    <%= link_to 'Destroy', import_mapping, method: :delete, data: { confirm: 'Are you sure?' }, class: "text-white btn btn-danger" %>
+                                    <%#= link_to 'Edit', edit_export_mapping_path(import_mapping), class: "text-white btn btn-info ml-3 mr-3" %>
+                                  </div>
+                                </td>
+                                </tr>
+                              <% end %>
+                            </table>
+                          </div>
+                        </li>
+                      </ul>
+                    </div>
+                </div>
+              </li>
+            </ul>
+          </div>
+          <!-- Product Accordion End -->
+          <!-- Consolidation Tool -->
+          <div class="faq-accordion mb-30">
+            <ul class="accordion">
+              <li class="accordion-item">
+                <a class="accordion-title" href="javascript:void(0)">
+                  <i class="lni-plus"></i>
+                  Consolidation Tool
+                </a>
+                <div class="accordion-content">
+                    <div class= "mb-4">
+                      <a class="btn btn-primary float-right" data-toggle="modal" data-target='#consolidation-modal'>Create</a>
+                    </div>
+                    <table class="table m-0 table-hover">
+                      <% @consolidations&.each do |consolidation| %>
+                        <div class= 'd-flex mb-3'>
+                          <tr>
+                            <td class="text-center font-weight-bold mr-4 font-lg"><%= consolidation.sub_type %></td>
+                            <td>
+                              <%=  form_for @consolidation, url: consolidation_mapping_path, method: :post do |f| %>
+                                <%= f.file_field :file, style:"width:240px;", class: 'btn p-0', accept: ".csv",required: true %>
+                                <%= f.hidden_field :consolidation_id, value: consolidation.id%>
+                                <%= f.submit 'Generate Report', class:"btn btn-primary"%>
+                              <% end %>
+                            </td>
+                            <td>
+                              <div class="dropdown dropleft">
+                                <button class="btn btn-primary" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Actions">
+                                  <i data-feather='bell' class='icon wh-15 mt-minus-3'></i>
+                                </button>
+                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                  <%= link_to 'Edit', edit_import_mapping_path(consolidation), class: "dropdown-item" %>
+                                  <%#= link_to 'Destroy', consolidation, method: :delete, data: { confirm: 'Are you sure?' }, class: "btn btn-danger mx-3" %>
+                                </div>
+                              </div>
+                            </td>
+                          </tr>
+                        </div>
+                      <% end %>
+                    </table>
+                </div>
+              </li>
+            </ul>
+          </div>
+          <!-- Consolidation Tool End -->
         </div>
 
         <div class="tab-pane fade" id="demo_two_profile" role="tabpanel">
@@ -551,6 +653,30 @@
           <!-- Order Accordion End -->
         </div>
       </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal" id="consolidation-modal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Create Consolidation</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <%= form_with url: consolidation_tool_path, method: :post do |f| %>
+        <div class="modal-body">
+          <%= f.label 'Please select a file:' %>
+          <%= f.file_field :file, style:"width:240px;", class: 'btn', accept: ".csv",required: true %>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          <%= f.submit 'Create Mapping', class:"btn btn-primary"%>
+        </div>
+      <% end %>
     </div>
   </div>
 </div>

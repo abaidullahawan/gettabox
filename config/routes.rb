@@ -198,6 +198,11 @@ Rails.application.routes.draw do
   post 'multi_file', to: 'import_mappings#multi_file_mapping'
   post 'courier_csv_export', to: 'import_mappings#courier_csv_export'
   post 'tracking_file', to: 'import_mappings#tracking_file'
+  post 'consolidation_tool', to: 'import_mappings#consolidation_tool'
+  get 'export_new_consolidation', to: 'import_mappings#export_new_consolidation'
+  post 'export_new_consolidation', to: 'import_mappings#export_consolidation'
+  post 'consolidation_mapping', to: 'import_mappings#consolidation_mapping'
+
 
   # Order Dispatch Routes
   get 'all_order_data', to: 'order_dispatches#all_order_data'
