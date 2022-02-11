@@ -549,13 +549,15 @@
                         </thead>
                           <tbody>
                             <%@multifile_mapping.each do |multifile_maping|%>
-                            <tr>
-                            <td><%= multifile_maping.split('/').last.split('--').last %></td>
-                              <td class='border-right'>
-                                <%= link_to "Download", download_path(download: true, url: multifile_maping), download: '', class: "btn btn-primary text-white" %>
-                                <%= link_to "Delete", download_path(download: false, url: multifile_maping), class: "btn btn-danger text-white" %>
-                              </td>
-                            </tr>
+                            <% if multifile_maping.include? 'multi-mapping'%>
+                              <tr>
+                              <td><%= multifile_maping.split('/').last.split('--').last %></td>
+                                <td class='border-right'>
+                                  <%= link_to "Download", download_path(download: true, url: multifile_maping), download: '', class: "btn btn-primary text-white" %>
+                                  <%= link_to "Delete", download_path(download: false, url: multifile_maping), class: "btn btn-danger text-white" %>
+                                </td>
+                              </tr>
+                              <% end %>
                             <% end %>
                           </tbody>
                       </table>
