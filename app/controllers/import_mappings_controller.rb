@@ -26,7 +26,7 @@ class ImportMappingsController < ApplicationController
     @system_user_export_mappings = ExportMapping.where(table_name: 'SystemUser')
     @courier_csv_exports = ExportMapping.where(table_name: 'Courier csv export')
     @consolidations = ImportMapping.where(table_name: 'consolidation')
-    @multifile_mapping = MultifileMapping.all
+    @multifile_mapping = Dir[Rails.root.join('tmp', 'csv_cache/*').to_s]
   end
 
   # GET /import_mappings/1 or /import_mappings/1.json
@@ -229,11 +229,12 @@ class ImportMappingsController < ApplicationController
       spreadsheet1 = open_spreadsheet(file1)
       spreadsheet2 = open_spreadsheet(file2)
       @multifile_mapping = MultifileMapping.create(file1: file1.original_filename, file2: file2.original_filename, download: 0)
-      MultiFileMappingJob.perform_now(spreadsheet1: spreadsheet1, spreadsheet2: spreadsheet2, mapping: mapping, multifile_mapping: @multifile_mapping)
+      MultiFileMappingJob.perform_later(spreadsheet1: spreadsheet1, spreadsheet2: spreadsheet2, mapping: mapping, multifile_mapping: @multifile_mapping)
+      flash[:notice] = 'Job added successfully!'
     else
       flash[:alert] = 'Try again file not match'
-      redirect_to import_mappings_path
     end
+    redirect_to import_mappings_path
   end
 
   def open_spreadsheet(file)
@@ -300,6 +301,20 @@ class ImportMappingsController < ApplicationController
       redirect_to export_new_consolidation_path(db_columns: @header, header: @db_names, import_mapping: @import_mapping)
     else
       flash[:alert] = 'Try again file not match'
+    end
+  end
+
+  def download
+    if params[:download].eql? 'true'
+      send_file(
+        params[:url],
+        filename: "your_custom_file_name.csv",
+        type: "csv"
+      )
+    else
+      File.delete(params[:url])
+      flash[:notice] = 'File deleted!'
+      redirect_to import_mappings_path
     end
   end
 
