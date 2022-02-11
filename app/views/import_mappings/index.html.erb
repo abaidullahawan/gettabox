@@ -627,14 +627,8 @@
                             </td>
                             <td>
                               <div class="dropdown dropleft">
-                                <button class="btn btn-primary" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Actions">
-                                  <i data-feather='bell' class='icon wh-15 mt-minus-3'></i>
-                                </button>
-                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                  <%= link_to 'Edit', edit_import_mapping_path(consolidation), class: "dropdown-item" %>
-                                  <%#= link_to 'Destroy', consolidation, method: :delete, data: { confirm: 'Are you sure?' }, class: "btn btn-danger mx-3" %>
-                                </div>
-                              </div>
+                                <%= link_to 'Edit', edit_import_mapping_path(consolidation), class: "btn btn-primary text-white" %>
+                                <%#= link_to 'Destroy', consolidation, method: :delete, data: { confirm: 'Are you sure?' }, class: "btn btn-danger mx-3" %>
                             </td>
                           </tr>
                         </div>
