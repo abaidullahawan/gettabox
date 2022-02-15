@@ -293,7 +293,7 @@ class ProductsController < ApplicationController
   end
 
   def update_log(stock)
-    @product.update(manual_edit_stock: stock, available_stock: @product.total_stock.to_f - @product.allocated_orders.to_f, change_log: "Manual Edit, #{params[:reason]}, #{stock}, Manual Edit, #{params[:description]}")
+    @product.update(manual_edit_stock: stock, available_stock: (@product.total_stock.to_i - @product.unshipped.to_i), change_log: "Manual Edit, #{params[:reason]}, #{stock}, Manual Edit, #{params[:description]}")
     product = @product.product_mappings.last.channel_product if @product.product_mappings.present?
     return unless product.present? && (product.listing_id.eql? '144375988077')
 

@@ -10,6 +10,8 @@ class Product < ApplicationRecord
 
   validates :sku, presence: true, uniqueness: { case_sensitive: false }
   validates :title, presence: true
+  attribute :allocated_orders, :float, default: 0.0
+  validates :total_stock, numericality: { greater_than_or_equal_to: :allocated_orders }, if: -> { product_type_single? }
   has_many :barcodes, dependent: :destroy
   has_many :product_suppliers, dependent: :destroy
   has_many :system_users, through: :product_suppliers
@@ -58,7 +60,8 @@ class Product < ApplicationRecord
   def re_modulate_dimensions
     max = [length, height].max
     min = [length, height].min
-    update_columns(length: max, height: min)
+    update_columns(length: max, height: min, inventory_balance: (total_stock.to_i - unshipped.to_i),
+                   unallocated: unshipped.to_i - allocated_orders.to_i)
   end
 
   def available_stock_change
