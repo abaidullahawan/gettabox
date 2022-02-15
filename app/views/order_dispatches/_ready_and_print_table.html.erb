@@ -49,7 +49,7 @@
                       <% end %>
                     </div>
                     <div>
-                      <% title = product.channel_product.present? ? product.channel_product.item_name : product.product.title %>
+                      <% title = product&.channel_product.present? ? product&.channel_product&.item_name : product&.product&.title %>
                       <span class="truncate text-white" title="<%= title %>"><%= title %></span><br>
                       <b class = "text-white"><%= product.line_item_id if product.line_item_id.present? %></b><br>
                       <div class="sku-width text-white"><%= product&.sku if product&.sku.present? %></div>

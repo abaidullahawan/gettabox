@@ -41,7 +41,7 @@ class OrderDispatchesController < ApplicationController
       @order.channel_order_items.each do |item|
         if item.product.present?
           item.update(sku: item.product.sku)
-          item.product.update(available_stock: item.product.available_stock - item.ordered.to_i,
+          item.product.update(unshipped: item.product.unshipped.to_i - item.ordered&.to_i,
                               change_log: "Manual Order, #{@order.id}, #{@order.order_id}, Manual Order, #{params[:channel_order][:buyer_name]}")
         end
         current_order = ChannelOrder.find_by(id: params[:channel_order]['id'])
