@@ -62,10 +62,11 @@ class ProductMappingsController < ApplicationController
     @product = Product.find_by(id: @product_id)
     @channel_product = ChannelProduct.find_by(id: params[:anything]['channel_product_id'])
     @product_id = @product&.id if @product_id.to_i.to_s != @product_id
+    unshipped = ChannelOrderItem.where(channel_product_id: 2855).pluck(:ordered).sum
     if @product_id.present?
       @product_mapping = ProductMapping.create!(channel_product_id: @channel_product.id,
                                                 product_id: @product_id)
-      @product.update(change_log: "Product Mapped, #{@product.sku}, #{@channel_product.item_sku}, Mapped, #{@channel_product.item_id}")
+      @product.update(change_log: "Product Mapped, #{@product.sku}, #{@channel_product.item_sku}, Mapped, #{@channel_product.item_id}", unshipped: unshipped)
       @channel_product.status_mapped! if @product_mapping.present?
       update_order_stage(@channel_product)
       flash[:notice] = 'Product mapped successfully'
@@ -84,6 +85,8 @@ class ProductMappingsController < ApplicationController
     )
     @product.update(change_log: "Product UnMapped, #{@product.sku}, #{@channel_product.item_sku}, UnMapped, #{@channel_product.item_id}")
     if @product_mapping&.destroy
+      channel_order_ids = ChannelOrderItem.where(channel_product_id: 2855).pluck(:channel_order_id)
+      ChannelOrder.where(id: channel_order_ids).update_all(stage: 'unmapped_product_sku')
       @channel_product.status_unmapped!
       flash[:notice] = 'Product Un-mapped successfully'
     else
@@ -112,6 +115,7 @@ class ProductMappingsController < ApplicationController
       cd.status_mapped!
       update_order_stage(cd)
       attach_photo(cd) unless @product.photo.attached? || cd.product_data['PictureDetails'].nil?
+      @product.update(unshipped: (@product.unshipped.to_i + cd.channel_order_items.pluck(:ordered).sum))
     else
       flash[:alert] = @product.errors.full_messages
     end
