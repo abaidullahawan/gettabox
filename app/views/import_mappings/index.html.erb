@@ -8,6 +8,9 @@
         <li class="nav-item">
           <a class="nav-link" data-toggle="tab" href="#demo_two_profile">Export Mappings</a>
         </li>
+        <li class="nav-item">
+          <a class="nav-link" data-toggle="tab" href="#download-multifile">Downloads</a>
+        </li>
       </ul>
 
       <div class="tab-content">
@@ -538,31 +541,6 @@
                       </ul>
                     </div>
                   <% end %>
-                  <div class="col-lg-12">
-                    <div class="card text-center mb-30">
-                      <table class="table m-0 table-hover">
-                        <thead>
-                          <tr>
-                            <th class='border-right'>Created At</th>
-                            <th class='border-right'>Download</th>
-                          </tr>
-                        </thead>
-                          <tbody>
-                            <%@multifile_mapping.each do |multifile_maping|%>
-                            <% if multifile_maping.include? 'multi-mapping'%>
-                              <tr>
-                              <td><%= multifile_maping.split('/').last.split('--').last %></td>
-                                <td class='border-right'>
-                                  <%= link_to "Download", download_path(download: true, url: multifile_maping), download: '', class: "btn btn-primary text-white" %>
-                                  <%= link_to "Delete", download_path(download: false, url: multifile_maping), class: "btn btn-danger text-white" %>
-                                </td>
-                              </tr>
-                              <% end %>
-                            <% end %>
-                          </tbody>
-                      </table>
-                    </div>
-                  </div>
                 </div>
               </li>
             </ul>
@@ -670,6 +648,11 @@
           <!-- Order Accordion -->
           <%= render 'index_export_mappings' %>
           <!-- Order Accordion End -->
+        </div>
+        <div class="tab-pane fade" id="download-multifile" role="tabpanel">
+          <!-- Download MultiFile -->
+          <%= render 'download_multifile_mapping' %>
+          <!-- Download MultiFile End -->
         </div>
       </div>
     </div>
