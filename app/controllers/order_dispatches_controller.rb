@@ -298,7 +298,7 @@ class OrderDispatchesController < ApplicationController
   end
 
   def allocations
-    order_items = ChannelOrder.find_by(id: params[:item_id]).channel_order_items
+    order_items = ChannelOrder.find_by(id: params[:listing_id]).channel_order_items
     # return flash[:alert] = 'Item not Found' unless order_item.present?
     if params[:allocate].eql? 'true'
       order_items.each do |item|
@@ -318,7 +318,7 @@ class OrderDispatchesController < ApplicationController
 
     product.update(available_stock: product.available_stock.to_f + order_item.ordered,
                    allocated_orders: product.allocated_orders.to_f - order_item.ordered,
-                   change_log: "#{order_item.channel_order.channel_type} API, #{order_item.channel_order.id}, #{order_item.channel_order.order_id}, UnAllocate, #{order_item.channel_product.item_id}")
+                   change_log: "#{order_item.channel_order.channel_type} API, #{order_item.channel_order.id}, #{order_item.channel_order.order_id}, UnAllocate, #{order_item.channel_product.listing_id}")
     order_item.update(allocated: false)
     flash[:notice] = 'Unallocation successful!'
     # redirect_to request.referrer
@@ -331,7 +331,7 @@ class OrderDispatchesController < ApplicationController
     if product.available_stock.to_i >= order_item.ordered
       product.update(available_stock: product.available_stock.to_f - order_item.ordered,
                      allocated_orders: product.allocated_orders.to_f + order_item.ordered,
-                     change_log: "#{order_item.channel_order.channel_type} API, #{order_item.channel_order.id}, #{order_item.channel_order.order_id}, Allocated, #{order_item.channel_product.item_id}")
+                     change_log: "#{order_item.channel_order.channel_type} API, #{order_item.channel_order.id}, #{order_item.channel_order.order_id}, Allocated, #{order_item.channel_product.listing_id}")
       order_item.update(allocated: true)
     else
       flash[:alert] = 'Available stock is not enough!'
@@ -345,7 +345,7 @@ class OrderDispatchesController < ApplicationController
       ordered = (order_item.ordered * quantity)
       child.update(available_stock: child.available_stock.to_f + ordered,
                    allocated_orders: child.allocated_orders.to_f - ordered,
-                   change_log: "#{order_item.channel_order.channel_type} API, #{order_item.channel_order.id}, #{order_item.channel_order.order_id}, UnAllocate, #{order_item.channel_product.item_id}")
+                   change_log: "#{order_item.channel_order.channel_type} API, #{order_item.channel_order.id}, #{order_item.channel_order.order_id}, UnAllocate, #{order_item.channel_product.listing_id}")
     end
     order_item.update(allocated: false)
     flash[:notice] = 'Unallocation successful!'
@@ -363,7 +363,7 @@ class OrderDispatchesController < ApplicationController
         ordered = (order_item.ordered * quantity)
         child.update(available_stock: child.available_stock.to_f - ordered,
                      allocated_orders: child.allocated_orders.to_f + ordered,
-                     change_log: "#{order_item.channel_order.channel_type} API, #{order_item.channel_order.id}, #{order_item.channel_order.order_id}, Allocated, #{order_item.channel_product.item_id}")
+                     change_log: "#{order_item.channel_order.channel_type} API, #{order_item.channel_order.id}, #{order_item.channel_order.order_id}, Allocated, #{order_item.channel_product.listing_id}")
       end
       order_item.update(allocated: true)
     else
@@ -374,7 +374,7 @@ class OrderDispatchesController < ApplicationController
   def allocate(product, ordered)
     product.update(available_stock: product.available_stock.to_f - ordered,
                    allocated_orders: product.allocated_orders.to_f + ordered,
-                   change_log: "#{order_item.channel_order.channel_type} API, #{order_item.channel_order.id}, #{order_item.channel_order.order_id}, Allocated, #{order_item.channel_product.item_id}")
+                   change_log: "#{order_item.channel_order.channel_type} API, #{order_item.channel_order.id}, #{order_item.channel_order.order_id}, Allocated, #{order_item.channel_product.listing_id}")
   end
 
   def version

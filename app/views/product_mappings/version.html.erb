@@ -33,7 +33,7 @@
                     <td><strong><%= @channel_product.item_sku %></strong></td>
                     <td><%= @channel_product&.product_mapping&.product&.sku %></td>
                     <td>
-                        <%= @channel_product.item_id %>,
+                        <%= @channel_product.listing_id %>,
                     </td>
                     <td>
                       <% @channel_product.product_mapping.versions.each do |version| %>
@@ -58,7 +58,7 @@
                 <td><%= @channel_product.status %></td>
                 <td><strong><%= @channel_product.item_sku %></strong></td>
                 <td><%= @product&.sku %></td>
-                <td><%= @channel_product.item_id %>,</td>
+                <td><%= @channel_product.listing_id %>,</td>
                 <td><%= @product&.title %></td>
                 <td><%= @product.total_stock.to_i %></td>
                 <td><%= User.find_by(id: @versions.whodunnit)&.personal_detail&.full_name %></td>

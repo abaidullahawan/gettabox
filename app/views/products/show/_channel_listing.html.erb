@@ -19,12 +19,12 @@
               </div><hr>
               <% @product.product_mappings.each.with_index(1) do |mapping, index| %>
                 <% product = mapping.channel_product %>
-                <a href="<%= product_mappings_path(q: {item_sku_or_item_id_cont: product.item_id}) %>" class='link_tag' style="text-decoration: none;">
+                <a href="<%= product_mappings_path(q: {item_sku_or_item_id_cont: product.listing_id}) %>" class='link_tag' style="text-decoration: none;">
                   <div class='row'>
                     <p class="mb-1 fs-14 col-2"><%= product.channel_type %></p>
                     <p class="mb-1 fs-14 col-2"><%= product.item_sku %></p>
                     <p class="mb-1 fs-14 col-2"></p>
-                    <p class="mb-1 fs-14 col-2"><%= product.item_id %></p>
+                    <p class="mb-1 fs-14 col-2"><%= product.listing_id %></p>
                     <p class="mb-1 fs-14 col-2"><%= product.item_quantity.to_i %></p>
                     <p class="mb-1 fs-14 col-2"><%=  %></p>
                   </div><hr>

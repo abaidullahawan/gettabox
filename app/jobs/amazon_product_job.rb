@@ -43,8 +43,17 @@ class AmazonProductJob < ApplicationJob
     csv = CSV.parse(text, headers: true, col_sep: "\t", quote_char: nil)
     csv.each do |row|
       hash = filter_hash(row)
+      if hash['asin1'].present?
+        asin = hash['asin1']
+      elsif hash['asin2'].present?
+        asin = hash['asin2']
+      elsif hash['asin3'].present?
+        asin = hash['asin3']
+      else
+        asin = nil
+      end
       channel_product = ChannelProduct.find_or_initialize_by(
-        channel_type: 'amazon', item_id: hash['listing-id'], item_sku: hash['seller-sku']
+        channel_type: 'amazon', listing_id: asin, item_sku: hash['seller-sku']
       )
       channel_product.update(product_data: hash, created_at: hash['open-date'].to_time,
                              item_name: hash['item-name'], item_quantity: hash['quantity'].to_i, item_price: hash['price'] )
