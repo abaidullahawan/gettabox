@@ -40,7 +40,7 @@ class EbaySellingListJob < ApplicationJob
       end
       xml_data.ErrorLanguage 'en_US'
       xml_data.WarningLevel 'High'
-      xml_data.ItemID product.item_id.to_s # Item ID
+      xml_data.ItemID product.listing_id.to_s # Item ID
     end
     api_call(xml_data)
   end
