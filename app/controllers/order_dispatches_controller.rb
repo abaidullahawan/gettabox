@@ -286,6 +286,17 @@ class OrderDispatchesController < ApplicationController
     redirect_to order_dispatches_path(order_filter: params[:order_filter])
   end
 
+  def refresh_product
+    orders = ChannelOrder.where(stage: 'ready_to_dispatch')
+    orders.each do |order|
+      order.channel_order_items.each do |item|
+        product = item.channel_product&.product_mapping&.product || item.product
+        product.update(unshipped: (product.unshipped.to_i + item.ordered.to_i))
+      end
+    end
+    redirect_to order_dispatches_path(order_filter: params[:order_filter])
+  end
+
   def allocations
     order_items = ChannelOrder.find_by(id: params[:item_id]).channel_order_items
     # return flash[:alert] = 'Item not Found' unless order_item.present?
