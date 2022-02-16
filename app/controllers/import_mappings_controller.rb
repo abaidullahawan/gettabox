@@ -27,6 +27,7 @@ class ImportMappingsController < ApplicationController
     @courier_csv_exports = ExportMapping.where(table_name: 'Courier csv export')
     @consolidations = ImportMapping.where(table_name: 'consolidation')
     @multifile_mapping = Dir[Rails.root.join('tmp/*').to_s]
+    @multifile_mapping_filename = MultifileMapping.where(download: false)
   end
 
   # GET /import_mappings/1 or /import_mappings/1.json
