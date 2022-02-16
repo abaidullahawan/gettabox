@@ -67,7 +67,7 @@ class ProductMappingsController < ApplicationController
       @product_mapping = ProductMapping.create!(channel_product_id: @channel_product.id,
                                                 product_id: @product_id)
 
-      @product.update(change_log: "Product Mapped, #{@product.sku}, #{@channel_product.item_sku}, Mapped, #{@channel_product.listing_id}", unshipped: unshipped)
+      @product.update(change_log: "Product Mapped, #{@product.sku}, #{@channel_product.item_sku}, Mapped, #{@channel_product.listing_id}", unshipped: unshipped, available_stock: (@product.total_stock.to_i - @product.unshipped.to_i))
       @channel_product.status_mapped! if @product_mapping.present?
       update_order_stage(@channel_product)
       flash[:notice] = 'Product mapped successfully'
@@ -84,7 +84,8 @@ class ProductMappingsController < ApplicationController
       channel_product_id: @channel_product.id,
       product_id: @product_id
     )
-    @product.update(change_log: "Product UnMapped, #{@product.sku}, #{@channel_product.item_sku}, UnMapped, #{@channel_product.listing_id}")
+    ordered_value = @channel_product.channel_order_items.pluck(:ordered).sum
+    @product.update(change_log: "Product UnMapped, #{@product.sku}, #{@channel_product.item_sku}, UnMapped, #{@channel_product.listing_id}", unshipped: (@product.unshipped.to_i - ordered_value.to_i), available_stock: (@product.total_stock.to_i - @product.unshipped.to_i))
     if @product_mapping&.destroy
       channel_order_ids = ChannelOrderItem.where(channel_product_id: 2855).pluck(:channel_order_id)
       ChannelOrder.where(id: channel_order_ids).update_all(stage: 'unmapped_product_sku')
@@ -116,7 +117,7 @@ class ProductMappingsController < ApplicationController
       cd.status_mapped!
       update_order_stage(cd)
       attach_photo(cd) unless @product.photo.attached? || cd.product_data['PictureDetails'].nil?
-      @product.update(unshipped: (@product.unshipped.to_i + cd.channel_order_items.pluck(:ordered).sum))
+      @product.update(unshipped: (@product.unshipped.to_i + cd.channel_order_items.pluck(:ordered).sum), available_stock: (@product.total_stock.to_i - @product.unshipped.to_i))
     else
       flash[:alert] = @product.errors.full_messages
     end
