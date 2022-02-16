@@ -162,8 +162,7 @@
     </div>
   </div>
 <% end %>
-
-<%= form_for @new_order, url: order_dispatches_path(@order), method: :post do |f| %>
+<%= form_for @new_order, url: order_dispatches_path(@order.id), method: :post do |f| %>
   <div class="modal fade" id="create-replacement-order-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
     <div class="modal-dialog  modal-dialog-scrollable modal-lg" role="document">
       <div class="modal-content">
