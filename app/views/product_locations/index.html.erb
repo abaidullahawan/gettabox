@@ -1,0 +1,83 @@
+<!-- Main Content Header -->
+<div class="main-content-header">
+  <h1>Product Location Mapping</h1>
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item">
+      <a href="<%= home_path %>">Dashboard</a>
+    </li>
+    <li class="breadcrumb-item">
+      <a href="<%= settings_path %>">Settings</a>
+    </li>
+    <li class="breadcrumb-item active">
+      <span class="active">Product Location Mapping</span>
+    </li>
+  </ol>
+</div>
+<!-- End Main Content Header -->
+<!-- Product Location Mapping -->
+<div class="alert alert-dismissible fade show text-white jquery-selected-alert d-none " style="position: fixed; width:93%; z-index:99999;" role="alert"></div>
+<div class="row">
+  <div class="col-xl-12">
+    <div class="card mb-30">
+      <div class="card-body">
+        <div class="card-header">
+          Product Location Mapping
+          <div class= "mb-4">
+            <a class="btn-sm btn-primary float-right" data-toggle="modal" data-target='#product-location-mapping-modal'>Create</a>
+          </div>
+        </div>
+        <div class="row">
+          <div class='col-lg-12'>
+            <table class="table m-0 text-center table-bordered table-hover">
+             <tr>
+                <th class='text-center'>Location</th>
+                <th class='text-center'>Products</th>
+                <th class='text-center'>Actions</th>
+              </tr>
+              <% @product_location.each do |location|%>
+                <tr>
+                  <td><%= location.location %></td>
+                  <td>
+                  <% if location.products.present? %>
+                    <% location.products.each do |location_product|%>
+                      <%= location_product.title %>
+                      <br/>
+                    <% end %>
+                  <% end %>
+                  </td>
+                  <td>
+                    <%= link_to "Edit", edit_product_location_path(location), method: :get, class: "btn btn-primary text-white"%>
+                  </td>
+                </tr>
+              <% end %>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Product Location Mapping  End -->
+<div class="modal" id="product-location-mapping-modal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Create Product Location Mapping</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <%= form_with url: product_locations_path	, method: :post do |f| %>
+        <div class="modal-body">
+          <%= f.label 'Please select a file:' %>
+          <%= f.file_field :file, style:"width:240px;", class: 'btn', accept: ".csv",required: true %>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          <%= f.submit 'Create Mapping', class:"btn btn-primary"%>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
