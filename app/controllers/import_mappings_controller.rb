@@ -27,7 +27,7 @@ class ImportMappingsController < ApplicationController
     @courier_csv_exports = ExportMapping.where(table_name: 'Courier csv export')
     @consolidations = ImportMapping.where(table_name: 'consolidation')
     @multifile_mapping = Dir[Rails.root.join('tmp/*').to_s]
-    @multifile_mapping_filename = MultifileMapping.where(download: false)
+    @multifile_mapping_filename = MultifileMapping.all
   end
 
   # GET /import_mappings/1 or /import_mappings/1.json
@@ -314,6 +314,7 @@ class ImportMappingsController < ApplicationController
       )
     else
       File.delete(params[:url])
+      MultifileMapping.find_by(id: params[:id]).destroy
       flash[:notice] = 'File deleted!'
       redirect_to import_mappings_path
     end
