@@ -297,7 +297,7 @@ class ProductsController < ApplicationController
     product = @product.product_mappings.last.channel_product if @product.product_mappings.present?
     return amazon_update(product, @product) if product.channel_type.eql? 'amazon'
 
-    return unless product.present? && (product.item_id.eql? '144375988077')
+    return unless product.present? && (product.listing_id.eql? '144375988077')
 
     UpdateEbayProduct.perform_later(product: product, quantity: @product.total_stock)
   end
