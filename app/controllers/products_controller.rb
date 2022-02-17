@@ -295,8 +295,15 @@ class ProductsController < ApplicationController
   def update_log(stock)
     @product.update(manual_edit_stock: stock, available_stock: (@product.total_stock.to_i - @product.unshipped.to_i), change_log: "Manual Edit, #{params[:reason]}, #{stock}, Manual Edit, #{params[:description]}")
     product = @product.product_mappings.last.channel_product if @product.product_mappings.present?
-    return unless product.present? && (product.listing_id.eql? '144375988077')
+    return amazon_update(product, @product) if product.channel_type.eql? 'amazon'
 
-    UpdateEbayProduct.perform_later(product: product, quantity: @product.available_stock)
+    return unless product.present? && (product.item_id.eql? '144375988077')
+
+    UpdateEbayProduct.perform_later(product: product, quantity: @product.total_stock)
+  end
+
+  def amazon_update(channel_product, product)
+    return unless channel_product.item_sku.eql? 'KSB1008'
+    UpdateAmazonProduct.perform_now(product: channel_product.item_sku, quantity: product.total_stock)
   end
 end
