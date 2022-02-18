@@ -3,8 +3,6 @@
     <table class="table m-0 table-hover">
       <thead>
         <tr>
-          <th class='border-right'>File 1</th>
-          <th class='border-right'>File 2</th>
           <th class='border-right'>Created At</th>
           <th class='border-right'>Download</th>
         </tr>
@@ -12,7 +10,7 @@
         <tbody>
           <% @multifile_mapping_filename.each do |multifile_maping_name| %>
             <tr>
-              <% created_at_filename = created_at_filename.strftime('%d-%m-%Y @ %H:%M:%S') %>
+              <% created_at_filename = multifile_maping_name.created_at.strftime('%d-%m-%Y @ %H:%M:%S') %>
               <% multifile_maping = @multifile_mapping.select { |a| (a.include? 'multi-mapping') && (a.split('/').last.split('--').last == created_at_filename)}%>
               <td><%= multifile_maping_name.file1 %></td>
               <td><%= multifile_maping_name.file2 %></td>
