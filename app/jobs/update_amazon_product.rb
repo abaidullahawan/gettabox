@@ -55,7 +55,7 @@ class UpdateAmazonProduct < ApplicationJob
               "value" => [
                 {
                   "fulfillment_channel_code" => "DEFAULT",
-                  "quantity" => quantity
+                  "quantity" => quantity.to_i
                 }
               ]
             }
