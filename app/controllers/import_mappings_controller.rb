@@ -229,7 +229,7 @@ class ImportMappingsController < ApplicationController
       spreadsheet1 = open_spreadsheet(file1)
       spreadsheet2 = open_spreadsheet(file2)
       @multifile_mapping = MultifileMapping.create(file1: file1.original_filename, file2: file2.original_filename, download: 0)
-      MultiFileMappingJob.perform_later(spreadsheet1: spreadsheet1, spreadsheet2: spreadsheet2, mapping: mapping, multifile_mapping: @multifile_mapping)
+      MultiFileMappingJob.perform_later(spreadsheet1: spreadsheet1, spreadsheet2: spreadsheet2, mapping: mapping, multifile_mapping_id: @multifile_mapping.id)
       flash[:notice] = 'Job added successfully!'
     else
       flash[:alert] = 'Try again file not match'
