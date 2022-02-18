@@ -4,6 +4,7 @@
 class Product < ApplicationRecord
   acts_as_paranoid
   has_one :extra_field_value, as: :fieldvalueable
+  belongs_to :product_location
   after_create :re_modulate_dimensions
   after_create :available_stock_change
   after_update :re_modulate_dimensions

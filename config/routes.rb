@@ -23,6 +23,7 @@ Rails.application.routes.draw do
     end
   end
   resources :import_mappings
+  resources :product_locations
   resources :export_mappings do
     collection do
       get 'export_new', to: 'export_mappings#export_new'
