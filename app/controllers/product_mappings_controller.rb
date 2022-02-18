@@ -44,7 +44,7 @@ class ProductMappingsController < ApplicationController
                   @channel_product&.product_mapping&.versions
                 else
                   Version.find_by(item_type: 'ChannelProduct',
-                                  item_id: @channel_product.id.to_s, object: nil)
+                                  listing_id: @channel_product.id.to_s, object: nil)
                 end
     @product = Product.find(@versions.object_changes) if @mappings.blank? && @versions.present?
   end
@@ -62,10 +62,12 @@ class ProductMappingsController < ApplicationController
     @product = Product.find_by(id: @product_id)
     @channel_product = ChannelProduct.find_by(id: params[:anything]['channel_product_id'])
     @product_id = @product&.id if @product_id.to_i.to_s != @product_id
+    unshipped = ChannelOrderItem.where(channel_product_id: 2855).pluck(:ordered).sum
     if @product_id.present?
       @product_mapping = ProductMapping.create!(channel_product_id: @channel_product.id,
                                                 product_id: @product_id)
-      @product.update(change_log: "Product Mapped, #{@product.sku}, #{@channel_product.item_sku}, Mapped, #{@channel_product.item_id}")
+
+      @product.update(change_log: "Product Mapped, #{@product.sku}, #{@channel_product.item_sku}, Mapped, #{@channel_product.listing_id}", unshipped: unshipped, available_stock: (@product.total_stock.to_i - @product.unshipped.to_i))
       @channel_product.status_mapped! if @product_mapping.present?
       update_order_stage(@channel_product)
       flash[:notice] = 'Product mapped successfully'
@@ -82,8 +84,11 @@ class ProductMappingsController < ApplicationController
       channel_product_id: @channel_product.id,
       product_id: @product_id
     )
-    @product.update(change_log: "Product UnMapped, #{@product.sku}, #{@channel_product.item_sku}, UnMapped, #{@channel_product.item_id}")
+    ordered_value = @channel_product.channel_order_items.pluck(:ordered).sum
+    @product.update(change_log: "Product UnMapped, #{@product.sku}, #{@channel_product.item_sku}, UnMapped, #{@channel_product.listing_id}", unshipped: (@product.unshipped.to_i - ordered_value.to_i), available_stock: (@product.total_stock.to_i - @product.unshipped.to_i))
     if @product_mapping&.destroy
+      channel_order_ids = ChannelOrderItem.where(channel_product_id: 2855).pluck(:channel_order_id)
+      ChannelOrder.where(id: channel_order_ids).update_all(stage: 'unmapped_product_sku')
       @channel_product.status_unmapped!
       flash[:notice] = 'Product Un-mapped successfully'
     else
@@ -112,6 +117,7 @@ class ProductMappingsController < ApplicationController
       cd.status_mapped!
       update_order_stage(cd)
       attach_photo(cd) unless @product.photo.attached? || cd.product_data['PictureDetails'].nil?
+      @product.update(unshipped: (@product.unshipped.to_i + cd.channel_order_items.pluck(:ordered).sum), available_stock: (@product.total_stock.to_i - @product.unshipped.to_i))
     else
       flash[:alert] = @product.errors.full_messages
     end
@@ -221,13 +227,19 @@ class ProductMappingsController < ApplicationController
   end
 
   def csv_export(product)
-    attributes = ChannelProduct.column_names.excluding('created_at', 'updated_at').including('available_stock')
+    attributes = ChannelProduct.column_names.excluding('created_at', 'updated_at', 'product_data', 'product_range_id', 'range_sku', 'assign_rule_id', 'selected', 'status', 'error_message').including('product_title', 'product_sku', 'product_quantity', 'status')
     CSV.generate(headers: true) do |csv|
       csv << attributes
       product.each do |channel_product|
         row = channel_product.attributes.values_at(*attributes)
-        value = add_avaialable_stock(channel_product) if channel_product.status_mapped?
-        row[-1] = value if value.present?
+        # value = add_avaialable_stock(channel_product) if channel_product.status_mapped?
+        # row[-1] = value if value.present?
+        quantity = add_product_mapped_quantity(channel_product) if channel_product.status_mapped?
+        row[-2] = quantity if quantity.present?
+        sku = add_product_mapped_sku(channel_product) if channel_product.status_mapped?
+        row[-3] = sku if sku.present?
+        title = add_product_mapped_title(channel_product) if channel_product.status_mapped?
+        row[-4] = title if title.present?
         csv << row
       end
     end
@@ -238,6 +250,21 @@ class ProductMappingsController < ApplicationController
     return multipack_products_stock(product) if product.product_type_multiple?
 
     calculate_available_stock(product)
+  end
+
+  def add_product_mapped_quantity(channel_product)
+    product = channel_product.product_mapping.product
+    product.total_stock
+  end
+
+  def add_product_mapped_sku(channel_product)
+    product = channel_product.product_mapping.product
+    product.sku
+  end
+
+  def add_product_mapped_title(channel_product)
+    product = channel_product.product_mapping.product
+    product.title
   end
 
   def multipack_products_stock(product)

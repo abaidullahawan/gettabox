@@ -85,12 +85,12 @@
               <% @order.channel_order_items.each do |product| %>
                 <tr>
                   <% local_product = product.channel_product.present? ? product.channel_product.product_mapping&.product : product.product %>
-                  <td scope="col"><%= local_product.title %></td>
-                  <td scope="col"><%= local_product.sku %> </td>
+                  <td scope="col"><%= local_product&.title %></td>
+                  <td scope="col"><%= local_product&.sku %> </td>
                   <td scope="col"><%= product.channel_product&.item_price %> </td>
                   <td scope="col"><%= product.ordered %></td>
                   <td scope="col"><%= @order.total_amount %></td>
-                  <td scope="col"><%= percent  =  Product.vats[local_product.vat].to_i%>%</td>
+                  <td scope="col"><%= percent  =  Product.vats[local_product&.vat].to_i%>%</td>
                   <% totalvalue = @order.total_amount.to_f %>
                   <td scope="col"><%= (totalvalue/100)*percent %></td>
                   <td scope="col"><%= (totalvalue/100)*percent+totalvalue %></td>
@@ -162,8 +162,7 @@
     </div>
   </div>
 <% end %>
-
-<%= form_for @new_order, url: order_dispatches_path(@order), method: :post do |f| %>
+<%= form_for @new_order, url: order_dispatches_path(@order.id), method: :post do |f| %>
   <div class="modal fade" id="create-replacement-order-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
     <div class="modal-dialog  modal-dialog-scrollable modal-lg" role="document">
       <div class="modal-content">

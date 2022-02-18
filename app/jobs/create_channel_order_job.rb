@@ -118,8 +118,9 @@ class CreateChannelOrderJob < ApplicationJob
   def update_available_stock(item, product, available_stock, ordered)
     if product.available_stock >= item.ordered
       product.update(available_stock: available_stock, allocated_orders: product.allocated_orders.to_i + ordered,
-                     change_log: "API, #{item.channel_order.id},
-                                  #{item.channel_order.order_id}, Allocated, #{item.channel_product.item_id}")
+
+                     change_log: "API, #{item.channel_order.id}
+                                  #{item.channel_order.order_id}, Allocated, #{item.channel_product.listing_id}", unshipped: product.unshipped.to_f + ordered.to_f )
       item.update(allocated: true)
     else
       item.update(allocated: false)

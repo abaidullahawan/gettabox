@@ -1,13 +1,21 @@
 <div class="form-row">
-  <div class="form-group col-md-6">
+  <div class="form-group col-12">
       <%= f.label 'Warehouse Stock' %>
-      <%= f.number_field :total_stock, step: :any, class: 'form-control updating_stock', placeholder: 'Enter Total Quantity', required: true %>
+      <%= f.number_field :total_stock, step: :any, class: "form-control updating_stock", placeholder: 'Enter Total Quantity', required: true %>
   </div>
-  <div class="form-group col-md-6">
+  <!--div class="form-group col-md-6">
       <%= f.label :fake_stock %>
       <%= f.number_field :fake_stock, step: :any, class: 'form-control updating_fake_stock', placeholder: 'Enter Fake Stock Quantity' %>
   </div>
-  <!--div class="form-group col-md-6">
+  <div class="form-group col-md-6">
+      <%= f.label :unshipped %>
+      <%= f.number_field :unshipped, step: :any, class: 'form-control', placeholder: 'Enter Fake Stock Quantity' %>
+  </div>
+  <div class="form-group col-md-6">
+      <%= f.label :inventory_balance %>
+      <%= f.number_field :inventory_balance, step: :any, class: 'form-control', placeholder: 'Enter Fake Stock Quantity' %>
+  </div>
+  <div class="form-group col-md-6">
       <%#= f.label :pending_orders %>
       <%#= f.number_field :pending_orders, step: :any, class: 'form-control', placeholder: 'Enter Pending Orders Quantity' %>
   </div>

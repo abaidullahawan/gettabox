@@ -5,18 +5,22 @@
   <div class="form-group row">
     <div class="form-group col-6">
       <%= f.label :sku, 'Product Name' %>
-      <div class="dropdown form-group" style="min-width: 250px;">
-        <%= f.search_field :sku, class: 'form-control dropdown-toggle', id: 'product-title-search', data: {toggle: 'dropdown', option: {array: {index: 0} } }, autocomplete: 'off', placeholder:"Search in Title", onkeyup: "dropdown_search( '/products/products_by_title', 'product-dropdown-list', 'product-list-item', event)", onclick: "dropdown_search( '/products/products_by_title', 'product-dropdown-list', 'product-list-item', event)" %>
-        <span class="searchclear">@@</span>
-        <ul class="dropdown-menu product-dropdown-list search-list" aria-labelledby="product-title-search">
-          <li><label class="dropdown-item product-list-item">Select the Product</label></li>
-        </ul>
-        <%= f.hidden_field :product_id %>
-      </div>
+      <% @order.channel_order_items.each do |product| %>
+        <% local_product = product&.channel_product.present? ? product.channel_product.product_mapping&.product : product&.product %>
+        <% sku_product = "#{local_product&.sku}" + ",#{local_product&.title}" if local_product&.title.present? %>
+        <div class="dropdown form-group" style="min-width: 250px;">
+          <%= f.search_field :sku, class: 'form-control dropdown-toggle', id: 'product-title-search', value: sku_product , data: {toggle: 'dropdown', option: {array: {index: 0} } }, autocomplete: 'off', placeholder:"Search in Title", onkeyup: "dropdown_search( '/products/products_by_title', 'product-dropdown-list', 'product-list-item', event)", onclick: "dropdown_search( '/products/products_by_title', 'product-dropdown-list', 'product-list-item', event)", required: true %>
+          <span class="searchclear">@@</span>
+          <ul class="dropdown-menu product-dropdown-list search-list" aria-labelledby="product-title-search">
+            <li><label class="dropdown-item product-list-item">Select the Product</label></li>
+          </ul>
+          <%= f.hidden_field :product_id, value: local_product&.id %>
+        </div>
+      <% end %>
     </div>
     <div class="form-group col-3">
       <%= f.label :ordered, 'Quantity' %>
-      <%= f.text_field :ordered, class: 'form-control', placeholder: 'Enter Quantity' %>
+      <%= f.text_field :ordered, class: 'form-control', placeholder: 'Enter Quantity', required: true %>
     </div>
   </div>
 </div>

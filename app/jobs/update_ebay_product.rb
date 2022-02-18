@@ -28,7 +28,7 @@ class UpdateEbayProduct < ApplicationJob
       @xml_data.ErrorLanguage 'en_US'
       @xml_data.WarningLevel 'High'
       @xml_data.Item do
-        @xml_data.ItemID product.item_id
+        @xml_data.ItemID product.listing_id
         @xml_data.Variations do
           @xml_data.Variation do
             @xml_data.SKU product.item_sku

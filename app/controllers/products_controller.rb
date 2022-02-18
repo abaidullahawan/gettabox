@@ -97,6 +97,7 @@ class ProductsController < ApplicationController
 
   def show
     @product.build_extra_field_value if @product.extra_field_value.nil?
+    @product_location = ProductLocation.all
   end
 
   def destroy
@@ -256,7 +257,7 @@ class ProductsController < ApplicationController
     params.require(:product)
           .permit(:sku, :title, :photo, :total_stock, :fake_stock, :pending_orders, :allocated_orders,
                   :available_stock, :length, :width, :height, :weight, :pack_quantity, :cost_price, :gst, :vat,
-                  :minimum, :maximum, :optimal, :category_id, :product_type, :season_id, :description,
+                  :minimum, :maximum, :optimal, :category_id, :product_type, :season_id, :description, :product_location_id,
                   barcodes_attributes:
                   %i[id title _destroy],
                   product_suppliers_attributes:
@@ -293,10 +294,17 @@ class ProductsController < ApplicationController
   end
 
   def update_log(stock)
-    @product.update(manual_edit_stock: stock, available_stock: @product.total_stock.to_f - @product.allocated_orders.to_f, change_log: "Manual Edit, #{params[:reason]}, #{stock}, Manual Edit, #{params[:description]}")
+    @product.update(manual_edit_stock: stock, available_stock: (@product.total_stock.to_i - @product.unshipped.to_i), change_log: "Manual Edit, #{params[:reason]}, #{stock}, Manual Edit, #{params[:description]}")
     product = @product.product_mappings.last.channel_product if @product.product_mappings.present?
-    return unless product.present? && (product.item_id.eql? '144375988077')
+    return amazon_update(product, @product) if product.channel_type.eql? 'amazon'
 
-    UpdateEbayProduct.perform_later(product: product, quantity: @product.available_stock)
+    return unless product.present? && (product.listing_id.eql? '144375988077')
+
+    UpdateEbayProduct.perform_later(product: product, quantity: @product.total_stock)
+  end
+
+  def amazon_update(channel_product, product)
+    return unless channel_product.item_sku.eql? 'KSB1008'
+    UpdateAmazonProduct.perform_now(product: channel_product.item_sku, quantity: product.total_stock)
   end
 end
