@@ -3,21 +3,30 @@
     <table class="table m-0 table-hover">
       <thead>
         <tr>
+          <th class='border-right'>File 1</th>
+          <th class='border-right'>File 2</th>
           <th class='border-right'>Created At</th>
           <th class='border-right'>Download</th>
         </tr>
       </thead>
         <tbody>
-          <% @multifile_mapping.each do |multifile_maping| %>
-            <% if multifile_maping.include? 'multi-mapping'%>
-              <tr>
-                <td><%= multifile_maping.split('/').last.split('--').last %></td>
-                <td class='border-right'>
-                  <%= link_to "Download", download_path(download: true, url: multifile_maping), download: '', class: "btn btn-primary text-white" %>
-                  <%= link_to "Delete", download_path(download: false, url: multifile_maping), class: "btn btn-danger text-white", data: {confirm: "Are you sure?"} %>
-                </td>
-              </tr>
-            <% end %>
+          <% @multifile_mapping_filename.each do |multifile_maping_name| %>
+            <tr>
+                <% created_at_filename = multifile_maping_name.created_at + 5.hours %>
+                <% created_at_filename = created_at_filename.strftime('%d-%m-%Y @ %H:%M:%S') %>
+                <% multifile_maping = @multifile_mapping.select { |a| (a.include? 'multi-mapping') && (a.split('/').last.split('--').last == created_at_filename)}%>
+                <td><%= multifile_maping_name.file1 %></td>
+                <td><%= multifile_maping_name.file2 %></td>
+                <td><%= created_at_filename %></td>
+                <% if multifile_maping_name.download == true %>
+                  <td class='border-right'>
+                    <%= link_to "Download", download_path(download: true, url: multifile_maping.first), download: '', class: "btn btn-primary text-white" %>
+                    <%= link_to "Delete", download_path(download: false, url: multifile_maping.first, id: multifile_maping_name.id), class: "btn btn-danger text-white", data: {confirm: "Are you sure?"} %>
+                  </td>
+                <% else %>
+                  <td class='border-right'>Not available for download</td>
+                <% end %>
+            </tr>
           <% end %>
         </tbody>
     </table>

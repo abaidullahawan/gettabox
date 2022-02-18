@@ -58,8 +58,7 @@ class MultiFileMappingJob < ApplicationJob
     # )
     # @multifile_mapping.attach_csv.attach = file.path
     # @multifile_mapping.save
-    # @multifile_mapping.update(download: true)
-
+    @multifile_mapping.update(download: true)
   end
 
   def case_sensitivity(spreadsheet1, spreadsheet2, matchable, mapping, csv, attribute_data)
