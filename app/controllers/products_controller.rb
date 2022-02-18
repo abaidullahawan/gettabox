@@ -97,6 +97,7 @@ class ProductsController < ApplicationController
 
   def show
     @product.build_extra_field_value if @product.extra_field_value.nil?
+    @product_location = ProductLocation.all
   end
 
   def destroy
@@ -256,7 +257,7 @@ class ProductsController < ApplicationController
     params.require(:product)
           .permit(:sku, :title, :photo, :total_stock, :fake_stock, :pending_orders, :allocated_orders,
                   :available_stock, :length, :width, :height, :weight, :pack_quantity, :cost_price, :gst, :vat,
-                  :minimum, :maximum, :optimal, :category_id, :product_type, :season_id, :description,
+                  :minimum, :maximum, :optimal, :category_id, :product_type, :season_id, :description, :product_location_id,
                   barcodes_attributes:
                   %i[id title _destroy],
                   product_suppliers_attributes:
