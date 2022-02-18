@@ -17,7 +17,7 @@
               <td><%= multifile_maping_name.file1 %></td>
               <td><%= multifile_maping_name.file2 %></td>
               <td><%= created_at_filename %></td>
-              <% if multifile_maping_name.download == true %>
+              <% if multifile_maping_name.download == true  && multifile_maping.present? %>
                 <td class='border-right'>
                   <%= link_to "Download", download_path(download: true, url: multifile_maping.first), download: '', class: "btn btn-primary text-white" %>
                   <%= link_to "Delete", download_path(download: false, url: multifile_maping.first, id: multifile_maping_name.id), class: "btn btn-danger text-white", data: {confirm: "Are you sure?"} %>

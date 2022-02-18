@@ -21,7 +21,7 @@ class MultiFileMappingJob < ApplicationJob
     # file = Tempfile.new(['Mapped-File', '.csv'])
     # begin
       # @csv = CSV.generate(headers: true) do |csv|
-      name = "multi-mapping--#{DateTime.now.strftime('%d-%m-%Y @ %H:%M:%S')}"
+      name = "multi-mapping--#{Time.zone.now.strftime('%d-%m-%Y @ %H:%M:%S')}"
       csv = CSV.open("/home/deploy/channeldispatch/current/tmp/#{name}", "wb") do |csv|
         csv << attributes
         non_matching1 = []
