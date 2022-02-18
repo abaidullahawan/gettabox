@@ -291,7 +291,7 @@ class OrderDispatchesController < ApplicationController
     orders.each do |order|
       order.channel_order_items.each do |item|
         product = item.channel_product&.product_mapping&.product || item.product
-        product.update(unshipped: (product.unshipped.to_i + item.ordered.to_i))
+        product&.update(unshipped: (product.unshipped.to_i + item.ordered.to_i))
       end
     end
     redirect_to order_dispatches_path(order_filter: params[:order_filter])
