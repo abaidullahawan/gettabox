@@ -190,6 +190,14 @@ Rails.application.routes.draw do
       post 'search_batch', to: 'order_batches#search_batch'
     end
   end
+
+  resources :channel_forecastings do
+    collection do
+      get 'buffer_rule', to: 'channel_forecastings#buffer_rule'
+      post 'assign_buffer_rule', to: 'channel_forecastings#assign_buffer_rule'
+    end
+  end
+
   resources :mails
   resources :notes
   resources :inventory_reports

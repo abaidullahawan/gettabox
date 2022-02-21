@@ -98,6 +98,7 @@ class ProductsController < ApplicationController
   def show
     @product.build_extra_field_value if @product.extra_field_value.nil?
     @product_location = ProductLocation.all
+    @forecasting = ChannelForecasting.all
   end
 
   def destroy

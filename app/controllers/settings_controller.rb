@@ -18,6 +18,8 @@ class SettingsController < ApplicationController
                       export_mapping: ExportMapping.count,
                       customer: SystemUser.customers.count,
                       pick_and_pack: OrderBatch.count,
-                      product_location_mapping: ProductLocation.count }
+                      product_location_mapping: ProductLocation.count,
+                      channel_forecastings: ChannelForecasting.count
+                     }
   end
 end
