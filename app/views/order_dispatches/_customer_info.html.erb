@@ -46,7 +46,7 @@
                   </td>
                   <td style="width: 320px">
                     <% order.channel_order_items&.each do |product|%>
-                      <%= link_to product_mappings_path(q:{item_sku_or_item_id_cont: product.sku}) do %>
+                      <%= link_to product_mappings_path(q:{item_sku_or_listing_id_cont: product.sku}) do %>
                         <div class="card-style px-3 mt-1 relative">
                           <div>
                             <span class="order-listing order-quantity"><%= product.ordered %></span>

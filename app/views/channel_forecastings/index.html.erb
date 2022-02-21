@@ -1,0 +1,125 @@
+<!-- Main Content Header -->
+<div class="main-content-header">
+  <h1>Channel Forecastings</h1>
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item">
+      <a href="<%= home_path %>">Dashboard</a>
+    </li>
+    <li class="breadcrumb-item">
+      <a href="<%= settings_path %>">Settings</a>
+    </li>
+    <li class="breadcrumb-item active">
+      <span class="active">Channel Forecastings</span>
+    </li>
+  </ol>
+</div>
+<!-- End Main Content Header -->
+<div class="alert alert-dismissible fade show text-white jquery-selected-alert d-none " style="position: fixed; width:93%; z-index:99999;" role="alert"></div>
+<div class="row">
+  <div class="col-xl-12">
+    <div class="card mb-30">
+      <div class="card-body">
+        <div class="card-header">
+          <button type="button" class="btn btn-primary float-right" data-toggle="modal" data-target="#courier-create-modal">
+            Create
+          </button>
+          <h5 class="card-title"> Data</h5>
+        </div>
+        <%= search_form_for @q, url: channel_forecastings_path, method: :get do |f| %>
+          <div class='row'>
+            <div class='col-1 ml-auto'>
+              <label for="inputState">Per Page</label>
+              <%= select_tag :limit, options_for_select([10, 50, 100, 500, 1000], selected: params[:limit] || 10), id: 'change_per_page', class: 'form-control' %>
+              <button type="submit" id="per_page_submit" hidden="hidden"></button>
+            </div>
+          </div>
+        <% end %>
+        <br>
+          <div class="table-responsive">
+            <table class="table m-0 table-hover">
+              <tr>
+                <th class="text-center">Name</th>
+                <th class="text-center">Filter Name</th>
+                <th class="text-center">Filter By</th>
+                <th class="text-center">Filter Action</th>
+                <th class="text-center">Type Number</th>
+                <th class="text-center">Units</th>
+                <th class="text-center">Actions</th>
+              </tr>
+              <% @channel_rules.each do |rule| %>
+                <tr>
+                  <td class="text-center"><%= rule.name%></td>
+                  <td class="text-center"><%= rule.filter_name%></td>
+                  <td class="text-center"><%= rule.filter_by%></td>
+                  <td class="text-center"><%= rule.action%></td>
+                  <td class="text-center"><%= rule.type_number%></td>
+                  <td class="text-center"><%= rule.units%></td>
+                  <td class="text-center"></td>
+                </tr>
+              <% end %>
+            </table>
+          </div>
+        <br>
+        <div class='float-right'>
+          <%= page_entries_info @channel_rules %>
+        </div><br>
+        <div class="pagination justify-content-center mt-3">
+          <%= paginate @channel_rules,theme: "twitter-bootstrap-4",pagination_class: "pagination-sm",nav_class: "d-inline-b" %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%= form_for ChannelForecasting.new, url: channel_forecastings_path, method: :post do |f| %>
+  <div class="modal fade" id="courier-create-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Create Forecasting Rule</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-12">
+              <%= f.label :filter_by, 'Name' %>
+              <%= f.text_field :name, class: 'form-control', placeholder: 'Please enter name for rule' %>
+            </div>
+            <div class="col-6 col-4 filter-container">
+              <%= f.label :filter_name %>
+              <%= f.select :filter_name, options_for_select(ChannelForecasting.filter_names.map { |key, value| [key.humanize, key] }), {include_blank: "Please Select Filter Name"}, class: 'form-control filter-name-field' %>
+            </div>
+            <div class="col-6 col-4 filter-by-field-container mt-1">
+              <%= f.label :filter_by %>
+              <%= f.select :filter_by, {}, {include_blank: '-- Please Select Filter Name first --'}, class: "form-control filter-empty" %>
+              <%= f.select :filter_by, options_for_select(ChannelForecasting.filter_bies.map { |key, value| [value, key] }), {include_blank: "Please Select Filter"}, class: 'form-control d-none filter-by-field' %>
+              <%= f.select :system_user_id, options_for_select(@supplier.collect { | c | [c.name, c.id] }, f.object.id), {include_blank: 'Please Select Filter'}, class: "form-control d-none filter-supplier" %>
+            </div>
+            <div class="col-4 d-none custom-number-field">
+              <%= f.label :comparison_number, 'Value' %>
+              <%= f.text_field :comparison_number, class: 'form-control', placeholder: 'Please enter value' %>
+            </div>
+            <div class="col-6 mt-1">
+              <%= f.label :action %>
+              <%= f.select :action, options_for_select(ChannelForecasting.actions.map { |key, value| [key.humanize, key] }), {include_blank: "Please Select Action"}, class: 'form-control' %>
+            </div>
+            <div class="col-6 mt-1">
+              <%= f.label :type_number %>
+              <%= f.number_field :type_number, class: 'form-control', placeholder: 'Please enter number' %>
+            </div>
+            <div class="col-6 mt-1 mx-auto">
+              <%= f.label :units %>
+              <%= f.select :units, options_for_select(ChannelForecasting.units.map { |key, value| [key.humanize, key] }), {include_blank: "Please Select Rule"}, class: 'form-control' %>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+          <%= f.submit 'Create', class: 'btn btn-info'%>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>

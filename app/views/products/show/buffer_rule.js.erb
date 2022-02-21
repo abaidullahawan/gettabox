@@ -1,0 +1,6 @@
+$('#buffer-rule-modal').html("<%= escape_javascript(render partial: 'products/buffer_rule_modal') %>");
+$('#buffer-rule-modal').show();
+
+$('.pick_and_pack_modal_close').on('click', function(){
+  $('#buffer-rule-modal').children().remove();
+})

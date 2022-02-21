@@ -1,0 +1,28 @@
+  <%= form_with url: assign_buffer_rule_channel_forecastings_path, method: :post do |f| %>
+    <div class="modal-dialog modal-dialog-scrollable" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Forecasting Rule</h5>
+          <button type="button" class="close pick_and_pack_modal_close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="modal-body">
+            <div class="row">
+              <div class="col-12">
+                <%= f.label :filter_name, 'Forcasting Rule' %>
+                <%= f.select :forecasting_rule, options_for_select(@forecasting.collect { | c | [c.name, c.id] }, @product.channel_forecasting_id), {include_blank: 'Please Select Rule'}, class: "form-control" %>
+                 <%= f.hidden_field :product_id, value: @product.id %>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary pick_and_pack_modal_close" data-dismiss="modal">Close</button>
+          <%= f.submit 'Assign Rule', class: 'btn btn-primary' %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+

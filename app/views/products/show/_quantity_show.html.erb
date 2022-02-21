@@ -7,7 +7,7 @@
       <div class='row'>
         <table class="table m-0 table-hover">
           <tr>
-            <th>Fake Stock <button type='button' data-toggle="modal" data-target='#fake-quantity-modal' class='btn btn-outline-success btn-sm ml-3'>Edit</button></th>
+            <th class="fake-stock-bg-color">Fake Stock <button type='button' data-toggle="modal" data-target='#fake-quantity-modal' class='btn btn-outline-success btn-sm ml-3'>Edit</button></th>
             <th>Warehouse stock <button type='button' data-toggle="modal" data-target='#quantity-modal' class='btn btn-outline-success btn-sm ml-3'>Edit</button></th>
             <th>Inventory Balance</th>
             <th>Unshipped</th>
@@ -15,8 +15,8 @@
             <th>Unallocated </th>
           </tr>
           <tr>
-            <td><%= @product.fake_stock %></td>
-            <td><%= @product.total_stock %></td>
+            <td class="fake-stock-bg-color"><%= @product.fake_stock %></td>
+            <td><%= @product.total_stock.to_i %></td>
             <td><%= @product.inventory_balance %></td>
             <td><%= @product.unshipped %></td>
             <td><%= @product.allocated_orders %></td>
