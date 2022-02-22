@@ -22,6 +22,7 @@
                   <a href="<%= product_mappings_path(q: {item_sku_or_listing_id_cont: product.listing_id}) %>" class='link_tag' style="text-decoration: none;">
                     <tr>
                       <% deduction_unit = product.item_sku.split(" x ")[1].to_i %>
+                      <% deduction_unit = deduction_unit.zero? ? 1 : deduction_unit %>
                       <td class="text-center"><%= product.channel_type %></td>
                       <td class="text-center"><%= product.listing_id %></td>
                       <td class="text-center"><%= product.item_sku %></td>
