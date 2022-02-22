@@ -17,8 +17,6 @@ class InventoryReportsController < ApplicationController
       date_from = params['/inventory_reports']['date_from']
       date_to = params['/inventory_reports']['date_to']
       @date = date_from..date_to
-    else
-      @date = filter_date_range(params['/inventory_reports']['date_range'])
     end
     if params['/inventory_reports']['channels'] == 'All Channels' && params['/inventory_reports']['supplier'] == 'All Suppliers'
       @inventory_products = Product.joins(:system_users).includes(:system_users).where(

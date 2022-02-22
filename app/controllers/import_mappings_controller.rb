@@ -254,6 +254,7 @@ class ImportMappingsController < ApplicationController
     file_type = file.present? ? file.path.split('.').last.to_s.downcase : ''
     if file.present? && (file_type.include? 'csv') || (file_type.include? 'xlsx')
       spreadsheet = open_spreadsheet(file)
+      spreadsheet = CSV.parse(spreadsheet, headers: true)
       @header = spreadsheet.headers
       @data = []
       @import_mapping = ImportMapping.new
@@ -294,6 +295,7 @@ class ImportMappingsController < ApplicationController
     file_type = file.present? ? file.path.split('.').last.to_s.downcase : ''
     if file.present? && (file_type.include? 'csv') || (file_type.include? 'xlsx')
       spreadsheet = open_spreadsheet(file)
+      spreadsheet = CSV.parse(spreadsheet, headers: true)
       @header = spreadsheet.headers
       @data = []
       @import_mapping = ImportMapping.new
