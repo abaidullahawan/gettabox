@@ -15,7 +15,7 @@ class ChannelForecasting < ApplicationRecord
     anticipate_fake_stock_only_by: 2
   }, _prefix: true
 
-  enum unit: {
+  enum units: {
     product_units: 0,
     listing_units: 1,
     last_day_product_units_sold: 2
