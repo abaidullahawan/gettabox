@@ -200,7 +200,11 @@ Rails.application.routes.draw do
 
   resources :mails
   resources :notes
-  resources :inventory_reports
+  resources :inventory_reports do
+    collection do
+      get 'date_picker_from_to', to: 'inventory_reports#date_picker_from_to'
+    end
+  end
 
   post 'product_file', to: 'products#import_product_file'
   post 'channel_product_file', to: 'product_mappings#import_product_file'

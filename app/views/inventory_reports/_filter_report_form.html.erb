@@ -33,11 +33,11 @@
     <div class="row">
       <div class="col-6 form-group">
         <%= f.label :channels, "Channels"%>
-        <%= f.select :channels, options_for_select(SystemUser.sales_channels.map { |key, value| [key.humanize, value]}), {}, class:"form-control" %>
+        <%= f.select :channels, options_for_select(@sale_channels.map { |key, value| [key.humanize, value]}),{} , class:"form-control" %>
       </div>
       <div class="col-6 form-group">
         <%= f.label :supplier, "Supplier"%>
-        <%= f.select :supplier, SystemUser.suppliers.map{|s| [s.name, s.id]}, {}, class:"form-control" %>
+        <%= f.select :supplier, options_for_select(@suppliers.map { |key, value| [key.humanize, value]}), {}, class:"form-control" %>
       </div>
     </div>
     <div class='float-right'>
