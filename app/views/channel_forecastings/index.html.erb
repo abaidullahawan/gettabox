@@ -48,12 +48,12 @@
               </tr>
               <% @channel_rules.each do |rule| %>
                 <tr>
-                  <td class="text-center"><%= rule.name%></td>
-                  <td class="text-center"><%= rule.filter_name%></td>
-                  <td class="text-center"><%= rule.filter_by%></td>
-                  <td class="text-center"><%= rule.action%></td>
-                  <td class="text-center"><%= rule.type_number%></td>
-                  <td class="text-center"><%= rule.units%></td>
+                  <td class="text-center"><%= rule.name %></td>
+                  <td class="text-center"><%= rule.filter_name.humanize %></td>
+                  <td class="text-center"><%= rule.filter_by %></td>
+                  <td class="text-center"><%= rule.action.humanize %></td>
+                  <td class="text-center"><%= rule.type_number %></td>
+                  <td class="text-center"><%= rule.units.humanize %></td>
                   <td class="text-center"></td>
                 </tr>
               <% end %>
