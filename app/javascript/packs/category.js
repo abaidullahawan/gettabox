@@ -38,4 +38,17 @@ $(document).on('turbolinks:load', function () {
             $('.custom-number-field').addClass('d-none')
         }
     })
+    $('#_inventory_reports_date_range').on('change', function () {
+        var selectedValue = $(this).val();
+        $.ajax({
+            url: '/inventory_reports/date_picker_from_to',
+            type: 'GET',
+            data: { 'selectedValue': selectedValue },
+            dataType: 'json',
+            success: function (response) {
+                $('#_inventory_reports_date_from').val(response.start_date);
+                $('#_inventory_reports_date_to').val(response.end_date);
+            }
+          })
+    });
 })

@@ -19,7 +19,6 @@ class ProductsController < ApplicationController
   before_action :klass_import, only: %i[import]
 
   def index
-    @product_exports = ExportMapping.where(table_name: 'Product')
     export_csv(@q.result) if params[:export_csv].present?
     respond_to do |format|
       format.html
@@ -270,6 +269,7 @@ class ProductsController < ApplicationController
   def ransack_products
     @q = Product.ransack(params[:q])
     @products = @q.result(distinct: true).order(created_at: :desc).page(params[:page]).per(params[:limit])
+    @product_exports = ExportMapping.where(table_name: 'Product')
   end
 
   def build_product
