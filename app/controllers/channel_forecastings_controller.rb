@@ -3,6 +3,8 @@
 # Channel Forcasting rules for products.
 class ChannelForecastingsController < ApplicationController
 
+  before_action :set_channel_forecastings, only: %i[show edit update destroy]
+
   # GET /couriers or /couriers.json
   def index
     @q = ChannelForecasting.ransack(params[:q])
@@ -34,7 +36,6 @@ class ChannelForecastingsController < ApplicationController
   def buffer_rule
     @forecasting = ChannelForecasting.all
     @product = ChannelProduct.find(params[:id])
-    # request.format = 'js'
     respond_to do |format|
       format.js { render 'products/show/buffer_rule' }
     end
@@ -46,14 +47,32 @@ class ChannelForecastingsController < ApplicationController
   end
 
   def update
-
+      if @channel_forecasting.update(forecasting_params)
+        flash[:notice] = 'Channel Forecasting Rule was successfully updated.'
+        redirect_to channel_forecastings_path
+      else
+        flash.now[:alert] = @channel_forecasting.errors.full_messages
+        render :show
+      end
   end
 
   def destroy
-
+    if @channel_forecasting.destroy
+      flash[:notice] = 'Channel Forecasting Rule was successfully deleted.'
+      ChannelProduct.where(channel_forecasting_id: @channel_forecasting.id).update_all(channel_forecasting_id: nil)
+      redirect_to channel_forecastings_path
+    else
+      flash.now[:alert] = @channel_forecasting.errors.full_messages
+      render channel_forecastings_path
+    end
   end
 
   private
+
+  def set_channel_forecastings
+    @channel_forecasting = ChannelForecasting.find(params[:id])
+    @supplier = SystemUser.where(user_type: 'supplier')
+  end
 
   def forecasting_params
     params.require(:channel_forecasting).permit(:name, :filter_name, :filter_by, :action, :type_number, :units, :system_user_id, :comparison_number)

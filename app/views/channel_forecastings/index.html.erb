@@ -54,7 +54,17 @@
                   <td class="text-center"><%= rule.action.humanize %></td>
                   <td class="text-center"><%= rule.type_number %></td>
                   <td class="text-center"><%= rule.units.humanize %></td>
-                  <td class="text-center"></td>
+                  <td class="text-center">
+                    <div class="dropdown dropleft">
+                      <button class="btn btn-primary" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Actions">
+                        <i data-feather='bell' class='icon wh-15 mt-minus-3'></i>
+                      </button>
+                      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <%= link_to 'Edit', edit_channel_forecasting_path(id: rule.id), class: 'dropdown-item' %>
+                        <%= link_to 'Delete', channel_forecasting_path(id: rule.id), method: :delete, class: 'dropdown-item' %>
+                      </div>
+                    </div>
+                  </td>
                 </tr>
               <% end %>
             </table>
@@ -82,38 +92,7 @@
           </button>
         </div>
         <div class="modal-body">
-          <div class="row">
-            <div class="col-12">
-              <%= f.label :filter_by, 'Name' %>
-              <%= f.text_field :name, class: 'form-control', placeholder: 'Please enter name for rule' %>
-            </div>
-            <div class="col-6 col-4 filter-container">
-              <%= f.label :filter_name %>
-              <%= f.select :filter_name, options_for_select(ChannelForecasting.filter_names.map { |key, value| [key.humanize, key] }), {include_blank: "Please Select Filter Name"}, class: 'form-control filter-name-field' %>
-            </div>
-            <div class="col-6 col-4 filter-by-field-container mt-1">
-              <%= f.label :filter_by %>
-              <%= f.select :filter_by, {}, {include_blank: '-- Please Select Filter Name first --'}, class: "form-control filter-empty" %>
-              <%= f.select :filter_by, options_for_select(ChannelForecasting.filter_bies.map { |key, value| [value, key] }), {include_blank: "Please Select Filter"}, class: 'form-control d-none filter-by-field' %>
-              <%= f.select :system_user_id, options_for_select(@supplier.collect { | c | [c.name, c.id] }, f.object.id), {include_blank: 'Please Select Filter'}, class: "form-control d-none filter-supplier" %>
-            </div>
-            <div class="col-4 d-none custom-number-field">
-              <%= f.label :comparison_number, 'Value' %>
-              <%= f.text_field :comparison_number, class: 'form-control', placeholder: 'Please enter value' %>
-            </div>
-            <div class="col-6 mt-1">
-              <%= f.label :action %>
-              <%= f.select :action, options_for_select(ChannelForecasting.actions.map { |key, value| [key.humanize, key] }), {include_blank: "Please Select Action"}, class: 'form-control' %>
-            </div>
-            <div class="col-6 mt-1">
-              <%= f.label :type_number %>
-              <%= f.number_field :type_number, class: 'form-control', placeholder: 'Please enter number' %>
-            </div>
-            <div class="col-6 mt-1 mx-auto">
-              <%= f.label :units %>
-              <%= f.select :units, options_for_select(ChannelForecasting.units.map { |key, value| [key.humanize, key] }), {include_blank: "Please Select Rule"}, class: 'form-control' %>
-            </div>
-          </div>
+          <%= render 'form', f: f %>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>

@@ -1,0 +1,36 @@
+<!-- Main Content Header -->
+<div class="main-content-header">
+  <h1>Categories</h1>
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item">
+      <a href="<%= home_path %>">Dashboard</a>
+    </li>
+    <li class="breadcrumb-item">
+      <a href="<%= settings_path %>">Settings</a>
+    </li>
+    <li class="breadcrumb-item active">
+      <a href="<%= channel_forecastings_path %>">Channel Forecastings</a>
+    </li>
+    <li class="breadcrumb-item active">
+      <span class="active">Edit</span>
+    </li>
+  </ol>
+</div>
+<!-- End Main Content Header -->
+<div class="row">
+  <div class="col-xl-12">
+    <div class="card mb-30">
+      <div class="card-body">
+        <div class="card-header">
+          <h5 class="card-title">Edit</h5>
+        </div>
+        <%= form_for @channel_forecasting, url: channel_forecasting_path(@channel_forecasting) do |f| %>
+          <%= render 'form', f: f %>
+          <div class="col-12">
+            <%= f.submit 'Update', class: 'btn btn-info float-right'%>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
