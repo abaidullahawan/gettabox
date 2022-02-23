@@ -22,13 +22,6 @@ class ChannelForecasting < ApplicationRecord
   }, _prefix: true
 
   enum filter_by: {
-    greater_then: '>',
-    less_then: '<',
-    equals: '=',
-    greater_then_equal: '>=',
-    less_then_equal: '<=',
-    between: 'between',
-    not_between: 'not between',
     contains: 'contains',
     does_not_contain: 'does not contain',
     start_with: 'start with',
