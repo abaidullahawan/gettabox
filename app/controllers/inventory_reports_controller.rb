@@ -2,7 +2,6 @@
 
 # Inventory Reports
 class InventoryReportsController < ApplicationController
-
   def index
     @asc_desc = { 'asc': 'Ascending', 'desc': 'Descending' }
     @sale_channels = SystemUser.sales_channels.deep_dup
@@ -20,21 +19,27 @@ class InventoryReportsController < ApplicationController
     end
     if params['/inventory_reports']['channels'] == 'All Channels' && params['/inventory_reports']['supplier'] == 'All Suppliers'
       @inventory_products = Product.joins(:system_users).includes(:system_users).where(
-        created_at: @date, product_type: 'single'
+        'products.created_at': @date, product_type: 'single'
       ).order("products.created_at #{params['/inventory_reports']['asc_desc']}").page(params[:page]).per(params[:limit])
     elsif params['/inventory_reports']['supplier'] == 'All Suppliers'
       @inventory_products = Product.joins(:system_users).includes(:system_users).where(
-        created_at: @date, product_type: 'single', 'system_users.sales_channel': params['/inventory_reports']['channels']
+        'products.created_at': @date, product_type: 'single', 'system_users.sales_channel': params['/inventory_reports']['channels']
       ).order("products.created_at #{params['/inventory_reports']['asc_desc']}").page(params[:page]).per(params[:limit])
     elsif params['/inventory_reports']['channels'] == 'All Channels'
       @inventory_products = Product.joins(:system_users).includes(:system_users).where(
-        created_at: @date, product_type: 'single', 'system_users.id': params['/inventory_reports']['supplier']
+        'products.created_at': @date, product_type: 'single', 'system_users.id': params['/inventory_reports']['supplier']
       ).order("products.created_at #{params['/inventory_reports']['asc_desc']}").page(params[:page]).per(params[:limit])
     else
       @inventory_products = Product.joins(:system_users).includes(:system_users).where(
-      created_at: @date, product_type: 'single', 'system_users.sales_channel': params['/inventory_reports']['channels'],
-      'system_users.id': params['/inventory_reports']['supplier']
-    ).order("products.created_at #{params['/inventory_reports']['asc_desc']}").page(params[:page]).per(params[:limit])
+        'products.created_at': @date, product_type: 'single', 'system_users.sales_channel': params['/inventory_reports']['channels'],
+        'system_users.id': params['/inventory_reports']['supplier']
+      ).order("products.created_at #{params['/inventory_reports']['asc_desc']}").page(params[:page]).per(params[:limit])
+    end
+    @sales_unit = {}
+    @sales = {}
+    @inventory_products.each do |product|
+      @sales_unit[product.id] = calculate_sales_unit(product.id)
+      @sales[product.id] = calculate_sales(product.id)
     end
   end
 
@@ -51,7 +56,7 @@ class InventoryReportsController < ApplicationController
   def filter_date_range(date_range)
     case date_range
     when 'Today'
-      Time.zone.today.beginning_of_day..Time.zone.today.end_of_day
+      Time.zone.today..Time.zone.today
     when 'This Week'
       Time.zone.today.beginning_of_week..Time.zone.today.end_of_week
     when 'Last Week'
@@ -65,5 +70,29 @@ class InventoryReportsController < ApplicationController
     when 'Last Year'
       Time.zone.today.last_year.beginning_of_year..Time.zone.today.last_year.end_of_year
     end
+  end
+
+  def calculate_sales_unit(id)
+    count = ChannelOrder.joins(channel_order_items: [channel_product: [product_mapping: :product]]).includes(
+      channel_order_items: [channel_product: [product_mapping: :product]]
+    ).where('products.id = ?', id).where(stage: 'completed').where(
+      'channel_orders.updated_at': @date
+    ).count
+    date_from = @date.first.split('-').last.to_i
+    date_to = @date.last.split('-').last.to_i
+    @number_of_days = date_to - date_from + 1
+    sales_unit = count / @number_of_days.to_f
+  end
+
+  def calculate_sales(id)
+    sales = ChannelOrder.joins(channel_order_items: [channel_product: [product_mapping: :product]]).includes(
+      channel_order_items: [channel_product: [product_mapping: :product]]
+    ).where('products.id = ?', id).where(stage: 'completed').where(
+      'channel_orders.updated_at': @date
+    )
+    sales_count = sales.count
+    sales = sales.pluck(:total_amount).last.to_f
+    sales = sales_count * sales
+    return sales
   end
 end
