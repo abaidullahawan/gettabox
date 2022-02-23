@@ -5,39 +5,24 @@
   <div class="list-group">
     <div class="list-group-item">
       <div class='row'>
-        <% if @product.product_type_single? %>
-          <table class="table m-0 table-hover">
-            <tr>
-              <th class="fake-stock-bg-color">Fake Stock <button type='button' data-toggle="modal" data-target='#fake-quantity-modal' class='btn btn-outline-success btn-sm ml-3'>Edit</button></th>
-              <th>Warehouse stock <button type='button' data-toggle="modal" data-target='#quantity-modal' class='btn btn-outline-success btn-sm ml-3'>Edit</button></th>
-              <th>Inventory Balance</th>
-              <th>Unshipped</th>
-              <th>Allocated </th>
-              <th>Unallocated </th>
-            </tr>
-            <tr>
-              <td class="fake-stock-bg-color"><%= @product.fake_stock.to_i %></td>
-              <td><%= @product.total_stock.to_i %></td>
-              <td><%= @product.inventory_balance.to_i %></td>
-              <td><%= @product.unshipped.to_i %></td>
-              <td><%= @product.allocated_orders.to_i %></td>
-              <td><%= @product.unallocated.to_i %></td>
-            </tr>
-          </table>
-        <% else %>
-          <table class="table m-0 table-hover">
-            <tr>
-              <th class="fake-stock-bg-color">Fake Stock</th>
-              <th>Warehouse stock</th>
-              <th>Inventory Balance</th>
-            </tr>
-            <tr>
-              <td class="fake-stock-bg-color"><%= @product.fake_stock.to_i %></td>
-              <td><%= @product.total_stock.to_i %></td>
-              <td><%= @product.inventory_balance.to_i %></td>
-            </tr>
-          </table>
-        <% end %>
+        <table class="table m-0 table-hover">
+          <tr>
+            <th class="fake-stock-bg-color">Fake Stock <button type='button' data-toggle="modal" data-target='#fake-quantity-modal' class='btn btn-outline-success btn-sm ml-3'>Edit</button></th>
+            <th>Warehouse stock <button type='button' data-toggle="modal" data-target='#quantity-modal' class='btn btn-outline-success btn-sm ml-3'>Edit</button></th>
+            <th>Inventory Balance</th>
+            <th>Unshipped</th>
+            <th>Allocated </th>
+            <th>Unallocated </th>
+          </tr>
+          <tr>
+            <td class="fake-stock-bg-color"><%= @product.fake_stock.to_i %></td>
+            <td><%= @product.total_stock.to_i %></td>
+            <td><%= @product.inventory_balance.to_i %></td>
+            <td><%= @product.unshipped.to_i %></td>
+            <td><%= @product.allocated_orders.to_i %></td>
+            <td><%= @product.unallocated.to_i %></td>
+          </tr>
+        </table>
       </div>
     </div>
   </div>

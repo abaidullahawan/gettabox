@@ -80,12 +80,12 @@ class ProductsController < ApplicationController
           csv << [
             version.created_at&.strftime('%m/%d/%Y'),
             version.created_at&.strftime('%I:%M %p'),
-            version.changeset["change_log"][1].split(',')[3],
-            version.changeset["change_log"][1].split(',')[1],
-            version.changeset["change_log"][1].split(',')[2],
-            version.changeset["change_log"][1].split(',')[4],
-            version.changeset["available_stock"][1].to_i - version.changeset["available_stock"][0].to_i,
-            version.changeset["available_stock"][1].to_i,
+            version.changeset['change_log'][1].split(',')[3],
+            version.changeset['change_log'][1].split(',')[1],
+            version.changeset['change_log'][1].split(',')[2],
+            version.changeset['change_log'][1].split(',')[4],
+            version.changeset['available_stock'][1].to_i - version.changeset["available_stock"][0].to_i,
+            version.changeset['available_stock'][1].to_i,
             version.whodunnit.present? ? User.find_by(id: version.whodunnit)&.personal_detail&.full_name : 'Developer'
           ]
         end
@@ -98,6 +98,7 @@ class ProductsController < ApplicationController
     @product.build_extra_field_value if @product.extra_field_value.nil?
     @product_location = ProductLocation.all
     @forecasting = ChannelForecasting.all
+    @channel_listings = ChannelProduct.joins(product_mapping: [product: [multipack_products: :child]]).where('child.id': @product.id)
   end
 
   def destroy

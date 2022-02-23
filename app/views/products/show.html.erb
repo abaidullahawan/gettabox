@@ -41,27 +41,33 @@
   </div>
 </div>
 <div class="row">
-  <div class="col-md-12">
-    <%= render '/products/show/quantity_show' %>
-  </div>
+  <% if @product.product_type_single? %>
+    <div class="col-md-12">
+      <%= render '/products/show/quantity_show' %>
+    </div>
+  <% end %>
 </div>
 <div class="row">
   <div class="col-lg-6">
     <%= render '/products/show/channel_listing' %>
     <%= render '/products/show/suppliers_show' %>
-    <%= render '/products/show/taxes_show' %>
+    <% if @product.product_type_single? %>
+      <%= render '/products/show/taxes_show' %>
+    <% end %>
     <%= render '/products/show/extra_field_show'%>
   </div>
 
-  <div class="col-lg-6">
     <% if @product.product_type_single? %>
-      <%= render '/products/show/stock_show' %>
+      <div class="col-lg-6">
+        <%= render '/products/show/stock_show' %>
+        <%= render '/products/show/dimensions_show' %>
+        <%= render '/products/show/extra_show' %>
+        <%= render '/products/show/barcode_show' %>
+        <%= render '/products/show/product_location' %>
+      </div>
+    <% else %>
+      <div class="col-lg-12">
+        <%= render '/products/show/dimensions_show' %>
+      </div>
     <% end %>
-    <%= render '/products/show/dimensions_show' %>
-    <% if @product.product_type_single? %>
-      <%= render '/products/show/extra_show' %>
-      <%= render '/products/show/barcode_show' %>
-      <%= render '/products/show/product_location' %>
-    <% end %>
-  </div>
 </div>
