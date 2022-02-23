@@ -61,6 +61,8 @@ class Product < ApplicationRecord
   def re_modulate_dimensions
     max = [length, height].max
     min = [length, height].min
+    return unless product_type.eql? 'single'
+
     update_columns(length: max, height: min, inventory_balance: (total_stock.to_i - unshipped.to_i),
                    unallocated: unshipped.to_i - allocated_orders.to_i)
   end

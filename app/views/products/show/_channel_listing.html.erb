@@ -27,7 +27,7 @@
                       <td class="text-center"><%= product.listing_id %></td>
                       <td class="text-center"><%= product.item_sku %></td>
                       <td class="text-center"><%= deduction_unit %></td>
-                      <td class="text-center"><%= (@product.inventory_balance.to_f/deduction_unit.to_f).floor %></td>
+                      <td class="text-center"><%= [(@product.inventory_balance.to_f/deduction_unit.to_f).floor, 0].max %></td>
                       <td class="text-center">
                       <div>
                         <div class="row">
@@ -38,6 +38,25 @@
                       </td>
                     </tr>
                   </a>
+                <% end %>
+                <% @channel_listings.each do |multi_mapping| %>
+                  <tr>
+                    <% deduction_unit = multi_mapping.item_sku.split(" x ")[1].to_i %>
+                    <% deduction_unit = deduction_unit.zero? ? 1 : deduction_unit %>
+                    <td class="text-center"><%= multi_mapping.channel_type %></td>
+                    <td class="text-center"><%= multi_mapping.listing_id %></td>
+                    <td class="text-center"><%= multi_mapping.item_sku %></td>
+                    <td class="text-center"><%= deduction_unit %></td>
+                    <td class="text-center"><%= [(@product.inventory_balance.to_f/deduction_unit.to_f).floor, 0].max %></td>
+                    <td class="text-center">
+                    <div>
+                      <div class="row">
+                        <%= multi_mapping.channel_forecasting&.name %>
+                        <%= link_to '', buffer_rule_channel_forecastings_path(id: multi_mapping.id), remote: true, class: 'lni lni-pencil mt-1' %>
+                      </div>
+                    </div>
+                    </td>
+                  </tr>
                 <% end %>
               </table>
             </div>
