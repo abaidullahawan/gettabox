@@ -321,7 +321,7 @@ class OrderDispatchesController < ApplicationController
                   #  change_log: "#{order_item.channel_order.channel_type} API, #{order_item.channel_order.id}, #{order_item.channel_order.order_id}, UnAllocate, #{order_item.channel_product.listing_id}")
     order_item.update(allocated: false)
     flash[:notice] = 'Unallocation successful!'
-    redirect_to request.referrer
+    # redirect_to request.referrer
   end
 
   def allocate_item(order_item)
