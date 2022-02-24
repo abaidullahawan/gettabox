@@ -9,6 +9,7 @@ class ProductsController < ApplicationController
   before_action :find_product, only: %i[edit update show destroy]
   before_action :product_load_resources, only: %i[index new edit show create update]
   before_action :fetch_field_names, only: %i[new create show index]
+  before_action :load_show, only: %i[show]
   # before_action :attributes_for_filter, only: [:index]
   before_action :new_product, :ransack_products, only: %i[index]
   before_action :build_product, only: %i[create]
@@ -65,6 +66,7 @@ class ProductsController < ApplicationController
       flash[:notice] = 'Updated successfully.'
       redirect_to product_path(@product)
     else
+      load_show
       render 'show'
     end
   end
@@ -94,12 +96,7 @@ class ProductsController < ApplicationController
     send_data csv_data, filename: "product-logs-#{Date.today}.csv", disposition: :attachment
   end
 
-  def show
-    @product.build_extra_field_value if @product.extra_field_value.nil?
-    @product_location = ProductLocation.all
-    @forecasting = ChannelForecasting.all
-    @channel_listings = ChannelProduct.joins(product_mapping: [product: [multipack_products: :child]]).where('child.id': @product.id)
-  end
+  def show; end
 
   def destroy
     @product.destroy
@@ -308,5 +305,12 @@ class ProductsController < ApplicationController
   def amazon_update(channel_product, product)
     return unless channel_product.item_sku.eql? 'KSB1008'
     UpdateAmazonProduct.perform_now(product: channel_product.item_sku, quantity: product.total_stock)
+  end
+
+  def load_show
+    @product.build_extra_field_value if @product.extra_field_value.nil?
+    @product_location = ProductLocation.all
+    @forecasting = ChannelForecasting.all
+    @channel_listings = ChannelProduct.joins(product_mapping: [product: [multipack_products: :child]]).where('child.id': @product.id)
   end
 end
