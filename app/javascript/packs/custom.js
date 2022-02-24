@@ -226,6 +226,10 @@ $(document).on('turbolinks:load', function () {
     $('.bulk-courier-order-dispatch').trigger('click')
   })
 
+  $('#inventory_export_csv').on('click', function () {
+    $('#view_reports').trigger('click')
+  })
+
   $('#export_mapping_table_name').on('change', function () {
     var table = $("#export_mapping_table_name").val()
     $.ajax({

@@ -89,6 +89,7 @@ class CreateChannelOrderJob < ApplicationJob
   def allocate_or_unallocate(channel_items)
     channel_items.each do |item|
       product = item.channel_product.product_mapping.product
+      update_change_log(item, product)
       next multipack_product(item, product) unless product.product_type.eql? 'single'
 
       available_stock = product.available_stock.to_f - item.ordered
@@ -118,12 +119,16 @@ class CreateChannelOrderJob < ApplicationJob
   def update_available_stock(item, product, available_stock, ordered)
     if product.available_stock >= item.ordered
       product.update(available_stock: available_stock, allocated_orders: product.allocated_orders.to_i + ordered,
-
-                     change_log: "API, #{item.channel_order.id},
-                                  #{item.channel_order.order_id}, Allocated, #{item.channel_product.listing_id}", unshipped: product.unshipped.to_f + ordered.to_f )
+        # change_log: "API, #{item.channel_order.id} #{item.channel_order.order_id}, Allocated, #{item.channel_product.listing_id}",
+       unshipped: product.unshipped.to_f + ordered.to_f )
       item.update(allocated: true)
     else
       item.update(allocated: false)
     end
+  end
+
+  def update_change_log(item, product)
+    product.update(change_log: "API, #{item.channel_order.order_id}, #{item.channel_product.item_sku}, Order Paid,
+       #{item.ordered}, #{product.inventory_balance}")
   end
 end
