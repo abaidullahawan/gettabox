@@ -21,7 +21,7 @@ class ChannelForecasting < ApplicationRecord
     last_day_product_units_sold: 2
   }, _prefix: true
 
-  enum filter_by: {
+  enum filter_by_sku: {
     contains: 'contains',
     does_not_contain: 'does not contain',
     start_with: 'start with',

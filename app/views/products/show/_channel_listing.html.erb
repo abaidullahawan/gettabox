@@ -33,6 +33,7 @@
                         <div class="row">
                           <%= product.channel_forecasting&.name %>
                           <%= link_to '', buffer_rule_channel_forecastings_path(id: product.id), remote: true, class: 'lni lni-pencil mt-1' %>
+                          <%= product.customize.present? ? '(Customized)' : nil %>
                         </div>
                       </div>
                       </td>
@@ -53,6 +54,7 @@
                       <div class="row">
                         <%= multi_mapping.channel_forecasting&.name %>
                         <%= link_to '', buffer_rule_channel_forecastings_path(id: multi_mapping.id), remote: true, class: 'lni lni-pencil mt-1' %>
+                        <%= multi_mapping.customize.present? ? '(Customized)' : nil %>
                       </div>
                     </div>
                     </td>

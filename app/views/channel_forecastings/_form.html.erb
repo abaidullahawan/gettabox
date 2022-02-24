@@ -1,6 +1,6 @@
 <div class="row">
   <div class="col-12">
-    <%= f.label :filter_by, 'Name' %>
+    <%= f.label :name %>
     <%= f.text_field :name, class: 'form-control', placeholder: 'Please enter name for rule' %>
   </div>
   <div class="col-6 col-4 filter-container">
@@ -9,8 +9,9 @@
   </div>
   <div class="col-6 col-4 filter-by-field-container mt-1">
     <%= f.label :filter_by %>
-    <%= f.select :filter_by, {}, {include_blank: '-- Please Select Filter Name first --'}, class: "form-control filter-empty" %>
-    <%= f.select :filter_by, options_for_select(ChannelForecasting.filter_bies.map { |key, value| [value, key] }, f.object.filter_by), {include_blank: "Please Select Filter"}, class: 'form-control d-none filter-by-field' %>
+    <%= f.select :filter_by, {}, {include_blank: '-- Please Select Filter Name first --'}, class: "form-control filter-empty", disabled: true %>
+    <%= f.select :filter_by, options_for_select(ChannelForecasting.filter_by_skus.map { |key, value| [value, key] }, f.object.filter_by_sku), {include_blank: "Please Select Filter"}, class: 'form-control d-none filter-by-field', disabled: true %>
+    <%= f.select :filter_by, options_for_select(ChannelProduct.channel_types.map { |key, value| [key.humanize, key] }, f.object.filter_by), {include_blank: "Please Select Filter"}, class: 'form-control d-none channel-type', disabled: true %>
     <%= f.select :system_user_id, options_for_select(@supplier.collect { | c | [c.name, c.id] }, f.object.id), {include_blank: 'Please Select Filter'}, class: "form-control d-none filter-supplier" %>
   </div>
   <div class="col-4 d-none custom-number-field">
