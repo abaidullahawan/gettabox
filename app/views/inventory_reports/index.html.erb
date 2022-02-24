@@ -1,11 +1,11 @@
 <div class="main-content-header mt-3">
-  <h1>Inventory Reports</h1>
+  <h1>Stock Cover Report</h1>
   <ol class="breadcrumb">
     <li class="breadcrumb-item">
       <a href="<%= home_path %>">Dashboard</a>
     </li>
     <li class="breadcrumb-item active">
-      <span class="active">Inventory Reports</span>
+      <span class="active">Stock Cover Report</span>
     </li>
   </ol>
 </div>
@@ -32,7 +32,7 @@
                 </button>
               </div>
               <div class="col-3">
-                <button type="button" class="btn btn-primary">
+                <button type="button", id= "inventory_export_csv" class="btn btn-primary">
                   Download Reports
                 </button>
               </div>
@@ -63,17 +63,12 @@
               <tr>
                 <td class="text-center"><%= product.id %></td>
                 <td class="text-center font-weight-bold"><%= product.sku %></td>
-                <% sales_unit_product = @sales_unit[product.id] %>
-                <% sales = @sales[product.id] %>
-                <td class="text-center"><%= sales_unit_product %></td>
-                <td class="text-center"><%= sales %></td>
-                <% weekly_sales = @sales_unit[product.id] *7 %>
-                <td class="text-center"><%= weekly_sales %></td>
+                <td class="text-center"><%= @sales_unit[product.id] %></td>
+                <td class="text-center"><%= @sales[product.id] %></td>
+                <td class="text-center"><%=  @sales_unit[product.id] *7 %></td>
                 <td class="text-center"><%= product.allocated_orders.to_i %></td>
-                <% stock = product.total_stock.to_i %>
-                <td class="text-center"><%= stock %></td>
-                <% cover = (stock/(sales_unit_product/ @number_of_days))%>
-                <td class="text-center"><%= cover %></td>
+                <td class="text-center"><%= product.total_stock.to_i %></td>
+                <td class="text-center"><%= (product.total_stock.to_i/(@sales_unit[product.id]/ @number_of_days)) %></td>
               </tr>
             <% end %>
           </table>
@@ -104,6 +99,7 @@
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
           <%= f.submit "View Reports", class:"btn btn-primary" %>
+          <%= f.submit "Export Button", class:"btn btn-primary d-none", id: "view_reports" %>
         </div>
       </div>
     </div>

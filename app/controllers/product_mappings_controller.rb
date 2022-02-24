@@ -62,14 +62,13 @@ class ProductMappingsController < ApplicationController
     @product = Product.find_by(id: @product_id)
     @channel_product = ChannelProduct.find_by(id: params[:anything]['channel_product_id'])
     @product_id = @product&.id if @product_id.to_i.to_s != @product_id
-    unshipped = ChannelOrderItem.where(channel_product_id: 2855).pluck(:ordered).sum
     if @product_id.present?
       @product_mapping = ProductMapping.create!(channel_product_id: @channel_product.id,
                                                 product_id: @product_id)
 
-      @product.update(change_log: "Product Mapped, #{@product.sku}, #{@channel_product.item_sku}, Mapped, #{@channel_product.listing_id}", unshipped: unshipped, available_stock: (@product.total_stock.to_i - @product.unshipped.to_i))
+      @product.update(change_log: "Product Mapped, #{@product.sku}, #{@channel_product.item_sku}, Mapped, #{@channel_product.listing_id}")
       @channel_product.status_mapped! if @product_mapping.present?
-      update_order_stage(@channel_product)
+      update_order_stage(@channel_product, @product)
       flash[:notice] = 'Product mapped successfully'
     else
       flash[:alert] = 'Please select product to map'
@@ -115,7 +114,7 @@ class ProductMappingsController < ApplicationController
     if @product&.save
       ProductMapping.create(channel_product_id: cd.id, product_id: @product.id)
       cd.status_mapped!
-      update_order_stage(cd)
+      update_order_stage(cd, @product)
       attach_photo(cd) unless @product.photo.attached? || cd.product_data['PictureDetails'].nil?
       @product.update(unshipped: (@product.unshipped.to_i + cd.channel_order_items.pluck(:ordered).sum), available_stock: (@product.total_stock.to_i - @product.unshipped.to_i))
     else
@@ -394,9 +393,14 @@ class ProductMappingsController < ApplicationController
     flash[:notice] = 'Refresh Token and Access Token created successfully'
   end
 
-  def update_order_stage(channel_product)
-    ChannelOrder.joins(:channel_order_items).includes(:channel_order_items)
-                .where('channel_order_items.channel_product_id': channel_product.id)
-                .update_all(stage: 'ready_to_dispatch')
+  def update_order_stage(channel_product, product)
+    orders = ChannelOrder.joins(:channel_order_items).includes(:channel_order_items)
+                         .where('channel_order_items.channel_product_id': channel_product.id)
+    orders.each do |order|
+      order.update(stage: 'ready_to_dispatch')
+      unshipped = order.channel_order_items.pluck(:ordered).sum
+      unshipped = product.unshipped + unshipped if product.unshipped.present?
+      product.update(change_log: " Order Paid, #{channel_product.item_sku}, #{order.order_id}, Order Paid, #{channel_product.listing_id}, #{unshipped}, #{product.inventory_balance} ", unshipped: unshipped, inventory_balance: (product.total_stock.to_i - unshipped.to_i))
+    end
   end
 end

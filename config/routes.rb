@@ -203,6 +203,7 @@ Rails.application.routes.draw do
   resources :inventory_reports do
     collection do
       get 'date_picker_from_to', to: 'inventory_reports#date_picker_from_to'
+      get 'export_reports', to: 'inventory_reports#export_reports'
     end
   end
 

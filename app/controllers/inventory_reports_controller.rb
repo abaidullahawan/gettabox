@@ -41,6 +41,7 @@ class InventoryReportsController < ApplicationController
       @sales_unit[product.id] = calculate_sales_unit(product.id)
       @sales[product.id] = calculate_sales(product.id)
     end
+    export_reports(@inventory_products) if params[:commit].eql? 'Export Button'
   end
 
   def date_picker_from_to
@@ -48,6 +49,20 @@ class InventoryReportsController < ApplicationController
     respond_to do |format|
       format.js
       format.json { render json: { start_date: date.first, end_date: date.last } }
+    end
+  end
+
+  def export_reports(products)
+    headers = ['ID', 'Product SKU', 'Sales Unit', 'Sales £', 'Weekly Sales', 'Purchased Qty', 'Stock', 'Cover(days)']
+    csv_data = CSV.generate(headers: true) do |csv|
+      csv << headers
+    # @csv = CSV.generqate
+    # @csv << attributes
+    # products.each do |product|
+    #   data = []
+    #   data.push(product.id, product.sku)
+    #   @csv << data
+    # end
     end
   end
 

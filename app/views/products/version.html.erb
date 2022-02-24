@@ -60,8 +60,8 @@
                     <td>
                       <%= version.changeset["change_log"][1].split(',')[4] %>
                     </td>
-                    <td><%= version.changeset["available_stock"][1].to_i - version.changeset["available_stock"][0].to_i if version.changeset.include? 'available_stock'  %></td>
-                    <td><%= version.changeset["available_stock"][1].to_i if version.changeset.include? 'available_stock' %></td>
+                    <td><%= version.changeset["unshipped"][1].to_i - version.changeset["unshipped"][0].to_i if version.changeset.include? 'unshipped'  %></td>
+                    <td><%= version.changeset["inventory_balance"][1].to_i if version.changeset.include? 'inventory_balance' %></td>
                     <td><%= version.whodunnit.present? ? User.find_by(id: version.whodunnit)&.personal_detail&.full_name : 'Developer' %></td>
                   </tr>
                 <% end %>
