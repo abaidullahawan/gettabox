@@ -29,13 +29,9 @@
                       <td class="text-center"><%= deduction_unit %></td>
                       <td class="text-center"><%= [(@product.inventory_balance.to_f/deduction_unit.to_f).floor, 0].max %></td>
                       <td class="text-center">
-                      <div>
-                        <div class="row">
-                          <%= product.channel_forecasting&.name %>
-                          <%= link_to '', buffer_rule_channel_forecastings_path(id: product.id), remote: true, class: 'lni lni-pencil mt-1' %>
-                          <%= product.customize.present? ? '(Customized)' : nil %>
-                        </div>
-                      </div>
+                        <%= product.channel_forecasting&.name %>
+                        <%= link_to '', buffer_rule_channel_forecastings_path(id: product.id), remote: true, class: 'lni lni-pencil mt-1 ml-3' %>
+                        <div><p class="badge badge_warning py-1"><%= product.customize.present? ? 'Customized' : nil %></p></div>
                       </td>
                     </tr>
                   </a>
@@ -50,13 +46,9 @@
                     <td class="text-center"><%= deduction_unit %></td>
                     <td class="text-center"><%= [(@product.inventory_balance.to_f/deduction_unit.to_f).floor, 0].max %></td>
                     <td class="text-center">
-                    <div>
-                      <div class="row">
                         <%= multi_mapping.channel_forecasting&.name %>
-                        <%= link_to '', buffer_rule_channel_forecastings_path(id: multi_mapping.id), remote: true, class: 'lni lni-pencil mt-1' %>
-                        <%= multi_mapping.customize.present? ? '(Customized)' : nil %>
-                      </div>
-                    </div>
+                        <%= link_to '', buffer_rule_channel_forecastings_path(id: multi_mapping.id), remote: true, class: 'lni lni-pencil mt-1 ml-3' %>
+                        <div><p class="badge badge_warning py-1"><%= product.customize.present? ? 'Customized' : nil %></p></div>
                     </td>
                   </tr>
                 <% end %>
