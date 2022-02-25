@@ -185,7 +185,12 @@ class AmazonOrderJob < ApplicationJob
   end
 
   def update_change_log(item, product)
-    product.update(change_log: "API, #{item.channel_order.order_id} #{item.channel_product.item_sku}, Order Paid,
-      #{item.ordered}, #{product.inventory_balance}")
+    unshipped = item.ordered
+    unshipped = product.unshipped + unshipped if product.unshipped.present?
+    product.update(
+      change_log: "API, #{item.channel_product.item_sku}, #{item.channel_order.order_id}, Order Paid,
+       #{item.channel_product.listing_id}, #{unshipped}, #{product.inventory_balance}", unshipped: unshipped,
+        inventory_balance: (product.total_stock.to_i - unshipped.to_i)
+    )
   end
 end

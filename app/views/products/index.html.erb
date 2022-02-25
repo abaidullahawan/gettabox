@@ -153,7 +153,7 @@
                         </button>
                         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                           <a class="dropdown-item" href="<%= product_path(product)%>">Show</a>
-                          <%= link_to 'Logs', version_products_path(id: product.id), class: 'dropdown-item' %>
+                          <%= link_to 'Logs', version_products_path(id: product.id), class: 'dropdown-item' if product.product_type != 'multiple' %>
                           <%= link_to 'Archive', product_path(product), method: 'delete', data: {confirm: "Are you sure you want to archive"}, class: "dropdown-item"%>
                         </div>
                       </div>

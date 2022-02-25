@@ -123,7 +123,7 @@ Unmapped Product SKU's
                     <%= f.hidden_field :mapped_product_id, value: @matching_products[product.id].id %>
                     <div class="text-left d-flex ">
                       <div class="productSearchContainer">
-                        <% if item.status_unmapped? %>
+                        <% if item.present? && item.status_unmapped? %>
                           <span class='text-warning'>(Suggestion)-</span>
                         <% end %>
                         <%= @matching_products[product.id]&.title %>
@@ -136,7 +136,7 @@ Unmapped Product SKU's
                         </ul>
                         <%= f.hidden_field :searched_product_id %>
                       </div>
-                      <% if item.status_unmapped? %>
+                      <% if item.present? && item.status_unmapped? %>
                         <div class="productSearchContainer">
                           <button type="button" class="productSearchBtn btn btn-primary mr-5">
                             <i data-feather='search' class='icon wh-15 mt-minus-3'></i>
