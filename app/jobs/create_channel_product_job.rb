@@ -21,7 +21,6 @@ class CreateChannelProductJob < ApplicationJob
   def create_or_update_product(item)
     picture = item['PictureDetails'].present? ? item['PictureDetails']['GalleryURL'] : nil
 
-    byebug if item['Variations'].present? && (!item['Variations']['Variation'].class.eql? Array)
     if item['Variations'].present? && (item['Variations']['Variation'].class.eql? Array) && item['Variations']['Variation'].count > 1
       multi_product(item, item['Variations']['Variation'], picture)
     elsif item['Variations'].present? && (item['Variations']['Variation'].class.eql? Hash)
