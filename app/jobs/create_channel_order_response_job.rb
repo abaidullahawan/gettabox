@@ -53,9 +53,9 @@ class CreateChannelOrderResponseJob < ApplicationJob
     result = RefreshTokenService.refresh_token_api(@refresh_token, credential)
     return update_refresh_token(result[:body], @refresh_token) if result[:status]
 
-    flash[:alert] = (result[:error]).to_s
+    puts (result[:error]).to_s
   rescue StandardError
-    flash[:alert] = 'Please contact your administration for process'
+    puts 'Please contact your administration for process'
   end
 
   def update_refresh_token(result, refresh_token)
