@@ -32,9 +32,7 @@
                       <td class="text-center">
                         <% if product.channel_forecasting&.action == 'safe_stock_by' %>
                           -
-                        <% elsif product.channel_forecasting&.action == 'anticipate_by' %>
-                          +
-                        <% else %>
+                        <% elsif product.channel_forecasting&.action == 'anticipate_by'  || product.channel_forecasting&.action == 'anticipate_fake_stock_only_by' %>
                           +
                         <% end %>
                         <%= product.channel_forecasting&.type_number %>
@@ -58,12 +56,10 @@
                     <td class="text-center"><%= [(@product.inventory_balance.to_f/deduction_unit.to_f).floor, 0].max %></td>
                     <td class="text-center">
                       <% if multi_mapping.channel_forecasting&.action == 'safe_stock_by' %>
-                          -
-                        <% elsif multi_mapping.channel_forecasting&.action == 'anticipate_by' %>
-                          +
-                        <% else %>
-                          +
-                        <% end %>
+                        -
+                      <% elsif multi_mapping.channel_forecasting&.action == 'anticipate_by' || multi_mapping.channel_forecasting&.action == 'anticipate_fake_stock_only_by' %>
+                        +
+                      <% end %>
                       <%= multi_mapping.channel_forecasting&.type_number %>
                     </td>
                     <td class="text-center">
