@@ -43,7 +43,6 @@ class CreateChannelProductJob < ApplicationJob
       ChannelOrderItem.where(sku: product.item_sku)&.update_all(channel_product_id: product.id)
 
       rescue StandardError => e
-        byebug
         puts e.to_s
     end
   end
