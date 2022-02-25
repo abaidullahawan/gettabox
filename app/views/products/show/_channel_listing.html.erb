@@ -20,10 +20,9 @@
                 </tr>
                 <% @product.product_mappings.each.with_index(1) do |mapping, index| %>
                   <% product = mapping.channel_product %>
+                  <% deduction_unit = 1 %>
                   <a href="<%= product_mappings_path(q: {item_sku_or_listing_id_cont: product.listing_id}) %>" class='link_tag' style="text-decoration: none;">
                     <tr>
-                      <% deduction_unit = product.item_sku.split(" x ")[1].to_i %>
-                      <% deduction_unit = deduction_unit.zero? ? 1 : deduction_unit %>
                       <td class="text-center"><%= product.channel_type %></td>
                       <td class="text-center"><%= product.listing_id %></td>
                       <td class="text-center"><%= product.item_sku %></td>
@@ -46,9 +45,8 @@
                   </a>
                 <% end %>
                 <% @channel_listings.each do |multi_mapping| %>
+                  <% deduction_unit = multi_mapping.product_mapping&.product&.multipack_products&.find_by(child_id: @product.id).quantity.to_i %>
                   <tr>
-                    <% deduction_unit = multi_mapping.item_sku.split(" x ")[1].to_i %>
-                    <% deduction_unit = deduction_unit.zero? ? 1 : deduction_unit %>
                     <td class="text-center"><%= multi_mapping.channel_type %></td>
                     <td class="text-center"><%= multi_mapping.listing_id %></td>
                     <td class="text-center"><%= multi_mapping.item_sku %></td>
