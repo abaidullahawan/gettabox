@@ -30,7 +30,7 @@ class ChannelForecastingsController < ApplicationController
       if params[:channel_forecasting][:system_user_id].present?
         ChannelProduct.includes(product_mapping: [product: [product_suppliers: :system_user]])
                       .where('system_user.id': params[:channel_forecasting][:system_user_id])
-                      .update_all(channel_forecasting_id: @forecasting.id, customize: true)
+                      .update_all(channel_forecasting_id: @forecasting.id, customize: nil)
       end
       case params[:channel_forecasting][:filter_name]
       when 'product_sku'
@@ -38,9 +38,9 @@ class ChannelForecastingsController < ApplicationController
         .where(
           "products.sku #{filter[params[:channel_forecasting][:filter_by]]} ?",
            filter_with[params[:channel_forecasting][:filter_by]]
-        ).update_all(channel_forecasting_id: @forecasting.id, customize: true)
+        ).update_all(channel_forecasting_id: @forecasting.id, customize: nil)
       when 'channel'
-        ChannelProduct.where(channel_type: params[:channel_forecasting][:filter_by]).update_all(channel_forecasting_id: @forecasting.id, customize: true)
+        ChannelProduct.where(channel_type: params[:channel_forecasting][:filter_by]).update_all(channel_forecasting_id: @forecasting.id, customize: nil)
       end
       flash[:notice] = 'Channel Forecasting was successfully created.'
     else
