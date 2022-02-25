@@ -281,14 +281,15 @@ class ProductsController < ApplicationController
 
   def csv_create_records(csv)
     csv.each do |row|
-      product = Product.with_deleted.find_or_initialize_by(sku: row['sku'])
-      next product.update(row.to_hash) if row['category_id'].to_i.positive?
+      hash = row.to_hash
+      hash.delete(nil)
+      hash['product_type'] = hash['product_type'].downcase
+      product = Product.with_deleted.find_or_initialize_by(sku: hash['sku'])
+      next product.update(hash) if hash['category_id'].to_i.positive?
 
-      row['category_id'] = Category.where('title ILIKE ?', row['category_id'])
-                                   .first_or_create(title: row['category_id']).id
-      row = row.to_hash
-      row.delete(nil)
-      product.update!(row)
+      hash['category_id'] = Category.where('title ILIKE ?', hash['category_id'])
+                                   .first_or_create(title: hash['category_id']).id
+      product.update!(hash)
     end
   end
 
