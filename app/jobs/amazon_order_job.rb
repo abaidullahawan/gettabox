@@ -154,7 +154,7 @@ class AmazonOrderJob < ApplicationJob
 
   def multipack_product(item, product)
     available = product.multipack_products.map { |m| m.child.available_stock.to_i }
-    required = product.multipack_products.map { |m| m.quantity.to_i * order_item.ordered }
+    required = product.multipack_products.map { |m| m.quantity.to_i * item.ordered }
     check = available.zip(required).all? { |a, b| a >= b }
     return unless check
 
