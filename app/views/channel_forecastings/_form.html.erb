@@ -1,11 +1,11 @@
 <div class="row">
   <div class="col-12">
     <%= f.label :name %>
-    <%= f.text_field :name, class: 'form-control', placeholder: 'Please enter name for rule' %>
+    <%= f.text_field :name, class: 'form-control', placeholder: 'Please enter name for rule', required: true %>
   </div>
   <div class="col-6 col-4 filter-container">
     <%= f.label :filter_name %>
-    <%= f.select :filter_name, options_for_select(ChannelForecasting.filter_names.map { |key, value| [key.humanize, key] }, f.object.filter_name), {include_blank: "Please Select Filter Name"}, class: 'form-control filter-name-field' %>
+    <%= f.select :filter_name, options_for_select(ChannelForecasting.filter_names.map { |key, value| [key.humanize, key] }, f.object.filter_name), {include_blank: "Please Select Filter Name"}, class: 'form-control filter-name-field', required: true %>
   </div>
   <div class="col-6 col-4 filter-by-field-container mt-1">
     <%= f.label :filter_by %>
@@ -20,11 +20,11 @@
   </div>
   <div class="col-6 mt-1">
     <%= f.label :action %>
-    <%= f.select :action, options_for_select(ChannelForecasting.actions.map { |key, value| [key.humanize, key] }, f.object.action), {include_blank: "Please Select Action"}, class: 'form-control' %>
+    <%= f.select :action, options_for_select(ChannelForecasting.actions.map { |key, value| [key.humanize, key] }, f.object.action), {include_blank: "Please Select Action"}, class: 'form-control', required: true %>
   </div>
   <div class="col-6 mt-1">
     <%= f.label :type_number %>
-    <%= f.number_field :type_number, class: 'form-control', placeholder: 'Please enter number' %>
+    <%= f.number_field :type_number, class: 'form-control', placeholder: 'Please enter number', required: true %>
   </div>
   <div class="col-6 mt-1 mx-auto">
     <%= f.label :units %>
