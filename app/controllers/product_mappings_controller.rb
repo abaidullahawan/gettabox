@@ -83,15 +83,19 @@ class ProductMappingsController < ApplicationController
       channel_product_id: @channel_product.id,
       product_id: @product_id
     )
-    ordered_value = @channel_product.channel_order_items.pluck(:ordered).sum
-    @product.update(change_log: "Product UnMapped, #{@product.sku}, #{@channel_product.item_sku}, UnMapped, #{@channel_product.listing_id}", unshipped: (@product.unshipped.to_i - ordered_value.to_i), available_stock: (@product.total_stock.to_i - @product.unshipped.to_i))
-    if @product_mapping&.destroy
-      channel_order_ids = ChannelOrderItem.where(channel_product_id: 2855).pluck(:channel_order_id)
-      ChannelOrder.where(id: channel_order_ids).update_all(stage: 'unmapped_product_sku')
-      @channel_product.status_unmapped!
-      flash[:notice] = 'Product Un-mapped successfully'
+    if params[:commit] == 'Un-map' && @channel_product.channel_order_items.present?
+      flash[:alert] = 'Please first complete orders to unmapped products.'
     else
-      flash[:notice] = 'Product cannot be Un-mapped'
+      ordered_value = @channel_product.channel_order_items.pluck(:ordered).sum
+      @product.update(change_log: "Product UnMapped, #{@product.sku}, #{@channel_product.item_sku}, UnMapped, #{@channel_product.listing_id}", unshipped: (@product.unshipped.to_i - ordered_value.to_i), available_stock: (@product.total_stock.to_i - @product.unshipped.to_i))
+      if @product_mapping&.destroy
+        channel_order_ids = ChannelOrderItem.where(channel_product_id: 2855).pluck(:channel_order_id)
+        ChannelOrder.where(id: channel_order_ids).update_all(stage: 'unmapped_product_sku')
+        @channel_product.status_unmapped!
+        flash[:notice] = 'Product Un-mapped successfully'
+      else
+        flash[:notice] = 'Product cannot be Un-mapped'
+      end
     end
   end
 
