@@ -21,29 +21,37 @@ class CreateChannelProductJob < ApplicationJob
   def create_or_update_product(item)
     picture = item['PictureDetails'].present? ? item['PictureDetails']['GalleryURL'] : nil
 
-    return multi_product(item, item['Variations'], picture) if item['Variations'].present?
-
-    # byebug if item['Variations'].present? && (item['Variations']['Variation'].length = 1)
-    product = ChannelProduct
+    if item['Variations'].present? && (item['Variations']['Variation'].class.eql? Array) && item['Variations']['Variation'].count > 1
+      multi_product(item, item['Variations']['Variation'], picture)
+    elsif item['Variations'].present? && (item['Variations']['Variation'].class.eql? Hash)
+      single_variation_multi_product(item, item['Variations']['Variation'], picture)
+    else
+      product = ChannelProduct
               .create_with(channel_type: 'ebay', listing_id: item['ItemID'].to_i,
                            product_data: item, item_sku: item['SKU'], item_quantity: item['Quantity'],
                            item_image: picture, item_name: item['Title'], item_price: item['BuyItNowPrice'])
               .find_or_create_by(channel_type: 'ebay', listing_id: item['ItemID'].to_i)
     ChannelOrderItem.where(sku: product.item_sku)&.update_all(channel_product_id: product.id)
+    end
   end
 
   def multi_product(item, variations, picture)
     variations.each do |variation|
-      variation = variation['Variation']
       product = ChannelProduct
                 .create_with(channel_type: 'ebay', listing_id: item['ItemID'].to_i, product_data: item,
                              item_sku: variation['SKU'], item_quantity: variation['Quantity'],
                              item_image: picture, item_name: variation['VariationTitle'], item_price: item['BuyItNowPrice'])
                 .find_or_create_by(channel_type: 'ebay', listing_id: item['ItemID'].to_i, item_sku: variation['SKU'])
       ChannelOrderItem.where(sku: product.item_sku)&.update_all(channel_product_id: product.id)
-
-      rescue StandardError => e
-        puts e.to_s
     end
+  end
+
+  def single_variation_multi_product(item, variation, picture)
+    product = ChannelProduct
+                .create_with(channel_type: 'ebay', listing_id: item['ItemID'].to_i, product_data: item,
+                             item_sku: variation['SKU'], item_quantity: variation['Quantity'],
+                             item_image: picture, item_name: variation['VariationTitle'], item_price: item['BuyItNowPrice'])
+                .find_or_create_by(channel_type: 'ebay', listing_id: item['ItemID'].to_i, item_sku: variation['SKU'])
+      ChannelOrderItem.where(sku: product.item_sku)&.update_all(channel_product_id: product.id)
   end
 end
