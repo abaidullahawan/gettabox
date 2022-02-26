@@ -283,7 +283,7 @@ class ProductsController < ApplicationController
     csv.each.with_index(1) do |row, index|
       hash = row.to_hash
       hash.delete(nil)
-      hash['product_type'] = hash['product_type'].downcase
+      hash['product_type'] = hash['product_type']&.downcase
       hash['vat'] = hash['vat'].to_i
       product = Product.with_deleted.find_or_initialize_by(sku: hash['sku'])
       next product.update(hash) if hash['category_id'].to_i.positive?
@@ -295,7 +295,7 @@ class ProductsController < ApplicationController
   end
 
   def update_log(stock)
-    @product.update(manual_edit_stock: stock, available_stock: (@product.total_stock.to_i - @product.unshipped.to_i), change_log: "Manual Edit, #{params[:reason]}, #{stock}, Manual Edit, #{params[:description]}")
+    @product.update(manual_edit_stock: stock, inventory_balance: (@product.total_stock.to_i - @product.unshipped.to_i), change_log: "Manual Edit, #{params[:reason]}, #{stock}, Manual Edit, #{params[:description]}, #{(@product.total_stock.to_i - @product.unshipped.to_i)}")
     product = @product.product_mappings.last.channel_product if @product.product_mappings.present?
     return amazon_update(product, @product) if product.channel_type.eql? 'amazon'
 
