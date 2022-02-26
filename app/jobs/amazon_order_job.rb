@@ -174,9 +174,9 @@ class AmazonOrderJob < ApplicationJob
     unshipped_quantity = item.ordered
     unshipped = product.unshipped + unshipped_quantity if product.unshipped.present?
     if product.inventory_balance >= unshipped_quantity
-      product.update(change_log: "API, #{item.channel_product.item_sku}, #{item.channel_order.order_id}, Order Paid, 
-        #{item.channel_product.listing_id} ", unshipped: unshipped,
-        inventory_balance: inventory_balance, allocated_orders: product.allocated_orders.to_i + ordered)
+      product.update(change_log: "API, #{item.channel_product.item_sku}, #{item.channel_order.order_id}, Order Paid,
+        #{item.channel_product.listing_id} ", unshipped: unshipped, unshipped_orders: product.unshipped_orders.to_i + 1,
+        inventory_balance: inventory_balance, allocated: product.allocated.to_i + ordered, allocated_orders: product.allocated_orders.to_i + 1)
       item.update(allocated: true)
     else
       item.update(allocated: false)

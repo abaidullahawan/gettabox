@@ -91,7 +91,7 @@
                               </div>
                               <div class="col-4 col-padding">
                                 <p class="heading-table <%=dark_color%>">Alloc</p>
-                                <p class="table-value <%=dark_color%>"><%= record.child.allocated_orders.to_i  %></p>
+                                <p class="table-value <%=dark_color%>"><%= record.child.allocated.to_i  %></p>
                               </div>
                               <div class="col-4 col-padding">
                                 <p class="heading-table <%=dark_color%>">Disp</p>
@@ -118,7 +118,7 @@
                               </div>
                               <div class="col-4 col-padding">
                                 <p class="heading-table <%=dark_color%>">Alloc</p>
-                                <p class="table-value <%=dark_color%>"><%= product.channel_product&.product_mapping&.product&.allocated_orders.to_i %></p>
+                                <p class="table-value <%=dark_color%>"><%= product.channel_product&.product_mapping&.product&.allocated.to_i %></p>
                               </div>
                               <div class="col-4 col-padding">
                                 <p class="heading-table <%=dark_color%>">Disp</p>
@@ -145,7 +145,7 @@
             <%= page_entries_info @missing_customer_orders %>
           </div><br>
           <div class="pagination justify-content-center mt-1">
-            <%= paginate @missing_customer_orders, :param_name => :not_started_page,theme: "twitter-bootstrap-4",pagination_class: "pagination-sm",nav_class: "d-inline-b" %>
+            <%= paginate @missing_customer_orders, :param_name => :page,theme: "twitter-bootstrap-4",pagination_class: "pagination-sm",nav_class: "d-inline-b" %>
           </div>
         </div>
       </div>
