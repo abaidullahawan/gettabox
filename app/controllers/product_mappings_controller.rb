@@ -66,7 +66,7 @@ class ProductMappingsController < ApplicationController
       @product_mapping = ProductMapping.create!(channel_product_id: @channel_product.id,
                                                 product_id: @product_id)
 
-      @product.update(change_log: "Product Mapped, #{@product.sku}, #{@channel_product.item_sku}, Mapped, #{@channel_product.listing_id}, #{@product.inventory_balance}")
+      @product.update(change_log: "Product Mapped, #{@product.sku}, #{@channel_product.item_sku}, Mapped, #{@channel_product.listing_id}, #{@product.inventory_balance}", unshipped_orders: @product.unshipped_orders.to_i + 1)
       @channel_product.status_mapped! if @product_mapping.present?
       update_order_stage(@channel_product, @product)
       flash[:notice] = 'Product mapped successfully'
@@ -298,7 +298,7 @@ class ProductMappingsController < ApplicationController
   def product_mapping_params
     params
       .require(:product)
-      .permit(:sku, :title, :photo, :total_stock, :fake_stock, :pending_orders, :allocated_orders,
+      .permit(:sku, :title, :photo, :total_stock, :fake_stock, :pending_orders, :allocated,
               :available_stock, :length, :width, :height, :weight, :pack_quantity, :cost_price, :gst, :vat,
               :minimum, :maximum, :optimal, :category_id, :product_type, :season_id, :description,
               barcodes_attributes: %i[id title _destroy],
@@ -405,10 +405,12 @@ class ProductMappingsController < ApplicationController
     orders = ChannelOrder.joins(:channel_order_items).includes(:channel_order_items)
                          .where('channel_order_items.channel_product_id': channel_product.id)
     orders.each do |order|
+      next if order.channel_order_items.map { |i| i.channel_product.status}.any?('unmapped')
+
       order.update(stage: 'ready_to_dispatch')
       unshipped = order.channel_order_items.pluck(:ordered).sum
       unshipped = product.unshipped + unshipped if product.unshipped.present?
-      product.update(change_log: " Order Paid, #{channel_product.item_sku}, #{order.order_id}, Order Paid, #{channel_product.listing_id}, #{unshipped}, #{product.inventory_balance} ", unshipped: unshipped, inventory_balance: (product.total_stock.to_i - unshipped.to_i))
+      product.update(change_log: " Order Paid, #{channel_product.item_sku}, #{order.order_id}, Order Paid, #{channel_product.listing_id}, #{unshipped}, #{product.inventory_balance} ", unshipped: unshipped, inventory_balance: (product.total_stock.to_i - unshipped.to_i), unshipped_orders: product.unshipped_orders.to_i + 1)
     end
   end
 
@@ -423,7 +425,7 @@ class ProductMappingsController < ApplicationController
       product.multipack_products.each do |multi_pack_log|
         unshipped_log = multi_pack_log.quantity.to_i * order.channel_order_items.pluck(:ordered).sum
         unshipped = multi_pack_log.child.unshipped + unshipped_log if multi_pack_log.child.unshipped.present?
-        multi_pack_log.child.update(change_log: " Order Paid, #{channel_product.item_sku}, #{order.order_id}, Order Paid, #{channel_product.listing_id} ", unshipped: unshipped, inventory_balance: (multi_pack_log.child.total_stock.to_i - unshipped.to_i))
+        multi_pack_log.child.update(change_log: " Order Paid, #{channel_product.item_sku}, #{order.order_id}, Order Paid, #{channel_product.listing_id} ", unshipped: unshipped, inventory_balance: (multi_pack_log.child.total_stock.to_i - unshipped.to_i), unshipped_orders: multi_pack_log.child&.unshipped_orders.to_i + 1)
       end
     end
   end
