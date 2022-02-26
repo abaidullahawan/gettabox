@@ -21,7 +21,7 @@ class Product < ApplicationRecord
   has_many :product_mappings
   has_many :channel_order_items
 
-  belongs_to :category
+  belongs_to :category, optional: true
   belongs_to :season, optional: true
   has_one_attached :photo do |attachable|
     attachable.variant :thumb, resize: '100x100'

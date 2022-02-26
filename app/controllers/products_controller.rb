@@ -280,10 +280,11 @@ class ProductsController < ApplicationController
   end
 
   def csv_create_records(csv)
-    csv.each do |row|
+    csv.each.with_index(1) do |row, index|
       hash = row.to_hash
       hash.delete(nil)
       hash['product_type'] = hash['product_type'].downcase
+      hash['vat'] = hash['vat'].to_i
       product = Product.with_deleted.find_or_initialize_by(sku: hash['sku'])
       next product.update(hash) if hash['category_id'].to_i.positive?
 
