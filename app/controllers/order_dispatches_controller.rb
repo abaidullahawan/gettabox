@@ -462,6 +462,9 @@ class OrderDispatchesController < ApplicationController
   def ransack_params
     @q = ChannelOrder.includes(:channel_order_items).ransack(params[:q])
     @channel_orders = @q.result
+    @channel_orders = ChannelOrder.joins(channel_order_items: :channel_product)
+    .includes(channel_order_items: :channel_product)
+    .where('channel_products.item_sku LIKE ?', "%#{params[:q]['order_id_or_order_status_or_buyer_name_cont']}%") if @channel_orders.count.zero?
     @channel_types = ChannelOrder.channel_types
     @mail_service_rules = MailServiceRule.all
   end
