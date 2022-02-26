@@ -89,11 +89,10 @@ class CreateChannelOrderJob < ApplicationJob
   def allocate_or_unallocate(channel_items)
     channel_items.each do |item|
       product = item.channel_product.product_mapping.product
-      update_change_log(item, product)
       next multipack_product(item, product) unless product.product_type.eql? 'single'
 
-      available_stock = product.available_stock.to_f - item.ordered
-      update_available_stock(item, product, available_stock, item.ordered)
+      inventory_balance = product.inventory_balance.to_f - item.ordered
+      update_available_stock(item, product, inventory_balance, item.ordered)
     end
   end
 
@@ -116,24 +115,17 @@ class CreateChannelOrderJob < ApplicationJob
     end
   end
 
-  def update_available_stock(item, product, available_stock, ordered)
-    if product.available_stock >= item.ordered
-      product.update(available_stock: available_stock, allocated_orders: product.allocated_orders.to_i + ordered,
-        # change_log: "API, #{item.channel_order.id} #{item.channel_order.order_id}, Allocated, #{item.channel_product.listing_id}",
-       unshipped: product.unshipped.to_f + ordered.to_f )
+  def update_available_stock(item, product, inventory_balance, ordered)
+    unshipped_quantity = item.ordered
+    unshipped = product.unshipped + unshipped_quantity if product.unshipped.present?
+    if product.inventory_balance >= unshipped_quantity
+      product.update(change_log: "API, #{item.channel_product.item_sku}, #{item.channel_order.order_id}, Order Paid, 
+        #{item.channel_product.listing_id} ", unshipped: unshipped,
+        inventory_balance: inventory_balance, allocated_orders: product.allocated_orders.to_i + ordered)
       item.update(allocated: true)
     else
       item.update(allocated: false)
     end
   end
 
-  def update_change_log(item, product)
-    unshipped = item.ordered
-    unshipped = product.unshipped + unshipped if product.unshipped.present?
-    product.update(
-      change_log: "API, #{item.channel_product.item_sku}, #{item.channel_order.order_id}, Order Paid,
-       #{item.channel_product.listing_id}, #{unshipped}, #{product.inventory_balance}", unshipped: unshipped,
-        inventory_balance: (product.total_stock.to_i - unshipped.to_i)
-    )
-  end
 end

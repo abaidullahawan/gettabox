@@ -66,7 +66,7 @@ class ProductMappingsController < ApplicationController
       @product_mapping = ProductMapping.create!(channel_product_id: @channel_product.id,
                                                 product_id: @product_id)
 
-      @product.update(change_log: "Product Mapped, #{@product.sku}, #{@channel_product.item_sku}, Mapped, #{@channel_product.listing_id}")
+      @product.update(change_log: "Product Mapped, #{@product.sku}, #{@channel_product.item_sku}, Mapped, #{@channel_product.listing_id}, #{@product.inventory_balance}")
       @channel_product.status_mapped! if @product_mapping.present?
       update_order_stage(@channel_product, @product)
       flash[:notice] = 'Product mapped successfully'
@@ -121,9 +121,8 @@ class ProductMappingsController < ApplicationController
       if params['product']['product_type'] == 'multiple'
         update_multi_pack_logs(cd, @product)
       else
-        @product.update(change_log: "Product Mapped, #{@product.sku}, #{cd.item_sku}, Mapped, #{cd.listing_id}")
+        @product.update(change_log: "Product Mapped, #{@product.sku}, #{cd.item_sku}, Mapped, #{cd.listing_id}, #{@product.inventory_balance}")
         update_order_stage(cd, @product)
-        @product.update(unshipped: (@product.unshipped.to_i + cd.channel_order_items.pluck(:ordered).sum), available_stock: (@product.total_stock.to_i - @product.unshipped.to_i))
       end
       attach_photo(cd) unless @product.photo.attached? || cd.product_data['PictureDetails'].nil?
     else
@@ -417,14 +416,14 @@ class ProductMappingsController < ApplicationController
     orders = ChannelOrder.joins(:channel_order_items).includes(:channel_order_items)
                          .where('channel_order_items.channel_product_id': channel_product.id)
     product.multipack_products.each do |multi_pack_log|
-      multi_pack_log.child.update(change_log: "Product Mapped, #{multi_pack_log.child.sku}, #{channel_product.item_sku}, Mapped, #{channel_product.listing_id}")
+      multi_pack_log.child.update(change_log: "Product Mapped, #{multi_pack_log.child.sku}, #{channel_product.item_sku}, Mapped, #{channel_product.listing_id}, #{@product.inventory_balance}")
     end
     orders.each do |order|
       order.update(stage: 'ready_to_dispatch')
       product.multipack_products.each do |multi_pack_log|
         unshipped_log = multi_pack_log.quantity.to_i * order.channel_order_items.pluck(:ordered).sum
         unshipped = multi_pack_log.child.unshipped + unshipped_log if multi_pack_log.child.unshipped.present?
-        multi_pack_log.child.update(change_log: " Order Paid, #{channel_product.item_sku}, #{order.order_id}, Order Paid, #{channel_product.listing_id}, #{unshipped_log}, #{multi_pack_log.child.inventory_balance} ", unshipped: unshipped, inventory_balance: (multi_pack_log.child.total_stock.to_i - unshipped.to_i))
+        multi_pack_log.child.update(change_log: " Order Paid, #{channel_product.item_sku}, #{order.order_id}, Order Paid, #{channel_product.listing_id} ", unshipped: unshipped, inventory_balance: (multi_pack_log.child.total_stock.to_i - unshipped.to_i))
       end
     end
   end
