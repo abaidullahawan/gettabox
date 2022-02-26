@@ -10,10 +10,8 @@ class SystemUser < ApplicationRecord
   has_one :extra_field_value, as: :fieldvalueable
   has_many :purchase_orders, foreign_key: 'supplier_id', primary_key: 'id', dependent: :destroy
   validates :name, presence: true
-  # validates :email, presence: true, if: -> { user_type_supplier? }
-  # validates :phone_number, presence: true, if: -> { user_type_supplier? }
-  validates :email
-  validates :phone_number
+  validates :email, presence: true, if: -> { user_type_supplier? }
+  validates :phone_number, presence: true, if: -> { user_type_supplier? }
   has_one_attached :photo
   has_many :addresses, as: :addressable
   has_many :notes, as: :reference
