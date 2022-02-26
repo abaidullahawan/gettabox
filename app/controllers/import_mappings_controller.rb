@@ -116,7 +116,7 @@ class ImportMappingsController < ApplicationController
         mapping[col_name.to_s] = params[:"#{col_name}"]
       end
       @import_mapping = ImportMapping.new(table_name: params[:table_name], mapping_data: mapping,
-                                          sub_type: params[:sub_type], table_data: params[:header_data].split(' '),
+                                          sub_type: params[:sub_type], table_data: params[:table_data].split(' '),
                                           header_data: params[:header_data].split(' '))
     end
     respond_to do |format|
