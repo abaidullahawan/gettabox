@@ -12,8 +12,8 @@ class SystemUser < ApplicationRecord
   validates :name, presence: true
   # validates :email, presence: true, if: -> { user_type_supplier? }
   # validates :phone_number, presence: true, if: -> { user_type_supplier? }
-  validates :email
-  validates :phone_number
+#   validates :email
+#   validates :phone_number
   has_one_attached :photo
   has_many :addresses, as: :addressable
   has_many :notes, as: :reference
