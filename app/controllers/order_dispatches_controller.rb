@@ -317,7 +317,7 @@ class OrderDispatchesController < ApplicationController
     return multipack_unallocation(order_item, product) if product.product_type.eql? 'multiple'
 
     product.update(available_stock: product.available_stock.to_f + order_item.ordered,
-                    allocated: product.allocated.to_f - order_item.ordered, allocated_orders: product.allocated_orders.to_i - 1)
+                    allocated_orders: product.allocated_orders.to_f - order_item.ordered)
                   #  change_log: "#{order_item.channel_order.channel_type} API, #{order_item.channel_order.id}, #{order_item.channel_order.order_id}, UnAllocate, #{order_item.channel_product.listing_id}")
     order_item.update(allocated: false)
     flash[:notice] = 'Unallocation successful!'
@@ -329,7 +329,7 @@ class OrderDispatchesController < ApplicationController
 
     if product.available_stock.to_i >= order_item.ordered
       product.update(available_stock: product.available_stock.to_f - order_item.ordered,
-                      allocated: product.allocated.to_f + order_item.ordered, allocated_orders: product.allocated_orders.to_i + 1)
+                      allocated_orders: product.allocated_orders.to_f + order_item.ordered)
       #                change_log: "#{order_item.channel_order.channel_type} API, #{order_item.channel_order.id}, #{order_item.channel_order.order_id}, Allocated, #{order_item.channel_product.listing_id}")
       order_item.update(allocated: true)
     else
@@ -343,7 +343,7 @@ class OrderDispatchesController < ApplicationController
       quantity = multipack.quantity
       ordered = (order_item.ordered * quantity)
         child.update(available_stock: child.available_stock.to_f + ordered,
-                      allocated: child.allocated.to_f - ordered, allocated_orders: child.allocated_orders.to_i - 1)
+                      allocated_orders: child.allocated_orders.to_f - ordered)
                     #,change_log: "#{order_item.channel_order.channel_type} API, #{order_item.channel_order.id}, #{order_item.channel_order.order_id}, UnAllocate, #{order_item.channel_product.listing_id}"
     end
     order_item.update(allocated: false)
@@ -360,7 +360,7 @@ class OrderDispatchesController < ApplicationController
         quantity = multipack.quantity
         ordered = (order_item.ordered * quantity)
         child.update(available_stock: child.available_stock.to_f - ordered,
-                     allocated: child.allocated.to_f + ordered, allocated_orders: child.allocated_orders.to_i + 1)
+                     allocated_orders: child.allocated_orders.to_f + ordered)
                     #  change_log: "#{order_item.channel_order.channel_type} API, #{order_item.channel_order.id}, #{order_item.channel_order.order_id}, Allocated, #{order_item.channel_product.listing_id}")
       end
       order_item.update(allocated: true)
@@ -371,7 +371,7 @@ class OrderDispatchesController < ApplicationController
 
   def allocate(product, ordered)
     product.update(available_stock: product.available_stock.to_f - ordered,
-                   allocated: product.allocated.to_f + ordered)
+                   allocated_orders: product.allocated_orders.to_f + ordered)
                   #  change_log: "#{order_item.channel_order.channel_type} API, #{order_item.channel_order.id}, #{order_item.channel_order.order_id}, Allocated, #{order_item.channel_product.listing_id}")
   end
 
