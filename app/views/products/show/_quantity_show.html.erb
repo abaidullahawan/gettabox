@@ -18,9 +18,9 @@
             <td class="fake-stock-bg-color"><%= @product.fake_stock.to_i %></td>
             <td><%= @product.total_stock.to_i %></td>
             <td><%= @product.inventory_balance.to_i %></td>
-            <td><%= @product.unshipped.to_i %></td>
-            <td><%= @product.allocated_orders.to_i %></td>
-            <td><%= @product.unallocated.to_i %></td>
+            <td><%= @product.unshipped.to_i %> (<%= @product.unshipped_orders.to_i %>)</td>
+            <td><%= @product.allocated.to_i %> (<%= @product.allocated_orders.to_i %>)</td>
+            <td><%= @product.unallocated.to_i %> (<%= @product.unshipped_orders.to_i - @product.allocated_orders.to_i %>) </td>
           </tr>
         </table>
       </div>

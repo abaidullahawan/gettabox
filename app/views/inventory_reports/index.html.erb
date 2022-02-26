@@ -66,7 +66,7 @@
                 <td class="text-center"><%= @sales_unit[product.id] %></td>
                 <td class="text-center"><%= @sales[product.id] %></td>
                 <td class="text-center"><%=  @sales_unit[product.id] *7 %></td>
-                <td class="text-center"><%= product.allocated_orders.to_i %></td>
+                <td class="text-center"><%= product.allocated.to_i %></td>
                 <td class="text-center"><%= product.total_stock.to_i %></td>
                 <td class="text-center"><%= (product.total_stock.to_i/(@sales_unit[product.id]/ @number_of_days)) %></td>
               </tr>
