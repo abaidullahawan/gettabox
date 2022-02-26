@@ -317,7 +317,7 @@ class OrderDispatchesController < ApplicationController
     return multipack_unallocation(order_item, product) if product.product_type.eql? 'multiple'
 
     product.update(available_stock: product.available_stock.to_f + order_item.ordered,
-                   allocated_orders: product.allocated_orders.to_f - order_item.ordered)
+                    allocated_orders: product.allocated_orders.to_f - order_item.ordered)
                   #  change_log: "#{order_item.channel_order.channel_type} API, #{order_item.channel_order.id}, #{order_item.channel_order.order_id}, UnAllocate, #{order_item.channel_product.listing_id}")
     order_item.update(allocated: false)
     flash[:notice] = 'Unallocation successful!'
@@ -329,7 +329,7 @@ class OrderDispatchesController < ApplicationController
 
     if product.available_stock.to_i >= order_item.ordered
       product.update(available_stock: product.available_stock.to_f - order_item.ordered,
-                     allocated_orders: product.allocated_orders.to_f + order_item.ordered)
+                      allocated_orders: product.allocated_orders.to_f + order_item.ordered)
       #                change_log: "#{order_item.channel_order.channel_type} API, #{order_item.channel_order.id}, #{order_item.channel_order.order_id}, Allocated, #{order_item.channel_product.listing_id}")
       order_item.update(allocated: true)
     else
@@ -343,7 +343,7 @@ class OrderDispatchesController < ApplicationController
       quantity = multipack.quantity
       ordered = (order_item.ordered * quantity)
         child.update(available_stock: child.available_stock.to_f + ordered,
-                    allocated_orders: child.allocated_orders.to_f - ordered)
+                      allocated_orders: child.allocated_orders.to_f - ordered)
                     #,change_log: "#{order_item.channel_order.channel_type} API, #{order_item.channel_order.id}, #{order_item.channel_order.order_id}, UnAllocate, #{order_item.channel_product.listing_id}"
     end
     order_item.update(allocated: false)
@@ -581,7 +581,7 @@ class OrderDispatchesController < ApplicationController
 
     @missing_customer_detail = @channel_orders.where(channel_type: 'amazon', stage: 'ready_to_dispatch', system_user_id: nil)
                                               .order(created_at: :desc)
-    @missing_customer_orders = @missing_customer_detail.page(params[:unmatched_product_page]).per(params[:limit])
+    @missing_customer_orders = @missing_customer_detail.page(params[:page]).per(params[:limit])
   end
 
   def csv_export(orders)
