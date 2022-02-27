@@ -65,22 +65,24 @@ class PickAndPacksController < ApplicationController
     if product.present?
       product_scan = tracking_order.product_scan
       if product_scan.nil?
-        tracking_order.update(product_scan: { "#{product.id}": 1 })
+        product_scan = { "#{product.id}": 1 }
+        tracking_order.update(product_scan: product_scan)
         flash[:notice] = 'Product scaned successfully'
       else
         ordered_quantity = @products_group[product.sku].pluck(:quantity)&.sum()
         if ordered_quantity > product_scan[product.id.to_s].to_i
           product_scan[product.id.to_s] = product_scan[product.id.to_s].to_i + 1
           tracking_order.update(product_scan: product_scan)
-          total_product_scan = @products_group.map { |g| { g.last.first[:product].id.to_s => g.last.pluck(:quantity).sum.to_i }}.reduce(:merge)
-          return product_scan_successfully unless total_product_scan == product_scan
-
-          tracking_order.update(product_scan: total_product_scan, stage: 'completed', order_batch_id: nil, change_log: "Order Completed, #{tracking_order.id}, #{tracking_order.order_id}, #{current_user.personal_detail.full_name}")
-          flash[:notice] = 'Order completed successfully'
         else
           flash[:alert] = 'All products already scanned'
         end
       end
+      total_product_scan = @products_group.map { |g| { g.last.first[:product].id.to_s => g.last.pluck(:quantity).sum.to_i }}.reduce(:merge)
+      return product_scan_successfully unless total_product_scan == product_scan
+
+      update_all_products(tracking_order)
+      tracking_order.update(product_scan: total_product_scan, stage: 'completed', order_batch_id: nil, change_log: "Order Completed, #{tracking_order.id}, #{tracking_order.order_id}, #{current_user.personal_detail.full_name}")
+      flash[:notice] = 'Order completed successfully'
     else
       flash[:alert] = 'Product not found'
     end
@@ -96,6 +98,7 @@ class PickAndPacksController < ApplicationController
     local_products(tracking_order)
     product_scan = @products_group.map{|g| {"#{g.last.first[:product].id}"=> g.last.pluck(:quantity).sum.to_i}}.reduce(:merge)
     tracking_order.update(product_scan: product_scan, stage: 'completed', order_batch_id: nil, change_log: "Order Completed, #{tracking_order.id}, #{tracking_order.order_id}, #{current_user.personal_detail.full_name}")
+    update_all_products(tracking_order)
     flash[:notice] = 'Order completed successfully'
     redirect_to start_packing_pick_and_packs_path(q: {batch_name_eq: params[:q][:batch_name_eq]})
   end
@@ -276,18 +279,38 @@ class PickAndPacksController < ApplicationController
     multiple_products.each do |multiple_product|
       multiple_product.channel_product.product_mapping.product.multipack_products.each do |multi|
         product = multi.child
-        quantity = multi.quantity.to_f * (product.pack_quantity.nil? ? 1 : product.pack_quantity.to_f)
-        products << { sku: product.sku, product: product, quantity: quantity * multiple_product.ordered }
+        products << { sku: product.sku, product: product, quantity: multi.quantity.to_f * multiple_product.ordered }
       end
     end
 
     single_products.each do |single_product|
       product = single_product.channel_product.product_mapping.product
-      quantity = single_product.ordered * (product.pack_quantity.nil? ? 1 : product.pack_quantity.to_f)
-      products << { sku: product.sku, product: product, quantity: quantity }
+      products << { sku: product.sku, product: product, quantity: single_product.ordered.to_i }
     end
 
     @products_group = products.group_by { |d| d[:sku] }
+  end
+
+  def update_all_products(order)
+    order.channel_order_items.each do |order_item|
+      product = order_item.channel_product.product_mapping.product
+      item_quantity = order_item.ordered.to_i
+      next update_product_quantity(product, item_quantity) if product.product_type.eql? 'single'
+
+      product.multipack_products.each do |multi|
+        item_quantity = multi.quantity.to_i * order_item.ordered
+        product = multi.child
+        update_product_quantity(product, item_quantity)
+      end
+    end
+  end
+
+  def update_product_quantity(product, item_quantity)
+    product.update(total_stock: product.total_stock.to_i - item_quantity.to_i,
+                   unshipped: product.unshipped.to_i - item_quantity.to_i,
+                   unshipped_orders: product.unshipped_orders.to_i - 1,
+                   allocated_orders: product.allocated_orders.to_i - 1,
+                   allocated: product.allocated.to_i - item_quantity.to_i)
   end
 
   def product_scan_successfully

@@ -64,7 +64,7 @@ class Product < ApplicationRecord
     return unless product_type.eql? 'single'
 
     update_columns(length: max, height: min, inventory_balance: (total_stock.to_i - unshipped.to_i),
-                   unallocated: unshipped.to_i - allocated.to_i)
+                   unallocated: unshipped.to_i - allocated.to_i, available_stock: total_stock.to_i - allocated.to_i)
   end
 
   def available_stock_change
