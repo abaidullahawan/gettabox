@@ -18,7 +18,7 @@ class EbaySellingListJob < ApplicationJob
 
     ebay_products.each do |product|
       response = get_product_response(product, refresh_token)
-      sleep 1
+      sleep 5
       next unless response.status.to_s.include?('OK')
 
       @xml_response_data = Nokogiri::XML(response.body)

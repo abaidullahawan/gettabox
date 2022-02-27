@@ -13,7 +13,7 @@ class AmazonCreateReportService
   def self.create_report(access_token, url, document)
     signature = post_signature_generator(access_token, url, document)
     response = post_api_call(access_token, signature, url, document)
-    sleep 1
+    sleep 5
     return_response(response)
   end
 

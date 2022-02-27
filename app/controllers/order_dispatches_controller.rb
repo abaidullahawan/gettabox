@@ -282,6 +282,7 @@ class OrderDispatchesController < ApplicationController
       item.update(channel_product_id: product&.id)
     end
     update_order_stage
+    AmazonOrderItemJob.perform_later
     flash[:notice] = 'Channel Order Items updated!'
     redirect_to order_dispatches_path(order_filter: params[:order_filter])
   end
@@ -461,10 +462,11 @@ class OrderDispatchesController < ApplicationController
 
   def ransack_params
     @q = ChannelOrder.includes(:channel_order_items).ransack(params[:q])
-    @channel_orders = @q.result
+    name = params[:q].try(:[], 'order_id_or_order_status_or_buyer_name_cont')&.gsub('', ' ')
     @channel_orders = ChannelOrder.joins(channel_order_items: :channel_product)
     .includes(channel_order_items: :channel_product)
-    .where('channel_products.item_sku LIKE ?', "%#{params[:q]['order_id_or_order_status_or_buyer_name_cont']}%") if @channel_orders.count.zero?
+    .where("REPLACE(channel_products.item_sku, ' ', '') ILIKE REPLACE('%#{name}%', ' ', '')") if name.present?
+    @channel_orders = @q.result  if @channel_orders.nil? || @channel_orders.empty?
     @channel_types = ChannelOrder.channel_types
     @mail_service_rules = MailServiceRule.all
   end
