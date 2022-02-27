@@ -162,7 +162,7 @@ class ProductsController < ApplicationController
 
   def search_products_by_title
     @searched_products = Product.ransack('sku_or_title_cont': params[:search_value].downcase.to_s)
-                                .result.limit(20).pluck(:id, :sku, :title)
+                                .result.where(product_type: 'single').limit(20).pluck(:id, :sku, :title)
     respond_to do |format|
       format.json  { render json: @searched_products }
     end
@@ -289,8 +289,10 @@ class ProductsController < ApplicationController
       next product.update(hash) if hash['category_id'].to_i.positive?
 
       hash['category_id'] = Category.where('title ILIKE ?', hash['category_id'])
-                                   .first_or_create(title: hash['category_id']).id
+                                    .first_or_create(title: hash['category_id']).id
+      hash['product_location_id'] = ProductLocation.find_or_create_by(location: hash['product_location_id']).id
       product.update!(hash)
+      # Barcode.find_or_create_by(product_id: product.id, title: hash['title'])
     end
   end
 
