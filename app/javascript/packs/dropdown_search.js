@@ -10,6 +10,8 @@ $(document).on('turbolinks:load', function () {
     var product_title = target.value
     var list_class = '.' + listClass
     var dropdown_class = '.' + dropdownClass
+    var startTag = '<b>'
+    var endTag = '</b>'
 
     $.ajax({
       url: url,
@@ -26,7 +28,7 @@ $(document).on('turbolinks:load', function () {
         else {
           $.each(response, function () {
             index += 1;
-            $(dropdown_class).append('<li><a href="#" data-id=' + this[0] + ' class="dropdown-item ' + listClass + '" data-option-array-index=' + index + '>' + this.slice(1) + '</a></li>')
+            $(dropdown_class).append('<li><a href="#" data-id=' + this[0] + ' class="dropdown-item ' + listClass + '" data-option-array-index=' + index + '>' + startTag + this.slice(1).slice(0,1) + endTag  + this.slice(1).slice(1) + '</a></li>')
           });
         }
       }

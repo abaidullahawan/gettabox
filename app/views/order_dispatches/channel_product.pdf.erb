@@ -71,7 +71,7 @@
         <td class="text-center"><%= product.title %></td>
         <td class="text-center"><%= product.sku %></td>
         <td class="text-center" ><%= item.last.pluck(:quantity)&.sum() %></td>
-        <td class="text-center" ><%= product.location %></td>
+        <td class="text-center" ><%= product.&product_location.&location %></td>
       </tr>
     <% end %>
   </table>
