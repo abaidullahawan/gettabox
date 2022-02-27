@@ -13,7 +13,7 @@ class AmazonService
   def self.amazon_api(access_token, url)
     signature = signature_generator(access_token, url)
     response = api_call(signature, access_token, url)
-    sleep 1
+    sleep 5
     # byebug unless response.success?
     return_response(response)
   end
@@ -54,7 +54,7 @@ class AmazonService
   def self.next_orders_amz(next_token, access_token, url)
     signature = next_signature_generator(access_token, url, next_token)
     response = next_api_call(signature, access_token, url, next_token)
-    sleep 1
+    sleep 5
     result = return_response(response)
     return result unless result[:status]
 
@@ -108,7 +108,7 @@ class AmazonService
   def self.amazon_product_api(url, access_token)
     signature = signature_generator(access_token, url)
     response = api_call(signature, access_token, url)
-    sleep 1
+    sleep 5
     result = return_response(response)
     return return_response(response) if result[:status]
 
@@ -118,7 +118,7 @@ class AmazonService
   def self.limited_tries(result, url, access_token)
     @limit = 0 if @limit.blank? || @limit >= 3
     @limit += 1
-    sleep 1
+    sleep 5
     return amazon_product_api(url, access_token) if @limit < 3
 
     result
