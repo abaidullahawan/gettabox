@@ -307,6 +307,19 @@ $(document).on('turbolinks:load', function () {
     var same_export = export_ids.every((val, i, arr) => val === arr[0])
     var rule = object_ids.map(function (i, e) { return e.dataset.courier }).toArray();
     var same_rule = rule.every((val, i, arr) => val === arr[0]) && rule[0] == 'Manual Dispatch'
+    var allocated = object_ids.map(function (i, e) { return e.dataset.allocate }).toArray();
+
+    for(var i = 0; i < allocated.length; i++ ){
+      if(allocated[i] == 'true')
+      {
+        $('.jquery-selected-alert').html('Please allocate order first')
+        $('.jquery-selected-alert').addClass('bg-danger').removeClass('d-none').removeClass('bg-success')
+        $(".jquery-selected-alert").fadeTo(4000, 500).slideUp(500, function () {
+          $(".jquery-selected-alert").slideUp(500);
+        });
+        return
+      }
+    }
     if (same_rule) {
       $('.order_batch_print_courier_labels').addClass('d-none')
       $('.manual-dispatch-csv').removeClass('d-none')

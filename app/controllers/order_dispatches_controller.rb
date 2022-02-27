@@ -477,7 +477,7 @@ class OrderDispatchesController < ApplicationController
     # @unmatched_sku = []
     @unmatched_sku_body = @channel_orders.where(stage: 'unable_to_find_sku')
                                          .order(created_at: :desc)
-    @unmatched_sku = @unmatched_sku_body.page(params[:unmatched_page]).per(params[:limit])
+    @unmatched_sku = @unmatched_sku_body.page(params[:unmatched_page]).per(params[:limit] || 100)
     @matching_products = {}
     @un_matched_product_order.each do |order|
       order.channel_order_items.each do |item|
@@ -500,7 +500,7 @@ class OrderDispatchesController < ApplicationController
     return unless params[:order_filter].eql? 'completed'
 
     @completed = @channel_orders.where(stage: 'completed')
-    @completed_orders = @completed.order(created_at: :desc).page(params[:completed_page]).per(params[:limit])
+    @completed_orders = @completed.order(created_at: :desc).page(params[:completed_page]).per(params[:limit] || 100)
     return unless params[:export]
 
     @completed = @completed.where(selected: true) if params[:selected]
@@ -515,7 +515,7 @@ class OrderDispatchesController < ApplicationController
     return unless params[:order_filter].eql? 'issue'
 
     @issue = @channel_orders.where(stage: 'issue')
-    @issue_orders = @issue.order(created_at: :desc).page(params[:orders_page]).per(params[:limit])
+    @issue_orders = @issue.order(created_at: :desc).page(params[:orders_page]).per(params[:limit] || 100)
     return unless params[:export]
 
     @issue = @issue.where(selected: true) if params[:selected]
@@ -530,7 +530,7 @@ class OrderDispatchesController < ApplicationController
     return unless params[:order_filter].eql? 'unpaid'
 
     @unpaid_orders = @channel_orders.where(stage: %w[pending unpaid])
-    @unpaid = @unpaid_orders.order(created_at: :desc).page(params[:unpaid_page]).per(params[:limit])
+    @unpaid = @unpaid_orders.order(created_at: :desc).page(params[:unpaid_page]).per(params[:limit] || 100)
     return unless params[:export]
 
     @unpaid_orders = @unpaid_orders.where(selected: true) if params[:selected]
@@ -558,7 +558,7 @@ class OrderDispatchesController < ApplicationController
     @not_started_orders = @channel_orders.where(stage: 'ready_to_dispatch')
                                          .where.not(channel_type: 'amazon', system_user_id: nil)
     @not_started_orders = @not_started_orders.order(:order_type, created_at: :desc)
-    @not_started_order_data = @not_started_orders.page(params[:not_started_page]).per(params[:limit])
+    @not_started_order_data = @not_started_orders.page(params[:not_started_page]).per(params[:limit] || 100)
     return unless (params[:order_filter].eql? 'ready') && params[:export]
 
     @not_started_orders = @not_started_orders.where(selected: true) if params[:selected]
@@ -574,7 +574,7 @@ class OrderDispatchesController < ApplicationController
 
     @un_matched_product_order_body = @channel_orders.where(stage: 'unmapped_product_sku')
                                                     .order(created_at: :desc)
-    @un_matched_product_order = @un_matched_product_order_body.page(params[:unmatched_product_page]).per(params[:limit])
+    @un_matched_product_order = @un_matched_product_order_body.page(params[:unmatched_product_page]).per(params[:limit] || 100)
   end
 
   def ready_to_print_orders
@@ -586,7 +586,7 @@ class OrderDispatchesController < ApplicationController
 
     @missing_customer_detail = @channel_orders.where(channel_type: 'amazon', stage: 'ready_to_dispatch', system_user_id: nil)
                                               .order(created_at: :desc)
-    @missing_customer_orders = @missing_customer_detail.page(params[:page]).per(params[:limit])
+    @missing_customer_orders = @missing_customer_detail.page(params[:page]).per(params[:limit] || 100)
   end
 
   def csv_export(orders)
