@@ -21,6 +21,7 @@ $(document).on('turbolinks:load', function () {
     if ((title != "") && (sku != "") && (category != "")) {
       $('.multi-basic-info-form').addClass('d-none')
       $('.multi-detail-form').removeClass('d-none')
+      $('.create_product_button').removeClass('d-none')
     }
     else {
       if (title == "") {
@@ -38,6 +39,7 @@ $(document).on('turbolinks:load', function () {
   $('.multi_detail_info_button').on('click', function () {
     $('.multi-detail-form').addClass('d-none')
     $('.multi-basic-info-form').removeClass('d-none')
+    $('.create_product_button').addClass('d-none')
   })
 
   $('.basic_info_button').on('click', function () {

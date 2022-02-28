@@ -139,11 +139,12 @@ class ProductMappingsController < ApplicationController
     when 'Create'
       create_product
     end
-    if request.referrer.include? 'order_dispatches'
-      redirect_to order_dispatches_path(order_filter: 'unprocessed')
-    else
-      redirect_to product_mappings_path
-    end
+    redirect_to request.referrer
+    # if request.referrer.include? 'order_dispatches'
+    #   redirect_to order_dispatches_path(order_filter: 'unprocessed')
+    # else
+    #   redirect_to product_mappings_path
+    # end
   end
 
   def export_csv
@@ -402,8 +403,9 @@ class ProductMappingsController < ApplicationController
   end
 
   def update_order_stage(channel_product, product)
-    orders = ChannelOrder.joins(:channel_order_items).includes(:channel_order_items)
-                         .where('channel_order_items.channel_product_id': channel_product.id)
+    ids = ChannelOrder.joins(:channel_order_items).includes(:channel_order_items)
+                         .where('channel_order_items.channel_product_id': channel_product.id).pluck(:id)
+    orders = ChannelOrder.where(id: ids)
     orders.each do |order|
       next if order.channel_order_items.map { |i| i.channel_product.status}.any?('unmapped')
 

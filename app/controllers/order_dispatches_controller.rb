@@ -481,7 +481,7 @@ class OrderDispatchesController < ApplicationController
     @matching_products = {}
     @un_matched_product_order.each do |order|
       order.channel_order_items.each do |item|
-        matching = Product.find_by('sku LIKE ?', "%#{item.sku}%")
+        matching = item.channel_product.status_mapped? ? item.channel_product.product_mapping&.product : Product.find_by('sku LIKE ?', "%#{item.sku}%")
         @matching_products[item.id] = matching if matching.present?
       end
     end

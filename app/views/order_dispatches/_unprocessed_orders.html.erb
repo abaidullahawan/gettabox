@@ -110,6 +110,7 @@ Unmapped Product SKU's
           <td>
             <% order.channel_order_items&.each do |product|%>
               <%= image_tag(product.channel_product.item_image, width: '55px', height: '80px', class: 'mr-3') if product.channel_product&.item_image.present? %><br>
+              <div class="font-weight-bold"><%= product.line_item_id if product.line_item_id.present? %></div>
               <%= product&.sku %><br>
             <% end %>
           </td>
@@ -154,16 +155,18 @@ Unmapped Product SKU's
                       <%= f.hidden_field :searched_product_id %>
                     </div>
                   <% end %>
-                    <div class="dropdown dropleft">
-                      <button class="btn btn-primary" type="button" class="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Actions
-                      </button>
-                      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                        <%= f.submit 'Map', class: "dropdown-item" %>
-                        <a type="button" class="dropdown-item create-single-product-mapping" data-id="<%= item&.id %>" data-item = '<%= order.channel_order_items.to_json.html_safe %>' >Create Single Pack</a>
-                        <a type="button" class="dropdown-item create-multi-product-mapping" data-id="<%= item&.id %>" data-item = '<%= order.channel_order_items.to_json.html_safe %>' >Create Multi Pack</a>
+                    <% if item.status_unmapped? %>
+                      <div class="dropdown dropleft">
+                        <button class="btn btn-primary" type="button" class="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                          Actions
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                          <%= f.submit 'Map', class: "dropdown-item" %>
+                          <a type="button" class="dropdown-item create-single-product-mapping" data-id="<%= item&.id %>" data-item = '<%= order.channel_order_items.to_json.html_safe %>' >Create Single Pack</a>
+                          <a type="button" class="dropdown-item create-multi-product-mapping" data-id="<%= item&.id %>" data-item = '<%= order.channel_order_items.to_json.html_safe %>' >Create Multi Pack</a>
+                        </div>
                       </div>
-                    </div>
+                    <% end %>
                 </div>
                 <% end %>
             <% end %>
@@ -222,7 +225,7 @@ Unmapped Product SKU's
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary mr-auto" data-dismiss="modal">Close</button>
-            <%= f.submit(@product.new_record? ? "Create" : "Save changes", class: 'btn btn-outline-primary create_product_button') %>
+            <%= f.submit(@product.new_record? ? "Create" : "Save changes", class: 'btn btn-outline-primary create_product_button d-none') %>
         </div>
       </div>
     </div>
