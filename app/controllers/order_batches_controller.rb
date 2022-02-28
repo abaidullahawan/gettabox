@@ -59,7 +59,14 @@ class OrderBatchesController < ApplicationController
         system_user_data[key] = attribute if SystemUser.column_names.excluding(to_be_ignored).include? attribute
         mail_service_label_data[key] = attribute if MailServiceLabel.column_names.excluding(to_be_ignored).include? attribute
       end
-      attributes = channel_order_data.keys + channel_order_item_data.keys + system_user_data.keys + address_data.keys + mail_service_label_data.keys
+      attributes = system_user_data.keys + channel_order_item_data.keys + mail_service_label_data.keys + address_data.keys + channel_order_data.keys
+      attributes[1], attributes[15] = attributes[15], attributes[1]
+      attributes[2], attributes[15] = attributes[16], attributes[2]
+      attributes[4], attributes[17] = attributes[17], attributes[4]
+      attributes[4], attributes[5] = attributes[5], attributes[4]
+      attributes[5], attributes[6] = attributes[6], attributes[5]
+      attributes[6], attributes[7] = attributes[7], attributes[6]
+      attributes[7], attributes[8] = attributes[8], attributes[7]
       @csv = CSV.generate(headers: true) do |csv|
         csv << attributes
         orders.each do |order|
@@ -71,7 +78,15 @@ class OrderBatchesController < ApplicationController
           address_csv = address_data.values.map { |attr| order.system_user&.addresses&.find_by(address_title: 'delivery')&.send(attr) }
           system_user_csv = system_user_data.values.map { |attr| order.system_user&.send(attr) }
           label_csv = mail_service_label_data.values.map { |attr| order.assign_rule.mail_service_labels.first.send(attr) }
-          csv << order_csv + item_csv + system_user_csv + address_csv + label_csv
+          row = system_user_csv + item_csv + label_csv + address_csv + order_csv
+          row[1], row[15] = row[15], row[1]
+          row[2], row[16] = row[16], row[2]
+          row[4], row[17] = row[17], row[4]
+          row[4], row[5] = row[5], row[4]
+          row[5], row[6] = row[6], row[5]
+          row[6], row[7] = row[7], row[6]
+          row[7], row[8] = row[8], row[7]
+          csv << row
         end
       end
       request.format = 'csv'
