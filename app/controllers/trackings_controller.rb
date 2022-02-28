@@ -173,6 +173,7 @@ class TrackingsController < ApplicationController
       order.update(stage: 'ready_to_print', order_batch_id: batch.id, change_log: "Order Exported, #{order.id}, #{order.order_id}, #{current_user.personal_detail.full_name}")
       order.update(change_log: "Channel Updated, #{order.id}, #{order.order_id}, #{current_user.personal_detail&.full_name}") if batch.update_channels
     end
+    AmazonTrackingJob.perform_later(order_ids: order_ids) if batch.update_channels
   end
 
   def redirect_response

@@ -174,6 +174,8 @@ class OrderDispatchesController < ApplicationController
   def bulk_method
     return unless params[:object_ids].excluding('0').present?
 
+    return bulk_allocation if params['commit'].eql? 'allocation'
+
     if params[:commit] == 'courier_csv'
       @orders = ChannelOrder.where(id: params[:object_ids].excluding('0'), selected: true)
       courier_csv_export(@orders)
@@ -300,7 +302,6 @@ class OrderDispatchesController < ApplicationController
 
   def allocations
     order_items = ChannelOrder.find_by(id: params[:listing_id]).channel_order_items
-    # return flash[:alert] = 'Item not Found' unless order_item.present?
     if params[:allocate].eql? 'true'
       order_items.each do |item|
         allocate_item(item)
@@ -634,5 +635,27 @@ class OrderDispatchesController < ApplicationController
     else
       order.update(stage: 'ready_to_dispatch')
     end
+  end
+
+  def bulk_allocation
+    orders = ChannelOrder.where(id: params[:object_ids])
+    not_allocated = []
+    orders.each do |order|
+      if order.channel_order_items
+              .joins(channel_product: [product_mapping: :product])
+              .where('products.available_stock >= channel_order_items.ordered')
+              .count < order.channel_order_items.count
+          not_allocated << order.order_id
+        else
+        order.channel_order_items.each do |item|
+          next if item.allocated
+
+          allocate_item(item)
+        end
+        flash[:notice] = 'Allocation successful'
+      end
+    end
+    flash[:alert] = "Allocation failed for #{not_allocated}. Available stock not enough" if not_allocated.present?
+    redirect_to request.referrer
   end
 end
