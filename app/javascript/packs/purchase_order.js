@@ -25,7 +25,6 @@ $(document).on('turbolinks:load', function () {
     else {
       $('.payment_method_value').val("unpaid")
     }
-    debugger
     $('.edit_purchase_order').submit();
   })
 

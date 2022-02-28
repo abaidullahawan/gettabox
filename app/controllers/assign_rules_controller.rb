@@ -41,8 +41,8 @@ class AssignRulesController < ApplicationController
     @assign_rule.update(criteria: criteria)
     @assign_rule.update(status: 'customized') if (params[:status].eql? 'customized') || check_labels(assign_rule_params[:mail_service_labels_attributes]['0']) || assign_rule_params[:mail_service_labels_attributes]['1'].present?
     channel_order.update(assign_rule_id: @assign_rule.id)
-    redirect_to order_dispatches_path(order_filter: 'ready')
     flash[:notice] = 'Mail Service Rule Updated!'
+    redirect_to request.referrer
   end
 
   private
