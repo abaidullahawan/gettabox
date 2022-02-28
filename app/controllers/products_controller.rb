@@ -292,7 +292,7 @@ class ProductsController < ApplicationController
                                     .first_or_create(title: hash['category_id']).id
       hash['product_location_id'] = ProductLocation.find_or_create_by(location: hash['product_location_id']).id
       product.update!(hash)
-      # Barcode.find_or_create_by(product_id: product.id, title: hash['title'])
+      Barcode.find_or_create_by(product_id: product.id, title: hash['location'])
     end
   end
 
