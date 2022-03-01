@@ -1,43 +1,42 @@
 <table class="table table-hover text-vertical-middle mb-0">
-  <thead class="bort-none borpt-0">
-    <tr>
-      <th>
-        <input type="checkbox" id="customSwitchAll" name="" value="" class='select-all-checkbox'>
-      </th>
-      <th scope="col">Channel</th>
-      <th scope="col">Order Information</th>
-      <th scope="col">Listings</th>
-      <th scope="col">Information</th>
-      <th scope="col">Courier Service</th>
-      <th scope="col">Tracking</th>
-      <th scope="col">Date</th>
-      <th scope="col">Total</th>
-      <th scope="col">Status</th>
+    <div class="d-flex mb-3 pb-3 d-flex align-items-center" style="border-bottom: 1px solid #dee2e6">
+      <div style="width: 3%;">
+        <input type="checkbox" id="customSwitchAll" name="" value="" class='select-all-checkbox ml-2'>
+      </div>
+      <div class="col-1 text-center d-flex align-items-center">Channel</div>
+      <div class="text-center d-flex align-items-center" style="width: 10%">Order Information</div>
+      <div class="col-3 text-center d-flex align-items-center">Listings</div>
+      <div class="col-2 text-center d-flex align-items-center">Information</div>
+      <div class="d-flex align-items-center" style="width: 5%">Courier Service</div>
+      <div class="col-1 text-center d-flex align-items-center" sytle="width: 10%">Tracking</div>
+      <div class="col-1 text-center d-flex align-items-center">Date</div>
+      <div class="col-1 d-flex align-items-center" style="width: 5%">Total</div>
+      <div class="text-center" style="width: 5%">Status</div>
       <!--th scope="col"></th-->
-    </tr>
-  </thead>
-  <tbody>
+    </div>
     <% channel_orders.each.with_index(1) do |order, index| %>
-        <tr>
-          <td>
+        <div class="d-flex mb-3 pb-3 d-flex align-items-center" style="border-bottom: 1px solid #dee2e6">
+          <div class="font-sm d-flex align-items-center" style="width: 3%;">
             <div id="<%=order.id%>" class= 'orders-switch' name="orders-switch">
               <input id="object_ids[]" class="ml-2 form_field_questions" type="checkbox" data-allocate = '<%= (order.channel_order_items.pluck(:allocated) - [true]).present? %>' data-courier="<%= order.assign_rule&.mail_service_rule&.courier&.name %>" data-export="<%= order.assign_rule&.mail_service_rule&.export_mapping_id %>" data-item="<%= order.channel_order_items.count %>" value="<%=order.id%>" name="object_ids[]">
               <%# f.check_box 'object_ids[]', {'data-item': order.channel_order_items.count}, order.id %>
             </div>
-          </td>
-          <td style = "width: 70px">
+          </div>
+          <div class="font-sm col-1">
             <%= render  'image_partial', order: order %>
-          </td>
-          <td>
-            <%= order.order_id %>
-            <br><%= order.buyer_username %>
-            <br><strong><b><%= order.buyer_name %></b></strong>
-            <br><span class="sku-width"><%= order.system_user&.addresses&.find_by(address_title: 'delivery')&.address%></span>
-          </td>
-          <td style="width: 400px">
+          </div>
+          <div class="font-sm d-flex align-items-center" style="width: 10%;">
+            <div>
+              <%= order.order_id %>
+              <br><%= order.buyer_username %>
+              <br><strong><b><%= order.buyer_name %></b></strong>
+              <br><span class="sku-width"><%= order.system_user&.addresses&.find_by(address_title: 'delivery')&.address%></span>
+            </div>
+          </div>
+          <div class="font-sm col-3 d-flex align-items-center">
             <% order.channel_order_items&.each do |product|%>
-              <%= link_to product_mappings_path(q:{item_sku_or_listing_id_cont: product.sku}) do %>
-                <div class="card-style px-3 mt-1 relative">
+              <%= link_to product_mappings_path(q:{item_sku_or_listing_id_cont: product.sku}), class:'w-full' do %>
+                <div class="card-style px-1 mt-1 relative">
                   <div>
                     <span class="order-listing order-quantity"><%= product.ordered %></span>
                     <div class="d-flex">
@@ -48,7 +47,7 @@
                           <%= image_tag('user/1.jpg', style: "border-radius: 5px;", width: "80px", height: "100%", class: 'mr-3 img-thumbnail img-height', alt: 'User Image') %>
                         <% end %>
                       </div>
-                      <div>
+                      <div class="ml-2">
                         <% title = product&.channel_product.present? ? product&.channel_product&.item_name : product&.product&.title %>
                         <span class="truncate text-white" title="<%= title %>"><%= title %></span><br>
                         <b class = "text-white"><%= product.line_item_id if product.line_item_id.present? %></b><br>
@@ -59,15 +58,15 @@
                 </div>
               <% end %>
             <% end %>
-          </td>
-          <td style="width: 300px;">
+          </div>
+          <div class="col-2 d-flex align-items-center">
             <% order.channel_order_items.each do |product|%>
               <% if product.channel_product&.product_mapping.present? || product.product.present?  %>
                 <% if product.channel_product&.product_mapping&.product&.product_type_multiple? %>
                   <% product.channel_product&.product_mapping&.product&.multipack_products&.each do |record| %>
                   <% light_color = product.allocated ? 'bg-success-light' : 'bg-danger'%>
                   <% dark_color = product.allocated ? 'bg-success-dark' : 'bg-danger-dark'%>
-                  <div class="card-style2 <%=light_color%>">
+                  <div class="card-style2 w-full <%=light_color%>">
                     <%= link_to record.child.sku, product_path(record.child.id), target: 'blank', class: 'text-white' %>
                     <p style="color: white;">
                       <b>Location:</b> <span><%= record.child.location %></span>
@@ -78,16 +77,16 @@
                     </p>
                     <div class="d-flex">
                       <div class="col-4 col-padding">
-                        <p class="heading-table <%=dark_color%>">Avail</p>
-                        <p class="table-value <%=dark_color%>"><%= record.child.available_stock.to_i %></p>
+                        <p class="heading-table font-sm <%=dark_color%>">Avail</p>
+                        <p class="table-value mb-0 <%=dark_color%>"><%= record.child.available_stock.to_i %></p>
                       </div>
                       <div class="col-4 col-padding">
-                        <p class="heading-table <%=dark_color%>">Alloc</p>
-                        <p class="table-value <%=dark_color%>"><%= record.child.allocated.to_i  %></p>
+                        <p class="heading-table font-sm <%=dark_color%>">Alloc</p>
+                        <p class="table-value mb-0 <%=dark_color%>"><%= record.child.allocated.to_i  %></p>
                       </div>
                       <div class="col-4 col-padding">
-                        <p class="heading-table <%=dark_color%>">Disp</p>
-                        <p class="table-value <%=dark_color%>">0</p>
+                        <p class="heading-table font-sm <%=dark_color%>">Disp</p>
+                        <p class="table-value mb-0 <%=dark_color%>">0</p>
                       </div>
                     </div>
                   </div>
@@ -96,7 +95,7 @@
                   <% local_product = product.channel_product&.product_mapping&.product || product.product %>
                   <% light_color = product.allocated ? 'bg-success-light' : 'bg-danger'%>
                   <% dark_color = product.allocated ? 'bg-success-dark' : 'bg-danger-dark'%>
-                  <div class="card-style2 <%=light_color%>">
+                  <div class="card-style2 w-full <%=light_color%>">
                     <%= link_to local_product&.sku, product_path(local_product&.id), target: 'blank', style: "color: white" %>
                     <p style="color: white;">
                       <b>Location:</b> <span><%= local_product&.location %></span>
@@ -107,24 +106,24 @@
                     </p>
                     <div class="d-flex">
                       <div class="col-4 col-padding">
-                        <p class="heading-table <%=dark_color%>">Avail</p>
-                        <p class="table-value <%=dark_color%>"><%= local_product&.available_stock.to_i %></p>
+                        <p class="heading-table font-sm <%=dark_color%>">Avail</p>
+                        <p class="table-value mb-0 <%=dark_color%>"><%= local_product&.available_stock.to_i %></p>
                       </div>
                       <div class="col-4 col-padding">
-                        <p class="heading-table <%=dark_color%>">Alloc</p>
-                        <p class="table-value <%=dark_color%>"><%= local_product&.allocated.to_i %></p>
+                        <p class="heading-table font-sm <%=dark_color%>">Alloc</p>
+                        <p class="table-value mb-0 <%=dark_color%>"><%= local_product&.allocated.to_i %></p>
                       </div>
                       <div class="col-4 col-padding">
-                        <p class="heading-table <%=dark_color%>">Disp</p>
-                      <p class="table-value <%=dark_color%>">0</p>
+                        <p class="heading-table font-sm <%=dark_color%>">Disp</p>
+                      <p class="table-value mb-0 <%=dark_color%>">0</p>
                     </div>
                     </div>
                   </div>
                 <% end %>
               <% end %>
             <% end %>
-          </td>
-          <td>
+          </div>
+          <div class="font-sm d-flex align-items-center" style="width: 5%">
             <% if order.assign_rule.present? %>
               <span class="mt-2 mr-2 badge badge-warning mb-1"><%= order.assign_rule&.status %></span>
               <span class="update-rule-modal click_able_cursor" data-id= "<%= order.id %>"data-index= "<%=index%>">
@@ -184,8 +183,8 @@
                 <%= hidden_field_tag 'weight',  @weight, class: "weight-value"%>
               </div>
             <% end %>
-          </td>
-          <td>
+          </div>
+          <div class="font-sm d-flex align-items-center" style="width: 10%">
             <% if order.assign_rule %>
               <%= order.assign_rule.mail_service_rule&.courier&.name %><br>
               <%= ExportMapping.find_by(id: order.assign_rule&.mail_service_rule&.export_mapping_id)&.sub_type %>
@@ -195,27 +194,28 @@
                 <%= tracking.tracking_no %>
               <% end %>
             <% end %>
-          </td>
-          <td style="width: 100px;"><%= order.created_at.strftime("%m/%d/%Y %H:%M") %></td>
-          <td><%= order.total_amount%></td>
-          <td>
-            <span class="badge badge_warning py-1"><%= order.order_status%></span><br>
-              <div class="dropdown dropleft">
-                <button class="btn btn-primary" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Actions">
-                  <i data-feather='bell' class='icon wh-15 mt-minus-3'></i>
-                </button>
-                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                  <a class="dropdown-item" href="<%= order_dispatch_path(order)%>" >Show</a>
-                  <% if (order.channel_order_items.map{|i| i.allocated} & [true]).any? %>
-                    <%= link_to 'Unallocate', allocations_order_dispatches_path(allocate: false, listing_id: order.id, order_filter: params[:order_filter]), class: 'dropdown-item' %>
-                  <% else %>
-                    <%= link_to 'Allocate', allocations_order_dispatches_path(allocate: true, listing_id: order.id, order_filter: params[:order_filter]), class: 'dropdown-item' %>
-                  <% end %>
-                  <%= link_to 'Logs', version_order_dispatches_path(id: order.id), class: 'dropdown-item' %>
+          </div>
+          <div class="font-sm col-1 d-flex align-items-center"><%= order.created_at.strftime("%m/%d/%Y %H:%M") %></div>
+          <div class="font-sm text-center d-flex align-items-center" style="width: 5%"><%= order.total_amount%></div>
+          <div class="font-sm col-1 pl-0 d-flex align-items-center" style="width: 5%">
+            <div class="text-center">
+              <span class="badge badge_warning py-1 font-sm"><%= order.order_status%></span><br>
+                <div class="dropdown dropleft">
+                  <button class="btn btn-primary p-1" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Actions">
+                    <i data-feather='bell' class='icon wh-15 mt-minus-3'></i>
+                  </button>
+                  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <a class="dropdown-item" href="<%= order_dispatch_path(order)%>" >Show</a>
+                    <% if (order.channel_order_items.map{|i| i.allocated} & [true]).any? %>
+                      <%= link_to 'Unallocate', allocations_order_dispatches_path(allocate: false, listing_id: order.id, order_filter: params[:order_filter]), class: 'dropdown-item' %>
+                    <% else %>
+                      <%= link_to 'Allocate', allocations_order_dispatches_path(allocate: true, listing_id: order.id, order_filter: params[:order_filter]), class: 'dropdown-item' %>
+                    <% end %>
+                    <%= link_to 'Logs', version_order_dispatches_path(id: order.id), class: 'dropdown-item' %>
+                  </div>
                 </div>
               </div>
-          </td>
-        </tr>
+          </div>
+        </div>
     <% end %>
-  </tbody>
 </table>
