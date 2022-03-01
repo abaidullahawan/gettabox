@@ -68,7 +68,7 @@
                 <% light_color = product.allocated ? 'bg-success-light' : 'bg-danger'%>
                 <% dark_color = product.allocated ? 'bg-success-dark' : 'bg-danger-dark'%>
                 <div class="card-style2 <%=light_color%>">
-                  <%= link_to record.child.sku, product_path(record.child.id), target: 'blank' %>
+                  <%= link_to record.child.sku, product_path(record.child.id), target: 'blank', class:'text-white' %>
                   <p style="color: white;">
                     <b>Location:</b> <span><%= record.child.location %></span>
                   </p>
