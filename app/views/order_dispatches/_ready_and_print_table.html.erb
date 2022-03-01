@@ -34,94 +34,98 @@
             </div>
           </div>
           <div class="font-sm col-3 d-flex align-items-center">
-            <% order.channel_order_items&.each do |product|%>
-              <%= link_to product_mappings_path(q:{item_sku_or_listing_id_cont: product.sku}), class:'w-full' do %>
-                <div class="card-style px-1 mt-1 relative">
-                  <div>
-                    <span class="order-listing order-quantity"><%= product.ordered %></span>
-                    <div class="d-flex">
-                      <div>
-                        <% if product.channel_product&.item_image.present?%>
-                            <%= image_tag(product.channel_product.item_image, style: "border-radius: 5px;", width: '80px', height: '100%', class: 'mr-3')%>
-                        <% else %>
-                          <%= image_tag('user/1.jpg', style: "border-radius: 5px;", width: "80px", height: "100%", class: 'mr-3 img-thumbnail img-height', alt: 'User Image') %>
-                        <% end %>
+            <div class="w-full">
+              <% order.channel_order_items&.each do |product|%>
+                <%= link_to product_mappings_path(q:{item_sku_or_listing_id_cont: product.sku}), class:'w-full' do %>
+                  <div class="card-style px-1 mt-1 relative">
+                    <div>
+                      <span class="order-listing order-quantity"><%= product.ordered %></span>
+                      <div class="d-flex">
+                        <div>
+                          <% if product.channel_product&.item_image.present?%>
+                              <%= image_tag(product.channel_product.item_image, style: "border-radius: 5px;", width: '80px', height: '100%', class: 'mr-3')%>
+                          <% else %>
+                            <%= image_tag('user/1.jpg', style: "border-radius: 5px;", width: "80px", height: "100%", class: 'mr-3 img-thumbnail img-height', alt: 'User Image') %>
+                          <% end %>
+                        </div>
+                        <div class="ml-2">
+                          <% title = product&.channel_product.present? ? product&.channel_product&.item_name : product&.product&.title %>
+                          <span class="truncate text-white" title="<%= title %>"><%= title %></span><br>
+                          <b class = "text-white"><%= product.line_item_id if product.line_item_id.present? %></b><br>
+                          <div class="sku-width text-white"><%= product&.sku if product&.sku.present? %></div>
+                        </div>
                       </div>
-                      <div class="ml-2">
-                        <% title = product&.channel_product.present? ? product&.channel_product&.item_name : product&.product&.title %>
-                        <span class="truncate text-white" title="<%= title %>"><%= title %></span><br>
-                        <b class = "text-white"><%= product.line_item_id if product.line_item_id.present? %></b><br>
-                        <div class="sku-width text-white"><%= product&.sku if product&.sku.present? %></div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              <% end %>
-            <% end %>
-          </div>
-          <div class="col-2 d-flex align-items-center">
-            <% order.channel_order_items.each do |product|%>
-              <% if product.channel_product&.product_mapping.present? || product.product.present?  %>
-                <% if product.channel_product&.product_mapping&.product&.product_type_multiple? %>
-                  <% product.channel_product&.product_mapping&.product&.multipack_products&.each do |record| %>
-                  <% light_color = product.allocated ? 'bg-success-light' : 'bg-danger'%>
-                  <% dark_color = product.allocated ? 'bg-success-dark' : 'bg-danger-dark'%>
-                  <div class="card-style2 w-full <%=light_color%>">
-                    <%= link_to record.child.sku, product_path(record.child.id), target: 'blank', class: 'text-white' %>
-                    <p style="color: white;">
-                      <b>Location:</b> <span><%= record.child.location %></span>
-                    </p>
-                    <p style="color: white;">
-                      <!--b>QTY:</b> <span><%= record.quantity * product.ordered.to_i * (record.child.pack_quantity.nil? ? 1 : record.child.pack_quantity).to_i %></span-->
-                      <b>QTY:</b> <span><%= record.quantity * product.ordered.to_i %></span>
-                    </p>
-                    <div class="d-flex">
-                      <div class="col-4 col-padding">
-                        <p class="heading-table font-sm <%=dark_color%>">Avail</p>
-                        <p class="table-value mb-0 <%=dark_color%>"><%= record.child.available_stock.to_i %></p>
-                      </div>
-                      <div class="col-4 col-padding">
-                        <p class="heading-table font-sm <%=dark_color%>">Alloc</p>
-                        <p class="table-value mb-0 <%=dark_color%>"><%= record.child.allocated.to_i  %></p>
-                      </div>
-                      <div class="col-4 col-padding">
-                        <p class="heading-table font-sm <%=dark_color%>">Disp</p>
-                        <p class="table-value mb-0 <%=dark_color%>">0</p>
-                      </div>
-                    </div>
-                  </div>
-                  <% end %>
-                <% else %>
-                  <% local_product = product.channel_product&.product_mapping&.product || product.product %>
-                  <% light_color = product.allocated ? 'bg-success-light' : 'bg-danger'%>
-                  <% dark_color = product.allocated ? 'bg-success-dark' : 'bg-danger-dark'%>
-                  <div class="card-style2 w-full <%=light_color%>">
-                    <%= link_to local_product&.sku, product_path(local_product&.id), target: 'blank', style: "color: white" %>
-                    <p style="color: white;">
-                      <b>Location:</b> <span><%= local_product&.location %></span>
-                    </p>
-                    <p style="color: white;">
-                      <!--b>QTY:</b> <span><%= (local_product.pack_quantity.nil? ? 1 : local_product.pack_quantity ).to_i * product.ordered.to_i %></span-->
-                      <b>QTY:</b> <span><%= product.ordered.to_i %></span>
-                    </p>
-                    <div class="d-flex">
-                      <div class="col-4 col-padding">
-                        <p class="heading-table font-sm <%=dark_color%>">Avail</p>
-                        <p class="table-value mb-0 <%=dark_color%>"><%= local_product&.available_stock.to_i %></p>
-                      </div>
-                      <div class="col-4 col-padding">
-                        <p class="heading-table font-sm <%=dark_color%>">Alloc</p>
-                        <p class="table-value mb-0 <%=dark_color%>"><%= local_product&.allocated.to_i %></p>
-                      </div>
-                      <div class="col-4 col-padding">
-                        <p class="heading-table font-sm <%=dark_color%>">Disp</p>
-                      <p class="table-value mb-0 <%=dark_color%>">0</p>
-                    </div>
                     </div>
                   </div>
                 <% end %>
               <% end %>
-            <% end %>
+            </div>
+          </div>
+          <div class="col-2 d-flex align-items-center">
+            <div class="w-full">
+              <% order.channel_order_items.each do |product|%>
+                <% if product.channel_product&.product_mapping.present? || product.product.present?  %>
+                  <% if product.channel_product&.product_mapping&.product&.product_type_multiple? %>
+                    <% product.channel_product&.product_mapping&.product&.multipack_products&.each do |record| %>
+                    <% light_color = product.allocated ? 'bg-success-light' : 'bg-danger'%>
+                    <% dark_color = product.allocated ? 'bg-success-dark' : 'bg-danger-dark'%>
+                    <div class="card-style2 w-full <%=light_color%>">
+                      <%= link_to record.child.sku, product_path(record.child.id), target: 'blank', class: 'text-white' %>
+                      <p style="color: white;">
+                        <b>Location:</b> <span><%= record.child.location %></span>
+                      </p>
+                      <p style="color: white;">
+                        <!--b>QTY:</b> <span><%= record.quantity * product.ordered.to_i * (record.child.pack_quantity.nil? ? 1 : record.child.pack_quantity).to_i %></span-->
+                        <b>QTY:</b> <span><%= record.quantity * product.ordered.to_i %></span>
+                      </p>
+                      <div class="d-flex">
+                        <div class="col-4 col-padding">
+                          <p class="heading-table font-sm <%=dark_color%>">Avail</p>
+                          <p class="table-value mb-0 <%=dark_color%>"><%= record.child.available_stock.to_i %></p>
+                        </div>
+                        <div class="col-4 col-padding">
+                          <p class="heading-table font-sm <%=dark_color%>">Alloc</p>
+                          <p class="table-value mb-0 <%=dark_color%>"><%= record.child.allocated.to_i  %></p>
+                        </div>
+                        <div class="col-4 col-padding">
+                          <p class="heading-table font-sm <%=dark_color%>">Disp</p>
+                          <p class="table-value mb-0 <%=dark_color%>">0</p>
+                        </div>
+                      </div>
+                    </div>
+                    <% end %>
+                  <% else %>
+                    <% local_product = product.channel_product&.product_mapping&.product || product.product %>
+                    <% light_color = product.allocated ? 'bg-success-light' : 'bg-danger'%>
+                    <% dark_color = product.allocated ? 'bg-success-dark' : 'bg-danger-dark'%>
+                    <div class="card-style2 w-full <%=light_color%>">
+                      <%= link_to local_product&.sku, product_path(local_product&.id), target: 'blank', style: "color: white" %>
+                      <p style="color: white;">
+                        <b>Location:</b> <span><%= local_product&.location %></span>
+                      </p>
+                      <p style="color: white;">
+                        <!--b>QTY:</b> <span><%= (local_product.pack_quantity.nil? ? 1 : local_product.pack_quantity ).to_i * product.ordered.to_i %></span-->
+                        <b>QTY:</b> <span><%= product.ordered.to_i %></span>
+                      </p>
+                      <div class="d-flex">
+                        <div class="col-4 col-padding">
+                          <p class="heading-table font-sm <%=dark_color%>">Avail</p>
+                          <p class="table-value mb-0 <%=dark_color%>"><%= local_product&.available_stock.to_i %></p>
+                        </div>
+                        <div class="col-4 col-padding">
+                          <p class="heading-table font-sm <%=dark_color%>">Alloc</p>
+                          <p class="table-value mb-0 <%=dark_color%>"><%= local_product&.allocated.to_i %></p>
+                        </div>
+                        <div class="col-4 col-padding">
+                          <p class="heading-table font-sm <%=dark_color%>">Disp</p>
+                        <p class="table-value mb-0 <%=dark_color%>">0</p>
+                      </div>
+                      </div>
+                    </div>
+                  <% end %>
+                <% end %>
+              <% end %>
+            </div>
           </div>
           <div class="font-sm d-flex align-items-center" style="width: 5%">
             <% if order.assign_rule.present? %>
