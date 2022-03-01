@@ -82,6 +82,7 @@ class PickAndPacksController < ApplicationController
 
       update_all_products(tracking_order)
       tracking_order.update(product_scan: total_product_scan, stage: 'completed', order_batch_id: nil, change_log: "Order Completed, #{tracking_order.id}, #{tracking_order.order_id}, #{current_user.personal_detail.full_name}")
+      AmazonTrackingJob.perform_later(order_ids: tracking_order.order_id) unless tracking_order.update_channel
       flash[:notice] = 'Order completed successfully'
     else
       flash[:alert] = 'Product not found'
@@ -99,6 +100,7 @@ class PickAndPacksController < ApplicationController
     product_scan = @products_group.map{|g| {"#{g.last.first[:product].id}"=> g.last.pluck(:quantity).sum.to_i}}.reduce(:merge)
     tracking_order.update(product_scan: product_scan, stage: 'completed', order_batch_id: nil, change_log: "Order Completed, #{tracking_order.id}, #{tracking_order.order_id}, #{current_user.personal_detail.full_name}")
     update_all_products(tracking_order)
+    AmazonTrackingJob.perform_later(order_ids: tracking_order.order_id) unless tracking_order.update_channel
     flash[:notice] = 'Order completed successfully'
     redirect_to start_packing_pick_and_packs_path(q: {batch_name_eq: params[:q][:batch_name_eq]})
   end
