@@ -25,6 +25,7 @@ class CreateChannelOrderJob < ApplicationJob
           channel_order_item = ChannelOrderItem.find_or_initialize_by(line_item_id: order_product['lineItemId'])
           channel_order_item.channel_order_id = channel_order_record.id
           channel_order_item.sku = order_product['sku']
+          channel_order_item.title = order_product['title']
           channel_order_item.channel_product_id = ChannelProduct.find_by(item_sku: channel_order_item.sku)&.id
           channel_order_item.item_data = order_product
           channel_order_item.ordered = order_product['quantity']

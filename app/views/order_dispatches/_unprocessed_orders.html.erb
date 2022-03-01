@@ -110,7 +110,7 @@ Unmapped Product SKU's
           <td>
             <% order.channel_order_items&.each do |product|%>
               <%= image_tag(product.channel_product.item_image, width: '55px', height: '80px', class: 'mr-3') if product.channel_product&.item_image.present? %><br>
-              <div class="font-weight-bold"><%= product.channel_product.listing_id if product.channel_product.listing_id.present? %></div>
+              <div class="font-weight-bold"><%= product&.channel_product&.listing_id if product&.channel_product&.listing_id&.present? %></div>
               <%= product&.sku %><br>
             <% end %>
           </td>
@@ -155,7 +155,7 @@ Unmapped Product SKU's
                       <%= f.hidden_field :searched_product_id %>
                     </div>
                   <% end %>
-                    <% if item.status_unmapped? %>
+                    <% if item&.status_unmapped? %>
                       <div class="dropdown dropleft">
                         <button class="btn btn-primary" type="button" class="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                           Actions
