@@ -22,7 +22,7 @@ class AmazonTrackingJob < ApplicationJob
     result = upload_document(@refresh_token.access_token, document_response[:body]['url'], order_ids)
     return result[:error] unless result[:status]
 
-    create_feed_response(document_response)
+    create_feed_response(document_response, order_ids)
   end
 
   def generate_refresh_token_amazon
@@ -83,7 +83,7 @@ class AmazonTrackingJob < ApplicationJob
     { status: false, error: result['error_description'] }
   end
 
-  def create_feed_response(result)
+  def create_feed_response(result, order_ids)
     url = "https://sellingpartnerapi-eu.amazon.com/feeds/2021-06-30/feeds"
     document = {
       feedType: "POST_ORDER_FULFILLMENT_DATA",
@@ -95,6 +95,7 @@ class AmazonTrackingJob < ApplicationJob
     feed_response = AmazonCreateReportService.create_report(@refresh_token.access_token, url, document)
     return feed_response[:error] unless feed_response[:status]
 
+    channel_updated(order_ids)
     # get_feed(feed_response[:body]['feedId'])
   end
 
@@ -104,5 +105,9 @@ class AmazonTrackingJob < ApplicationJob
     # return puts result unless result[:status]
 
     # create_order_response(result, url)
+  end
+
+  def channel_updated(order_ids)
+    ChannelOrder.where(order_id: order_ids).update_all(update_channel: true)
   end
 end

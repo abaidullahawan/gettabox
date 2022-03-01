@@ -99,9 +99,13 @@ class ProductsController < ApplicationController
   def show; end
 
   def destroy
-    @product.destroy
-    flash[:notice] = 'Product archive successful'
-    redirect_to products_path
+    if @product.product_mappings.present?
+      flash[:alert] = 'Cannot archive mapped product'
+    else
+      @product.destroy
+      flash[:notice] = 'Product archive successful'
+    end
+    redirect_to request.referrer
   end
 
   def export_csv(products)
@@ -162,7 +166,7 @@ class ProductsController < ApplicationController
 
   def search_products_by_title
     @searched_products = Product.ransack('sku_or_title_cont': params[:search_value].downcase.to_s)
-                                .result.where(product_type: 'single').limit(20).pluck(:id, :sku, :title)
+                                .result.limit(20).pluck(:id, :sku, :title)
     respond_to do |format|
       format.json  { render json: @searched_products }
     end
@@ -200,6 +204,14 @@ class ProductsController < ApplicationController
     else
       flash[:alert] = 'Try again file not match'
       redirect_to import_mappings_path
+    end
+  end
+
+  def search_multipack
+    @searched_products = Product.ransack('sku_or_title_cont': params[:search_value].downcase.to_s)
+                                .result.where(product_type: 'single').limit(20).pluck(:id, :sku, :title)
+    respond_to do |format|
+      format.json { render json: @searched_products }
     end
   end
 
@@ -291,6 +303,12 @@ class ProductsController < ApplicationController
       hash['category_id'] = Category.where('title ILIKE ?', hash['category_id'])
                                     .first_or_create(title: hash['category_id']).id
       hash['product_location_id'] = ProductLocation.find_or_create_by(location: hash['product_location_id']).id
+      if hash['total_stock'].present? && product.total_stock.present?
+        difference = hash['total_stock'].to_i - product.total_stock.to_i
+        stock = product.manual_edit_stock.to_i
+        stock += difference
+        product.update(manual_edit_stock: stock, change_log: "Manual Edit, Spreadsheet, #{stock}, Manual Edit, , #{(hash['total_stock'].to_i - product.unshipped.to_i)}")
+      end
       product.update!(hash)
       Barcode.find_or_create_by(product_id: product.id, title: hash['location'])
     end
