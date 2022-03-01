@@ -81,6 +81,7 @@ Rails.application.routes.draw do
       post 'restore', to: 'products#restore'
       post 'permanent_delete', to: 'products#permanent_delete'
       post 'products_by_title', to: 'products#search_products_by_title'
+      post 'search_multipack', to: 'products#search_multipack'
       post 'products_by_sku', to: 'products#search_products_by_sku'
       post 'check_category', to: 'products#search_category'
       get 'export', to: 'products#export_logs'
