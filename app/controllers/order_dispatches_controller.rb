@@ -335,7 +335,7 @@ class OrderDispatchesController < ApplicationController
       #                change_log: "#{order_item.channel_order.channel_type} API, #{order_item.channel_order.id}, #{order_item.channel_order.order_id}, Allocated, #{order_item.channel_product.listing_id}")
       order_item.update(allocated: true)
     else
-      flash[:alert] = 'Available stock is not enough!'
+      (@not_allocated.class.eql? Array) ? (@not_allocated << order_item.channel_order&.order_id) : flash[:alert] = 'Available stock is not enough!'
     end
   end
 
@@ -367,7 +367,7 @@ class OrderDispatchesController < ApplicationController
       end
       order_item.update(allocated: true)
     else
-      flash[:alert] = 'Available stock is not enough!'
+      (@not_allocated.class.eql? Array) ? (@not_allocated << order_item.channel_order&.order_id): flash[:alert] = 'Available stock is not enough!'
     end
   end
 
@@ -639,23 +639,16 @@ class OrderDispatchesController < ApplicationController
 
   def bulk_allocation
     orders = ChannelOrder.where(id: params[:object_ids])
-    not_allocated = []
+    @not_allocated = []
     orders.each do |order|
-      if order.channel_order_items
-              .joins(channel_product: [product_mapping: :product])
-              .where('products.available_stock >= channel_order_items.ordered')
-              .count < order.channel_order_items.count
-          not_allocated << order.order_id
-        else
-        order.channel_order_items.each do |item|
-          next if item.allocated
+      order.channel_order_items.each do |item|
+        next if item.allocated
 
-          allocate_item(item)
-        end
-        flash[:notice] = 'Allocation successful'
+        allocate_item(item)
       end
+      flash[:notice] = 'Allocation successful'
     end
-    flash[:alert] = "Allocation failed for #{not_allocated}. Available stock not enough" if not_allocated.present?
+    flash[:alert] = "Allocation failed for #{@not_allocated}. Available stock not enough" if @not_allocated.present?
     redirect_to request.referrer
   end
 end
