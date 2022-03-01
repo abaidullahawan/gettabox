@@ -5,7 +5,7 @@
       <%= f.label 'Add Product' %>
       <div class="dropdown form-group" style="min-width: 250px;">
       <% child_text = f.object.child.present? ? (f.object.child&.sku+','+f.object.child&.title).to_s : ''%>
-        <%= f.search_field :child_id, value: child_text, class: 'form-control dropdown-toggle', id: 'product-title-search', data: {toggle: 'dropdown', option: {array: {index: 0} } }, autocomplete: 'off', placeholder:"Search in Title", onkeyup: "dropdown_search( '/products/products_by_title', 'product-dropdown-list', 'product-list-item', event)", onclick: "dropdown_search( '/products/products_by_title', 'product-dropdown-list', 'product-list-item', event)" %>
+        <%= f.search_field :child_id, value: child_text, class: 'form-control dropdown-toggle', id: 'product-title-search', data: {toggle: 'dropdown', option: {array: {index: 0} } }, autocomplete: 'off', placeholder:"Search in Title", onkeyup: "dropdown_search( '/products/search_multipack', 'product-dropdown-list', 'product-list-item', event)", onclick: "dropdown_search( '/products/search_multipack', 'product-dropdown-list', 'product-list-item', event)" %>
         <span class="searchclear">@@</span>
         <ul class="dropdown-menu product-dropdown-list search-list" aria-labelledby="product-title-search">
           <li><label class="dropdown-item product-list-item">Select the Product</label></li>

@@ -61,7 +61,7 @@ class OrderBatchesController < ApplicationController
       end
       attributes = system_user_data.keys + channel_order_item_data.keys + mail_service_label_data.keys + address_data.keys + channel_order_data.keys
       attributes[1], attributes[15] = attributes[15], attributes[1]
-      attributes[2], attributes[15] = attributes[16], attributes[2]
+      attributes[2], attributes[16] = attributes[16], attributes[2]
       attributes[4], attributes[17] = attributes[17], attributes[4]
       attributes[4], attributes[5] = attributes[5], attributes[4]
       attributes[5], attributes[6] = attributes[6], attributes[5]
