@@ -125,7 +125,7 @@
             <a class="nav-link <%= 'active' if params[:order_filter].eql? 'unpaid' %>" href=<%= order_dispatches_path(order_filter: 'unpaid', q: { channel_type_eq: params[:q].try(:[], :channel_type_eq), order_id_or_order_status_or_buyer_name_cont: params[:q].try(:[], :order_id_or_order_status_or_buyer_name_cont)})%>><%= "Unpaid Orders (#{@unpaid_orders_count.to_i})"%></a>
           </li>
         </ul>
-        <div class="tab-content">
+        <div class="py-4">
           <div class="tab-pane fade <%= 'show active' if params[:order_filter].eql? 'unprocessed' %>" id="demo_two_home" role="tabpanel">
             <%= render 'unprocessed_orders' if params[:order_filter].eql? 'unprocessed' %>
           </div>
