@@ -99,9 +99,13 @@ class ProductsController < ApplicationController
   def show; end
 
   def destroy
-    @product.destroy
-    flash[:notice] = 'Product archive successful'
-    redirect_to products_path
+    if @product.product_mappings.present?
+      flash[:alert] = 'Cannot archive mapped product'
+    else
+      @product.destroy
+      flash[:notice] = 'Product archive successful'
+    end
+    redirect_to request.referrer
   end
 
   def export_csv(products)
