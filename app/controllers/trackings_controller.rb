@@ -196,8 +196,12 @@ class TrackingsController < ApplicationController
       'yodel direct xpect 48 pod'=>	{carrier: 'Yodel', service:	'Xpect'},
       'yodel direct xpect 48 non pod'=>	{carrier: 'Yodel', service:	'Xpect'},
       'yodel direct channel islands 48 non pod'=>	{carrier: 'Yodel', service:	'offshore'},
-      'hermes 48'=>	{carrier: 'Other', service:	'Standard Courier Collection '},
-      'hermes 24'=>	{carrier: 'Other', service:	'Standard Courier Collection '}
+      'hermes 48'=>	{carrier: 'Hermes', service:	'Standard Courier Collection'},
+      'hermes 24'=>	{carrier: 'Hermes', service:	'Standard Courier Collection'},
+      'hermes 48 pod' => {carrier: 'Hermes', service: 'Standard Courier Collection'},
+      'hermes 48 pod' => {carrier: 'Hermes', service: 'Standard Courier Collection'},
+      'hermes 48 non pod' => {carrier: 'Hermes', service: 'Standard Courier Collection'},
+      'hermes 48 non pod' => {carrier: 'Hermes', service: 'Standard Courier Collection'}
     }
     shipping_services[shipping_service]
   end
