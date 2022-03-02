@@ -54,8 +54,8 @@ $(document).on('turbolinks:load', function () {
     $('#single-product-create-modal').modal('show')
   })
   $('.shipment_modal').on('click', function () {
-    var parent = $(this).parent()
-    var quantity = $(this.closest('tr')).find('.order-quantity')[0].innerHTML
+    var parent = $(this).parent().parent()
+    var quantity = $(this).parent().parent().find('.order-quantity')[0].innerHTML
     var length = $(parent).find('.length-value').val() || 0
     var width = $(parent).find('.width-value').val() || 0
     var height = $(parent).find('.height-value').val() || 0
