@@ -391,14 +391,15 @@ class OrderDispatchesController < ApplicationController
         order = ChannelOrder.find_by(stage: 'ready_to_dispatch', order_id: row['order-id'])
         next unless order.present?
 
+        order.buyer_name = row['buyer-name']
         order.build_system_user(user_type: 'customer', sales_channel: 'amazon', name: row['buyer-name'],
                                 email: row['buyer-email'], phone_number: row['buyer-phone-number'],
                                 days_for_order_to_completion: row['promise-date'].to_date - Date.today)
         order
           .system_user
           .addresses
-          .build(address_title: 'delivery', company: row['recipient-name'],
-                 address: row['ship-address-1'].to_s + row['ship-address-2'].to_s + row['ship-address-3'].to_s,
+          .build(address_title: 'delivery', company: row['ship-address-1'].to_s,
+                 address: row['ship-address-2'].to_s + row['ship-address-3'].to_s,
                  city: row['ship-city'], region: row['ship-state'], postcode: row['ship-postal-code'],
                  country: row['ship-country'])
         order.save
