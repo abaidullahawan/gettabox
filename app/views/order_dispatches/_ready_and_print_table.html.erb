@@ -1,30 +1,30 @@
 <div class="d-flex mb-3 pb-3 d-flex align-items-center" style="border-bottom: 1px solid #dee2e6">
   <div style="width: 3%;">
-    <input type="checkbox" id="customSwitchAll" name="" value="" class='select-all-checkbox ml-2'>
+    <input type="checkbox" id="customSwitchAll" style="width: 20px; height: 20px;" name="" value="" class='select-all-checkbox ml-2'>
   </div>
-  <div class="col-1 text-center d-flex align-items-center">Channel</div>
-  <div class="text-center d-flex align-items-center" style="width: 10%">Order Information</div>
-  <div class="col-3 text-center d-flex align-items-center">Listings</div>
-  <div class="col-2 text-center d-flex align-items-center">Information</div>
-  <div class="d-flex align-items-center" style="width: 5%">Courier Service</div>
-  <div class="col-1 text-center d-flex align-items-center" sytle="width: 10%">Tracking</div>
-  <div class="col-1 text-center d-flex align-items-center">Date</div>
-  <div class="col-1 d-flex align-items-center" style="width: 5%">Total</div>
-  <div class="text-center" style="width: 5%">Status</div>
+  <div class="header-font-size col-1 text-center d-flex align-items-center">Channel</div>
+  <div class="header-font-size text-center d-flex align-items-center" style="width: 9%">Order Information</div>
+  <div class="header-font-size col-3 text-center d-flex align-items-center">Listings</div>
+  <div class="header-font-size col-2 text-center d-flex align-items-center">Information</div>
+  <div class="header-font-size d-flex align-items-center" style="width: 5%">Courier Service</div>
+  <div class="header-font-size col-1 text-center d-flex align-items-center" sytle="width: 10%">Tracking</div>
+  <div class="header-font-size col-1 text-center d-flex align-items-center">Date</div>
+  <div class="header-font-size col-1 d-flex align-items-center" style="width: 5%">Total</div>
+  <div class="header-font-size text-center" style="width: 5%">Status</div>
   <!--th scope="col"></th-->
 </div>
 <% channel_orders.each.with_index(1) do |order, index| %>
     <div class="d-flex mb-3 pb-3 d-flex align-items-center" style="border-bottom: 1px solid #dee2e6">
       <div class="font-sm d-flex align-items-center" style="width: 3%;">
         <div id="<%=order.id%>" class= 'orders-switch' name="orders-switch">
-          <input id="object_ids[]" class="ml-2 form_field_questions" type="checkbox" data-allocate = '<%= (order.channel_order_items.pluck(:allocated) - [true]).present? %>' data-courier="<%= order.assign_rule&.mail_service_rule&.courier&.name %>" data-export="<%= order.assign_rule&.mail_service_rule&.export_mapping_id %>" data-item="<%= order.channel_order_items.count %>" value="<%=order.id%>" name="object_ids[]">
+          <input id="object_ids[]" class="ml-2 form_field_questions" style="width: 20px; height: 20px;" type="checkbox" data-allocate = '<%= (order.channel_order_items.pluck(:allocated) - [true]).present? %>' data-courier="<%= order.assign_rule&.mail_service_rule&.courier&.name %>" data-export="<%= order.assign_rule&.mail_service_rule&.export_mapping_id %>" data-item="<%= order.channel_order_items.count %>" value="<%=order.id%>" name="object_ids[]">
           <%# f.check_box 'object_ids[]', {'data-item': order.channel_order_items.count}, order.id %>
         </div>
       </div>
       <div class="font-sm col-1">
-        <%= render  'image_partial', order: order %>
+        <%= render 'image_partial', order: order %>
       </div>
-      <div class="font-sm d-flex align-items-center" style="width: 10%;">
+      <div class="font-sm d-flex align-items-center" style="width: 9%;">
         <div>
           <%= order.order_id %>
           <br><%= order.buyer_username %>
@@ -32,7 +32,7 @@
           <br><span><%= order.system_user&.addresses&.find_by(address_title: 'delivery')&.address%></span>
         </div>
       </div>
-      <div class="font-sm col-3 d-flex align-items-center">
+      <div class="font-sm col-3 d-flex align-items-center px-1">
         <div class="w-full">
           <% order.channel_order_items&.each do |product|%>
             <%= link_to product_mappings_path(q:{item_sku_or_listing_id_cont: product.sku}), class:'w-full' do %>
