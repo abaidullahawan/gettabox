@@ -103,6 +103,7 @@ class OrderBatchesController < ApplicationController
           row[13], row[14] = row[14], row[13]
           row[14], row[15] = row[15], row[14]
           row[15], row[16] = row[16], row[15]
+          row[4] = row[4] / 1000
           csv << row
         end
       end
