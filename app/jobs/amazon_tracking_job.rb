@@ -9,7 +9,7 @@ class AmazonTrackingJob < ApplicationJob
     remainaing_time = @refresh_token.access_token_expiry.localtime > DateTime.now
     generate_refresh_token_amazon if @refresh_token.present? && remainaing_time == false
 
-    order_ids = _args.last.try(:[], 'order_ids')
+    order_ids = _args.last[:order_ids]
     return 'Orders not found' unless order_ids.present?
 
     url = "https://sellingpartnerapi-eu.amazon.com/feeds/2021-06-30/documents"
@@ -53,11 +53,11 @@ class AmazonTrackingJob < ApplicationJob
           xml_data.MessageID index
           xml_data.OrderFulfillment do
             xml_data.AmazonOrderID order.order_id
-            xml_data.FulfillmentDate '2022-02-23T15:12:21+02:00'
+            xml_data.FulfillmentDate DateTime.now.localtime.strftime('%Y-%m-%dT%H:%M:%S')
             xml_data.FulfillmentData do
-              xml_data.CarrierCode 'Hermes'
-              xml_data.ShippingMethod 'Standard'
-              xml_data.ShipperTrackingNumber order.trackings
+              xml_data.CarrierCode order.trackings&.first&.carrier
+              xml_data.ShippingMethod order.trackings&.first&.service
+              xml_data.ShipperTrackingNumber order.trackings&.first&.tracking_no
             end
           end
         end
