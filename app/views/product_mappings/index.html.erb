@@ -67,8 +67,8 @@
       </div>
         <div class="row">
           <div class='col-lg-12'>
-            <table class="table m-0 text-center table-bordered table-hover">
-              <tr>
+            <table class="table m-0 text-center table-bordered table-hover table-responsive table-padding">
+              <tr class="font-sm">
                 <th colspan='8' class='text-center text-muted'>Channel Products</th>
                 <th colspan='3' class='text-center text-muted'>Local Products</th>
                 <th colspan='2' class='text-center text-muted'>Actions</th>
@@ -80,28 +80,29 @@
                     <label class="custom-control-label" for="selectSwitchAll"></label>
                   </div>
                 </th>
-                <th>Channel</th>
-                <th>Image</th>
-                <th colspan='2' class="text-center"><%= sort_link(@q, :item_sku, 'Sku', {}, {class: 'text-dark'}) %> / <span class="badge bg-info text-white"><%= sort_link(@q, :listing_id, 'Listing ID', {}, {class: 'text-white'}) %></span></th>
-                <th class="text-center"><%= sort_link(@q, :item_name, 'Name', {}, {class: 'text-dark'}) %></th>
-                <th class="text-center"><%= sort_link(@q, :range_sku, 'RNG SKU', {}, {class: 'text-dark'}) %></th>
-                <th class="text-center"><%= sort_link(@q, :product_range_id, 'Product range id', {}, {class: 'text-dark'}) %></th>
-                <th>Image</th>
-                <th class="text-center">Sku</th>
-                <th class="text-center">Name</th>
+                <th class="font-sm">Channel</th>
+                <th class="font-sm">Image</th>
+                <th class="font-sm" colspan='2' class="text-center"><%= sort_link(@q, :item_sku, 'Sku', {}, {class: 'text-dark'}) %> / <br/> <span class="badge bg-info text-white"><%= sort_link(@q, :listing_id, 'Listing ID', {}, {class: 'text-white'}) %></span></th>
+                <th class="text-center font-sm"><%= sort_link(@q, :item_name, 'Name', {}, {class: 'text-dark'}) %></th>
+                <th class="text-center font-sm"><%= sort_link(@q, :range_sku, 'RNG SKU', {}, {class: 'text-dark'}) %></th>
+                <th class="text-center font-sm"><%= sort_link(@q, :product_range_id, 'Product range id', {}, {class: 'text-dark'}) %></th>
+                <th class="font-sm">Image</th>
+                <th class="text-center font-sm">Sku</th>
+                <th class="text-center font-sm" >Name</th>
+                <th></th>
               </tr>
 
               <% if @body.present?%>
                 <% @body.each do |item| %>
                   <%= form_for :anything, data_no_turbolink: true, url: product_mappings_path do |f| %>
                     <tr class=''>
-                      <td>
+                      <td class="font-sm">
                         <div class="custom-control custom-switch">
                           <input type="checkbox" class="custom-control-input selectSwitch" name="select-switch" id="<%=item.id%>" <%= item.selected? ? 'checked': ''%> onclick="update_selected('/update_selected', '<%= item.class.name %>', event)">
                           <label class="custom-control-label" for="<%=item.id%>"></label>
                         </div>
                       </td>
-                      <td style = "width: 5%">
+                      <td class="font-sm" style = "width: 5%">
                         <% if item&.channel_type&.downcase&.eql? 'ebay'%>
                           <img src="/assets/pngegg_80.png" alt="ebay" style="max-width: 70%;"><br>
                         <% elsif item&.channel_type&.downcase&.eql? 'amazon' %>
@@ -111,7 +112,7 @@
                         <% end %>
                         <img src="/assets/uk.jpeg"alt="ebay"><br>
                       </td>
-                      <td>
+                      <td class="font-sm">
                         <% if item.item_image.present? %>
                           <%= image_tag(item.item_image, width: "50", height: "50", class: 'mr-3 img-thumbnail') %>
                         <% elsif item.product_data["PictureDetails"].present? %>
@@ -120,24 +121,24 @@
                           <%= image_tag('user/1.jpg', width: "50", height: "50", class: 'mr-3 img-thumbnail', alt: 'User Image') %>
                         <% end %>
                       </td>
-                      <td colspan='2' class="text-center">
+                      <td colspan='2' class="text-center font-sm">
                         <%= item.item_sku %><br>
                         <span class="badge bg-info text-white"><%= item.listing_id %></span>
                       </td>
                       <%= f.hidden_field :channel_product_id, value: item.id %>
-                      <td class="text-center"><%= item.item_name %></td>
-                      <td class="text-center"><%= item.range_sku %></td>
-                      <td class="text-center"><%= item.product_range_id %></td>
+                      <td class="text-center font-sm"><%= item.item_name %></td>
+                      <td class="text-center font-sm"><%= item.range_sku %></td>
+                      <td class="text-center font-sm"><%= item.product_range_id %></td>
                       <% if @matching_products[item.id].present? %>
                         <% if @matching_products[item.id].photo.attached? %>
-                          <td><%= image_tag(@matching_products[item.id].photo&.service_url, width: "50", height: "50", class: 'mr-3 img-thumbnail') %></td>
+                          <td  class="font-sm"><%= image_tag(@matching_products[item.id].photo&.service_url, width: "50", height: "50", class: 'mr-3 img-thumbnail') %></td>
                         <% else %>
-                          <td><%= image_tag('user/1.jpg', width: "50", height: "50", class: 'mr-3 img-thumbnail', alt: 'User Image') %></td>
+                          <td  class="font-sm"><%= image_tag('user/1.jpg', width: "50", height: "50", class: 'mr-3 img-thumbnail', alt: 'User Image') %></td>
                         <% end %>
-                        <td><%= link_to @matching_products[item.id].sku, product_path(@matching_products[item.id]) %></td>
+                        <td  class="font-sm"><%= link_to @matching_products[item.id].sku, product_path(@matching_products[item.id]) %></td>
                         <%= f.hidden_field :mapped_product_id, value: @matching_products[item.id].id %>
-                        <td>
-                          <div class="text-left d-flex ">
+                        <td class="font-sm" >
+                          <div class="text-left d-flex" >
                             <div class="productSearchContainer">
                               <% if item.status_unmapped? %>
                                 <span class='text-warning'>(Suggestion)-</span>
@@ -162,9 +163,9 @@
                           </div>
                         </td>
                       <% else %>
-                        <td></td>
-                        <td>N/A</td>
-                        <td>
+                        <td  class="font-sm"></td>
+                        <td  class="font-sm">N/A</td>
+                        <td  class="font-sm">
                           <div class="dropdown form-group" style="min-width: 250px;">
                             <%= f.search_field :searched_product_title, class: 'form-control dropdown-toggle', id: 'product-title-search', data: {toggle: 'dropdown', option: {array: {index: 0} } }, autocomplete: 'off', placeholder:"Search in Title", onkeyup: "dropdown_search( '/products/products_by_title', 'product-dropdown-list', 'product-list-item', event)", onclick: "dropdown_search( '/products/products_by_title', 'product-dropdown-list', 'product-list-item', event)" %>
                             <span class="searchclear">@@</span>
@@ -175,10 +176,10 @@
                           </div>
                         </td>
                       <% end %>
-                      <td class="text-center">
+                      <td class="text-center font-sm">
                         <div class="dropdown dropleft">
-                          <button class="btn btn-primary" type="button" class="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            Actions
+                          <button class="btn btn-primary p-2" type="button" class="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i data-feather='bell' class='icon wh-15 mt-minus-3'></i>
                           </button>
                           <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                             <%= f.submit 'Un-map', class: "dropdown-item", data_disable_with: false if item.status_mapped? %>
