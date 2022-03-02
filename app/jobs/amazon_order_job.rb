@@ -6,7 +6,11 @@ class AmazonOrderJob < ApplicationJob
 
   def perform(*_args)
     @refresh_token_amazon = RefreshToken.where(channel: 'amazon').last
-    url = "https://sellingpartnerapi-eu.amazon.com/orders/v0/orders?MarketplaceIds=A1F83G8C2ARO7P&CreatedAfter=#{Date.yesterday.strftime('%Y-%m-%d')}T17%3A00%3A00"
+    data = {
+      'MarketplaceIds' => 'A1F83G8C2ARO7P',
+      'CreatedAfter' => (Time.zone.now - 6.hours).strftime('%Y-%m-%dT%H:%M:%S')
+    }
+    url = "https://sellingpartnerapi-eu.amazon.com/orders/v0/orders?" + URI.encode_www_form(data)
     remainaing_time = @refresh_token_amazon.access_token_expiry.localtime > DateTime.now
     generate_refresh_token_amazon if @refresh_token_amazon.present? && remainaing_time == false
     result = AmazonService.amazon_api(@refresh_token_amazon.access_token, url)
