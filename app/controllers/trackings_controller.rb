@@ -92,6 +92,9 @@ class TrackingsController < ApplicationController
       message = []
       tracking_numbers.each do |number|
         tracking = Tracking.find_or_initialize_by(tracking_no: number, channel_order_id: order_id)
+        shipping_service = find_shipping_service(row['shipping_service'].downcase)
+        tracking.carrier = shipping_service.try(:[],'carrier')
+        tracking.service = shipping_service.try(:[],'service')
         note = tracking.save ? tracking.tracking_no : tracking.errors.full_messages
         message << note
       end
@@ -179,5 +182,23 @@ class TrackingsController < ApplicationController
   def redirect_response
     flash[:alert] = 'Please select orders'
     redirect_to order_dispatches_path(order_filter: 'ready')
+  end
+
+  def find_shipping_service(shipping_service)
+    shipping_services = {
+      'yodel direct xpress mini' =>	{carrier: 'Yodel', service:	'Xpress'},
+      'yodel direct xpress 48 pod'=>	{carrier: 'Yodel', service:	'Xpress'},
+      'yodel direct xpress 48 non pod'=>	{carrier: 'Yodel', service:	'Xpress'},
+      'yodel direct xpress 24 pod'=>	{carrier: 'Yodel', service:	'Xpress'},
+      'yodel direct xpress 24 non pod'=>	{carrier: 'Yodel', service:	'Xpress'},
+      'yodel direct xpect mon - sat pod'=>	{carrier: 'Yodel', service:	'Xpect'},
+      'yodel direct xpect mon - sat non pod'=>	{carrier: 'Yodel', service:	'Xpect'},
+      'yodel direct xpect 48 pod'=>	{carrier: 'Yodel', service:	'Xpect'},
+      'yodel direct xpect 48 non pod'=>	{carrier: 'Yodel', service:	'Xpect'},
+      'yodel direct channel islands 48 non pod'=>	{carrier: 'Yodel', service:	'offshore'},
+      'hermes 48'=>	{carrier: 'Other', service:	'48'},
+      'hermes 24'=>	{carrier: 'Other', service:	'48'}
+    }
+    shipping_services[shipping_service]
   end
 end
