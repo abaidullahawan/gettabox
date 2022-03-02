@@ -53,7 +53,7 @@ class AmazonTrackingJob < ApplicationJob
           xml_data.MessageID index
           xml_data.OrderFulfillment do
             xml_data.AmazonOrderID order.order_id
-            xml_data.FulfillmentDate DateTime.now.localtime.strftime('%Y-%m-%dT%H:%M:%S')
+            xml_data.FulfillmentDate Time.zone.now.strftime('%Y-%m-%dT%H:%M:%S')
             xml_data.FulfillmentData do
               xml_data.CarrierCode order.trackings&.first&.carrier
               xml_data.ShippingMethod order.trackings&.first&.service
@@ -95,6 +95,7 @@ class AmazonTrackingJob < ApplicationJob
     feed_response = AmazonCreateReportService.create_report(@refresh_token.access_token, url, document)
     return feed_response[:error] unless feed_response[:status]
 
+    byebug
     channel_updated(order_ids)
     # get_feed(feed_response[:body]['feedId'])
   end
