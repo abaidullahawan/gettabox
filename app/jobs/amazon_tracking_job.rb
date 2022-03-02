@@ -95,7 +95,6 @@ class AmazonTrackingJob < ApplicationJob
     feed_response = AmazonCreateReportService.create_report(@refresh_token.access_token, url, document)
     return feed_response[:error] unless feed_response[:status]
 
-    byebug
     channel_updated(order_ids)
     # get_feed(feed_response[:body]['feedId'])
   end
