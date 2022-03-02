@@ -199,9 +199,9 @@ class TrackingsController < ApplicationController
       'hermes 48'=>	{carrier: 'Hermes', service:	'Standard Courier Collection'},
       'hermes 24'=>	{carrier: 'Hermes', service:	'Standard Courier Collection'},
       'hermes 48 pod' => {carrier: 'Hermes', service: 'Standard Courier Collection'},
-      'hermes 48 pod' => {carrier: 'Hermes', service: 'Standard Courier Collection'},
+      'hermes 24 pod' => {carrier: 'Hermes', service: 'Standard Courier Collection'},
       'hermes 48 non pod' => {carrier: 'Hermes', service: 'Standard Courier Collection'},
-      'hermes 48 non pod' => {carrier: 'Hermes', service: 'Standard Courier Collection'}
+      'hermes 24 non pod' => {carrier: 'Hermes', service: 'Standard Courier Collection'}
     }
     shipping_services[shipping_service]
   end
