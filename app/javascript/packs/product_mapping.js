@@ -33,7 +33,7 @@ $(document).on('turbolinks:load', function () {
     var cd_id = this.dataset.id
     var data = JSON.parse(json)
     var sku = data[0].sku
-    var title = data[0].item_data.title
+    var title = data[0].title
     // var description = data.product_data.description
     // var imageUrl = data[0].item_data.product_data.PictureDetails.GalleryURL
     // var urlSplit = imageUrl.split('/')
@@ -105,7 +105,7 @@ $(document).on('turbolinks:load', function () {
     var cd_id = this.dataset.id
     var data = JSON.parse(json)
     var sku = data[0].sku
-    var title = data[0].item_data.title
+    var title = data[0].title
     // var description = data.product_data.description
 
     $('#multi-product-create-modal .modal-body #channel_product_id').val(cd_id)
