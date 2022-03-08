@@ -5,19 +5,20 @@ class OrderBatch < ApplicationRecord
   acts_as_paranoid
   belongs_to :user, optional: true
   has_many :channel_orders
+  validates :pick_preset, uniqueness: true
   enum print_packing_list_options: {
     products: 'Products',
     orders: 'Orders'
   }, _prefix: true
-  enum pick_preset: {
-    original: 'Orginal',
-    all_pick_operations: 'All Pick Operations',
-    all_pack_operations: 'All Pack Operations',
-    batch: 'Batch',
-    all: 'All',
-    all_pick_and_batch: 'All Pick + Batch',
-    all_pack_and_batch: 'All Pack + Batch'
-  }, _prefix: true
+  # enum pick_preset: {
+  #   original: 'Orginal',
+  #   all_pick_operations: 'All Pick Operations',
+  #   all_pack_operations: 'All Pack Operations',
+  #   batch: 'Batch',
+  #   all: 'All',
+  #   all_pick_and_batch: 'All Pick + Batch',
+  #   all_pack_and_batch: 'All Pack + Batch'
+  # }, _prefix: true
 
   enum options: {
     none: 'None',

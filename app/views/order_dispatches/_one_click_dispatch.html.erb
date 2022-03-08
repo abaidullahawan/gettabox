@@ -10,7 +10,7 @@
     <div class='form-row'>
       <div class="form-group">
         <%= f.label :pick_preset %>
-        <%= f.select :pick_preset, OrderBatch.pick_presets.map { |key, value| [value, key] }, {}, class: "form-control" %>
+        <%= f.select :pick_preset, options_for_select(OrderBatch.all.collect {|order_batch| [order_batch.pick_preset, order_batch.id]}, f.object&.pick_preset&.id), {include_blank: "Please Select Template"}, class: 'form-control pick-preset-select' %>
       </div>
     </div>
   </div>
@@ -33,7 +33,7 @@
                 <%= f.label :print_packing_list, class: 'h5 font-weight-bold' %>
                 <p>Mark orders as printed and produce Picking list(s) for the order(s).</p>
               </div>
-              <div class='col-4 d-none'>
+              <div class='col-4 d-none print-packing-list-options'>
                 <%= f.select :print_packing_list_option, OrderBatch.print_packing_list_options.map { |key, value| [value, key] }, {}, disabled: true, class: 'form-control' %>
               </div>
             </div>
@@ -128,7 +128,7 @@
               </div>
               <div class='col-4 select-batch d-none'>
                 <%= f.label :batch_name %>
-                <%= f.select :batch_name, options_for_select(OrderBatch.all.collect { |c| [c.batch_name, c.id]}), {include_blank: 'Please Select Batch'}, class: 'form-control' %>
+                <%= f.select :batch_name, options_for_select(OrderBatch.all.collect { |c| [c.batch_name, c.id]}), {include_blank: 'Please Select Batch'}, class: 'form-control'%>
               </div>
               <div class="col-4"><br>
                 <div class="dropdown">

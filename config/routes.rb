@@ -189,6 +189,7 @@ Rails.application.routes.draw do
   resources :order_batches do
     collection do
       post 'search_batch', to: 'order_batches#search_batch'
+      get 'set_pick_preset', to: 'order_batches#set_pick_preset'
     end
   end
 

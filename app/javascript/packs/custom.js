@@ -360,6 +360,36 @@ $(document).on('turbolinks:load', function () {
     $('.batches-button-submit').trigger('click');
   })
 
+  $('.pick-preset-select').on('change', function () {
+    var selected_value = $(this).val()
+    $.ajax({
+      url: '/order_batches/set_pick_preset',
+      type: 'GET',
+      data: { id: selected_value },
+      dataType: 'json',
+      success: function (response) {
+        $("#order_batch_print_packing_list").prop("checked", response[0]['print_packing_list']);
+        $("#order_batch_print_packing_list_option").val(response[0]['print_packing_list_option'])
+        $("#order_batch_mark_as_picked").prop("checked", response[0]['mark_as_picked']);
+        $("#order_batch_print_courier_labels").prop("checked", response[0]['print_courier_labels']);
+        $("#order_batch_print_invoice").prop("checked", response[0]['print_invoice']);
+        $("#order_batch_update_channels").prop("checked", response[0]['update_channels']);
+        $("#order_batch_mark_order_as_dispatched").prop("checked", response[0]['mark_order_as_dispatched']);
+        // $("#order_batch_batch_name").prop("checked", response[0]['print_packing_list']);
+        $("#batch-name-search").val(response[0]['batch_name'])
+        $("#order_batch_shipping_rule_max_weight").prop("checked", response[0]['shipping_rule_max_weight']);
+        $("#order_batch_overwrite_order_notes").prop("checked", response[0]['overwrite_order_notes']);
+        if(response[0]['print_packing_list']){
+          $('.print-packing-list-options').removeClass('d-none')
+        }
+        else{
+          $('.print-packing-list-options').addClass('d-none')
+        }
+      }
+    })
+
+  })
+
   $('.OrderBatchSubmit').on('click', function () {
     var object_ids = $('input[name="object_ids[]"]:checked')
     var rule = object_ids.map(function (i, e) { return e.dataset.courier }).toArray();
