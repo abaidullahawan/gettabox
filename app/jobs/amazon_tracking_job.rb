@@ -50,14 +50,18 @@ class AmazonTrackingJob < ApplicationJob
       xml_data.MessageType 'OrderFulfillment'
       xml_data.Message do
         orders.each.with_index(1) do |order, index|
+          carrier = order.trackings&.first&.carrier
+          service = order.trackings&.first&.service
+          tracking_no = order.trackings&.first&.tracking_no
+          order_id = order.order_id
           xml_data.MessageID index
           xml_data.OrderFulfillment do
-            xml_data.AmazonOrderID order.order_id
+            xml_data.AmazonOrderID order_id
             xml_data.FulfillmentDate Time.zone.now.strftime('%Y-%m-%dT%H:%M:%S')
             xml_data.FulfillmentData do
-              xml_data.CarrierCode order.trackings&.first&.carrier
-              xml_data.ShippingMethod order.trackings&.first&.service
-              xml_data.ShipperTrackingNumber order.trackings&.first&.tracking_no
+              xml_data.CarrierCode carrier
+              xml_data.ShippingMethod service
+              xml_data.ShipperTrackingNumber tracking_no
             end
           end
         end
@@ -69,7 +73,7 @@ class AmazonTrackingJob < ApplicationJob
   end
 
   def put_document(data, url)
-    body = data.to_xml.split('<inspect/>').first
+    body = data.to_xml.split('<to_xml/>').first
     HTTParty.put(
       url.to_str,
       body: body,
