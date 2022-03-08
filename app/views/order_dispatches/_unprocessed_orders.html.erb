@@ -130,9 +130,9 @@ Unmapped Product SKU's
                         <%= @matching_products[product.id]&.title %>
                       </div>
                       <div class="dropdown form-group">
-                        <%= f.search_field :product_id, class: 'form-control dropdown-toggle d-none productSearch', id: 'product-title-search', data: {toggle: 'dropdown', option: {array: {index: 0} } }, autocomplete: 'off', placeholder:"Search in Title", onkeyup: "dropdown_search( '/products/products_by_title', 'product-dropdown-list', 'product-list-item', event)", onclick: "dropdown_search( '/products/products_by_title', 'product-dropdown-list', 'product-list-item', event)" %>
+                        <%= f.search_field :product_id, class: 'form-control dropdown-toggle d-none productSearch', id: 'product-title-search', data: {toggle: 'dropdown', option: {array: {index: 0} } }, autocomplete: 'off', placeholder:"Search in Title", onkeyup: "dropdown_search_product( '/products/products_by_title', 'product-dropdown-list', 'product-list-item', event)", onclick: "dropdown_search_product( '/products/products_by_title', 'product-dropdown-list', 'product-list-item', event)" %>
                         <span class="searchclear">@@</span>
-                        <ul class="dropdown-menu product-dropdown-list search-list" aria-labelledby="product-title-search">
+                        <ul class="dropdown-menu product-dropdown-list search-list search-list-product" aria-labelledby="product-title-search">
                           <li><label class="dropdown-item product-list-item">Select the Product</label></li>
                         </ul>
                         <%= f.hidden_field :searched_product_id %>
@@ -147,9 +147,9 @@ Unmapped Product SKU's
                     </div>
                   <% else %>
                     <div class="dropdown form-group" style="min-width: 250px;">
-                      <%= f.search_field :product_id, class: 'form-control dropdown-toggle', id: 'product-title-search', data: {toggle: 'dropdown', option: {array: {index: 0} } }, autocomplete: 'off', placeholder:"Search in Title", onkeyup: "dropdown_search( '/products/products_by_title', 'product-dropdown-list', 'product-list-item', event)", onclick: "dropdown_search( '/products/products_by_title', 'product-dropdown-list', 'product-list-item', event)" %>
+                      <%= f.search_field :product_id, class: 'form-control dropdown-toggle', id: 'product-title-search', data: {toggle: 'dropdown', option: {array: {index: 0} } }, autocomplete: 'off', placeholder:"Search in Title", onkeyup: "dropdown_search_product( '/products/products_by_title', 'product-dropdown-list', 'product-list-item', event)", onclick: "dropdown_search_product( '/products/products_by_title', 'product-dropdown-list', 'product-list-item', event)" %>
                       <span class="searchclear">@@</span>
-                      <ul class="dropdown-menu product-dropdown-list search-list" aria-labelledby="product-title-search">
+                      <ul class="dropdown-menu product-dropdown-list search-list search-list-product" aria-labelledby="product-title-search">
                         <li><label class="dropdown-item product-list-item">Select the Product</label></li>
                       </ul>
                       <%= f.hidden_field :searched_product_id %>
@@ -161,7 +161,7 @@ Unmapped Product SKU's
                           Actions
                         </button>
                         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                          <%= f.submit 'Map', class: "dropdown-item" %>
+                          <%= f.submit 'Map', class: "dropdown-item map-submit-button", data_disable_with: false %>
                           <a type="button" class="dropdown-item create-single-product-mapping" data-id="<%= item&.id %>" data-item = '<%= order.channel_order_items.to_json.html_safe %>' >Create Single Pack</a>
                           <a type="button" class="dropdown-item create-multi-product-mapping" data-id="<%= item&.id %>" data-item = '<%= order.channel_order_items.to_json.html_safe %>' >Create Multi Pack</a>
                         </div>

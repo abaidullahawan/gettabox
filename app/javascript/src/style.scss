@@ -81,6 +81,16 @@ input:checked + .slider:before {
   width: auto;
 }
 
+.search-list-product{
+  position: fixed !important;
+  top: 0px !important;
+  left: 0px !important;
+  width: 100% !important;
+  z-index: 9999;
+  border: 10px solid #2962ff;
+  transform: none !important;
+}
+
 .category-dropdown-list {
   max-height: 100px;
   overflow: auto;

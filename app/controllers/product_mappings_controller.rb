@@ -62,6 +62,7 @@ class ProductMappingsController < ApplicationController
     @product = Product.find_by(id: @product_id)
     @channel_product = ChannelProduct.find_by(id: params[:anything]['channel_product_id'])
     @product_id = @product&.id if @product_id.to_i.to_s != @product_id
+    byebug
     if @product_id.present?
       @product_mapping = ProductMapping.create!(channel_product_id: @channel_product.id,
                                                 product_id: @product_id)
@@ -131,8 +132,11 @@ class ProductMappingsController < ApplicationController
   end
 
   def create
+    byebug
     case params[:commit]
     when 'Map'
+      map_product
+    when nil
       map_product
     when 'Un-map'
       unmap_product
