@@ -47,6 +47,7 @@ class AmazonOrderJob < ApplicationJob
       amazon_order.response['payload']['Orders'].each do |order|
         channel_order = ChannelOrder.find_or_initialize_by(order_id: order['AmazonOrderId'],
                                                            channel_type: 'amazon')
+        next if order['PurchaseDate'] < ('2022-03-08T09:10:00Z').to_datetime
         channel_order.order_data = order
         channel_order.created_at = order['PurchaseDate']
         channel_order.order_status = order['OrderStatus']
