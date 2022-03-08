@@ -134,6 +134,8 @@ class ProductMappingsController < ApplicationController
     case params[:commit]
     when 'Map'
       map_product
+    when nil
+      map_product
     when 'Un-map'
       unmap_product
     when 'Create'

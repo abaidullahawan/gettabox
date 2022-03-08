@@ -27,6 +27,9 @@
         </div>
         <% end %>
         <%= form_with(url: bulk_method_order_dispatches_path(format: "csv") , method: 'get', local: true) do |f| %>
+          <%= f.submit '', class: 'bulk-method-order-dispatch d-none'%>
+          <%= f.submit 'courier_csv', class: 'bulk-courier-order-dispatch d-none' %>
+          <%= f.submit 'allocation', class: 'bulk-allocation d-none' %>
           <div class="table-responsive pt-3">
             <%= render 'ready_and_print_table', channel_orders: @not_started_order_data %>
             <div class='float-right'>
@@ -76,9 +79,6 @@
               </div>
             </div>
           </div>
-          <%= f.submit '', class: 'bulk-method-order-dispatch d-none'%>
-          <%= f.submit 'courier_csv', class: 'bulk-courier-order-dispatch d-none' %>
-          <%= f.submit 'allocation', class: 'bulk-allocation d-none' %>
         <% end %>
       </div>
     </div>
