@@ -122,9 +122,15 @@
           <%= render partial: 'one_click_dispatch', locals: { f: f } %>
         </div>
 
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <%= f.submit 'Dispatch Orders', class: 'btn btn-primary OrderBatchSubmit' %>
+        <div class="modal-footer" style="justify-content: flex-start;">
+          <div class="d-flex">
+            <%= text_field_tag 'name_of_template', nil, placeholder: 'Enter Name', class: 'form-control mr-3'  %>
+            <%= f.submit 'save', class: 'btn btn-primary save-template' %>
+          </div>
+          <div class="ml-auto">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <%= f.submit 'Dispatch Orders', class: 'btn btn-primary OrderBatchSubmit', id: 'dispatch-orders', data: { disable_with: false } %>
+          </div>
         </div>
       </div>
     </div>

@@ -9,7 +9,10 @@ class OrderBatchesController < ApplicationController
   def create
     # @order_batch = OrderBatch.find_or_initialize_by(batch_name: params[:order_batch][:batch_name])
     orders = ChannelOrder.where(id: params[:order_ids].split(','))
-    if order_batch_params[:print_courier_labels] && check_rule(orders.first)
+    if params['commit'].eql? 'save'
+      @order_batch = OrderBatch.create(order_batch_params)
+      @order_batch.update(pick_preset: params['name_of_template'])
+    elsif order_batch_params[:print_courier_labels] && check_rule(orders.first)
       courier_csv_export(orders)
       # orders.update_all(stage: 'ready_to_print', order_batch_id: @order_batch.id)
     else
@@ -22,6 +25,13 @@ class OrderBatchesController < ApplicationController
     batches = OrderBatch.where('lower(batch_name) LIKE ?', "%#{params[:search_value]}%").pluck(:id, :batch_name)
     respond_to do |format|
       format.json { render json: batches }
+    end
+  end
+
+  def set_pick_preset
+    @order_batch_selected = OrderBatch.where(id: params['id'])
+    respond_to do |format|
+      format.json { render json: @order_batch_selected }
     end
   end
 
