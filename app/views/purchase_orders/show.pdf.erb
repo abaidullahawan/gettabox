@@ -92,10 +92,10 @@
                             <%= @missing[f.object.product_id] %>
                           </td>
                           <td>
-                            $ <%= f.object.cost_price %>
+                            £ <%= f.object.cost_price %>
                           </td>
                           <td>
-                            $ <%= f.object.quantity * f.object.cost_price if f.object.cost_price.present? && f.object.quantity.present? %>
+                            £ <%= f.object.quantity * f.object.cost_price if f.object.cost_price.present? && f.object.quantity.present? %>
                           </td>
                           <td>
                             <%= f.object.purchase_order.created_at.strftime("%d/ %m/ %Y") %>

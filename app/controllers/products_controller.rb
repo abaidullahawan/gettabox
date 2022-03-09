@@ -165,7 +165,7 @@ class ProductsController < ApplicationController
   end
 
   def search_products_by_title
-    @searched_products = Product.ransack('sku_or_title_cont': params[:search_value].downcase.to_s)
+    @searched_products = Product.ransack('sku_or_title_cont': params[:search_value].downcase.to_s, 'id_not_in': params[:product_selected])
                                 .result.limit(20).pluck(:id, :sku, :title)
     respond_to do |format|
       format.json  { render json: @searched_products }
