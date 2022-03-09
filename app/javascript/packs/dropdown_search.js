@@ -46,11 +46,16 @@ $(document).on('turbolinks:load', function () {
     var dropdown_class = '.' + dropdownClass
     var startTag = '<b>'
     var endTag = '</b>'
+    var product_selected_arr = []
+
+    for(var i = 0; i < $('.multipack-products-field').length; i++){
+      product_selected_arr.push($('.multipack-products-field')[i].value)
+    }
 
     $.ajax({
       url: url,
       type: "POST",
-      data: { 'search_value': product_title },
+      data: { 'search_value': product_title, 'product_selected': product_selected_arr },
       success: function (response) {
         var index = 0;
         $(list_class).remove()
