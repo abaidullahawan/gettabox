@@ -30,7 +30,7 @@ class CreateChannelProductJob < ApplicationJob
               .create_with(channel_type: 'ebay', listing_id: item['ItemID'].to_i,
                            product_data: item, item_sku: item['SKU'], item_quantity: item['Quantity'],
                            item_image: picture, item_name: item['Title'], item_price: item['BuyItNowPrice'])
-              .find_or_create_by(channel_type: 'ebay', listing_id: item['ItemID'].to_i)
+              .find_or_create_by(channel_type: 'ebay', listing_id: item['ItemID'].to_i, item_sku: item['SKU'])
     ChannelOrderItem.where(sku: product.item_sku)&.update_all(channel_product_id: product.id)
     end
   end
