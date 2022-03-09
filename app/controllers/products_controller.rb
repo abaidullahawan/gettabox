@@ -239,7 +239,7 @@ class ProductsController < ApplicationController
 
   def version
     @product = Product.find_by(id: params[:id])
-    @versions = @product&.versions
+    @versions = @product&.versions&.reorder('versions.created_at DESC')
   end
 
   private
