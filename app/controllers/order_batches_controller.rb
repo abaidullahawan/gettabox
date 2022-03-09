@@ -11,7 +11,7 @@ class OrderBatchesController < ApplicationController
     orders = ChannelOrder.where(id: params[:order_ids].split(','))
     if params['commit'].eql? 'save'
       @order_batch = OrderBatch.create(order_batch_params)
-      @order_batch.update(pick_preset: params['name_of_template'], preset_type: 1)
+      @order_batch.update(pick_preset: params['name_of_template'], preset_type: 'pick_preset')
     elsif order_batch_params[:print_courier_labels] && check_rule(orders.first)
       courier_csv_export(orders)
       # orders.update_all(stage: 'ready_to_print', order_batch_id: @order_batch.id)
@@ -114,7 +114,7 @@ class OrderBatchesController < ApplicationController
           row[14], row[15] = row[15], row[14]
           row[15], row[16] = row[16], row[15]
           row[4] = row[4] / 1000
-          row[16] = row[16].tr(';', '+')
+          row[16] = row[16].gsub(';', ' + ')
           csv << row
         end
       end
