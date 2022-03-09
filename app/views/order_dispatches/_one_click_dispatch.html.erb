@@ -10,7 +10,7 @@
     <div class='form-row'>
       <div class="form-group">
         <%= f.label :pick_preset %>
-        <%= f.select :pick_preset, options_for_select(OrderBatch.all.collect {|order_batch| [order_batch.pick_preset, order_batch.id]}, f.object&.pick_preset&.id), {include_blank: "Please Select Template"}, class: 'form-control pick-preset-select' %>
+        <%= f.select :pick_preset, options_for_select(OrderBatch.where(preset_type: 'pick_preset').collect {|order_batch| [order_batch.pick_preset, order_batch.id]}, f.object&.pick_preset&.id), {include_blank: "Please Select Template"}, class: 'form-control pick-preset-select' %>
       </div>
     </div>
   </div>

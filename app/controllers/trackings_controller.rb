@@ -170,7 +170,8 @@ class TrackingsController < ApplicationController
 
   def update_batch(order_ids)
     batch = OrderBatch.find_or_initialize_by(batch_name: session[:batch_params]['batch_name'])
-    batch.update(session[:batch_params])
+    update_session = session[:batch_params].merge(preset_type: 0)
+    batch.update(update_session)
     order_ids.each do |id|
       order = ChannelOrder.find_by(id: id)
       order.update(stage: 'ready_to_print', order_batch_id: batch.id, change_log: "Order Exported, #{order.id}, #{order.order_id}, #{current_user.personal_detail.full_name}")
