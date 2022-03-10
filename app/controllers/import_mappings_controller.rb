@@ -201,6 +201,8 @@ class ImportMappingsController < ApplicationController
             case val.to_a[0][1]
             when "Merge"
               row << value.map{ |a| a[val.to_a[0][0]]}
+            when ""
+              row << value.map{ |a| a[val.to_a[0][0]]}
             when "Sum"
               row << value.map{ |a| a[val.to_a[0][0]].to_i}.sum
             when "Consolidation"
