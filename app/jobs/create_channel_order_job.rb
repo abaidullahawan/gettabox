@@ -9,7 +9,7 @@ class CreateChannelOrderJob < ApplicationJob
     @response_orders.each do |response_order|
       response_order.response['orders'].each do |order|
         creationdate = order['creationDate']
-        next if creationdate < ('2022-03-08T09:10:00Z').to_datetime
+        next if creationdate < ('2022-03-10T08:00:00Z').to_datetime
         channel_order_record = ChannelOrder.find_or_initialize_by(order_id: order['orderId'],
                                                                   channel_type: 'ebay')
         channel_order_record.order_data = order
