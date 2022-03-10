@@ -79,10 +79,10 @@
                         <th scope="col"><strong>SKU</strong></th>
                         <th scope="col"><strong>Supplier SKU</strong></th>
                         <th scope="col"><strong>Category-Product</strong></th>
-                        <th scope="col"><strong>Deliverd</strong></th>
                         <th scope="col"><strong>Ordered</strong></th>
                         <th scope="col"><strong>Damaged</strong></th>
                         <th scope="col"><strong>Missing</strong></th>
+                        <th scope="col"><strong>Deliverd</strong></th>
                         <th scope="col"><strong>Price[FOB]</strong></th>
                         <th scope="col"><strong>Total</strong></th>
                         <th scope="col"><strong>Ex Fact</strong></th>
@@ -101,9 +101,6 @@
                             <%= f.object.product.title %>
                           </td>
                           <td>
-                            <%= @deliverd[f.object.product_id]%>
-                          </td>
-                          <td>
                             <%= f.object.purchase_order.purchase_order_details.where(product_id: f.object.product.id).first.quantity %>
                           </td>
                           <td>
@@ -111,6 +108,9 @@
                           </td>
                           <td>
                             <%= @missing[f.object.product_id] %>
+                          </td>
+                          <td>
+                            <%= @deliverd[f.object.product_id]%>
                           </td>
                           <td>
                             £ <%= f.object.cost_price %>

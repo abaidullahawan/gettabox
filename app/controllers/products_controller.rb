@@ -73,7 +73,7 @@ class ProductsController < ApplicationController
 
   def export_logs
     product = Product.find_by(id: params[:product_id])
-    versions = product&.versions
+    versions = product&.versions&.reorder('versions.created_at DESC')
     headers = ['Date', 'Time', 'Action', 'System ID', 'Channel ID', 'Channel Item ID', 'Changed', 'Result', 'User']
     csv_data = CSV.generate(headers: true) do |csv|
       csv << headers
@@ -82,12 +82,12 @@ class ProductsController < ApplicationController
           csv << [
             version.created_at&.strftime('%m/%d/%Y'),
             version.created_at&.strftime('%I:%M %p'),
-            version.changeset['change_log'][1].split(',')[3],
-            version.changeset['change_log'][1].split(',')[1],
-            version.changeset['change_log'][1].split(',')[2],
-            version.changeset['change_log'][1].split(',')[4],
-            version.changeset['available_stock'][1].to_i - version.changeset["available_stock"][0].to_i,
-            version.changeset['available_stock'][1].to_i,
+            version.changeset.try(:[], 'change_log')&.at(1).try(:split, ',')&.at(3),
+            (version.changeset.try(:[], 'change_log')&.at(1).include? 'Purchase Order Recieved') ? 'PO%.4d' % version.changeset.try(:[], 'change_log')&.at(1).try(:split, ',')&.at(1).to_i : version.changeset.try(:[], 'change_log')&.at(1).try(:split, ',')&.at(1),
+            version.changeset.try(:[],'change_log')&.at(1).try(:split, ',')&.at(2),
+            version.changeset.try(:[],'change_log')&.at(1).try(:split, ',')&.at(4),
+            (version.changeset&.include? 'unshipped') ? version.changeset.try(:[],'unshipped')&.at(0).to_i - version.changeset.try(:[],'unshipped')&.at(1).to_i : (version.changeset.try(:[],'change_log')&.at(1)&.include? 'Product Mapped') ? 0 : (version.changeset.try(:[],'change_log')&.at(1).split(',')&.include? 'Manual Edit') ? version.changeset.try(:[],'manual_edit_stock')&.at(1).to_i - version.changeset.try(:[],'manual_edit_stock')&.at(0).to_i : (version.changeset.try(:[],'change_log')&.at(1).split(',')&.include? 'Purchase Order') ? version.changeset.try(:[],'change_log')&.at(1).try(:split, ",")&.at(-1).to_i : version.changeset.try(:[],'change_log')&.at(1).try(:split, ",")&.at(2),
+            (version.changeset&.include? 'inventory_balance') ? version.changeset.try(:[],'inventory_balance')&.at(1).to_i : version.changeset.try(:[],'change_log')&.at(1).try(:split, ",")&.at(5).to_i,
             version.whodunnit.present? ? User.find_by(id: version.whodunnit)&.personal_detail&.full_name : 'Developer'
           ]
         end
