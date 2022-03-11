@@ -103,17 +103,16 @@
                     <b>Location:</b> <span><%= local_product&.location if local_product.present? %></span>
                   </p>
                   <p style="color: white;">
-                    <!--b>QTY:</b> <span><%= (local_product.pack_quantity.nil? ? 1 : local_product.pack_quantity ).to_i * product.ordered.to_i %></span-->
                     <b>QTY:</b> <span><%= product.ordered.to_i %></span>
                   </p>
                   <div class="d-flex">
                     <div class="col-4 col-padding">
                       <p class="heading-table font-sm <%=dark_color%>">Avail</p>
-                      <p class="table-value mb-0 <%=dark_color%>"><%= local_product&.available_stock.to_i %></p>
+                      <p class="table-value mb-0 <%=dark_color%>"><%= local_product&.available_stock.to_i if local_product.present? %></p>
                     </div>
                     <div class="col-4 col-padding">
                       <p class="heading-table font-sm <%=dark_color%>">Alloc</p>
-                      <p class="table-value mb-0 <%=dark_color%>"><%= local_product&.allocated.to_i %></p>
+                      <p class="table-value mb-0 <%=dark_color%>"><%= local_product&.allocated.to_i if local_product.present? %></p>
                     </div>
                     <div class="col-4 col-padding">
                       <p class="heading-table font-sm <%=dark_color%>">Disp</p>
