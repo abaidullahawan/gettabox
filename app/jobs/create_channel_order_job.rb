@@ -78,13 +78,15 @@ class CreateChannelOrderJob < ApplicationJob
   def update_order_stage(condition, order)
     return unless order.order_status.eql? 'NOT_STARTED'
 
-    if condition.any?(nil)
-      order.update(stage: 'unable_to_find_sku')
-    elsif condition.any?('unmapped')
-      order.update(stage: 'unmapped_product_sku')
-    else
-      order.update(stage: 'ready_to_dispatch')
-      allocate_or_unallocate(order.channel_order_items)
+    if order.stage != 'completed' && order.stage != 'ready_to_print' && order.stage != 'ready_to_dispatch'
+      if condition.any?(nil)
+        order.update(stage: 'unable_to_find_sku')
+      elsif condition.any?('unmapped')
+        order.update(stage: 'unmapped_product_sku')
+      else
+        order.update(stage: 'ready_to_dispatch')
+        allocate_or_unallocate(order.channel_order_items)
+      end
     end
   end
 
