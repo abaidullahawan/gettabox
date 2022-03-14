@@ -1,0 +1,3 @@
+
+class Selling < ApplicationRecord
+end

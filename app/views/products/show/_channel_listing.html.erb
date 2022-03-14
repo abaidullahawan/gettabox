@@ -27,7 +27,11 @@
                       <td class="text-center"><%= product.listing_id %></td>
                       <td class="text-center"><%= product.item_sku %></td>
                       <td class="text-center"><%= deduction_unit %></td>
-                      <td class="text-center"><%= [(@product.inventory_balance.to_f/deduction_unit.to_f).floor, 0].max %></td>
+                      <% if product.channel_type == 'ebay' %>
+                        <td class="text-center"><%= Selling.last.quantity < (@product.inventory_balance.to_f/deduction_unit.to_f) ? Selling.last.quantity : [(@product.inventory_balance.to_f/deduction_unit.to_f).floor, 0].max %></td>
+                      <% else %>
+                        <td class="text-center"><%= [(@product.inventory_balance.to_f/deduction_unit.to_f).floor, 0].max %></td>
+                      <% end %>
                       <td class="text-center">
                         <% if product.channel_forecasting&.action == 'safe_stock_by' %>
                           -
@@ -56,7 +60,11 @@
                     <td class="text-center"><%= multi_mapping.listing_id %></td>
                     <td class="text-center"><%= multi_mapping.item_sku %></td>
                     <td class="text-center"><%= deduction_unit %></td>
-                    <td class="text-center"><%= [deduction_quantity.to_i, 0].max %></td>
+                    <% if multi_mapping.channel_type == 'ebay' %>
+                      <td class="text-center"><%= Selling.last.quantity < deduction_quantity.to_i ? Selling.last.quantity : [deduction_quantity.to_i, 0].max %></td>
+                    <% else %>
+                      <td class="text-center"><%= [deduction_quantity.to_i, 0].max %></td>
+                    <% end %>
                     <td class="text-center">
                       <% if multi_mapping.channel_forecasting&.action == 'safe_stock_by' %>
                         -

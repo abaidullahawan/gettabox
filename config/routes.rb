@@ -200,6 +200,12 @@ Rails.application.routes.draw do
     end
   end
 
+  resources :sellings do
+    collection do
+      get 'ebay_selling', to: 'sellings#ebay_selling'
+    end
+  end
+
   resources :mails
   resources :notes
   resources :inventory_reports do
