@@ -47,29 +47,31 @@ class AmazonOrderJob < ApplicationJob
       amazon_order.response['payload']['Orders'].each do |order|
         channel_order = ChannelOrder.find_or_initialize_by(order_id: order['AmazonOrderId'],
                                                            channel_type: 'amazon')
-        next if order['PurchaseDate'] < ('2022-03-10T08:00:00Z').to_datetime
-        channel_order.order_data = order
-        channel_order.created_at = order['PurchaseDate']
-        channel_order.order_status = order['OrderStatus']
-        channel_order.stage = order_stage(order['OrderStatus'])
-        channel_order.order_type = order['OrderType']
-        amount = order['OrderTotal'].nil? ? nil : order['OrderTotal']['Amount']
-        channel_order.total_amount = amount
-        channel_order.fulfillment_instruction = order['FulfillmentChannel']
-        # customer_records(channel_order) if channel_order.save
-        return unless channel_order.save
+        if channel_order.id.present?
+          next if order['PurchaseDate'] < ('2022-03-10T08:00:00Z').to_datetime
+          channel_order.order_data = order
+          channel_order.created_at = order['PurchaseDate']
+          channel_order.order_status = order['OrderStatus']
+          channel_order.stage = order_stage(order['OrderStatus'])
+          channel_order.order_type = order['OrderType']
+          amount = order['OrderTotal'].nil? ? nil : order['OrderTotal']['Amount']
+          channel_order.total_amount = amount
+          channel_order.fulfillment_instruction = order['FulfillmentChannel']
+          # customer_records(channel_order) if channel_order.save
+          return unless channel_order.save
 
-        add_product(channel_order.order_id, access_token, channel_order.id)
-        criteria = channel_order.channel_order_items.map { |h| [h[:sku], h[:ordered]] }
-        assign_rules = AssignRule.where(criteria: criteria)&.last
-        channel_order.update(assign_rule_id: assign_rules.id) if assign_rules.present?
-        update_order_stage(channel_order.channel_order_items.map { |i| i.channel_product&.status }, channel_order)
-        channel_order.update(stage: 'issue') if channel_order.channel_order_items.map(&:sku).any? nil
-        if channel_order.stage == 'unable_to_find_sku' || channel_order.stage == 'unmapped_product_sku' || channel_order.stage == 'ready_to_dispatch'
-          channel_order.update(change_log: "Order Paid, #{channel_order.id}, #{channel_order.order_id}, amazon")
+          add_product(channel_order.order_id, access_token, channel_order.id)
+          criteria = channel_order.channel_order_items.map { |h| [h[:sku], h[:ordered]] }
+          assign_rules = AssignRule.where(criteria: criteria)&.last
+          channel_order.update(assign_rule_id: assign_rules.id) if assign_rules.present?
+          update_order_stage(channel_order.channel_order_items.map { |i| i.channel_product&.status }, channel_order)
+          channel_order.update(stage: 'issue') if channel_order.channel_order_items.map(&:sku).any? nil
+          if channel_order.stage == 'unable_to_find_sku' || channel_order.stage == 'unmapped_product_sku' || channel_order.stage == 'ready_to_dispatch'
+            channel_order.update(change_log: "Order Paid, #{channel_order.id}, #{channel_order.order_id}, amazon")
+          end
         end
+        amazon_order.update(status: 'executed')
       end
-      amazon_order.update(status: 'executed')
     end
   end
 
