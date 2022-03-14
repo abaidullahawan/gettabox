@@ -1,0 +1,32 @@
+<!-- Main Content Header -->
+<div class="main-content-header">
+  <h1>Sellings</h1>
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item">
+      <a href="<%= home_path %>">Dashboard</a>
+    </li>
+    <li class="breadcrumb-item">
+      <a href="<%= settings_path %>">Settings</a>
+    </li>
+    <li class="breadcrumb-item active">
+      <span class="active">Sellings</span>
+    </li>
+  </ol>
+</div>
+<!-- End Main Content Header -->
+<div class="alert alert-dismissible fade show text-white jquery-selected-alert d-none " style="position: fixed; width:93%; z-index:99999;" role="alert"></div>
+<div class="row">
+  <div class="col-xl-12">
+    <div class="card mb-30">
+      <div class="card-body">
+        <%= form_for @selling, url: selling_path(@selling), method: :put do |f| %>
+          <div class="row">
+            <span class="col-9" style="font-size: 20px; margin-top: 10px;">Set the amount of stock being pushed out to eBay and limit chances of hitting Selling Limits (0 is Off, recommend 20 to 50)</span>
+            <%= f.number_field :quantity, required: true, class: 'form-control col-3', placeholder: 'Enter Quantity' %>
+          </div>
+          <%= f.submit 'Update', class: 'btn btn-primary float-right mt-3' %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

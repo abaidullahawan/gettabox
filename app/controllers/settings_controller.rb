@@ -19,7 +19,8 @@ class SettingsController < ApplicationController
                       customer: SystemUser.customers.count,
                       pick_and_pack: OrderBatch.count,
                       product_location_mapping: ProductLocation.count,
-                      channel_forecastings: ChannelForecasting.count
+                      channel_forecastings: ChannelForecasting.count,
+                      sellings: Selling.count
                      }
   end
 end
