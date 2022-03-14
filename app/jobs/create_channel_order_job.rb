@@ -12,7 +12,7 @@ class CreateChannelOrderJob < ApplicationJob
         next if creationdate < ('2022-03-10T08:00:00Z').to_datetime
         channel_order_record = ChannelOrder.find_or_initialize_by(order_id: order['orderId'],
                                                                   channel_type: 'ebay')
-        if channel_order_record.id.present?
+        if channel_order_record.id.blank?
           channel_order_record.order_data = order
           channel_order_record.created_at = creationdate
           channel_order_record.order_status = order['orderFulfillmentStatus']
