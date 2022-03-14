@@ -18,7 +18,7 @@ class Product < ApplicationRecord
   has_many :system_users, through: :product_suppliers
   has_many :multipack_products, dependent: :destroy
   has_many :products, through: :multipack_products
-  has_many :product_mappings
+  has_many :product_mappings, dependent: :destroy
   has_many :channel_order_items
 
   belongs_to :category, optional: true
@@ -70,4 +70,5 @@ class Product < ApplicationRecord
   def available_stock_change
     update_columns(available_stock: total_stock)
   end
+
 end
