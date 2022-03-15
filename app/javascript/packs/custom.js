@@ -174,6 +174,9 @@ $(document).on('turbolinks:load', function () {
   $('.customSwitch1').on('click', function () {
     var value = this.checked
     var order_id = this.id
+    if (order_id === '') {
+      order_id = this.dataset.id
+    }
 
     $.ajax({
       url: '/order_dispatches/update_selected',

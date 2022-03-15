@@ -172,21 +172,25 @@ class OrderDispatchesController < ApplicationController
   end
 
   def bulk_method
-    return unless params[:object_ids].excluding('0').present?
-
     return bulk_allocation if params['commit'].eql? 'allocation'
 
     if params[:commit] == 'courier_csv'
       @orders = ChannelOrder.where(id: params[:object_ids].excluding('0'), selected: true)
       courier_csv_export(@orders)
     else
+      orders = ChannelOrder.where(selected: true)
       @assign_rule = AssignRule.create(mail_service_rule_id: params[:rule_id], save_later: true)
-      @service_label = MailServiceLabel.create(height: params[:height], weight: params[:weight],
-                                               length: params[:length], width: params[:width], assign_rule_id: @assign_rule.id)
-      order_ids = params[:object_ids].excluding('0')
-      order_ids.each do |order|
-        channel_order = ChannelOrder.find(order)
-        channel_order&.update(assign_rule_id: @assign_rule.id)
+      orders.each do |order|
+        order&.update(assign_rule_id: @assign_rule.id)
+        order&.channel_order_items&.each do |item|
+          quantity = item&.ordered
+          length = item&.channel_product&.product_mapping&.product&.length.to_f * quantity
+          weight = item&.channel_product&.product_mapping&.product&.weight.to_f * quantity
+          width = item&.channel_product&.product_mapping&.product&.width.to_f
+          height = item&.channel_product&.product_mapping&.product&.height.to_f
+          @service_label = MailServiceLabel.create(height: height, weight: weight,
+                                                   length: length, width: width, assign_rule_id: @assign_rule.id)
+        end
       end
       redirect_to order_dispatches_path(order_filter: 'ready')
       flash[:notice] = 'Mail Service Rule Assigned!'

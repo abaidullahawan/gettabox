@@ -26,19 +26,19 @@
           </div>
         </div>
         <% end %>
+        <div class="table-responsive pt-3">
+          <%= render 'ready_and_print_table', channel_orders: @not_started_order_data %>
+          <div class='float-right'>
+            <%= page_entries_info @not_started_order_data %>
+          </div><br>
+          <div class="pagination justify-content-center mt-1">
+            <%= paginate @not_started_order_data, :param_name => :not_started_page,theme: "twitter-bootstrap-4",pagination_class: "pagination-sm",nav_class: "d-inline-b" %>
+          </div>
+        </div>
         <%= form_with(url: bulk_method_order_dispatches_path(format: "csv") , method: 'get', local: true) do |f| %>
           <%= f.submit '', class: 'bulk-method-order-dispatch d-none'%>
           <%= f.submit 'courier_csv', class: 'bulk-courier-order-dispatch d-none' %>
           <%= f.submit 'allocation', class: 'bulk-allocation d-none' %>
-          <div class="table-responsive pt-3">
-            <%= render 'ready_and_print_table', channel_orders: @not_started_order_data %>
-            <div class='float-right'>
-              <%= page_entries_info @not_started_order_data %>
-            </div><br>
-            <div class="pagination justify-content-center mt-1">
-              <%= paginate @not_started_order_data, :param_name => :not_started_page,theme: "twitter-bootstrap-4",pagination_class: "pagination-sm",nav_class: "d-inline-b" %>
-            </div>
-          </div>
           <div class="modal fade" id="bulk-mail-service-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
             <div class="modal-dialog modal-dialog-scrollable" role="document">
               <div class="modal-content">
@@ -53,24 +53,24 @@
                     <%= label_tag "Rule Name" %>
                     <%= select_tag "rule_id", options_for_select(@mail_service_rules.collect{ |u| [u.rule_name, u.id]}), class: "form-control" %>
                   </div>
-                  <div class="form-group row">
+                  <!--div class="form-group row">
                     <div class="col-11">
-                      <%= label_tag 'Add weight' %>
-                      <%= number_field_tag :weight,{}, :class => "form-control", placeholder: 'Please enter the weight' %>
+                      <%#= label_tag 'Add weight' %>
+                      <%#= number_field_tag :weight,{}, :class => "form-control", placeholder: 'Please enter the weight' %>
                     </div>
                     <div class="col-11">
-                      <%= label_tag 'Add height' %>
-                      <%= number_field_tag :height,{}, :class => "form-control", placeholder: 'Please enter the height' %>
+                      <%#= label_tag 'Add height' %>
+                      <%#= number_field_tag :height,{}, :class => "form-control", placeholder: 'Please enter the height' %>
                     </div>
                     <div class="col-11">
-                      <%= label_tag 'Add length' %>
-                      <%= number_field_tag :length,{}, :class =>"form-control", placeholder: 'Please enter the length' %>
+                      <%#= label_tag 'Add length' %>
+                      <%#= number_field_tag :length,{}, :class =>"form-control", placeholder: 'Please enter the length' %>
                     </div>
                     <div class="col-11">
-                      <%= label_tag 'Add width' %>
-                      <%= number_field_tag :width,{}, :class => "form-control", placeholder: 'Please enter the width' %>
+                      <%#= label_tag 'Add width' %>
+                      <%#= number_field_tag :width,{}, :class => "form-control", placeholder: 'Please enter the width' %>
                     </div>
-                  </div>
+                  </div-->
                 </div>
                 <div class="modal-footer">
                   <button type="button" class="btn btn-secondary mr-auto" data-dismiss="modal">Close</button>
