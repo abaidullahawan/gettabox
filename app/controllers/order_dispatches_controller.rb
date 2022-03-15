@@ -546,22 +546,21 @@ class OrderDispatchesController < ApplicationController
   def not_started_orders
     return unless params[:order_filter].eql? 'ready'
 
-    # if params['assign_rule_name'].present?
-    #   @not_started_orders = (@channel_orders
-    #     .joins(channel_order_items: [channel_product: :product_mapping], assign_rule: [mail_service_rule: :service])
-    #     .includes(channel_order_items: [channel_product: :product_mapping], assign_rule: [mail_service_rule: :service])
-    #     .where('mail_service_rules.rule_name LIKE ? OR services.name LIKE ? and order_status = ? and stage = ?',
-    #            "%#{params['assign_rule_name']}%", "%#{params['assign_rule_name']}%", 'NOT_STARTED', 'ready_to_dispatch')
-    #     ).uniq
-    # else
-    #   @not_started_orders = @channel_orders.where(stage: 'ready_to_dispatch')
-    # end
-    # Need to be fixed
-    @search = @channel_orders.where(stage: 'ready_to_dispatch')
-                             .where.not(channel_type: 'amazon', system_user_id: nil).search(params[:q])
-    @not_started_orders = @search.result
-    @not_started_orders = @not_started_orders.order(:order_type, created_at: :desc)
-    @not_started_order_data = @not_started_orders.page(params[:not_started_page]).per(params[:limit] || 100)
+    if params['assign_rule_name'].present?
+      @not_started_orders = (@channel_orders
+        .joins(channel_order_items: [channel_product: :product_mapping], assign_rule: [mail_service_rule: :service])
+        .includes(channel_order_items: [channel_product: :product_mapping], assign_rule: [mail_service_rule: :service])
+        .where('mail_service_rules.rule_name ILIKE ? OR services.name ILIKE ? and order_status = ? and stage = ?',
+               "%#{params['assign_rule_name']}%", "%#{params['assign_rule_name']}%", 'NOT_STARTED', 'ready_to_dispatch')
+        ).uniq
+      @not_started_order_data = Kaminari.paginate_array(@not_started_orders).page(params[:not_started_page]).per(params[:limit] || 100)
+    else
+      @search = @channel_orders.where(stage: 'ready_to_dispatch')
+                               .where.not(channel_type: 'amazon', system_user_id: nil).search(params[:q])
+      @not_started_orders = @search.result
+      @not_started_orders = @not_started_orders.order(:order_type, created_at: :desc)
+      @not_started_order_data = @not_started_orders.page(params[:not_started_page]).per(params[:limit] || 100)
+    end
     return unless (params[:order_filter].eql? 'ready') && params[:export]
 
     @not_started_orders = @not_started_orders.where(selected: true) if params[:selected]
