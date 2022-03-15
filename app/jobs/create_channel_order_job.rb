@@ -56,9 +56,9 @@ class CreateChannelOrderJob < ApplicationJob
     address = order.order_data['buyer']['taxAddress']
     if address.present?
       customer.addresses.build(address_title: 'admin',
-                               country: address['countryCode'],
+                               country: 'United Kingdom',
                                region: address['stateOrProvince'],
-                               postcode: address['postalCode'])
+                               postcode: address['postalCode']&.upcase)
     end
     order.order_data['fulfillmentStartInstructions'].each do |delivery_address|
       cust_add = delivery_address['shippingStep']['shipTo']['contactAddress']
@@ -67,8 +67,8 @@ class CreateChannelOrderJob < ApplicationJob
       customer.addresses.build(address_title: 'delivery',
                                address: cust_add['addressLine1'],
                                city: cust_add['city'],
-                               postcode: cust_add['postalCode'],
-                               country: cust_add['countryCode'],
+                               postcode: cust_add['postalCode']&.upcase,
+                               country: 'United Kingdom',
                                region: cust_add['stateOrProvince'])
     end
     customer.sales_channel = 'ebay'
