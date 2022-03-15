@@ -114,10 +114,12 @@ class AmazonOrderItemJob < ApplicationJob
   def allocate_or_unallocate(channel_items)
     channel_items.each do |item|
       product = item.channel_product.product_mapping.product
-      next multipack_product(item, product) unless product.product_type.eql? 'single'
+      if product.present?
+        next multipack_product(item, product) unless product.product_type.eql? 'single'
 
-      inventory_balance = product.inventory_balance.to_f - item.ordered
-      update_available_stock(item, product, inventory_balance, item.ordered)
+        inventory_balance = product.inventory_balance.to_f - item.ordered
+        update_available_stock(item, product, inventory_balance, item.ordered)
+      end
     end
   end
 

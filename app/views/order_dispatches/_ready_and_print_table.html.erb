@@ -8,7 +8,7 @@
   <div class="header-font-size col-2 text-center d-flex align-items-center">Information</div>
   <div class="header-font-size d-flex align-items-center" style="width: 5%">Courier Service</div>
   <div class="header-font-size col-1 text-center d-flex align-items-center" sytle="width: 10%">Tracking</div>
-  <div class="header-font-size col-1 text-center d-flex align-items-center">Date</div>
+  <div class="header-font-size col-1 text-center d-flex align-items-center"><%= sort_link(@search, :created_at, 'Date', {}, default_order: { created_at: 'DESC' }, class: 'text-secondary') %></div>
   <div class="header-font-size col-1 d-flex align-items-center" style="width: 5%">Total</div>
   <div class="header-font-size text-center" style="width: 5%">Status</div>
   <!--th scope="col"></th-->
