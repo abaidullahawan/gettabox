@@ -52,7 +52,7 @@
                   <% deduction_unit = multi_mapping.product_mapping&.product&.multipack_products&.find_by(child_id: @product.id)&.quantity.to_i %>
                   <% deduction_quantity = [(@product.inventory_balance.to_f/deduction_unit.to_f).floor, 0].max unless deduction_unit.zero? %>
                   <% multipack_products = multi_mapping.product_mapping&.product&.multipack_products%>
-                  <% if multipack_products.count > 1 %>
+                  <% if multipack_products&.count.to_i > 1 %>
                     <% deduction_quantity = multi_products_check(multipack_products) %>
                   <% end %>
                   <tr>
