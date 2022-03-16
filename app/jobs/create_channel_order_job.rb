@@ -65,7 +65,9 @@ class CreateChannelOrderJob < ApplicationJob
       next unless cust_add.present?
 
       customer.addresses.build(address_title: 'delivery',
-                               address: cust_add['addressLine1'],
+                               name: delivery_address['shippingStep']['shipTo']['fullName'],
+                               company: cust_add['addressLine1'],
+                               address: cust_add['addressLine2'],
                                city: cust_add['city'],
                                postcode: cust_add['postalCode']&.upcase,
                                country: 'United Kingdom',
