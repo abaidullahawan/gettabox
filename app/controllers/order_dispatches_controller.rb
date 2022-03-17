@@ -327,7 +327,7 @@ class OrderDispatchesController < ApplicationController
 
   def allocate_item(order_item)
     product = order_item.channel_product.product_mapping.product
-    return multipack_allocation(order_item, product) if product&.product_type&.eql? 'multiple'
+    return multipack_allocation(order_item, product) if product&.product_type.eql? 'multiple'
 
     if product&.available_stock.to_i >= order_item.ordered
       product.update(available_stock: product.available_stock.to_f - order_item.ordered,
