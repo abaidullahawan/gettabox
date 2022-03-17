@@ -66,8 +66,12 @@ class ProductMappingsController < ApplicationController
       @product_mapping = ProductMapping.create!(channel_product_id: @channel_product.id,
                                                 product_id: @product_id)
 
-      @product.update(change_log: "Product Mapped, #{@product.sku}, #{@channel_product.item_sku}, Mapped, #{@channel_product.listing_id}, #{@product.inventory_balance}", unshipped_orders: @product.unshipped_orders.to_i + 1)
       @channel_product.status_mapped! if @product_mapping.present?
+      if @product.product_type == 'multiple'
+        update_multi_pack_logs(@channel_product, @product)
+      else
+        @product.update(change_log: "Product Mapped, #{@product.sku}, #{@channel_product.item_sku}, Mapped, #{@channel_product.listing_id}, #{@product.inventory_balance}", unshipped_orders: @product.unshipped_orders.to_i + 1)
+      end
       update_order_stage(@channel_product, @product)
       allocations
       flash[:notice] = 'Product mapped successfully'
