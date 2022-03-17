@@ -28,7 +28,7 @@
                       <td class="text-center"><%= product.item_sku %></td>
                       <td class="text-center"><%= deduction_unit %></td>
                       <% if product.channel_type == 'ebay' %>
-                        <td class="text-center"><%= Selling.last.quantity < (@product.inventory_balance.to_f/deduction_unit.to_f) ? Selling.last.quantity : [(@product.inventory_balance.to_f/deduction_unit.to_f).floor, 0].max %></td>
+                        <td class="text-center"><%= Selling&.last&.quantity.to_i < (@product.inventory_balance.to_f/deduction_unit.to_f) ? Selling&.last&.quantity : [(@product.inventory_balance.to_f/deduction_unit.to_f).floor, 0].max %></td>
                       <% else %>
                         <td class="text-center"><%= [(@product.inventory_balance.to_f/deduction_unit.to_f).floor, 0].max %></td>
                       <% end %>

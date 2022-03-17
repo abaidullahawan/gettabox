@@ -161,6 +161,7 @@ Unmapped Product SKU's
                           Actions
                         </button>
                         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                          <%= f.hidden_field :channel_order_id, value: order.id%>
                           <%= f.submit 'Map', class: "dropdown-item map-submit-button", data_disable_with: false %>
                           <a type="button" class="dropdown-item create-single-product-mapping" data-id="<%= item&.id %>" data-item = '<%= order.channel_order_items.to_json.html_safe %>' >Create Single Pack</a>
                           <a type="button" class="dropdown-item create-multi-product-mapping" data-id="<%= item&.id %>" data-item = '<%= order.channel_order_items.to_json.html_safe %>' >Create Multi Pack</a>

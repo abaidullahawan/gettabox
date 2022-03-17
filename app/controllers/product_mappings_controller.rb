@@ -69,6 +69,7 @@ class ProductMappingsController < ApplicationController
       @product.update(change_log: "Product Mapped, #{@product.sku}, #{@channel_product.item_sku}, Mapped, #{@channel_product.listing_id}, #{@product.inventory_balance}", unshipped_orders: @product.unshipped_orders.to_i + 1)
       @channel_product.status_mapped! if @product_mapping.present?
       update_order_stage(@channel_product, @product)
+      allocations
       flash[:notice] = 'Product mapped successfully'
     else
       flash[:alert] = 'Please select product to map'
@@ -433,4 +434,41 @@ class ProductMappingsController < ApplicationController
       end
     end
   end
+
+  def allocations
+    order_items = ChannelOrder.find_by(id: params['anything']['channel_order_id']).channel_order_items
+    order_items.each do |item|
+      allocate_item(item)
+    end
+  end
+
+  def allocate_item(order_item)
+    product = order_item.channel_product.product_mapping.product
+    return multipack_allocation(order_item, product) if product&.product_type.eql? 'multiple'
+
+    if product&.available_stock.to_i >= order_item.ordered
+      product.update(available_stock: product.available_stock.to_f - order_item.ordered,
+                      allocated: product.allocated.to_f + order_item.ordered, allocated_orders: product.allocated_orders.to_i + 1)
+      #                change_log: "#{order_item.channel_order.channel_type} API, #{order_item.channel_order.id}, #{order_item.channel_order.order_id}, Allocated, #{order_item.channel_product.listing_id}")
+      order_item.update(allocated: true)
+    end
+  end
+
+  def multipack_allocation(order_item, product)
+    available = product.multipack_products.map { |m| m.child.available_stock.to_i }
+    required = product.multipack_products.map { |m| m.quantity.to_i * order_item.ordered }
+    check = available.zip(required).all? { |a, b| a >= b }
+    if check
+      product.multipack_products.each do |multipack|
+        child = multipack.child
+        quantity = multipack.quantity
+        ordered = (order_item.ordered * quantity)
+        child.update(available_stock: child.available_stock.to_f - ordered,
+                     allocated: child.allocated.to_f + ordered, allocated_orders: child.allocated_orders.to_i + 1)
+                    #  change_log: "#{order_item.channel_order.channel_type} API, #{order_item.channel_order.id}, #{order_item.channel_order.order_id}, Allocated, #{order_item.channel_product.listing_id}")
+      end
+      order_item.update(allocated: true)
+    end
+  end
+
 end
