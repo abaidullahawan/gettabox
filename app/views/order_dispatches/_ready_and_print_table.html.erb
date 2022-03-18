@@ -140,10 +140,10 @@
             <% if product.channel_product.product_mapping.product&.product_type_multiple? %>
               <% product.channel_product.product_mapping.product&.multipack_products&.each do |record| %>
                 <% weight += record&.child&.weight.to_f * record.quantity.to_f%>
-                <div class="font-sm d-flex align-items-center" style="width: 5%">
-                  <%= weight %>
-                </div>
               <% end %>
+              <div class="font-sm d-flex align-items-center" style="width: 5%">
+                <%= weight %>
+              </div>
             <% else %>
               <% weight += product.channel_product.product_mapping&.product&.weight.to_f * product.ordered.to_f %>
               <div class="font-sm d-flex align-items-center" style="width: 5%">
