@@ -19,8 +19,8 @@
         <div class="col-md-5 form-group">
           <%= f.select :channel_type_eq, options_for_select(@channel_types.map { |key, value| [key.humanize, value] }, f.object.channel_type_eq), {include_blank: "Select Status", hide_label:true, required: true }, class:"bg-white form-control order-mapping-select", title: 'Select Mapping Category', prompt: "Please select" %>
         </div>
-        <div class="col-md-7 form-group">
-          <%= f.search_field :order_id_or_order_status_or_buyer_name_cont, class:"form-control bg-white text-black", title: 'Search Buyer Name or Order Id or Status', placeholder: 'Search Buyer Name or Order Id or Status' %>
+        <div class="col-md-8 form-group">
+          <%= f.search_field :order_id_or_order_status_or_buyer_name_or_channel_order_items_sku_cont, class:"form-control bg-white text-black", title: 'Search Buyer Name or Order Id or Status', placeholder: 'Search Buyer Name or Order Id or Status' %>
         </div>
       </div>
     </div>
