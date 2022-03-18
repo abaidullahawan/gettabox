@@ -132,7 +132,7 @@
           <% weight += label.weight%>
         <% end %>
         <div class="font-sm d-flex align-items-center" style="width: 5%">
-          <%= weight %>
+          <%= weight&.round(2).to_f %>
         </div>
       <% else%>
         <% order.channel_order_items.each do |product|%>
@@ -142,12 +142,12 @@
                 <% weight += record&.child&.weight.to_f * record.quantity.to_f * product&.ordered%>
               <% end %>
               <div class="font-sm d-flex align-items-center" style="width: 5%">
-                <%= weight %>
+                <%= weight&.round(2).to_f %>
               </div>
             <% else %>
               <% weight += product.channel_product.product_mapping&.product&.weight.to_f * product.ordered.to_f %>
               <div class="font-sm d-flex align-items-center" style="width: 5%">
-                <%= weight %>
+                <%= weight&.round(2).to_f %>
               </div>
             <% end %>
           <% end %>
