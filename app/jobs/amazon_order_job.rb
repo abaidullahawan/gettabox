@@ -55,7 +55,7 @@ class AmazonOrderJob < ApplicationJob
           channel_order.stage = order_stage(order['OrderStatus'])
           channel_order.order_type = order['OrderType']
           amount = order['OrderTotal'].nil? ? nil : order['OrderTotal']['Amount']
-          channel_order.total_amount = amount
+          channel_order.total_amount = amount.to_f
           channel_order.fulfillment_instruction = order['FulfillmentChannel']
           # customer_records(channel_order) if channel_order.save
           return unless channel_order.save
