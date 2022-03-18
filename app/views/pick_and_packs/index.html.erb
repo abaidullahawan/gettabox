@@ -52,8 +52,8 @@
             <table class="table m-0 table-hover">
               <tr>
                 <th>
-                  <div class='row' style='max-width: 65px'>
-                    <div class='col-6 p-0  mt-1'>
+                  <div class='row pl-3'>
+                    <div class='col-6 p-0 mt-1'>
                       <input type="checkbox" id="" name="" value="" class='col-6 select-all-checkbox'>
                     </div>
                   </div>
@@ -66,7 +66,7 @@
               <% @pick_and_packs&.each&.with_index(1) do |pick_and_pack, index| %>
                 <tr class='<%= pick_and_pack.channel_orders.count > 0 ? '' : 'alert-danger' %>'>
                   <td>
-                    <div class='row' style='max-width: 65px'>
+                    <div class='row pl-3'>
                       <div class='col-6 p-0 mt-1'>
                         <%= f.check_box 'object_ids[]', {}, pick_and_pack.id %>
                       </div>

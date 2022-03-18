@@ -14,17 +14,17 @@
 <div class="alert alert-dismissible fade show text-white font-weight-bold jquery-selected-alert d-none " style="position: fixed; width:93%; z-index:99999;" role="alert"></div>
 <%= search_form_for @q, url: order_dispatches_path(request.parameters.excluding('controller', 'action')), method: :get do |f| %>
   <div class='row ml-0'>
-    <div class='col-4'>
+    <div class='col-6'>
       <div class='row'>
-        <div class="col-md-4 form-group">
+        <div class="col-md-5 form-group">
           <%= f.select :channel_type_eq, options_for_select(@channel_types.map { |key, value| [key.humanize, value] }, f.object.channel_type_eq), {include_blank: "Select Status", hide_label:true, required: true }, class:"bg-white form-control order-mapping-select", title: 'Select Mapping Category', prompt: "Please select" %>
         </div>
-        <div class="col-md-8 form-group">
+        <div class="col-md-7 form-group">
           <%= f.search_field :order_id_or_order_status_or_buyer_name_cont, class:"form-control bg-white text-black", title: 'Search Buyer Name or Order Id or Status', placeholder: 'Search Buyer Name or Order Id or Status' %>
         </div>
       </div>
     </div>
-    <div class='col-2 offset-6'>
+    <div class='col-2 ml-auto'>
       <div class='row'>
         <div>
           <%= link_to 'Refresh', refresh_order_dispatches_path(channel_order_items: true, order_filter: params[:order_filter]), {class: 'btn btn-danger mr-1 d-none', style:"padding:13px;"} %>
