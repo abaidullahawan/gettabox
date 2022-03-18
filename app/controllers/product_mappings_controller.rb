@@ -71,8 +71,8 @@ class ProductMappingsController < ApplicationController
         update_multi_pack_logs(@channel_product, @product)
       else
         @product.update(change_log: "Product Mapped, #{@product.sku}, #{@channel_product.item_sku}, Mapped, #{@channel_product.listing_id}, #{@product.inventory_balance}", unshipped_orders: @product.unshipped_orders.to_i + 1)
+        update_order_stage(@channel_product, @product)
       end
-      update_order_stage(@channel_product, @product)
       allocations
       flash[:notice] = 'Product mapped successfully'
     else
@@ -434,7 +434,7 @@ class ProductMappingsController < ApplicationController
     orders = ChannelOrder.joins(:channel_order_items).includes(:channel_order_items)
                          .where('channel_order_items.channel_product_id': channel_product.id)
     product.multipack_products.each do |multi_pack_log|
-      multi_pack_log.child.update(change_log: "Product Mapped, #{multi_pack_log.child.sku}, #{channel_product.item_sku}, Mapped, #{channel_product.listing_id}, #{@product.inventory_balance}")
+      multi_pack_log.child.update(change_log: "Product Mapped, #{multi_pack_log.child.sku}, #{channel_product.item_sku}, Mapped, #{channel_product.listing_id}, #{multi_pack_log.child.inventory_balance}")
     end
     orders.each do |order|
       order.update(stage: 'ready_to_dispatch')
