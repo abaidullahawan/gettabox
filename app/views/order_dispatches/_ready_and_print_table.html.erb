@@ -125,6 +125,33 @@
           <% end %>
         </div>
       </div>
+      <% weight = 0%>
+      <% if order.assign_rule.present? %>
+        <% order.assign_rule.mail_service_labels.each do |label|%>
+          <% weight += label.weight%>
+        <% end %>
+        <div class="font-sm d-flex align-items-center" style="width: 5%">
+          <%= weight %>
+        </div>
+      <% else%>
+        <% order.channel_order_items.each do |product|%>
+          <% if product.channel_product&.product_mapping.present? %>
+            <% if product.channel_product.product_mapping.product&.product_type_multiple? %>
+              <% product.channel_product.product_mapping.product&.multipack_products&.each do |record| %>
+                <% weight += record&.child&.weight.to_f * record.quantity.to_f%>
+              <% end %>
+              <div class="font-sm d-flex align-items-center" style="width: 5%">
+                <%= weight %>
+              </div>
+            <% else %>
+              <% weight += product.channel_product.product_mapping&.product&.weight.to_f * product.ordered.to_f %>
+              <div class="font-sm d-flex align-items-center" style="width: 5%">
+                <%= weight %>
+              </div>
+            <% end %>
+          <% end %>
+        <% end %>
+      <% end %>
       <div class="font-sm d-flex align-items-center" style="width: 5%">
         <% if order.assign_rule.present? %>
           <span class="mt-2 mr-2 badge badge-warning mb-1"><%= order.assign_rule&.status %></span>
