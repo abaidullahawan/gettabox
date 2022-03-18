@@ -122,8 +122,8 @@ class AmazonOrderJob < ApplicationJob
     customer.addresses.build(address_title: title,
                              address: address['AddressLine1'],
                              city: address['City'],
-                             postcode: address['PostalCode'],
-                             country: address['CountryCode'],
+                             postcode: address['PostalCode']&.upcase,
+                             country: 'United Kingdom',
                              region: address['StateOrRegion'])
   end
 
