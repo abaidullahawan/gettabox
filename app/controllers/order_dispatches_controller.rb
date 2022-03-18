@@ -327,7 +327,7 @@ class OrderDispatchesController < ApplicationController
 
   def allocate_item(order_item)
     product = order_item.channel_product.product_mapping.product
-    return multipack_allocation(order_item, product) if product&.product_type&.eql? 'multiple'
+    return multipack_allocation(order_item, product) if product&.product_type.eql? 'multiple'
 
     if product&.available_stock.to_i >= order_item.ordered
       product.update(available_stock: product.available_stock.to_f - order_item.ordered,
@@ -558,7 +558,11 @@ class OrderDispatchesController < ApplicationController
       @search = @channel_orders.where(stage: 'ready_to_dispatch')
                                .where.not(channel_type: 'amazon', system_user_id: nil).search(params[:q])
       @not_started_orders = @search.result
-      @not_started_orders = @not_started_orders.order(:order_type, created_at: :desc)
+      if params[:q].present? && params[:q][:s].present? && params[:q][:s].include?('total_amount')
+        @not_started_orders = @not_started_orders.order(:total_amount)
+      else
+        @not_started_orders = @not_started_orders.order(:order_type, created_at: :desc)
+      end
       @not_started_order_data = @not_started_orders.page(params[:not_started_page]).per(params[:limit] || 100)
     end
     return unless (params[:order_filter].eql? 'ready') && params[:export]
