@@ -183,12 +183,11 @@ class AmazonOrderJob < ApplicationJob
   end
 
   def update_available_stock(item, product, inventory_balance, ordered)
-    unshipped_quantity = item.ordered
-    unshipped = product.unshipped + unshipped_quantity if product.unshipped.present?
+    unshipped = product.unshipped + ordered if product.unshipped.present?
     product.update(change_log: "API, #{item.channel_product.item_sku}, #{item.channel_order.order_id}, Order Paid,
         #{item.channel_product.listing_id}, #{unshipped}, #{product.inventory_balance} ", unshipped: unshipped, unshipped_orders: product.unshipped_orders.to_i + 1,
         inventory_balance: inventory_balance)
-    if product.inventory_balance >= unshipped_quantity
+    if product.inventory_balance >= ordered
       product.update(allocated: product.allocated.to_i + ordered, allocated_orders: product.allocated_orders.to_i + 1)
       item.update(allocated: true)
     else
