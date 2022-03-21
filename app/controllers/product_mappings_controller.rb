@@ -418,8 +418,15 @@ class ProductMappingsController < ApplicationController
 
       order.update(stage: 'ready_to_dispatch')
       unshipped = order.channel_order_items.pluck(:ordered).sum
-      unshipped = product.unshipped + unshipped if product.unshipped.present?
-      product.update(change_log: " Order Paid, #{channel_product.item_sku}, #{order.order_id}, Order Paid, #{channel_product.listing_id}, #{unshipped}, #{product.inventory_balance} ", unshipped: unshipped, inventory_balance: (product.total_stock.to_i - unshipped.to_i), unshipped_orders: product.unshipped_orders.to_i + 1)
+      if product&.product_type == 'multiple'
+        product.multipack_products.each do |multi|
+          unshipped = multi&.child&.unshipped + unshipped if multi&.child&.unshipped.present?
+          multi&.child.update(change_log: " Order Paid, #{channel_product.item_sku}, #{order.order_id}, Order Paid, #{channel_product.listing_id}, #{unshipped}, #{product.inventory_balance} ", unshipped: unshipped, inventory_balance: (multi&.child&.total_stock.to_i - unshipped.to_i), unshipped_orders: multi&.child&.unshipped_orders.to_i + 1)
+        end
+      else
+        unshipped = product.unshipped + unshipped if product.unshipped.present?
+        product.update(change_log: " Order Paid, #{channel_product.item_sku}, #{order.order_id}, Order Paid, #{channel_product.listing_id}, #{unshipped}, #{product.inventory_balance} ", unshipped: unshipped, inventory_balance: (product.total_stock.to_i - unshipped.to_i), unshipped_orders: product.unshipped_orders.to_i + 1)
+      end
     end
   end
 
@@ -432,10 +439,9 @@ class ProductMappingsController < ApplicationController
     orders.each do |order|
       order.update(stage: 'ready_to_dispatch')
       product.multipack_products.each do |multi_pack_log|
-        deduction_unit = channel_product.product_mapping&.product&.multipack_products&.find_by(child_id: multi_pack_log.child.id)&.quantity.to_i
         unshipped_log = multi_pack_log.quantity.to_i * order.channel_order_items.pluck(:ordered).sum
         unshipped = multi_pack_log.child.unshipped + unshipped_log if multi_pack_log.child.unshipped.present?
-        multi_pack_log.child.update(change_log: " Order Paid, #{channel_product.item_sku}, #{order.order_id}, Order Paid, #{channel_product.listing_id} ", unshipped: (unshipped * deduction_unit), inventory_balance: (multi_pack_log.child.total_stock.to_i - (unshipped.to_i * deduction_unit.to_i)), unshipped_orders: multi_pack_log.child&.unshipped_orders.to_i + 1)
+        multi_pack_log.child.update(change_log: " Order Paid, #{channel_product.item_sku}, #{order.order_id}, Order Paid, #{channel_product.listing_id} ", unshipped: unshipped, inventory_balance: (multi_pack_log.child.total_stock.to_i - unshipped.to_i), unshipped_orders: multi_pack_log.child&.unshipped_orders.to_i + 1)
       end
     end
   end
