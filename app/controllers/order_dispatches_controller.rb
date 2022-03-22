@@ -405,24 +405,29 @@ class OrderDispatchesController < ApplicationController
     if file.present? && file.path.split('.').last.to_s.downcase == 'csv'
       csv_text = File.read(file)
       csv = CSV.parse(csv_text, headers: true)
-      csv.each do |row|
-        order = ChannelOrder.find_by(stage: 'ready_to_dispatch', order_id: row['order-id'])
-        next unless order.present?
-        next unless !row['buyer-phone-number']&.downcase&.include? 'e'
-        order.buyer_name = row['buyer-name']
-        order.build_system_user(user_type: 'customer', sales_channel: 'amazon', name: row['buyer-name'],
-                                email: row['buyer-email'], phone_number: row['buyer-phone-number'],
-                                days_for_order_to_completion: row['promise-date'].to_date - Date.today)
-        order
-          .system_user
-          .addresses
-          .build(address_title: 'delivery', company: row['ship-address-1'].to_s,
-                 address: row['ship-address-2'].to_s + row['ship-address-3'].to_s,
-                 city: row['ship-city'], region: row['ship-state'], postcode: row['ship-postal-code'],
-                 country: row['ship-country'])
-        order.save
+      found_e, row_number = verify_csv_format(csv)
+      if found_e == false
+        csv.each do |row|
+          order = ChannelOrder.find_by(stage: 'ready_to_dispatch', order_id: row['order-id'])
+          next unless order.present?
+          next unless !row['buyer-phone-number']&.downcase&.include? 'e'
+          order.buyer_name = row['buyer-name']
+          order.build_system_user(user_type: 'customer', sales_channel: 'amazon', name: row['buyer-name'],
+                                  email: row['buyer-email'], phone_number: row['buyer-phone-number'],
+                                  days_for_order_to_completion: row['promise-date'].to_date - Date.today)
+          order
+            .system_user
+            .addresses
+            .build(address_title: 'delivery', company: row['ship-address-1'].to_s,
+                  address: row['ship-address-2'].to_s + row['ship-address-3'].to_s,
+                  city: row['ship-city'], region: row['ship-state'], postcode: row['ship-postal-code'],
+                  country: row['ship-country'])
+          order.save
+        end
+        flash[:notice] = 'Customer imported successfuly'
+      else
+        flash[:alert] = "Row number #{row_number} have issue in phone number."
       end
-      flash[:notice] = 'Customer imported successfuly'
     else
       flash[:alert] = 'File format no matched! Please change file'
     end
@@ -674,5 +679,18 @@ class OrderDispatchesController < ApplicationController
     end
     flash[:alert] = "Allocation failed for #{@not_allocated}. Available stock not enough" if @not_allocated.present?
     redirect_to request.referrer
+  end
+
+  def verify_csv_format(csv)
+    found_e = false
+    row_number = 1
+    csv.each do |row|
+      row_number += 1
+      if row['buyer-phone-number']&.downcase&.include? 'e'
+        found_e = true
+        break
+      end
+    end
+    [found_e, row_number]
   end
 end

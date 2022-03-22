@@ -61,7 +61,7 @@
                     <td class="text-center"><%= multi_mapping.item_sku %></td>
                     <td class="text-center"><%= deduction_unit %></td>
                     <% if multi_mapping.channel_type == 'ebay' %>
-                      <td class="text-center"><%= Selling.last.quantity < deduction_quantity.to_i ? Selling.last.quantity : [deduction_quantity.to_i, 0].max %></td>
+                      <td class="text-center"><%= Selling&.last&.quantity.to_i < deduction_quantity.to_i ? Selling&.last&.quantity.to_i: [deduction_quantity.to_i, 0].max %></td>
                     <% else %>
                       <td class="text-center"><%= [deduction_quantity.to_i, 0].max %></td>
                     <% end %>
