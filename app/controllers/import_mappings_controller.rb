@@ -275,7 +275,7 @@ class ImportMappingsController < ApplicationController
       csv_headers = CSV.parse(csv_text, headers: true).headers
       column_names = (ChannelOrder.column_names + ChannelOrderItem.column_names.excluding(to_be_ignored) +
                       MailServiceLabel.column_names.excluding(to_be_ignored) + SystemUser.column_names
-                      .excluding(to_be_ignored) + Address.column_names.excluding(to_be_ignored))
+                      .excluding(to_be_ignored) + Address.column_names.excluding(to_be_ignored) + MailServiceRule.column_names.excluding(to_be_ignored))
       redirect_to export_new_export_mappings_path(column_names: column_names, csv_headers: csv_headers)
       # export_mapping = ExportMapping.new(table_name: 'Order', sub_type: 'Courier csv export', export_data: csv_headers)
       # if export_mapping.save
