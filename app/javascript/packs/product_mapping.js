@@ -80,10 +80,20 @@ $(document).on('turbolinks:load', function () {
 
   $('.bulk-assign-rule').on('click', function () {
     $('#bulk-mail-service-modal').modal('show')
+    var object_ids = $('input[name="object_ids[]"]:checked')
+    var order_ids = object_ids.map(function (i, e) { return e.value }).toArray();
+    var rule_id = $('#rule_id').val()
+    $('.assign_bulk_rule_button').on('click', function () {
+      $.ajax({
+        url: '/order_dispatches/bulk_assign_rule',
+        type: 'GET',
+        data: { 'orders': order_ids, 'rule': rule_id },
+        success: function (response) {
+          window.location.reload()
+        }
+      })
+    })
   })
-
-
-
 
   $('.create-multi-product').on('click', function () {
     var json = this.dataset.item

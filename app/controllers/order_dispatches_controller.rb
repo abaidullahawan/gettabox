@@ -210,6 +210,24 @@ class OrderDispatchesController < ApplicationController
     flash[:notice] = 'Mail Service Rule Assigned!'
   end
 
+  def bulk_assign_rule
+    orders = ChannelOrder.find(params[:orders])
+    @assign_rule = AssignRule.create(mail_service_rule_id: params[:rule])
+    orders.each do |order|
+      order&.update(assign_rule_id: @assign_rule.id)
+      order&.channel_order_items&.each do |item|
+        quantity = item&.ordered
+        length = item&.channel_product&.product_mapping&.product&.length.to_f * quantity
+        weight = item&.channel_product&.product_mapping&.product&.weight.to_f * quantity
+        width = item&.channel_product&.product_mapping&.product&.width.to_f
+        height = item&.channel_product&.product_mapping&.product&.height.to_f
+        @service_label = MailServiceLabel.create(height: height, weight: weight,
+                                                  length: length, width: width, assign_rule_id: @assign_rule.id)
+      end
+    end
+    redirect_to order_dispatches_path(order_filter: 'ready')
+  end
+
   def update_selected
     if params[:order_id].present? || params[:selected].present?
       order = ChannelOrder.find_by(id: params[:order_id])
