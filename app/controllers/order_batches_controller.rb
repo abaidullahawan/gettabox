@@ -62,15 +62,18 @@ class OrderBatchesController < ApplicationController
       address_data = {}
       system_user_data = {}
       mail_service_label_data = {}
+      mail_service_rule_data = {}
       @export_mapping.mapping_data.compact_blank.each do |key, attribute|
         channel_order_data[key] = attribute if ChannelOrder.column_names.include? attribute
         channel_order_item_data[key] = attribute if ChannelOrderItem.column_names.excluding(to_be_ignored).include? attribute
         address_data[key] = attribute if Address.column_names.excluding(to_be_ignored).include? attribute
         system_user_data[key] = attribute if SystemUser.column_names.excluding(to_be_ignored).include? attribute
         mail_service_label_data[key] = attribute if MailServiceLabel.column_names.excluding(to_be_ignored).include? attribute
+        mail_service_rule_data[key] = attribute if MailServiceRule.column_names.excluding(to_be_ignored).include? attribute
+
       end
       # attributes = system_user_data.keys + channel_order_item_data.keys + mail_service_label_data.keys + address_data.keys + channel_order_data.keys
-      attributes = channel_order_item_data.keys + channel_order_data.keys + mail_service_label_data.keys + address_data.keys + system_user_data.keys
+      attributes = channel_order_item_data.keys + channel_order_data.keys + mail_service_label_data.keys + address_data.keys + system_user_data.keys + mail_service_rule_data.keys
       attributes[1], attributes[3] = attributes[3], attributes[1]
       attributes[2], attributes[4] = attributes[4], attributes[2]
       attributes[4], attributes[17] = attributes[17], attributes[4]
@@ -97,7 +100,8 @@ class OrderBatchesController < ApplicationController
           address_csv = address_data.values.map { |attr| order.system_user&.addresses&.find_by(address_title: 'delivery')&.send(attr) }
           system_user_csv = system_user_data.values.map { |attr| order.system_user&.send(attr) }
           label_csv = mail_service_label_data.values.map { |attr| order.assign_rule.mail_service_labels.first.send(attr) }
-          row = item_csv + order_csv + label_csv + address_csv + system_user_csv
+          service_rule_csv = mail_service_rule_data.values.map { |attr| order.assign_rule&.mail_service_rule.send(attr) }
+          row = item_csv + order_csv + label_csv + address_csv + system_user_csv + service_rule_csv
           row[1], row[3] = row[3], row[1]
           row[2], row[4] = row[4], row[2]
           row[4], row[17] = row[17], row[4]
