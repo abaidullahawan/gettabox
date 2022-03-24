@@ -9,6 +9,7 @@ class MultiFileMappingJob < ApplicationJob
     spreadsheet2 = _args.last[:spreadsheet2]
     mapping = _args.last[:mapping]
     id = _args.last[:multifile_mapping_id]
+    multifile = MultifileMapping.find(id)
     spreadsheet1 = CSV.parse(spreadsheet1, headers: true)
     spreadsheet2 = CSV.parse(spreadsheet2, headers: true)
     attributes = mapping.data_to_print
@@ -21,7 +22,7 @@ class MultiFileMappingJob < ApplicationJob
     # file = Tempfile.new(['Mapped-File', '.csv'])
     # begin
       # @csv = CSV.generate(headers: true) do |csv|
-      name = "multi-mapping--#{Time.zone.now.strftime('%d-%m-%Y @ %H:%M:%S')}"
+      name = "multi-mapping--#{multifile.created_at.strftime('%d-%m-%Y @ %H:%M:%S')}"
       csv = CSV.open("/home/deploy/channeldispatch/current/tmp/#{name}", "wb") do |csv|
         csv << attributes
         non_matching1 = []
@@ -29,21 +30,21 @@ class MultiFileMappingJob < ApplicationJob
         matching1 = []
         matching = []
         if mapping.mapping_rule.present?
-          case_sensitivity(spreadsheet1, spreadsheet2, matchable, mapping, csv, attribute_data)
+          case_sensitivity(spreadsheet1, spreadsheet2, matchable, mapping, csv, attributes)
         else
           spreadsheet1.each do |record1|
             matchable.each do |matched|
               matching = spreadsheet2.select { |row| row if record1[matched[0].gsub('_', ' ')] == row[matched[1].gsub('_', ' ')]}
               next non_matching1 << [record1] unless matching.present?
 
-              row1 = record1.values_at(*attribute_data).compact
-              row2 = matching.first.values_at(*attribute_data).compact
+              row1 = record1.values_at(*attributes).compact
+              row2 = matching.first.values_at(*attributes).compact
               row = row1 + row2
               csv << row
               matching1 << matching
             end
           end
-          unmatch_csv_data(spreadsheet2, matching1, non_matching2, non_matching1, csv, attribute_data)
+          unmatch_csv_data(spreadsheet2, matching1, non_matching2, non_matching1, csv, attributes)
         end
       end
     # ensure
@@ -58,7 +59,7 @@ class MultiFileMappingJob < ApplicationJob
     # )
     # @multifile_mapping.attach_csv.attach = file.path
     # @multifile_mapping.save
-    MultifileMapping.find(id).update(download: true)
+    multifile.update(download: true)
   end
 
   def case_sensitivity(spreadsheet1, spreadsheet2, matchable, mapping, csv, attribute_data)
@@ -86,7 +87,7 @@ class MultiFileMappingJob < ApplicationJob
   def symbol_case(record1, record2, matched, mapping)
     true unless mapping.mapping_rule.include?('symbol_case')
 
-    if record1[matched[0].gsub('_',' ')]&.gsub(/[^0-9A-Za-z]/, '')== record2[matched[1].gsub('_',' ')]&.gsub(/[^0-9A-Za-z]/, '')
+    if record1[matched[0]].gsub('_',' ')&.gsub(/[^0-9A-Za-z]/, '')== record2[matched[1].gsub('_',' ')]&.gsub(/[^0-9A-Za-z]/, '')
       true
     else
       false
@@ -96,7 +97,7 @@ class MultiFileMappingJob < ApplicationJob
   def space_case(record1, record2, matched, mapping)
     true unless mapping.mapping_rule.include?('space_case')
 
-    if record1[matched[0].gsub('_',' ')]&.delete(' ') == record2[matched[1].gsub('_', ' ')]&.delete(' ')
+    if record1[matched[0]].gsub('_',' ')&.delete(' ') == record2[matched[1].gsub('_', ' ')]&.delete(' ')
       true
     else
       false
@@ -106,7 +107,7 @@ class MultiFileMappingJob < ApplicationJob
   def upper_case(record1, record2, matched, mapping)
     true unless mapping.mapping_rule.include?('upper_case')
 
-    if record1[matched[0].gsub('_', ' ')]&.casecmp(record2[matched[1].gsub('_', ' ')])&.zero?
+    if record1[matched[0]].gsub('_', ' ')&.casecmp(record2[matched[1].gsub('_', ' ')])&.zero?
       true
     else
       false
