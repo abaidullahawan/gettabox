@@ -154,6 +154,7 @@ Rails.application.routes.draw do
       get 'refresh_product', to: 'order_dispatches#refresh_product'
       get 'allocations', to: 'order_dispatches#allocations'
       post 'import_customer', to: 'order_dispatches#import_customer'
+      get 'recalculate_rule', to: 'order_dispatches#recalculate_rule'
     end
   end
 
