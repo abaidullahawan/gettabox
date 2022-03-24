@@ -147,6 +147,7 @@ class AmazonOrderJob < ApplicationJob
       else
         order.update(stage: 'ready_to_dispatch')
         allocate_or_unallocate(order.channel_order_items)
+        assign_rule(order)
       end
     end
   end
@@ -192,6 +193,71 @@ class AmazonOrderJob < ApplicationJob
       item.update(allocated: true)
     else
       item.update(allocated: false)
+    end
+  end
+
+  def assign_rule(order)
+    total_weight = 0
+    min_weight = 0
+    max_weight = 0
+    order.channel_order_items.each do |item|
+      if item.channel_product&.product_mapping.present?
+        if item.channel_product&.product_mapping&.product&.product_type == 'multiple'
+          item.channel_product&.product_mapping&.product&.multipack_products.each do |multipack_product|
+            total_weight += multipack_product.child.weight
+          end
+        else
+          total_weight += item.channel_product&.product_mapping&.product&.weight
+        end
+      end
+    end
+    MailServiceRule.all.each do |mail_rule|
+      mail_rule.rules.each do |rule|
+        if rule.rule_field == 'weight_in_gm'
+          operator = rule.rule_operator
+          case operator
+          when 'greater_then'
+            min_weight = rule.rule_value.to_i + 1
+          when 'greater_then_equal'
+            min_weight = rule.rule_value
+          when 'less_then_equal'
+            max_weight = rule.rule_value
+          when 'less_then'
+            max_weight = rule.rule_value.to_i - 1
+          end
+        end
+      end
+      if total_weight <= max_weight && total_weight >= min_weight
+        assign_rule = AssignRule.create(mail_service_rule_id: mail_rule.id)
+        order&.channel_order_items&.each do |item|
+
+          if item.channel_product&.product_mapping&.product&.product_type == 'multiple'
+            quantity = item&.ordered
+            length = 0
+            weight = 0
+            width = 0
+            height = 0
+            item.channel_product&.product_mapping&.product&.multipack_products.each do |multipack_product|
+              length += multipack_product.child.length.to_f * quantity
+              weight += multipack_product.child.weight.to_f * quantity
+              width += multipack_product.child.width.to_f
+              height += multipack_product.child.height.to_f
+            end
+            @service_label = MailServiceLabel.create(height: height, weight: weight,
+                                                    length: length, width: width, assign_rule_id: assign_rule.id)
+          else
+            quantity = item&.ordered
+            length = item&.channel_product&.product_mapping&.product&.length.to_f * quantity
+            weight = item&.channel_product&.product_mapping&.product&.weight.to_f * quantity
+            width = item&.channel_product&.product_mapping&.product&.width.to_f
+            height = item&.channel_product&.product_mapping&.product&.height.to_f
+            @service_label = MailServiceLabel.create(height: height, weight: weight,
+                                                    length: length, width: width, assign_rule_id: assign_rule.id)
+          end
+
+        end
+        order.update(assign_rule_id: assign_rule.id)
+      end
     end
   end
 
