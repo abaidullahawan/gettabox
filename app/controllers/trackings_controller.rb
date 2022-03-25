@@ -178,6 +178,7 @@ class TrackingsController < ApplicationController
       order.update(change_log: "Channel Updated, #{order.id}, #{order.order_id}, #{current_user.personal_detail&.full_name}") if batch.update_channels
     end
     AmazonTrackingJob.perform_later(order_ids: order_ids) if batch.update_channels
+    EbayCompleteSaleJob.perform_later(order_ids: order_ids) if batch.update_channels
   end
 
   def redirect_response
