@@ -468,9 +468,7 @@ class OrderDispatchesController < ApplicationController
             end
           end
         end
-        byebug
         if total_weight <= max_weight && total_weight >= min_weight
-          
           if order.assign_rule&.mail_service_rule&.bonus_score.to_i < mail_rule.bonus_score.to_i
             assign_rule = AssignRule.create(mail_service_rule_id: mail_rule.id)
             order&.channel_order_items&.each do |item|

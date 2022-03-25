@@ -9,7 +9,7 @@ class MultiFileMappingJob < ApplicationJob
     spreadsheet2 = _args.last[:spreadsheet2]
     mapping = _args.last[:mapping]
     id = _args.last[:multifile_mapping_id]
-    multifile = MultifileMapping.find(id)
+    multifile = MultifileMapping.find_by(id: id)
     spreadsheet1 = CSV.parse(spreadsheet1, headers: true)
     spreadsheet2 = CSV.parse(spreadsheet2, headers: true)
     attributes = mapping.data_to_print
