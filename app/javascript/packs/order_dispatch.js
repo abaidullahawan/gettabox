@@ -18,4 +18,8 @@ $(document).on('turbolinks:load', function () {
     })
   })
 
+  $('#unassigned_').on('change', function () {
+    $('#per_page_submit').trigger('click')
+  })
+
 })

@@ -24,6 +24,10 @@
           <div class='float-right mr-2'>
             <%= search_field_tag :assign_rule_name, params[:assign_rule_name], class: 'form-control', placeholder: 'Search rule name' %>
           </div>
+          <div class="float-right mr-2">
+            <%= check_box :unassigned, '', {checked: params[:unassigned]&.last.to_i.zero? ? '' : true, class: 'form-control'} %>
+            <%= label_tag :unassigned, 'All orders' %>
+          </div>
         </div>
         <% end %>
         <%= form_with(url: bulk_method_order_dispatches_path(format: "csv") , method: 'get', local: true) do |f| %>
