@@ -649,8 +649,30 @@ class OrderDispatchesController < ApplicationController
                "%#{params['assign_rule_name']}%")
         ).uniq
       @not_started_order_data = Kaminari.paginate_array(@not_started_orders).page(params[:not_started_page]).per(params[:limit] || 100)
+    elsif params[:unassigned].present?
+      if params[:unassigned].last.to_i.zero?
+        @search = @channel_orders.where(stage: 'ready_to_dispatch', assign_rule_id: nil)
+                                 .where.not(channel_type: 'amazon', system_user_id: nil).search(params[:q])
+        @not_started_orders = @search.result
+        if params[:q].present? && params[:q][:s].present? && params[:q][:s].include?('total_amount')
+          @not_started_orders = @not_started_orders.order(:total_amount)
+        else
+          @not_started_orders = @not_started_orders.order(:order_type, created_at: :desc)
+        end
+        @not_started_order_data = @not_started_orders.page(params[:not_started_page]).per(params[:limit] || 100)
+      else
+        @search = @channel_orders.where(stage: 'ready_to_dispatch')
+                                 .where.not(channel_type: 'amazon', system_user_id: nil).search(params[:q])
+        @not_started_orders = @search.result
+        if params[:q].present? && params[:q][:s].present? && params[:q][:s].include?('total_amount')
+          @not_started_orders = @not_started_orders.order(:total_amount)
+        else
+          @not_started_orders = @not_started_orders.order(:order_type, created_at: :desc)
+        end
+        @not_started_order_data = @not_started_orders.page(params[:not_started_page]).per(params[:limit] || 100)
+      end
     else
-      @search = @channel_orders.where(stage: 'ready_to_dispatch')
+      @search = @channel_orders.where(stage: 'ready_to_dispatch', assign_rule_id: nil)
                                .where.not(channel_type: 'amazon', system_user_id: nil).search(params[:q])
       @not_started_orders = @search.result
       if params[:q].present? && params[:q][:s].present? && params[:q][:s].include?('total_amount')
