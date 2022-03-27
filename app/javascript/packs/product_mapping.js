@@ -84,6 +84,7 @@ $(document).on('turbolinks:load', function () {
     var order_ids = object_ids.map(function (i, e) { return e.value }).toArray();
     var rule_id = $('#rule_id').val()
     $('.assign_bulk_rule_button').on('click', function () {
+      var rule_id = $('#rule_id').val()
       $.ajax({
         url: '/order_dispatches/bulk_assign_rule',
         type: 'GET',

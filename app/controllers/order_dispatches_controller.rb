@@ -6,9 +6,9 @@ class OrderDispatchesController < ApplicationController
   before_action :authenticate_user!
   # before_action :refresh_token, :refresh_token_amazon, only: %i[index all_order_data]
   before_action :check_status, only: %i[index fetch_response_orders]
-  before_action :ransack_params, :load_counts, :unmatched_product_orders, :completed_orders,
+  before_action :ransack_params, :unmatched_product_orders, :completed_orders,
                 :no_sku, :not_started_orders, :unpaid_orders, :unmatched_sku, :ready_to_print_orders,
-                :customer_info, only: %i[index]
+                :customer_info, :load_counts, only: %i[index]
   before_action :new_product, :product_load_resources, :first_or_create_category, only: %i[index]
 
   def index
@@ -643,10 +643,10 @@ class OrderDispatchesController < ApplicationController
 
     if params['assign_rule_name'].present?
       @not_started_orders = (@channel_orders
-        .joins(channel_order_items: [channel_product: :product_mapping], assign_rule: [mail_service_rule: :service])
-        .includes(channel_order_items: [channel_product: :product_mapping], assign_rule: [mail_service_rule: :service])
-        .where('mail_service_rules.rule_name ILIKE ? OR services.name ILIKE ? and order_status = ? and stage = ?',
-               "%#{params['assign_rule_name']}%", "%#{params['assign_rule_name']}%", 'NOT_STARTED', 'ready_to_dispatch')
+        .joins(assign_rule: :mail_service_rule).includes(assign_rule: :mail_service_rule)
+        .where(stage: 'ready_to_dispatch').where.not(channel_type: 'amazon', system_user_id: nil)
+        .where('mail_service_rules.rule_name ILIKE ?',
+               "%#{params['assign_rule_name']}%")
         ).uniq
       @not_started_order_data = Kaminari.paginate_array(@not_started_orders).page(params[:not_started_page]).per(params[:limit] || 100)
     else
@@ -707,7 +707,7 @@ class OrderDispatchesController < ApplicationController
     @issue_products_count = ChannelProduct.where(item_sku: nil).count
     @today_orders = @channel_orders.where('Date(channel_orders.created_at) = ?', Date.today).count
     @ready_to_pack_count = @channel_orders.where(stage: 'ready_to_print').count
-    @not_started_order_count = @channel_orders.where(stage: 'ready_to_dispatch')
+    @not_started_order_count = @not_started_orders&.count || @channel_orders.where(stage: 'ready_to_dispatch')
                                               .where.not(channel_type: 'amazon', system_user_id: nil).count
     @issue_orders_count = @channel_orders.where(stage: 'issue').count
     @unpaid_orders_count = @channel_orders.where(stage: %w[unpaid pending]).count

@@ -129,7 +129,7 @@
       <% weight = 0%>
       <% if order.assign_rule.present? %>
         <% order.assign_rule.mail_service_labels.each do |label|%>
-          <% weight += label.weight%>
+          <% weight += label.weight.to_i %>
         <% end %>
         <div class="font-sm d-flex align-items-center" style="width: 5%">
           <%= weight %>
