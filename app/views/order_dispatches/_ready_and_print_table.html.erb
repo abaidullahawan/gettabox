@@ -6,7 +6,7 @@
   <div class="header-font-size text-center d-flex align-items-center" style="width: 9%">Order Information</div>
   <div class="header-font-size col-3 text-center d-flex align-items-center">Listings</div>
   <div class="header-font-size col-2 text-center d-flex align-items-center">Information</div>
-  <div class="header-font-size" style="width: 5%">Weight</div>
+  <div class="header-font-size" style="width: 5%"><%= @search.present? ? sort_link(@search, :assign_rule_mail_service_labels_weight, 'Weight', {}, class: 'text-secondary') : 'Weight' %></div>
   <div class="header-font-size d-flex align-items-center pl-2" style="width: 8%">Courier Service</div>
   <div class="header-font-size col-1 text-center d-flex align-items-center" sytle="width: 7%">Tracking</div>
   <div class="header-font-size col-1 text-center d-flex align-items-center"><%= @search.present? ? sort_link(@search, :created_at, 'Date', {}, default_order: { created_at: 'DESC' }, class: 'text-secondary') : 'Date' %></div>
@@ -129,10 +129,10 @@
       <% weight = 0%>
       <% if order.assign_rule.present? %>
         <% order.assign_rule.mail_service_labels.each do |label|%>
-          <% weight += label.weight.to_i %>
+          <% weight += label.weight.to_f %>
         <% end %>
         <div class="font-sm d-flex align-items-center" style="width: 3%">
-          <%= weight %>
+          <%= weight.round(2) %>
         </div>
       <% else%>
         <% order.channel_order_items.each do |product|%>
@@ -142,12 +142,12 @@
                 <% weight += record&.child&.weight.to_f * record.quantity.to_f * product&.ordered%>
               <% end %>
               <div class="font-sm d-flex align-items-center" style="width: 3%">
-                <%= weight %>
+                <%= weight.round(2) %>
               </div>
             <% else %>
               <% weight += product.channel_product.product_mapping&.product&.weight.to_f * product.ordered.to_f %>
               <div class="font-sm d-flex align-items-center" style="width: 3%">
-                <%= weight %>
+                <%= weight.round(2) %>
               </div>
             <% end %>
           <% end %>
