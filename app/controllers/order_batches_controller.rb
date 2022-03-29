@@ -129,26 +129,26 @@ class OrderBatchesController < ApplicationController
     session[:order_ids] = params[:order_ids]
     session[:batch_params] = order_batch_params.to_h
   end
-end
 
-def csv_order(item_csv, order_csv, label_csv, address_csv, system_user_csv, service_rule_csv)
-  row = item_csv + order_csv + label_csv + address_csv + system_user_csv + service_rule_csv
-  row[1], row[3] = row[3], row[1]
-  row[2], row[4] = row[4], row[2]
-  row[4], row[17] = row[17], row[4]
-  row[4], row[8] = row[8], row[4]
-  row[4], row[6] = row[6], row[4]
-  row[5], row[7] = row[7], row[5]
-  row[7], row[9] = row[9], row[7]
-  row[8], row[9] = row[9], row[8]
-  row[9], row[10] = row[10], row[9]
-  row[10], row[11] = row[11], row[10]
-  row[11], row[12] = row[12], row[11]
-  row[12], row[13] = row[13], row[12]
-  row[13], row[14] = row[14], row[13]
-  row[14], row[15] = row[15], row[14]
-  row[15], row[16] = row[16], row[15]
-  row[4] = row[4].to_f / 1000
-  row[16] = row[16].gsub(';', ' + ')
-  row
+  def csv_order(item_csv, order_csv, label_csv, address_csv, system_user_csv, service_rule_csv)
+    row = item_csv + order_csv + label_csv + address_csv + system_user_csv + service_rule_csv
+    row[1], row[3] = row[3], row[1]
+    row[2], row[4] = row[4], row[2]
+    row[4], row[17] = row[17], row[4]
+    row[4], row[8] = row[8], row[4]
+    row[4], row[6] = row[6], row[4]
+    row[5], row[7] = row[7], row[5]
+    row[7], row[9] = row[9], row[7]
+    row[8], row[9] = row[9], row[8]
+    row[9], row[10] = row[10], row[9]
+    row[10], row[11] = row[11], row[10]
+    row[11], row[12] = row[12], row[11]
+    row[12], row[13] = row[13], row[12]
+    row[13], row[14] = row[14], row[13]
+    row[14], row[15] = row[15], row[14]
+    row[15], row[16] = row[16], row[15]
+    row[4] = row[4].to_f / 1000
+    row[16] = row[16].gsub(';', ' + ')
+    row
+  end
 end
