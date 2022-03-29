@@ -36,6 +36,7 @@
               <%= page_entries_info @not_started_order_data %>
             </div><br>
             <div class="pagination justify-content-center mt-1">
+              <%= hidden_field_tag "assign_rule_name", params[:assign_rule_name] %>
               <%= paginate @not_started_order_data, :param_name => :not_started_page,theme: "twitter-bootstrap-4",pagination_class: "pagination-sm",nav_class: "d-inline-b" %>
             </div>
           </div>
