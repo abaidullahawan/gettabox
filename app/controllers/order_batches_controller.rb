@@ -96,10 +96,10 @@ class OrderBatchesController < ApplicationController
                 count += 1
               else
                 row = csv_order(item_csv, order_csv, label_csv, address_csv, system_user_csv, service_rule_csv)
-                row[4] = weigth_label_csv.weight / 1000
-                row[5] = weigth_label_csv.height
-                row[6] = weigth_label_csv.width
-                row[7] = weigth_label_csv.length
+                row[4] = weigth_label_csv.weight.to_f / 1000
+                row[5] = weigth_label_csv.height.to_f
+                row[6] = weigth_label_csv.width.to_f
+                row[7] = weigth_label_csv.length.to_f
                 row[2] = "#{row[2]} [Copied]"
                 count += 1
                 csv << row
@@ -148,7 +148,7 @@ def csv_order(item_csv, order_csv, label_csv, address_csv, system_user_csv, serv
   row[13], row[14] = row[14], row[13]
   row[14], row[15] = row[15], row[14]
   row[15], row[16] = row[16], row[15]
-  row[4] = row[4] / 1000
+  row[4] = row[4].to_f / 1000
   row[16] = row[16].gsub(';', ' + ')
   row
 end
