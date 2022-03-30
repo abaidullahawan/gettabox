@@ -21,6 +21,7 @@
             <button type="submit" id="per_page_submit" hidden="hidden"></button>
           </div>
             <%= hidden_field_tag "order_filter", params[:order_filter] %>
+            <%= hidden_field_tag "limit", params[:limit] %>
           <div class='float-right mr-2'>
             <%= search_field_tag :assign_rule_name, params[:assign_rule_name], class: 'form-control', placeholder: 'Search rule name' %>
           </div>
@@ -36,6 +37,7 @@
               <%= page_entries_info @not_started_order_data %>
             </div><br>
             <div class="pagination justify-content-center mt-1">
+              <%= hidden_field_tag "assign_rule_name", params[:assign_rule_name] %>
               <%= paginate @not_started_order_data, :param_name => :not_started_page,theme: "twitter-bootstrap-4",pagination_class: "pagination-sm",nav_class: "d-inline-b" %>
             </div>
           </div>

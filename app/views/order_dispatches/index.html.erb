@@ -43,6 +43,7 @@
           </div>
         </div>
         <div class="form-group">
+          <%= hidden_field_tag "assign_rule_name", params[:assign_rule_name] %>
           <%= select_tag :limit, options_for_select([100, 150, 200], params[:limit]), id: 'orders_per_page', class: 'form-control bg-info text-white' %>
         </div>
       </div>
