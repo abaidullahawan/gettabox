@@ -86,25 +86,14 @@ class OrderBatchesController < ApplicationController
           system_user_csv = system_user_data.values.map { |attr| order.system_user&.send(attr) }
           label_csv = mail_service_label_data.values.map { |attr| order.assign_rule.mail_service_labels.first.send(attr) }
           service_rule_csv = mail_service_rule_data.values.map { |attr| order.assign_rule&.mail_service_rule.send(attr) }
-          if order.assign_rule.mail_service_labels.count == 1
-            csv << csv_order(item_csv, order_csv, label_csv, address_csv, system_user_csv, service_rule_csv)
-          else
-            count = 0
-            order.assign_rule.mail_service_labels.each do |weigth_label_csv|
-              if count.zero?
-                csv << csv_order(item_csv, order_csv, label_csv, address_csv, system_user_csv, service_rule_csv)
-                count += 1
-              else
-                row = csv_order(item_csv, order_csv, label_csv, address_csv, system_user_csv, service_rule_csv)
-                row[4] = weigth_label_csv.weight.to_f / 1000
-                row[5] = weigth_label_csv.height.to_f
-                row[6] = weigth_label_csv.width.to_f
-                row[7] = weigth_label_csv.length.to_f
-                row[2] = "#{row[2]} [Copied]"
-                count += 1
-                csv << row
-              end
-            end
+          order.assign_rule.mail_service_labels.each_with_index do |weigth_label_csv, index|
+            row = csv_order(item_csv, order_csv, label_csv, address_csv, system_user_csv, service_rule_csv)
+            row[4] = weigth_label_csv.weight.to_f / 1000
+            row[5] = weigth_label_csv.height.to_f
+            row[6] = weigth_label_csv.width.to_f
+            row[7] = weigth_label_csv.length.to_f
+            row[2] = "#{row[2]} [Copied]" if index.positive?
+            csv << row
           end
         end
       end
