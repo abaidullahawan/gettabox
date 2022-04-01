@@ -200,6 +200,7 @@ class AmazonOrderJob < ApplicationJob
     total_weight = 0
     min_weight = 0
     max_weight = 0
+    rule_bonus_score = {}
     order.channel_order_items.each do |item|
       if item.channel_product&.product_mapping.present?
         if item.channel_product&.product_mapping&.product&.product_type == 'multiple'
@@ -227,10 +228,11 @@ class AmazonOrderJob < ApplicationJob
           end
         end
       end
-      if total_weight <= max_weight && total_weight >= min_weight
-        assign_rule = AssignRule.create(mail_service_rule_id: mail_rule.id)
+      rule_bonus_score[mail_rule.bonus_score] = mail_rule.id if total_weight <= max_weight && total_weight >= min_weight
+      if rule_bonus_score.max&.last.present?
+        mail_rule_id = rule_bonus_score.max&.last
+        assign_rule = AssignRule.create(mail_service_rule_id: mail_rule_id)
         order&.channel_order_items&.each do |item|
-
           if item.channel_product&.product_mapping&.product&.product_type == 'multiple'
             quantity = item&.ordered
             length = 0
@@ -254,7 +256,6 @@ class AmazonOrderJob < ApplicationJob
             @service_label = MailServiceLabel.create(height: height, weight: weight,
                                                     length: length, width: width, assign_rule_id: assign_rule.id)
           end
-
         end
         order.update(assign_rule_id: assign_rule.id)
       end
