@@ -57,7 +57,7 @@ class AmazonTrackingJob < ApplicationJob
           xml_data.MessageID index
           xml_data.OrderFulfillment do
             xml_data.AmazonOrderID order_id
-            xml_data.FulfillmentDate Time.zone.now.strftime('%Y-%m-%dT%H:%M:%S')
+            xml_data.FulfillmentDate Time.now.strftime('%Y-%m-%dT%H:%M:%S')
             xml_data.FulfillmentData do
               xml_data.CarrierCode carrier
               xml_data.ShippingMethod service
