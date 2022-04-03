@@ -18,7 +18,7 @@
       <div class="card-body">
         <div class="d-flex mb-2">
           <%= search_form_for @q, url: start_packing_pick_and_packs_path, method: :get, class: 'ml-auto' do |f| %>
-            <%= f.select :batch_name_eq, options_for_select(@batches.collect { | batch | [batch.batch_name, batch.batch_name] }, f.object.batch_name_eq),{include_blank: 'Please select batch'}, class: 'form-control ml-auto batches-select' %>
+            <%= f.select :batch_name_eq, options_for_select(@batches.collect { | batch | [batch.batch_name.titleize, batch.batch_name] }, f.object.batch_name_eq),{include_blank: 'Please select batch'}, class: 'form-control ml-auto batches-select' %>
             <%= f.submit 'check', class: 'batches-button-submit d-none'%>
           <% end %>
         </div>
