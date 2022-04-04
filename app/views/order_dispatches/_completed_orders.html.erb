@@ -10,7 +10,7 @@
   <div class="header-font-size d-flex align-items-center" style="width: 15%">Courier Service</div>
   <div class="header-font-size d-flex" style="width: 10%">Tracking</div>
   <div class="header-font-size d-flex" style="width: 12%"><%= @search.present? ? sort_link(@search, :created_at, 'Date', {}, default_order: { created_at: 'DESC' }, class: 'text-secondary') : 'Date' %></div>
-  <div class="header-font-size d-flex " style="width: 8%"><%= @search.present? ? sort_link(@search, :total_amount, 'Total', {}, class: 'text-secondary') : 'Total' %></div>
+  <div class="header-font-size d-flex " style="width: 8%">Total (Postage)</div>
   <div class="header-font-size" style="width: 10%">Status</div>
   <div class="header-font-size" style="width: 10%">Completed By</div>
   <!--th scope="col"></th-->
@@ -161,7 +161,7 @@
           <span class="mt-2 mr-2 badge badge-warning mb-1" style="font-size: 10px; padding: 5px;"><%= order.assign_rule&.status %></span>
         <% end %>
       </div>
-      <div class="font-sm d-flex" style="width: 8%">
+      <div class="font-sm d-flex" style="width: 12%">
         <% if order.assign_rule %>
           <%= order.assign_rule.mail_service_rule&.courier&.name %><br>
           <%= ExportMapping.find_by(id: order.assign_rule&.mail_service_rule&.export_mapping_id)&.sub_type %>
@@ -173,7 +173,7 @@
         <% end %>
       </div>
       <div class="font-sm col-1 d-flex"><%= order.created_at.strftime("%m/%d/%Y %H:%M") %></div>
-      <div class="font-sm d-flex" style="width: 5%">
+      <div class="font-sm d-flex" style="width: 8%">
         <%= order.total_amount%><br/>
         <%= "( #{order.postage} )" if order.postage.present? %>
       </div>
