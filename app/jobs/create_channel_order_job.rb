@@ -18,7 +18,8 @@ class CreateChannelOrderJob < ApplicationJob
           channel_order_record.order_status = order['orderFulfillmentStatus']
           channel_order_record.stage = 'completed' if order['orderFulfillmentStatus'].eql? 'FULFILLED'
           channel_order_record.payment_status = order['paymentSummary']['payments'].last['paymentStatus']
-          channel_order_record.total_amount = order['lineItems'][0]['total']['value']
+          channel_order_record.total_amount = order['pricingSummary']['total']['value']
+          channel_order_record.postage = order['pricingSummary']['deliveryCost']['value'] unless order['pricingSummary']['deliveryCost']['value'].to_i.zero?
           channel_order_record.buyer_name = order['fulfillmentStartInstructions'][0]['shippingStep']['shipTo']['fullName']&.capitalize
           channel_order_record.buyer_username = order['buyer']['username']
           channel_order_record.fulfillment_instruction = order['fulfillmentStartInstructions'][0]['shippingStep']['shippingServiceCode']
