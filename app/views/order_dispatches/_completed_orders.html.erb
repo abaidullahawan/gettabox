@@ -6,13 +6,13 @@
   <div class="header-font-size text-center d-flex align-items-center" style="width: 9%">Order Information</div>
   <div class="header-font-size col-3 text-center d-flex align-items-center">Listings</div>
   <div class="header-font-size col-2 text-center d-flex align-items-center">Information</div>
-  <div class="header-font-size" style="width: 5%"><%= @search.present? ? sort_link(@search, :assign_rule_mail_service_labels_weight, 'Weight', {}, class: 'text-secondary') : 'Weight' %></div>
-  <div class="header-font-size d-flex align-items-center pl-2" style="width: 8%">Courier Service</div>
-  <div class="header-font-size col-1 text-center d-flex align-items-center" sytle="width: 7%">Tracking</div>
-  <div class="header-font-size col-1 text-center d-flex align-items-center"><%= @search.present? ? sort_link(@search, :created_at, 'Date', {}, default_order: { created_at: 'DESC' }, class: 'text-secondary') : 'Date' %></div>
-  <div class="header-font-size col-1 d-flex align-items-center" style="width: 5%"><%= @search.present? ? sort_link(@search, :total_amount, 'Total', {}, class: 'text-secondary') : 'Total' %></div>
-  <div class="header-font-size text-center" style="width: 5%">Status</div>
-  <div class="header-font-size text-center" style="width: 5%">Completed By</div>
+  <div class="header-font-size" style="width: 10%"><%= @search.present? ? sort_link(@search, :assign_rule_mail_service_labels_weight, 'Weight', {}, class: 'text-secondary') : 'Weight' %></div>
+  <div class="header-font-size d-flex align-items-center" style="width: 15%">Courier Service</div>
+  <div class="header-font-size d-flex" style="width: 10%">Tracking</div>
+  <div class="header-font-size d-flex" style="width: 12%"><%= @search.present? ? sort_link(@search, :created_at, 'Date', {}, default_order: { created_at: 'DESC' }, class: 'text-secondary') : 'Date' %></div>
+  <div class="header-font-size d-flex " style="width: 8%"><%= @search.present? ? sort_link(@search, :total_amount, 'Total', {}, class: 'text-secondary') : 'Total' %></div>
+  <div class="header-font-size" style="width: 10%">Status</div>
+  <div class="header-font-size" style="width: 10%">Completed By</div>
   <!--th scope="col"></th-->
 </div>
 <% @completed_orders.each.with_index(1) do |order, index| %>
@@ -132,7 +132,7 @@
         <% order.assign_rule.mail_service_labels.each do |label|%>
           <% weight += label.weight.to_f %>
         <% end %>
-        <div class="font-sm d-flex align-items-center" style="width: 3%">
+        <div class="font-sm d-flex" style="width: 10%">
           <%= weight.round(2) %>
         </div>
       <% else%>
@@ -142,28 +142,26 @@
               <% product.channel_product.product_mapping.product&.multipack_products&.each do |record| %>
                 <% weight += record&.child&.weight.to_f * record.quantity.to_f * product&.ordered%>
               <% end %>
-              <div class="font-sm d-flex align-items-center" style="width: 3%">
+              <div class="font-sm d-flex" style="width: 10%">
                 <%= weight.round(2) %>
               </div>
             <% else %>
               <% weight += product.channel_product.product_mapping&.product&.weight.to_f * product.ordered.to_f %>
-              <div class="font-sm d-flex align-items-center" style="width: 3%">
+              <div class="font-sm d-flex" style="width: 10%">
                 <%= weight.round(2) %>
               </div>
             <% end %>
           <% end %>
         <% end %>
       <% end %>
-      <div class="font-sm align-items-center" style="width: 8%">
+      <div class="font-sm " style="width: 15%">
         <% if order.assign_rule.present? %>
-          <span class="update-rule-modal click_able_cursor" data-id= "<%= order.id %>"data-index= "<%=index%>">
-            <div class = "text-success"><%= order.assign_rule&.mail_service_rule&.rule_name %></div>
-            <div class = "text-info"><%= order.assign_rule&.mail_service_rule&.service&.name%></div>
-          </span>
+          <div class = "text-success"><%= order.assign_rule&.mail_service_rule&.rule_name %></div>
+          <div class = "text-info"><%= order.assign_rule&.mail_service_rule&.service&.name%></div>
           <span class="mt-2 mr-2 badge badge-warning mb-1" style="font-size: 10px; padding: 5px;"><%= order.assign_rule&.status %></span>
         <% end %>
       </div>
-      <div class="font-sm d-flex align-items-center" style="width: 7%">
+      <div class="font-sm d-flex" style="width: 8%">
         <% if order.assign_rule %>
           <%= order.assign_rule.mail_service_rule&.courier&.name %><br>
           <%= ExportMapping.find_by(id: order.assign_rule&.mail_service_rule&.export_mapping_id)&.sub_type %>
@@ -174,11 +172,14 @@
           <% end %>
         <% end %>
       </div>
-      <div class="font-sm col-1 d-flex align-items-center"><%= order.created_at.strftime("%m/%d/%Y %H:%M") %></div>
-      <div class="font-sm text-center d-flex align-items-center" style="width: 5%"><%= order.total_amount%></div>
-      <div class="font-sm col-1 pl-0 d-flex align-items-center" style="width: 5%">
+      <div class="font-sm col-1 d-flex"><%= order.created_at.strftime("%m/%d/%Y %H:%M") %></div>
+      <div class="font-sm d-flex" style="width: 5%"><%= order.total_amount%></div>
+      <div class="font-sm pl-0 d-flex" style="width: 10%">
+        <span class="badge badge_warning font-sm"><%= order.order_status%></span><br>
+      </div>
+      <div class="font-sm pl-4 d-flex" style="width: 10%">
         <div class="text-center">
-          <span class="badge badge_warning py-1 font-sm"><%= order.order_status%></span><br>
+          <%= order.versions.last.whodunnit.present? ? User.find_by(id: order.versions.last.whodunnit)&.personal_detail&.full_name : 'Developer' %>
         </div>
       </div>
     </div>
