@@ -640,7 +640,7 @@ class OrderDispatchesController < ApplicationController
   def not_started_orders
     return unless params[:order_filter].eql? 'ready'
 
-    params[:q] = JSON.parse params[:q].gsub('=>', ':') if params[:q].include?('"')
+    params[:q] = JSON.parse params[:q].gsub('=>', ':') if params[:q]&.include?('"')
     if params['assign_rule_name'].present?
       if params['assign_filter'].present? && params['assign_filter'] == '0'
         @not_started_orders = (@channel_orders

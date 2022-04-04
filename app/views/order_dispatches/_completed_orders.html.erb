@@ -1,75 +1,189 @@
-<div class="row">
-  <div class="col-lg-12">
-    <div class="card mb-30">
-      <div class="card-body">
-        <div class="table-responsive">
-          <table class="table table-hover text-vertical-middle mb-0">
-            <thead class="bort-none borpt-0">
-              <tr>
-                <th>
-                  <div class="custom-control custom-switch">
-                    <input type="checkbox" class="custom-control-input" id="customSwitchAll">
-                    <label class="custom-control-label" for="customSwitchAll"></label>
-                  </div>
-                </th>
-                <th scope="col">Channel</th>
-                <th scope="col">Order Information</th>
-                <th scope="col">Listings</th>
-                <th scope="col">Date Recieved</th>
-                <th scope="col">Total</th>
-                <th scope="col">Status</th>
-                <th scope="col"></th>
-              </tr>
-            </thead>
-            <% @completed_orders.each do |order| %>
-              <tbody>
-                <tr>
-                  <td>
-                    <div class="custom-control custom-switch">
-                      <input type="checkbox" class="custom-control-input customSwitch1" name="orders-switch" id="<%=order.id%>" <%= order.selected? ? 'checked': ''%>>
-                      <label class="custom-control-label" for="<%=order.id%>"></label>
+<div class="d-flex mb-3 pb-3 d-flex align-items-center" style="border-bottom: 1px solid #dee2e6">
+  <div style="width: 3%;">
+    <input type="checkbox" id="customSwitchAll" style="width: 20px; height: 20px;" name="" value="" class='select-all-checkbox ml-2'>
+  </div>
+  <div class="header-font-size col-1 text-center d-flex align-items-center">Channel</div>
+  <div class="header-font-size text-center d-flex align-items-center" style="width: 9%">Order Information</div>
+  <div class="header-font-size col-3 text-center d-flex align-items-center">Listings</div>
+  <div class="header-font-size col-2 text-center d-flex align-items-center">Information</div>
+  <div class="header-font-size" style="width: 10%"><%= @search.present? ? sort_link(@search, :assign_rule_mail_service_labels_weight, 'Weight', {}, class: 'text-secondary') : 'Weight' %></div>
+  <div class="header-font-size d-flex align-items-center" style="width: 15%">Courier Service</div>
+  <div class="header-font-size d-flex" style="width: 10%">Tracking</div>
+  <div class="header-font-size d-flex" style="width: 12%"><%= @search.present? ? sort_link(@search, :created_at, 'Date', {}, default_order: { created_at: 'DESC' }, class: 'text-secondary') : 'Date' %></div>
+  <div class="header-font-size d-flex " style="width: 8%"><%= @search.present? ? sort_link(@search, :total_amount, 'Total', {}, class: 'text-secondary') : 'Total' %></div>
+  <div class="header-font-size" style="width: 10%">Status</div>
+  <div class="header-font-size" style="width: 10%">Completed By</div>
+  <!--th scope="col"></th-->
+</div>
+<% @completed_orders.each.with_index(1) do |order, index| %>
+    <div class="d-flex mb-3 pb-3 d-flex align-items-center" style="border-bottom: 1px solid #dee2e6">
+      <div class="font-sm d-flex align-items-center" style="width: 3%;">
+        <div id="<%=order.id%>" class= 'orders-switch' name="orders-switch">
+          <input id="object_ids[]" class="ml-2 form_field_questions" style="width: 20px; height: 20px;" type="checkbox" data-allocate = '<%= (order.channel_order_items.pluck(:allocated) - [true]).present? %>' data-courier="<%= order.assign_rule&.mail_service_rule&.courier&.name %>" data-export="<%= order.assign_rule&.mail_service_rule&.export_mapping_id %>" data-item="<%= order.channel_order_items.count %>" value="<%=order.id%>" name="object_ids[]">
+          <%# f.check_box 'object_ids[]', {'data-item': order.channel_order_items.count}, order.id %>
+        </div>
+      </div>
+      <div class="font-sm col-1">
+        <%= render 'image_partial', order: order %>
+      </div>
+      <div class="font-sm d-flex align-items-center" style="width: 9%;">
+        <div>
+          <%= order.order_id %>
+          <br><%= order.buyer_username %>
+          <br><strong><b><%= order.buyer_name %></b></strong>
+          <br><span><%= order.system_user&.addresses&.find_by(address_title: 'delivery')&.address%></span>
+        </div>
+      </div>
+      <div class="font-sm col-3 d-flex align-items-center px-1">
+        <div class="w-full">
+          <% order.channel_order_items&.each do |product|%>
+            <%= link_to product_mappings_path(q:{item_sku_or_listing_id_cont: product.sku}), class:'w-full' do %>
+              <div class="card-style px-1 mt-1 relative">
+                <div>
+                  <span class="order-listing order-quantity"><%= product.ordered %></span>
+                  <div class="d-flex">
+                    <div>
+                      <% if product.channel_product&.item_image.present?%>
+                          <%= image_tag(product.channel_product.item_image, style: "border-radius: 5px;", width: '80px', height: '100%', class: 'mr-3')%>
+                      <% else %>
+                        <%= image_tag('user/1.jpg', style: "border-radius: 5px;", width: "80px", height: "100%", class: 'mr-3 img-thumbnail img-height', alt: 'User Image') %>
+                      <% end %>
                     </div>
-                  </td>
-                  <td style = "width: 15%">
-                    <%= render  'image_partial', order: order %>
-                  </td>
-                  <td>
-                    <%= order.order_id %><br>
-                    <%= order.buyer_username %><br>
-                    <strong><b><%= order.buyer_name %></b></strong><br>
-                    <%= order.system_user&.addresses&.find_by(address_title: 'delivery')&.address %>
-                  </td>
-                  <td>
-                    <% order.channel_order_items.each do |order|%>
-                      <%= order.sku %>
-                    <% end %>
-                  </td>
-                  <td><%= order.created_at.strftime("%m/%d/%Y %H:%M") %></td>
-                  <td><%= order.total_amount%></td>
-                  <td><span class="badge badge_warning py-1"><%= order.order_status%></span></td>
-                  <td>
-                    <%# link_to 'Logs',  version_order_dispatches_path(id: order.id), class: 'btn btn-primary text-white' %>
-                    <button class="btn btn-primary" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                      <i data-feather='refresh-ccw' class='icon wh-15 mt-minus-3'></i>
-                      Retry
-                    </button>
-                    <button class="btn btn-primary" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                      <i data-feather='x' class='icon wh-15 mt-minus-3'></i>
-                      Hide
-                    </button>
-                  </td>
-                </tr>
-              </tbody>
+                    <div class="ml-2">
+                      <% title = product&.channel_product.present? ? product&.channel_product&.item_name : product&.product&.title %>
+                      <span class="truncate text-white" title="<%= title %>"><%= title %></span><br>
+                      <b class = "text-white"><%= product.line_item_id if product.line_item_id.present? %></b><br>
+                      <div class="sku-width text-white"><%= product&.sku if product&.sku.present? %></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             <% end %>
-          </table>
-          <div class='float-right'>
-            <%= page_entries_info @completed_orders %>
-          </div><br>
-          <div class="pagination justify-content-center mt-1">
-            <%= paginate @completed_orders, :param_name => :completed_page,theme: "twitter-bootstrap-4",pagination_class: "pagination-sm",nav_class: "d-inline-b" %>
-          </div>
+          <% end %>
+        </div>
+      </div>
+      <div class="col-2 d-flex align-items-center">
+        <div class="w-full">
+          <% order.channel_order_items.each do |product|%>
+            <% if product.channel_product&.product_mapping.present? || product.product.present?  %>
+              <% if product.channel_product&.product_mapping&.product&.product_type_multiple? %>
+                <% product.channel_product&.product_mapping&.product&.multipack_products&.each do |record| %>
+                <% light_color = product.allocated ? 'bg-success-light' : 'bg-danger'%>
+                <% dark_color = product.allocated ? 'bg-success-dark' : 'bg-danger-dark'%>
+                <div class="card-style2 w-full <%=light_color%>">
+                  <%= link_to record.child.sku, product_path(record.child.id), target: 'blank', class: 'text-white' %>
+                  <p style="color: white;">
+                    <b>Location:</b> <span><%= record.child.location %></span>
+                  </p>
+                  <p style="color: white;">
+                    <!--b>QTY:</b> <span><%= record.quantity * product.ordered.to_i * (record.child.pack_quantity.nil? ? 1 : record.child.pack_quantity).to_i %></span-->
+                    <b>QTY:</b> <span><%= record.quantity * product.ordered.to_i %></span>
+                  </p>
+                  <div class="d-flex">
+                    <div class="col-4 col-padding">
+                      <p class="heading-table font-sm <%=dark_color%>">Avail</p>
+                      <p class="table-value mb-0 <%=dark_color%>"><%= record.child.available_stock.to_i %></p>
+                    </div>
+                    <div class="col-4 col-padding">
+                      <p class="heading-table font-sm <%=dark_color%>">Alloc</p>
+                      <p class="table-value mb-0 <%=dark_color%>"><%= record.child.allocated.to_i  %></p>
+                    </div>
+                    <div class="col-4 col-padding">
+                      <p class="heading-table font-sm <%=dark_color%>">Disp</p>
+                      <p class="table-value mb-0 <%=dark_color%>">0</p>
+                    </div>
+                  </div>
+                </div>
+                <% end %>
+              <% else %>
+                <% local_product = product.channel_product&.product_mapping&.product || product.product %>
+                <% light_color = product.allocated ? 'bg-success-light' : 'bg-danger'%>
+                <% dark_color = product.allocated ? 'bg-success-dark' : 'bg-danger-dark'%>
+                <div class="card-style2 w-full <%=light_color%>">
+                  <%= link_to local_product&.sku, product_path(local_product&.id), target: 'blank', style: "color: white" if local_product.present? %>
+                  <p style="color: white;">
+                    <b>Location:</b> <span><%= local_product&.location if local_product.present? %></span>
+                  </p>
+                  <p style="color: white;">
+                    <b>QTY:</b> <span><%= product.ordered.to_i %></span>
+                  </p>
+                  <div class="d-flex">
+                    <div class="col-4 col-padding">
+                      <p class="heading-table font-sm <%=dark_color%>">Avail</p>
+                      <p class="table-value mb-0 <%=dark_color%>"><%= local_product&.available_stock.to_i if local_product.present? %></p>
+                    </div>
+                    <div class="col-4 col-padding">
+                      <p class="heading-table font-sm <%=dark_color%>">Alloc</p>
+                      <p class="table-value mb-0 <%=dark_color%>"><%= local_product&.allocated.to_i if local_product.present? %></p>
+                    </div>
+                    <div class="col-4 col-padding">
+                      <p class="heading-table font-sm <%=dark_color%>">Disp</p>
+                    <p class="table-value mb-0 <%=dark_color%>">0</p>
+                  </div>
+                  </div>
+                </div>
+              <% end %>
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+      <% weight = 0%>
+      <% if order.assign_rule.present? %>
+        <% order.assign_rule.mail_service_labels.each do |label|%>
+          <% weight += label.weight.to_f %>
+        <% end %>
+        <div class="font-sm d-flex" style="width: 10%">
+          <%= weight.round(2) %>
+        </div>
+      <% else%>
+        <% order.channel_order_items.each do |product|%>
+          <% if product.channel_product&.product_mapping.present? %>
+            <% if product.channel_product.product_mapping.product&.product_type_multiple? %>
+              <% product.channel_product.product_mapping.product&.multipack_products&.each do |record| %>
+                <% weight += record&.child&.weight.to_f * record.quantity.to_f * product&.ordered%>
+              <% end %>
+              <div class="font-sm d-flex" style="width: 10%">
+                <%= weight.round(2) %>
+              </div>
+            <% else %>
+              <% weight += product.channel_product.product_mapping&.product&.weight.to_f * product.ordered.to_f %>
+              <div class="font-sm d-flex" style="width: 10%">
+                <%= weight.round(2) %>
+              </div>
+            <% end %>
+          <% end %>
+        <% end %>
+      <% end %>
+      <div class="font-sm " style="width: 15%">
+        <% if order.assign_rule.present? %>
+          <div class = "text-success"><%= order.assign_rule&.mail_service_rule&.rule_name %></div>
+          <div class = "text-info"><%= order.assign_rule&.mail_service_rule&.service&.name%></div>
+          <span class="mt-2 mr-2 badge badge-warning mb-1" style="font-size: 10px; padding: 5px;"><%= order.assign_rule&.status %></span>
+        <% end %>
+      </div>
+      <div class="font-sm d-flex" style="width: 8%">
+        <% if order.assign_rule %>
+          <%= order.assign_rule.mail_service_rule&.courier&.name %><br>
+          <%= ExportMapping.find_by(id: order.assign_rule&.mail_service_rule&.export_mapping_id)&.sub_type %>
+        <% end %>
+        <% if order.trackings.present? %>
+          <% order.trackings.each do |tracking| %>
+            <%= tracking.tracking_no %>
+          <% end %>
+        <% end %>
+      </div>
+      <div class="font-sm col-1 d-flex"><%= order.created_at.strftime("%m/%d/%Y %H:%M") %></div>
+      <div class="font-sm d-flex" style="width: 5%">
+        <%= order.total_amount%><br/>
+        <%= "( #{order.postage} )" if order.postage.present? %>
+      </div>
+      <div class="font-sm pl-0 d-flex" style="width: 10%">
+        <span class="badge badge_warning font-sm"><%= order.order_status%></span><br>
+      </div>
+      <div class="font-sm pl-4 d-flex" style="width: 10%">
+        <div class="text-center">
+          <%= order.versions.last.whodunnit.present? ? User.find_by(id: order.versions.last.whodunnit)&.personal_detail&.full_name : 'Developer' %>
         </div>
       </div>
     </div>
-  </div>
-</div>
+<% end %>
