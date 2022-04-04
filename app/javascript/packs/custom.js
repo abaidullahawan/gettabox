@@ -391,19 +391,38 @@ $(document).on('turbolinks:load', function () {
   })
 
   $('.OrderBatchSubmit').on('click', function () {
-    var object_ids = $('input[name="object_ids[]"]:checked')
-    var rule = object_ids.map(function (i, e) { return e.dataset.courier }).toArray();
-    var same_rule = rule.every((val, i, arr) => val === arr[0]) && rule[0] == 'Manual Dispatch'
-    if (same_rule) {
-      var dispatch_button = $('.one-click-dispatch')
-      dispatch_button.toggleClass('one-click-dispatch upload_trackings')
-      dispatch_button.attr('data-toggle', 'modal')
-      dispatch_button.attr('data-target', '.upload-trackings')
-      $('.upload-trackings').modal('show')
-    }
-    else {
-      window.location.reload()
-    }
+    var batch_name = $('#batch-name-search').val()
+    var save_or_not = $('#save_batch_name').is(":checked")
+    $.ajax({
+      url: '/order_batches/save_batch_name',
+      type: 'GET',
+      data: { batch_name: batch_name, save_check_box: save_or_not },
+      success: function (response) {
+        if (response.message == null){
+          $('.new_order_batch').submit()
+          var object_ids = $('input[name="object_ids[]"]:checked')
+          var rule = object_ids.map(function (i, e) { return e.dataset.courier }).toArray();
+          var same_rule = rule.every((val, i, arr) => val === arr[0]) && rule[0] == 'Manual Dispatch'
+          if (same_rule) {
+            var dispatch_button = $('.one-click-dispatch')
+            dispatch_button.toggleClass('one-click-dispatch upload_trackings')
+            dispatch_button.attr('data-toggle', 'modal')
+            dispatch_button.attr('data-target', '.upload-trackings')
+            $('.upload-trackings').modal('show')
+          }
+          else {
+            window.location.reload()
+          }
+        }
+        else{
+          $('.jquery-selected-alert').html(response.message)
+          $('.jquery-selected-alert').addClass('bg-danger').removeClass('d-none').removeClass('bg-success')
+          $(".jquery-selected-alert").fadeTo(2000, 500).slideUp(500, function () {
+            $(".jquery-selected-alert").slideUp(500);
+          });
+        }
+      }
+    })
   })
 
   $('.upload_trackings').on('click', function () {

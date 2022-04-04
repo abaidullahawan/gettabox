@@ -35,13 +35,25 @@ class OrderBatchesController < ApplicationController
     end
   end
 
+  def save_batch_name
+    batch = OrderBatch.find_by(batch_name: params[:batch_name])
+    if params[:save_check_box].eql? 'true'
+      message = 'Batch already exists' if batch.present?
+    else
+      message = 'This batch does not exists' unless batch.present?
+    end
+    respond_to do |format|
+      format.json { render json: { message: message } }
+    end
+  end
+
   private
 
   def order_batch_params
     params.require(:order_batch).permit(
       :pick_preset, :print_packing_list, :print_packing_list_option, :mark_as_picked, :print_courier_labels,
       :print_invoice, :update_channels, :mark_order_as_dispatched, :batch_name, :shipping_rule_max_weight,
-      :overwrite_order_notes
+      :overwrite_order_notes, :save_batch_name
     )
   end
 
@@ -117,6 +129,7 @@ class OrderBatchesController < ApplicationController
   def session_batch
     session[:order_ids] = params[:order_ids]
     session[:batch_params] = order_batch_params.to_h
+    session[:save_batch] = params[:save_batch_name].present?
   end
 
   def csv_order(item_csv, order_csv, label_csv, address_csv, system_user_csv, service_rule_csv)
