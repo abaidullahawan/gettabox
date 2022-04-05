@@ -706,7 +706,7 @@ class OrderDispatchesController < ApplicationController
   end
 
   def csv_export(orders)
-    attributes = ChannelOrder.column_names.excluding('updated_at')
+    attributes = ChannelOrder.column_names.excluding('created_at', 'updated_at')
     CSV.generate(headers: true) do |csv|
       csv << attributes
       orders.each do |channel_order|

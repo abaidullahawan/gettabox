@@ -22,7 +22,7 @@
           </div>
             <%= hidden_field_tag "order_filter", params[:order_filter] %>
             <%= hidden_field_tag :q, params[:q] %>
-            <%= hidden_field_tag "limit", params[:limit] %>
+            <%= hidden_field_tag "limit", params[:limit] || 100 %>
           <div class='float-right mr-2'>
             <%= search_field_tag :assign_rule_name, params[:assign_rule_name], class: 'form-control', placeholder: 'Search rule name' %>
           </div>

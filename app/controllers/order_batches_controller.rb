@@ -107,7 +107,7 @@ class OrderBatchesController < ApplicationController
       end
       request.format = 'csv'
       respond_to do |format|
-        format.csv { send_data @csv, filename: "#{rule_name}.csv" }
+        format.csv { send_data @csv, filename: "#{rule_name}-#{DateTime.now.strftime('%Y-%m-%d %H:%M:%S')}.csv" }
       end
       # flash[:alert] = 'Courier CSV Export Done!'
     else
