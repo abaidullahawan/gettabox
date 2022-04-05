@@ -468,7 +468,7 @@ class OrderDispatchesController < ApplicationController
             end
           end
         end
-        rule_bonus_score[mail_rule.bonus_score] = mail_rule.id if total_weight <= max_weight && total_weight >= min_weight
+        rule_bonus_score[mail_rule.bonus_score.to_i] = mail_rule.id if total_weight <= max_weight && total_weight >= min_weight
         if rule_bonus_score.max&.last.present?
           mail_rule_id = rule_bonus_score.max&.last
           assign_rule = AssignRule.create(mail_service_rule_id: mail_rule_id)

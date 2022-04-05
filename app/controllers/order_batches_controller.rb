@@ -37,11 +37,7 @@ class OrderBatchesController < ApplicationController
 
   def save_batch_name
     batch = OrderBatch.find_by(batch_name: params[:batch_name])
-    if params[:save_check_box].eql? 'true'
       message = 'Batch already exists' if batch.present?
-    else
-      message = 'This batch does not exists' unless batch.present?
-    end
     respond_to do |format|
       format.json { render json: { message: message } }
     end
