@@ -132,7 +132,7 @@
               </div>
               <div class="col-4">
                 <div class="dropdown">
-                  <%= f.search_field :batch_name, class: 'form-control dropdown-toggle', id: 'batch-name-search', data: {toggle: 'dropdown'}, area: {haspopup: true, expanded: 'false'}, autocomplete: 'off', placeholder:"Search in Batch Name", onkeyup: "dropdown_search( '/order_batches/search_batch', 'batch-dropdown-list', 'batch-list-item', event)", onclick: "dropdown_search( '/order_batches/search_batch', 'batch-dropdown-list', 'batch-list-item', event)" %>
+                  <%= f.search_field :batch_name, class: 'form-control dropdown-toggle', id: 'batch-name-search', data: {toggle: 'dropdown'}, area: {haspopup: true, expanded: 'false'}, autocomplete: 'off', placeholder:"Search in Batch Name", onkeyup: "dropdown_search_batch( '/order_batches/search_batch', 'batch-dropdown-list', 'batch-list-item', event)", onclick: "dropdown_search_batch( '/order_batches/search_batch', 'batch-dropdown-list', 'batch-list-item', event)" %>
                   <span class="searchclear">@@</span>
                   <ul class="dropdown-menu batch-dropdown-list search-list" aria-labelledby="batch-name-search">
                     <li><a href="#" class="dropdown-item batch-list-item">Select Batch</a></li>
