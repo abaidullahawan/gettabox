@@ -234,7 +234,7 @@
       <div class="font-sm col-1 d-flex align-items-center"><%= order.created_at.strftime("%m/%d/%Y %H:%M") %></div>
       <div class="font-sm text-center d-flex align-items-center" style="width: 5%">
         <%= order.total_amount %> <br/>
-        <%= "( #{order.postage} )" if order.postage.present? %>
+        <%= "( #{order.postage} )" %>
       </div>
       <div class="font-sm col-1 pl-0 d-flex align-items-center" style="width: 5%">
         <div class="text-center">
