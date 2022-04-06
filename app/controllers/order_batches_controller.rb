@@ -12,9 +12,13 @@ class OrderBatchesController < ApplicationController
     if params['commit'].eql? 'save'
       @order_batch = OrderBatch.create(order_batch_params)
       @order_batch.update(pick_preset: params['name_of_template'], preset_type: 'pick_preset')
-    elsif order_batch_params[:print_courier_labels] && check_rule(orders.first)
-      courier_csv_export(orders)
+    elsif order_batch_params[:print_courier_labels].to_i.zero?
+      print_packing_list if order_batch_params[:print_packing_list].to_i.positive?
+      update_channels if order_batch_params[:update_channels].to_i.positive?
+      mark_order_as_dispatched if order_batch_params[:mark_order_as_dispatched].to_i.positive?
       # orders.update_all(stage: 'ready_to_print', order_batch_id: @order_batch.id)
+    elsif check_rule(orders.first) && order_batch_params[:print_courier_labels].to_i.positive?
+      courier_csv_export(orders)
     else
       flash[:alert] = 'Only Manual Dispatch orders can be printed'
       redirect_to order_dispatches_path(order_filter: 'ready')
@@ -148,5 +152,76 @@ class OrderBatchesController < ApplicationController
     row[4] = row[4].to_f / 1000
     row[16] = row[16].gsub(';', ' + ')
     row
+  end
+
+  def print_packing_list
+    order_ids = params[:order_ids]
+    multiple_products = ChannelOrderItem.where(channel_order_id: order_ids).joins(channel_product: [product_mapping: :product]).where("products.product_type": "multiple").uniq
+    single_products = ChannelOrderItem.where(channel_order_id: order_ids).joins(channel_product: [product_mapping: :product]).where("products.product_type": "single").uniq
+    products = []
+    multiple_products.each do |multiple_product|
+      multiple_product.channel_product.product_mapping.product.multipack_products.each do |multi|
+        product = multi.child
+        # quantity = multi.quantity.to_f * (product.pack_quantity.nil? ? 1 : product.pack_quantity.to_f)
+        # products << { sku: product.sku, product: product, quantity: quantity * multiple_product.ordered }
+        products << { sku: product.sku, product: product, quantity: multi.quantity.to_f * multiple_product.ordered }
+      end
+    end
+
+    single_products.each do |single_product|
+      product = single_product.channel_product.product_mapping.product
+      # quantity = single_product.ordered * (product.pack_quantity.nil? ? 1 : product.pack_quantity.to_f)
+      # products << { sku: product.sku, product: product, quantity: quantity }
+      products << { sku: product.sku, product: product, quantity: single_product.ordered.to_i }
+    end
+
+    @products_group = products.group_by { |d| d[:sku] }
+    request.format = 'pdf'
+    respond_to do |format|
+      format.pdf do
+        render pdf: 'file.pdf', viewport_size: '1280x1024', template: 'order_dispatches/channel_product.pdf.erb'
+      end
+    end
+  end
+
+  def update_channels
+    order_ids = params[:order_ids]
+    AmazonTrackingJob.perform_later(order_ids: order_ids)
+    EbayCompleteSaleJob.perform_later(order_ids: order_ids)
+  end
+
+  def mark_order_as_dispatched
+    order_ids = params[:order_ids]
+    multiple_products = ChannelOrderItem.where(channel_order_id: order_ids).joins(channel_product: [product_mapping: :product]).where("products.product_type": 'multiple').uniq
+    single_products = ChannelOrderItem.where(channel_order_id: order_ids).joins(channel_product: [product_mapping: :product]).where("products.product_type": 'single').uniq
+    multiple_products.each do |multiple_product|
+      ordered_quantity = multiple_product.ordered
+      multiple_product.channel_product.product_mapping.product.multipack_products.each do |multi|
+        product = multi.child
+        quantity = ordered_quantity.to_i * multi.quantity.to_i
+        unshipped = product.unshipped.to_i - quantity
+        allocated = product.allocated.to_i - quantity
+        total_stock = product.total_stock.to_i - quantity
+        unshipped_orders = product.unshipped_orders.to_i - 1
+        allocated_orders = product.allocated_orders.to_i - 1
+        product.update(unshipped: unshipped, allocated: allocated, total_stock: total_stock, unshipped_orders: unshipped_orders, allocated_orders: allocated_orders)
+      end
+    end
+    single_products.each do |single_product|
+      ordered_quantity = single_product.ordered
+      product = single_product.channel_product.product_mapping.product
+      unshipped = product.unshipped.to_i - ordered_quantity.to_i
+      allocated = product.allocated.to_i - ordered_quantity.to_i
+      total_stock = product.total_stock.to_i - ordered_quantity.to_i
+      unshipped_orders = product.unshipped_orders.to_i - 1
+      allocated_orders = product.allocated_orders.to_i - 1
+      product.update(unshipped: unshipped, allocated: allocated, total_stock: total_stock, unshipped_orders: unshipped_orders, allocated_orders: allocated_orders)
+    end
+    orders = ChannelOrder.where(id: params[:order_ids].split(','))
+    orders.update_all(stage: 'completed')
+    return unless order_batch_params[:print_packing_list].to_i.zero?
+
+    flash[:notice] = 'Order completed successfully.'
+    redirect_to request.referrer
   end
 end
