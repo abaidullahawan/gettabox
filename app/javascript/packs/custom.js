@@ -391,18 +391,22 @@ $(document).on('turbolinks:load', function () {
   })
 
   $('.OrderBatchSubmit').on('click', function () {
-    var object_ids = $('input[name="object_ids[]"]:checked')
-    var rule = object_ids.map(function (i, e) { return e.dataset.courier }).toArray();
-    var same_rule = rule.every((val, i, arr) => val === arr[0]) && rule[0] == 'Manual Dispatch'
-    if (same_rule) {
-      var dispatch_button = $('.one-click-dispatch')
-      dispatch_button.toggleClass('one-click-dispatch upload_trackings')
-      dispatch_button.attr('data-toggle', 'modal')
-      dispatch_button.attr('data-target', '.upload-trackings')
-      $('.upload-trackings').modal('show')
-    }
-    else {
-      window.location.reload()
+    var csv_export = $("#order_batch_print_courier_labels").prop("checked")
+
+    if (csv_export) {
+      var object_ids = $('input[name="object_ids[]"]:checked')
+      var rule = object_ids.map(function (i, e) { return e.dataset.courier }).toArray();
+      var same_rule = rule.every((val, i, arr) => val === arr[0]) && rule[0] == 'Manual Dispatch'
+      if (same_rule) {
+        var dispatch_button = $('.one-click-dispatch')
+        dispatch_button.toggleClass('one-click-dispatch upload_trackings')
+        dispatch_button.attr('data-toggle', 'modal')
+        dispatch_button.attr('data-target', '.upload-trackings')
+        $('.upload-trackings').modal('show')
+      }
+      else {
+        window.location.reload()
+      }
     }
   })
 
