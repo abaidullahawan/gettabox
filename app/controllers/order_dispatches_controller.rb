@@ -480,8 +480,8 @@ class OrderDispatchesController < ApplicationController
               width = 0
               height = 0
               item.channel_product&.product_mapping&.product&.multipack_products.each do |multipack_product|
-                length += multipack_product.child.length.to_f * quantity
-                weight += multipack_product.child.weight.to_f * quantity
+                length += multipack_product.child.length.to_f * quantity * multipack_product.quantity
+                weight += multipack_product.child.weight.to_f * quantity * multipack_product.quantity
                 width += multipack_product.child.width.to_f
                 height += multipack_product.child.height.to_f
               end
