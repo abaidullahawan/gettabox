@@ -88,7 +88,7 @@ class TrackingsController < ApplicationController
       order_id = row['order_id'].nil? ? row['channel_order_id'] : ChannelOrder.find_by(order_id: row['order_id'])&.id
       next unless order_ids.include?(order_id.to_s)
 
-      tracking_numbers = row['tracking_no'].split(',')
+      tracking_numbers = row['tracking_no']&.split(',')
       message = []
       tracking_numbers.each do |number|
         tracking = Tracking.find_or_initialize_by(tracking_no: number, channel_order_id: order_id)
@@ -119,6 +119,8 @@ class TrackingsController < ApplicationController
       generate_csv(rows)
     else
       update_batch(order_ids)
+      return redirect_method if session[:batch_params]['print_packing_list'].to_i.zero?
+
       multiple_products = ChannelOrderItem.where(channel_order_id: order_ids).joins(channel_product: [product_mapping: :product]).where("products.product_type": "multiple").uniq
       single_products = ChannelOrderItem.where(channel_order_id: order_ids).joins(channel_product: [product_mapping: :product]).where("products.product_type": "single").uniq
 
@@ -169,6 +171,7 @@ class TrackingsController < ApplicationController
   end
 
   def update_batch(order_ids)
+    session[:batch_params]['batch_name'] = 'unbatch orders' if session[:batch_params]['mark_as_batch_name'].to_i.zero?
     batch = OrderBatch.find_or_initialize_by(batch_name: session[:batch_params]['batch_name'])
     update_session = session[:batch_params].merge(preset_type: 'batch_name')
     batch.update(update_session)
@@ -206,5 +209,10 @@ class TrackingsController < ApplicationController
       'hermes 24 non pod' => {carrier: 'Hermes', service: 'Standard Courier Collection'}
     }
     shipping_services[shipping_service]
+  end
+
+  def redirect_method
+    flash[:notice] = 'Order processed successfully.'
+    redirect_to request.referrer
   end
 end

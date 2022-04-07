@@ -8,7 +8,7 @@ class PickAndPacksController < ApplicationController
   def index
     @pick_and_pack = OrderBatch.new
     @q = OrderBatch.ransack(params[:q])
-    @pick_and_packs = @q.result(distinct: true).order(created_at: :desc).page(params[:page]).per(params[:limit])
+    @pick_and_packs = @q.result(distinct: true).where.not(batch_name: 'unbatch orders').order(created_at: :desc).page(params[:page]).per(params[:limit])
     export_csv(@pick_and_packs) if params[:export_csv].present?
     @user_list = User.all
     respond_to do |format|
