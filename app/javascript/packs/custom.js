@@ -375,6 +375,7 @@ $(document).on('turbolinks:load', function () {
         $("#order_batch_print_invoice").prop("checked", response[0]['print_invoice']);
         $("#order_batch_update_channels").prop("checked", response[0]['update_channels']);
         $("#order_batch_mark_order_as_dispatched").prop("checked", response[0]['mark_order_as_dispatched']);
+        $("#order_batch_mark_as_batch_name").prop("checked", response[0]['mark_as_batch_name']);
         // $("#order_batch_batch_name").prop("checked", response[0]['print_packing_list']);
         $("#batch-name-search").val(response[0]['batch_name'])
         $("#order_batch_shipping_rule_max_weight").prop("checked", response[0]['shipping_rule_max_weight']);

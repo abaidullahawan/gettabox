@@ -26,7 +26,7 @@ class OrderBatchesController < ApplicationController
   end
 
   def search_batch
-    batches = OrderBatch.where('lower(batch_name) LIKE ?', "%#{params[:search_value]}%").pluck(:id, :batch_name)
+    batches = OrderBatch.where('lower(batch_name) LIKE ?', "%#{params[:search_value]}%").where.not(batch_name: 'unbatch orders').pluck(:id, :batch_name)
     respond_to do |format|
       format.json { render json: batches }
     end
@@ -41,7 +41,7 @@ class OrderBatchesController < ApplicationController
 
   def save_batch_name
     batch = OrderBatch.find_by(batch_name: params[:batch_name])
-      message = 'Batch already exists' if batch.present?
+    message = 'Batch already exists' if batch.present?
     respond_to do |format|
       format.json { render json: { message: message } }
     end
@@ -53,7 +53,7 @@ class OrderBatchesController < ApplicationController
     params.require(:order_batch).permit(
       :pick_preset, :print_packing_list, :print_packing_list_option, :mark_as_picked, :print_courier_labels,
       :print_invoice, :update_channels, :mark_order_as_dispatched, :batch_name, :shipping_rule_max_weight,
-      :overwrite_order_notes, :save_batch_name
+      :overwrite_order_notes, :save_batch_name, :mark_as_batch_name
     )
   end
 
