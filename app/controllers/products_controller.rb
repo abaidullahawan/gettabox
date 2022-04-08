@@ -292,25 +292,30 @@ class ProductsController < ApplicationController
   end
 
   def csv_create_records(csv)
-    csv.each.with_index(1) do |row, index|
-      hash = row.to_hash
-      hash.delete(nil)
-      hash['product_type'] = hash['product_type']&.downcase
-      hash['vat'] = hash['vat'].to_i
-      product = Product.with_deleted.find_or_initialize_by(sku: hash['sku'])
-      next product.update(hash) if hash['category_id'].to_i.positive?
+    found_error, error_message = verify_csv_format(csv)
+    if found_error == false
+      csv.each.with_index(1) do |row, index|
+        hash = row.to_hash
+        hash.delete(nil)
+        hash['product_type'] = hash['product_type']&.downcase
+        hash['vat'] = hash['vat'].to_i
+        product = Product.with_deleted.find_or_initialize_by(sku: hash['sku'])
+        next product.update(hash) if hash['category_id'].to_i.positive?
 
-      hash['category_id'] = Category.where('title ILIKE ?', hash['category_id'])
-                                    .first_or_create(title: hash['category_id']).id
-      hash['product_location_id'] = ProductLocation.find_or_create_by(location: hash['product_location_id']).id
-      if hash['total_stock'].present? && product.total_stock.present?
-        difference = hash['total_stock'].to_i - product.total_stock.to_i
-        stock = product.manual_edit_stock.to_i
-        stock += difference
-        product.update(manual_edit_stock: stock, change_log: "Manual Edit, Spreadsheet, #{stock}, Manual Edit, , #{(hash['total_stock'].to_i - product.unshipped.to_i)}")
+        hash['category_id'] = Category.where('title ILIKE ?', hash['category_id'])
+                                      .first_or_create(title: hash['category_id']).id
+        hash['product_location_id'] = ProductLocation.find_or_create_by(location: hash['product_location_id']).id
+        if hash['total_stock'].present? && product.total_stock.present?
+          difference = hash['total_stock'].to_i - product.total_stock.to_i
+          stock = product.manual_edit_stock.to_i
+          stock += difference
+          product.update(manual_edit_stock: stock, change_log: "Manual Edit, Spreadsheet, #{stock}, Manual Edit, , #{(hash['total_stock'].to_i - product.unshipped.to_i)}")
+        end
+        product.update!(hash)
+        Barcode.find_or_create_by(product_id: product.id, title: hash['barcode'])
       end
-      product.update!(hash)
-      Barcode.find_or_create_by(product_id: product.id, title: hash['location'])
+    else
+      flash[:alert] = error_message
     end
   end
 
@@ -334,5 +339,26 @@ class ProductsController < ApplicationController
     @product_location = ProductLocation.all
     @forecasting = ChannelForecasting.all
     @channel_listings = ChannelProduct.joins(product_mapping: [product: [multipack_products: :child]]).where('child.id': @product.id)
+  end
+
+  def verify_csv_format(csv)
+    found_error = false
+    error_message = ''
+    csv.each do |row|
+      if row['title'].nil?
+        found_error = true
+        error_message = 'Title is blank.'
+        break
+      elsif row['sku'].nil?
+        found_error = true
+        error_message = 'Sku is blank.'
+        break
+      elsif row['product_type'] == 'single' && row['total_stock'].nil?
+        found_error = true
+        error_message = 'Stock is null.'
+        break
+      end
+    end
+    [found_error, error_message]
   end
 end
