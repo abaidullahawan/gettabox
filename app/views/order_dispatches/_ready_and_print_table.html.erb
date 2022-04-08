@@ -127,29 +127,20 @@
         </div>
       </div>
       <% weight = 0%>
-      <% if order.assign_rule.present? %>
-        <% order.assign_rule.mail_service_labels.each do |label|%>
-          <% weight += label.weight.to_f %>
-        <% end %>
-        <div class="font-sm d-flex align-items-center" style="width: 3%">
-          <%= weight.round(2) %>
-        </div>
-      <% else%>
-        <% order.channel_order_items.each do |product|%>
-          <% if product.channel_product&.product_mapping.present? %>
-            <% if product.channel_product.product_mapping.product&.product_type_multiple? %>
-              <% product.channel_product.product_mapping.product&.multipack_products&.each do |record| %>
-                <% weight += record&.child&.weight.to_f * record.quantity.to_f * product&.ordered%>
-              <% end %>
-              <div class="font-sm d-flex align-items-center" style="width: 3%">
-                <%= weight.round(2) %>
-              </div>
-            <% else %>
-              <% weight += product.channel_product.product_mapping&.product&.weight.to_f * product.ordered.to_f %>
-              <div class="font-sm d-flex align-items-center" style="width: 3%">
-                <%= weight.round(2) %>
-              </div>
+      <% order.channel_order_items.each do |product|%>
+        <% if product.channel_product&.product_mapping.present? %>
+          <% if product.channel_product.product_mapping.product&.product_type_multiple? %>
+            <% product.channel_product.product_mapping.product&.multipack_products&.each do |record| %>
+              <% weight += record&.child&.weight.to_f * record.quantity.to_f * product&.ordered%>
             <% end %>
+            <div class="font-sm d-flex align-items-center" style="width: 3%">
+              <%= weight.round(2) %>
+            </div>
+          <% else %>
+            <% weight += product.channel_product.product_mapping&.product&.weight.to_f * product.ordered.to_f %>
+            <div class="font-sm d-flex align-items-center" style="width: 3%">
+              <%= weight.round(2) %>
+            </div>
           <% end %>
         <% end %>
       <% end %>
