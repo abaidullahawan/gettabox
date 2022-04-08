@@ -185,7 +185,7 @@ class OrderBatchesController < ApplicationController
   end
 
   def update_channels
-    order_ids = params[:order_ids]
+    order_ids = params[:order_ids].split(',')
     AmazonTrackingJob.perform_later(order_ids: order_ids)
     EbayCompleteSaleJob.perform_later(order_ids: order_ids)
   end

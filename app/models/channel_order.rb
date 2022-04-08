@@ -60,4 +60,10 @@ class ChannelOrder < ApplicationRecord
   # def self.picture_data(product)
   #   ChannelProduct.find_by(item_sku: product.sku)&.product_data['PictureDetails']['GalleryURL']
   # end
+
+  private
+
+  ransacker :id do
+    Arel.sql("to_char(\"#{table_name}\".\"id\", '99999')")
+  end
 end
