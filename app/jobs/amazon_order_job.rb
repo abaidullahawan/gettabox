@@ -199,19 +199,32 @@ class AmazonOrderJob < ApplicationJob
 
   def assign_rule(order)
     total_weight = 0
+    total_postage = order.postage.to_f
     min_weight = 0
     max_weight = 0
+    min_postage = 0
+    max_postage = 0
     rule_bonus_score = {}
+    carrier_type_multi = []
+    type = false
+    equal = false
+    carrier_type = nil
     order.channel_order_items.each do |item|
       if item.channel_product&.product_mapping.present?
         if item.channel_product&.product_mapping&.product&.product_type == 'multiple'
           item.channel_product&.product_mapping&.product&.multipack_products.each do |multipack_product|
             total_weight += multipack_product.child.weight
+            carrier_type_multi.push(multipack_product.child&.courier_type)
           end
         else
           total_weight += item.channel_product&.product_mapping&.product&.weight
+          carrier_type = item.channel_product&.product_mapping&.product&.courier_type
         end
       end
+    end
+    carrier_type_multi.map {|v| v.downcase! if v.is_a? String}
+    if carrier_type.blank?
+      carrier_type = (carrier_type_multi&.include? 'hermes') ? 'hermes' : (carrier_type_multi&.include? 'yodal') ? 'yodal' : carrier_type_multi&.last
     end
     MailServiceRule.all.each do |mail_rule|
       mail_rule.rules.each do |rule|
@@ -227,9 +240,36 @@ class AmazonOrderJob < ApplicationJob
           when 'less_then'
             max_weight = rule.rule_value.to_i - 1
           end
+          if max_weight == 0 && min_weight == 0
+            type = false
+          else
+            type = true if total_weight <= max_weight && total_weight >= min_weight
+          end
+        elsif rule.rule_field == 'carrier_type'
+          operator = rule.rule_operator
+          type = (operator == 'equals' && rule&.rule_value&.downcase == carrier_type) ? true : false
+        elsif rule.rule_field == 'postage'
+          operator = rule.rule_operator
+          case operator
+          when 'greater_then'
+            min_postage = rule.rule_value.to_i + 0.1
+          when 'greater_then_equal'
+            min_postage = rule.rule_value
+          when 'less_then_equal'
+            max_postage = rule.rule_value
+          when 'less_then'
+            max_postage = rule.rule_value.to_i - 0.1
+          when 'equals'
+            equal  = true
+          end
+          if max_postage == 0 && min_postage == 0
+             type = rule.rule_value.to_f == total_postage ? true : false
+          else
+            type = true if total_postage <= max_postage && total_postage >= min_postage || rule.rule_value.to_i == total_postage
+          end
         end
       end
-      rule_bonus_score[mail_rule.bonus_score.to_i] = mail_rule.id if total_weight <= max_weight && total_weight >= min_weight
+      rule_bonus_score[mail_rule.bonus_score.to_i] = mail_rule.id if type
       if rule_bonus_score.max&.last.present?
         mail_rule_id = rule_bonus_score.max&.last
         assign_rule = AssignRule.create(mail_service_rule_id: mail_rule_id)

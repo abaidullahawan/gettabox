@@ -37,12 +37,11 @@ class MailServiceRulesController < ApplicationController
   def create
     @mail_service_rule = MailServiceRule.new(mail_service_rule_params)
     if @mail_service_rule.save
-      redirect_to mail_service_rules_path
       flash[:notice] = 'Mail service rule was successfully created.'
     else
       flash[:alert] = "#{@mail_service_rule.errors.full_messages} Cannot create rule"
-      redirect_to mail_service_rules_path
     end
+    redirect_to mail_service_rules_path
   end
 
   # PATCH/PUT /mail_service_rules/1 or /mail_service_rules/1.json
