@@ -6,88 +6,90 @@ class Rule < ApplicationRecord
 
   enum rule_field: {
     weight_in_gm: 'weight in GM',
-    max_weight_in_gm: 'max weight in GM',
-    max_width_in_mm: 'max width in MM',
-    max_length_in_mm: 'max length in MM',
-    max_height_in_mm: 'max height in MM',
-    total_width_in_mm: 'total width in MM',
-    total_length_in_mm: 'total length in MM',
-    total_height_in_mm: 'total height in MM',
-    any_dimension_in_mm: 'any dimension in MM',
-    total_volume_in_mm3: 'total volume in MM³',
-    item_volume_in_mm3: 'item volume in MM³',
-    formula_is_true: 'formula is true (Advanced)', ########## 1
-    formula_is_not_true: 'formula is not true (Advanced)', ########## 1
-    total_item_value_in_pence: 'total item value in pence',
-    total_postage_value_in_pence: 'total postage value in pence',
-    next_day_of_the_week_from_order_placed: 'next day of the week from order placed',
-    day_of_the_week_order_placed: 'day of the week order placed',
-    hour_of_the_day: 'hour of the day',
-    minute_of_the_day: 'minute of the day',
-    large_letter_compatible_products: 'large letter compatible products',
-    postcode: 'postcode',
-    address_line_one: 'address line 1',
-    address_line_two: 'address line 2',
-    town: 'town',
-    county: 'county',
-    country: 'country',
-    products_option_equals: 'products option equals', ###### 2
-    products_option_does_not_equals: 'products option does not equals', ###### 2
-    product_option_contains: 'product option contains', ###### 2
-    product_option_does_not_contains: 'product option does not contains', ###### 2
-    multipack_product_option_equals: 'multipack product option equals', ###### 2
-    multipack_product_option_does_not_equals: 'multipack product option does not equals', ###### 2
-    multipack_product_option_contains: 'multipack product option contains', ###### 2
-    multipack_product_option_does_not_contains: 'multipack product option does not contains', ###### 2
-    total_number_products_ordered: 'total number products ordered',
-    maximum_number_of_individual_products_ordered: 'maximum number of individual products ordered',
-    minimum_number_of_individual_products_ordered: 'minimum number of individual products ordered',
-    total_number_of_distinct_products_on_an_order: 'total number of distinct products on an order',
-    customer_name: 'customer name',
-    customer_type: 'customer type',
-    payment_terms: 'payment terms',
-    shipping_service_name: 'shipping service name',
-    product_supplier: 'product supplier',
-    product_sku: 'product sku',
-    any_product_sku: 'any product sku',
-    range_sku: 'range sku',
-    all_items_on_order_are_in_multipacks: 'all items on order are in multipacks',
-    all_items_on_order_are_standard_products: 'all items on order are standard products',
-    order_contains_mix_of_multipack_and_standard_products: 'order contains mix of multipack and standard products',
-    multipack_weight_in_gm: 'multipack weight in GM',
-    multipack_max_width_in_mm: 'multipack max width in MM',
-    multipack_max_length_in_MM: 'multipack max length in MM',
-    multipack_height_in_mm: 'multipack height in MM',
-    multipack_total_width_in_mm: 'multipack total width in MM',
-    multipack_total_length_in_mm: 'multipack total length in MM',
-    multipack_total_height_in_mm: 'multipack total height in MM',
-    any_multipack_dimension_in_mm: 'any multipack dimension in MM',
-    delivery_mobile_set: 'delivery mobile set',
-    delivery_telephone_set: 'delivery telephone set',
-    customer_email_set: 'customer email set',
-    warehouse_any_product: 'warehouse any product', ##### 3
-    warehouse_all_product: 'warehouse all product', ##### 3
-    order_is_split_across_multiple_warehouses: 'order is split across multiple warehouses',
-    any_product_on_order_is_dropshiped_by: 'any product on order is dropshiped by', ##### 4
-    all_product_on_order_is_dropshiped_by: 'all product on order is dropshiped by', ##### 4
-    any_product_has_additional_labels: 'any product has additional labels',
-    all_product_has_additional_labels: 'all product has additional labels',
-    any_product_line_gross: 'any product line gross (Pence)',
-    any_product_line_gross_before_discount: 'any product line gross before discount (Pence)',
-    any_single_product_line_gross: 'any single product line gross (Pence)',
-    any_single_product_line_gross_before_discount: 'any single product line gross before discount (Pence)',
-    any_multipack_product_line_gross: 'any multipack product line gross (Pence)',
-    any_multipack_product_line_gross_before_discount: 'any multipack product line gross before discount (Pence)',
-    any_product_item_gross: 'any product item gross (Pence)',
-    any_product_item_gross_before_discount: 'any product item gross before discount (Pence)',
-    any_single_product_item_gross: 'any single product item gross (Pence)',
-    any_single_product_item_gross_before_discount: 'any single product item gross before discount (Pence)',
-    any_multipack_product_item_gross: 'any multipack product item gross (Pence)',
-    any_multipack_product_item_gross_before_discount: 'any multipack product item gross before discount (Pence)',
-    total_gross_of_items_on_the_order: 'total gross of items on the order (Pence)',
-    total_gross_of_items_on_the_order_before_discount: 'total gross of items on the order before discount (Pence)',
-    total_vat_of_items_on_the_order: 'total Vat of items on the order (Pence)',
-    total_net_of_items_on_the_order: 'total Net of items on the order (Pence)'
+    carrier_type: 'Carrier type',
+    postage: 'Postage'
+    # max_weight_in_gm: 'max weight in GM',
+    # max_width_in_mm: 'max width in MM',
+    # max_length_in_mm: 'max length in MM',
+    # max_height_in_mm: 'max height in MM',
+    # total_width_in_mm: 'total width in MM',
+    # total_length_in_mm: 'total length in MM',
+    # total_height_in_mm: 'total height in MM',
+    # any_dimension_in_mm: 'any dimension in MM',
+    # total_volume_in_mm3: 'total volume in MM³',
+    # item_volume_in_mm3: 'item volume in MM³',
+    # formula_is_true: 'formula is true (Advanced)', ########## 1
+    # formula_is_not_true: 'formula is not true (Advanced)', ########## 1
+    # total_item_value_in_pence: 'total item value in pence',
+    # total_postage_value_in_pence: 'total postage value in pence',
+    # next_day_of_the_week_from_order_placed: 'next day of the week from order placed',
+    # day_of_the_week_order_placed: 'day of the week order placed',
+    # hour_of_the_day: 'hour of the day',
+    # minute_of_the_day: 'minute of the day',
+    # large_letter_compatible_products: 'large letter compatible products',
+    # postcode: 'postcode',
+    # address_line_one: 'address line 1',
+    # address_line_two: 'address line 2',
+    # town: 'town',
+    # county: 'county',
+    # country: 'country',
+    # products_option_equals: 'products option equals', ###### 2
+    # products_option_does_not_equals: 'products option does not equals', ###### 2
+    # product_option_contains: 'product option contains', ###### 2
+    # product_option_does_not_contains: 'product option does not contains', ###### 2
+    # multipack_product_option_equals: 'multipack product option equals', ###### 2
+    # multipack_product_option_does_not_equals: 'multipack product option does not equals', ###### 2
+    # multipack_product_option_contains: 'multipack product option contains', ###### 2
+    # multipack_product_option_does_not_contains: 'multipack product option does not contains', ###### 2
+    # total_number_products_ordered: 'total number products ordered',
+    # maximum_number_of_individual_products_ordered: 'maximum number of individual products ordered',
+    # minimum_number_of_individual_products_ordered: 'minimum number of individual products ordered',
+    # total_number_of_distinct_products_on_an_order: 'total number of distinct products on an order',
+    # customer_name: 'customer name',
+    # customer_type: 'customer type',
+    # payment_terms: 'payment terms',
+    # shipping_service_name: 'shipping service name',
+    # product_supplier: 'product supplier',
+    # product_sku: 'product sku',
+    # any_product_sku: 'any product sku',
+    # range_sku: 'range sku',
+    # all_items_on_order_are_in_multipacks: 'all items on order are in multipacks',
+    # all_items_on_order_are_standard_products: 'all items on order are standard products',
+    # order_contains_mix_of_multipack_and_standard_products: 'order contains mix of multipack and standard products',
+    # multipack_weight_in_gm: 'multipack weight in GM',
+    # multipack_max_width_in_mm: 'multipack max width in MM',
+    # multipack_max_length_in_MM: 'multipack max length in MM',
+    # multipack_height_in_mm: 'multipack height in MM',
+    # multipack_total_width_in_mm: 'multipack total width in MM',
+    # multipack_total_length_in_mm: 'multipack total length in MM',
+    # multipack_total_height_in_mm: 'multipack total height in MM',
+    # any_multipack_dimension_in_mm: 'any multipack dimension in MM',
+    # delivery_mobile_set: 'delivery mobile set',
+    # delivery_telephone_set: 'delivery telephone set',
+    # customer_email_set: 'customer email set',
+    # warehouse_any_product: 'warehouse any product', ##### 3
+    # warehouse_all_product: 'warehouse all product', ##### 3
+    # order_is_split_across_multiple_warehouses: 'order is split across multiple warehouses',
+    # any_product_on_order_is_dropshiped_by: 'any product on order is dropshiped by', ##### 4
+    # all_product_on_order_is_dropshiped_by: 'all product on order is dropshiped by', ##### 4
+    # any_product_has_additional_labels: 'any product has additional labels',
+    # all_product_has_additional_labels: 'all product has additional labels',
+    # any_product_line_gross: 'any product line gross (Pence)',
+    # any_product_line_gross_before_discount: 'any product line gross before discount (Pence)',
+    # any_single_product_line_gross: 'any single product line gross (Pence)',
+    # any_single_product_line_gross_before_discount: 'any single product line gross before discount (Pence)',
+    # any_multipack_product_line_gross: 'any multipack product line gross (Pence)',
+    # any_multipack_product_line_gross_before_discount: 'any multipack product line gross before discount (Pence)',
+    # any_product_item_gross: 'any product item gross (Pence)',
+    # any_product_item_gross_before_discount: 'any product item gross before discount (Pence)',
+    # any_single_product_item_gross: 'any single product item gross (Pence)',
+    # any_single_product_item_gross_before_discount: 'any single product item gross before discount (Pence)',
+    # any_multipack_product_item_gross: 'any multipack product item gross (Pence)',
+    # any_multipack_product_item_gross_before_discount: 'any multipack product item gross before discount (Pence)',
+    # total_gross_of_items_on_the_order: 'total gross of items on the order (Pence)',
+    # total_gross_of_items_on_the_order_before_discount: 'total gross of items on the order before discount (Pence)',
+    # total_vat_of_items_on_the_order: 'total Vat of items on the order (Pence)',
+    # total_net_of_items_on_the_order: 'total Net of items on the order (Pence)'
   }, _prefix: true
 
   enum rule_operator: {
