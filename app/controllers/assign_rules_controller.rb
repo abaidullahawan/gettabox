@@ -29,18 +29,19 @@ class AssignRulesController < ApplicationController
 
   def update
     @assign_rule = AssignRule.find(params[:id])
-    channel_order = ChannelOrder.find(params[:update_channel_order_id])
-    criteria = channel_order.channel_order_items.map { |h| [h[:sku], h[:ordered]] }
+    @channel_order = ChannelOrder.find(params[:update_channel_order_id])
+    criteria = @channel_order.channel_order_items.map { |h| [h[:sku], h[:ordered]] }
 
     if @assign_rule.save_later
       hash = assign_rule_params.to_h
-      hash['mail_service_labels_attributes']['0']['id'] = nil
+      hash['mail_service_labels_attributes'].each { |key, value| value["id"] = nil }
       @assign_rule = AssignRule.new(hash)
     end
+    return reset_labels if params['commit'].eql? 'Reset labels'
     @assign_rule.new_record? ? @assign_rule.save : @assign_rule.update(assign_rule_params)
     @assign_rule.update(criteria: criteria)
     @assign_rule.update(status: 'customized') if (params[:status].eql? 'customized') || check_labels(assign_rule_params[:mail_service_labels_attributes]['0']) || assign_rule_params[:mail_service_labels_attributes]['1'].present?
-    channel_order.update(assign_rule_id: @assign_rule.id)
+    @channel_order.update(assign_rule_id: @assign_rule.id)
     flash[:notice] = 'Mail Service Rule Updated!'
     redirect_to request.referrer
   end
@@ -65,5 +66,35 @@ class AssignRulesController < ApplicationController
     return false if assign_rule_labels['length'] == params[:hidden_length] && assign_rule_labels['width'] == params[:hidden_width] && assign_rule_labels['height'] == params[:hidden_height] && assign_rule_labels['weight'] == params[:hidden_weight]
 
     true
+  end
+
+  def reset_labels
+    @assign_rule.mail_service_labels.destroy_all
+    @length = 0
+    @weight = 0
+    @height = []
+    @width = []
+    @channel_order.channel_order_items.each do |product|
+      return unless product.channel_product&.product_mapping.present?
+
+      if product.channel_product.product_mapping.product&.product_type_multiple?
+        product.channel_product.product_mapping.product&.multipack_products&.each do |record|
+          @length += record&.child&.length.to_f * record.quantity.to_f
+          @weight += record&.child&.weight.to_f * record.quantity.to_f
+          @height.push(record&.child&.height.to_f)
+          @width.push(record&.child&.width.to_f)
+        end
+      else
+        @length += product.channel_product.product_mapping&.product&.length.to_f
+        @weight += product.channel_product.product_mapping&.product&.weight.to_f
+        @height.push( product.channel_product.product_mapping&.product&.height.to_f)
+        @width.push( product.channel_product.product_mapping&.product&.width.to_f)
+      end
+    end
+    @assign_rule.mail_service_labels.build(length: @length, weight: @weight, height: @height.max, width: @width.max).save
+    @assign_rule.update(status: nil)
+    @channel_order.update(assign_rule_id: @assign_rule.id)
+    flash[:notice] = 'Mail Service Labels reset!'
+    redirect_to request.referrer
   end
 end
