@@ -8,6 +8,7 @@ class MailServiceRule < ApplicationRecord
   belongs_to :service, optional: true
   has_many :rules
   belongs_to :export_mapping, optional: true
+  has_many :assign_rule, dependent: :destroy
   accepts_nested_attributes_for :rules, allow_destroy: true
 
   enum label_type: {
