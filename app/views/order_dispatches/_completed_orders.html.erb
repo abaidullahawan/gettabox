@@ -166,7 +166,7 @@
       <div class="font-sm col-1 d-flex"><%= order.created_at.strftime("%m/%d/%Y %H:%M") %></div>
       <div class="font-sm d-flex" style="width: 8%">
         <%= order.total_amount%><br/>
-        <%= "( #{order.postage} )" if order.postage.present? %>
+        <%= "( #{postage_mapping(order.postage)} )" %>
       </div>
       <div class="font-sm pl-0 d-flex" style="width: 10%">
         <span class="badge badge_warning font-sm"><%= order.order_status%></span><br>

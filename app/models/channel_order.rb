@@ -14,6 +14,10 @@ class ChannelOrder < ApplicationRecord
   has_many :order_replacements
   has_many :notes, as: :reference
   has_many :channel_orders, through: :order_replacements
+
+  after_create :set_postage
+  after_update :set_postage
+
   enum channel_type: {
     ebay: 0,
     amazon: 1,
@@ -65,5 +69,17 @@ class ChannelOrder < ApplicationRecord
 
   ransacker :id do
     Arel.sql("to_char(\"#{table_name}\".\"id\", '99999')")
+  end
+
+  # ransacker :assign_rule_id do
+  #   Arel.sql('COALESCE(assign_rule_id, 0)')
+  # end
+
+  def set_postage
+    postage_hash = {'Standard' => '0.0', 'SecondDay' => '2.99', 'Expedited' => '2.99'}
+
+    return if postage.to_f.to_s.eql? postage
+
+    update_columns(postage: postage_hash[postage])
   end
 end
