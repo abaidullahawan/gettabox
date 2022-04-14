@@ -17,11 +17,11 @@
     <div class='col-6'>
       <div class='row'>
         <div class="col-md-5 form-group">
-          <%= f.select :channel_type_eq, options_for_select(@channel_types.map { |key, value| [key.humanize, value] }, f.object.channel_type_eq), {include_blank: "Select Status", hide_label:true, required: true }, class:"bg-white form-control order-mapping-select", title: 'Select Mapping Category', prompt: "Please select" %>
+          <%= f.select :channel_type_eq, options_for_select(@channel_types.map { |key, value| [key.humanize, value] }, f.object.channel_type_eq), {include_blank: "Select Channel Type", hide_label:true, required: true }, class:"bg-white form-control order-mapping-select", title: 'Select Channel Type', prompt: "Please select" %>
         </div>
         <div class="col-md-8 form-group">
           <%= hidden_field_tag "assign_filter", params[:assign_filter] %>
-          <%= f.search_field :id_or_order_id_or_order_status_or_buyer_name_or_channel_order_items_sku_cont, class:"form-control bg-white text-black", title: 'Search Buyer Name or Order Id or Status', placeholder: 'Search Buyer Name or Order Id or Status', value: params.dig(:q, :id_or_order_id_or_order_status_or_buyer_name_or_channel_order_items_sku_cont) %>
+          <%= f.search_field :id_or_order_id_or_order_status_or_buyer_name_or_channel_order_items_sku_cont, class:"form-control bg-white text-black", title: 'Search Buyer Name or Order Id or Status', placeholder: 'Search Buyer Name or Order Id or Status', value: f.object.id_or_order_id_or_order_status_or_buyer_name_or_channel_order_items_sku_cont %>
         </div>
       </div>
     </div>

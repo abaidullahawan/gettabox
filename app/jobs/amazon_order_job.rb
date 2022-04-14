@@ -247,29 +247,30 @@ class AmazonOrderJob < ApplicationJob
           end
         elsif rule.rule_field == 'carrier_type'
           operator = rule.rule_operator
-          type = (operator == 'equals' && rule&.rule_value&.downcase == carrier_type) ? true : false
+          type = (operator == 'equals' && rule&.rule_value&.downcase == carrier_type&.downcase) ? true : false
         elsif rule.rule_field == 'postage'
           operator = rule.rule_operator
           case operator
           when 'greater_then'
-            min_postage = rule.rule_value.to_i + 0.1
+            min_postage = rule.rule_value.to_f + 0.1
           when 'greater_then_equal'
             min_postage = rule.rule_value
           when 'less_then_equal'
             max_postage = rule.rule_value
           when 'less_then'
-            max_postage = rule.rule_value.to_i - 0.1
+            max_postage = rule.rule_value.to_f - 0.1
           when 'equals'
             equal  = true
           end
           if max_postage == 0 && min_postage == 0
              type = rule.rule_value.to_f == total_postage ? true : false
           else
-            type = true if total_postage <= max_postage && total_postage >= min_postage || rule.rule_value.to_i == total_postage
+            type = true if total_postage <= max_postage && total_postage >= min_postage || rule.rule_value.to_f == total_postage
           end
         end
       end
       rule_bonus_score[mail_rule.bonus_score.to_i] = mail_rule.id if type
+      type = false
       if rule_bonus_score.max&.last.present?
         mail_rule_id = rule_bonus_score.max&.last
         assign_rule = AssignRule.create(mail_service_rule_id: mail_rule_id)

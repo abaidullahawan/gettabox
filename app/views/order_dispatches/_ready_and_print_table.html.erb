@@ -134,12 +134,14 @@
               <% weight += record&.child&.weight.to_f * record.quantity.to_f * product&.ordered%>
             <% end %>
             <div class="font-sm d-flex align-items-center" style="width: 3%">
-              <%= weight.round(2) %>
+              <% order.update(total_weight: weight.round(2)) unless order.total_weight.present? %> 
+              <%= order.total_weight %>
             </div>
           <% else %>
             <% weight += product.channel_product.product_mapping&.product&.weight.to_f * product.ordered.to_f %>
             <div class="font-sm d-flex align-items-center" style="width: 3%">
-              <%= weight.round(2) %>
+              <% order.update(total_weight: weight.round(2)) unless order.total_weight.present? %>
+              <%= order.total_weight %>
             </div>
           <% end %>
         <% end %>

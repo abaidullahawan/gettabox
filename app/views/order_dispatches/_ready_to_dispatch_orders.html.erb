@@ -16,18 +16,19 @@
               <a class="cursor-pointer allocate-button dropdown-item">Allocate selected</a>
               <%# <a class="upload_trackings dropdown-item" data-toggle="modal" data-target=".upload-trackings">Upload Trackings</a> %>
             </div>
-            <%# <label for="inputState">Per Page</label> %>
-            <%#= select_tag :limit, options_for_select([5, 10, 15, 20], selected: params[:limit] || 5), id: 'change_per_page', class: 'form-control' %>
             <button type="submit" id="per_page_submit" hidden="hidden"></button>
           </div>
             <%= hidden_field_tag "order_filter", params[:order_filter] %>
-            <%= hidden_field_tag :q, params[:q] %>
+            <%= hidden_field_tag :q, params[:q] unless params[:q].blank? %>
             <%= hidden_field_tag "limit", params[:limit] || 100 %>
+          <div class='float-right mr-2'>
+            <button type="button" class="btn btn-outline-primary w-100" data-toggle="modal" data-target=".LargeModal" style="height:42px;">Filters</button>
+          </div>
           <div class='float-right mr-2'>
             <%= search_field_tag :assign_rule_name, params[:assign_rule_name], class: 'form-control', placeholder: 'Search rule name' %>
           </div>
           <div class='float-right mr-2'>
-            <%= select_tag(:assign_filter, options_for_select([["Unassigned Courier", 0],["Assigned Courrier", 1]], params[:assign_filter] ), class:"form-control select", onchange: 'this.form.submit()') %>
+            <%#= select_tag(:assign_filter, options_for_select([["Unassigned Courier", 0],["Assigned Courrier", 1]], params[:assign_filter] ), class:"form-control select", onchange: 'this.form.submit()') %>
           </div>
         </div>
         <% end %>
@@ -144,6 +145,58 @@
           <%#= link_to 'PDF', order_dispatches_path(format: :pdf), class:"btn btn-primary float-right ml-1", type:"button"%>
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
           <%= submit_tag("Upload Trackings", id: "button", class: "btn btn-primary", name: "submit", data: {disable_with: false}) %>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>
+
+<%= search_form_for @q, url: order_dispatches_path(request.parameters.excluding('controller', 'action')), method: :get do |f| %>
+  <div class="modal fade LargeModal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-md">
+      <div class="modal-content">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Search Filters</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+
+          <div class="modal-body">
+            <%= hidden_field_tag "order_filter", params[:order_filter] %>
+            <div class="row">
+              <div class="col-md-6 form-group">
+                <%= f.label 'Select Rule Type' %>
+                <%= f.select :assign_rule_id_null, options_for_select([["Assigned Courier", false],["Unassigned Courrier", true]], f.object.assign_rule_id_null), {include_blank: "Select Assign Rule", hide_label:true, required: true }, class:"bg-white form-control", title: 'Select Assign Rule' %>
+              </div>
+              <div class="col-md-6 form-group">
+                <%= f.label 'Select Postage' %>
+                <%= f.select :postage_eq, options_for_select(@channel_postages, f.object.postage_eq), {include_blank: "Select Postage", hide_label:true, required: true }, class:"bg-white form-control", title: 'Select Mapping Postage' %>
+              </div>
+            </div>
+            <div class='row'>
+              <div class="col-md-6 form-group">
+                <%= f.label 'Enter Minimum Weight' %>
+                <%= f.search_field :total_weight_gteq, class:"form-control bg-white text-black", title: 'Search Weight', placeholder: 'Minimum Weight', value: f.object.total_weight_gteq %>
+             </div>
+              <div class="col-md-6 form-group">
+                <%= f.label 'Enter Maximum Weight' %>
+                <%= f.search_field :total_weight_lteq, class:"form-control bg-white text-black", title: 'Search Weight', placeholder: 'Maximum Weight', value: f.object.total_weight_lteq %>
+             </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6 mx-auto form-group">
+                <%= f.label 'Enter Carrier Type' %>
+                <%= f.search_field :channel_order_items_channel_product_product_mapping_product_courier_type_or_channel_order_items_channel_product_product_mapping_product_multipack_products_child_courier_type_eq, class:"form-control bg-white text-black", title: 'Search Carrier Type', placeholder: 'Search Carrier Type', value: f.object.channel_order_items_channel_product_product_mapping_product_courier_type_or_channel_order_items_channel_product_product_mapping_product_multipack_products_child_courier_type_eq %>
+              </div>
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <%= f.submit 'Apply filters', class: 'btn btn-primary'%>
+          </div>
         </div>
       </div>
     </div>

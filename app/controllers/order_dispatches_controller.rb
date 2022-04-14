@@ -486,29 +486,30 @@ class OrderDispatchesController < ApplicationController
             end
           elsif rule.rule_field == 'carrier_type'
             operator = rule.rule_operator
-            type = (operator == 'equals' && rule&.rule_value&.downcase == carrier_type) ? true : false
+            type = (operator == 'equals' && rule&.rule_value&.downcase == carrier_type&.downcase) ? true : false
           elsif rule.rule_field == 'postage'
             operator = rule.rule_operator
             case operator
             when 'greater_then'
-              min_postage = rule.rule_value.to_i + 0.1
+              min_postage = rule.rule_value.to_f + 0.1
             when 'greater_then_equal'
               min_postage = rule.rule_value
             when 'less_then_equal'
               max_postage = rule.rule_value
             when 'less_then'
-              max_postage = rule.rule_value.to_i - 0.1
+              max_postage = rule.rule_value.to_f - 0.1
             when 'equals'
               equal  = true
             end
             if max_postage == 0 && min_postage == 0
                type = rule.rule_value.to_f == total_postage ? true : false
             else
-              type = true if total_postage <= max_postage && total_postage >= min_postage || rule.rule_value.to_i == total_postage
+              type = true if total_postage <= max_postage && total_postage >= min_postage || rule.rule_value.to_f == total_postage
             end
           end
         end
         rule_bonus_score[mail_rule.bonus_score.to_i] = mail_rule.id if type
+        type = false
         if rule_bonus_score.max&.last.present?
           mail_rule_id = rule_bonus_score.max&.last
           assign_rule = AssignRule.create(mail_service_rule_id: mail_rule_id)
@@ -604,6 +605,7 @@ class OrderDispatchesController < ApplicationController
     .where("REPLACE(channel_products.item_sku, ' ', '') ILIKE REPLACE('%#{name}%', ' ', '')") if name.present?
     @channel_orders = @q.result  if @channel_orders.nil? || @channel_orders.empty?
     @channel_types = ChannelOrder.channel_types
+    @channel_postages = ChannelOrder.pluck(:postage).uniq.compact
     @mail_service_rules = MailServiceRule.all
   end
 
@@ -682,30 +684,30 @@ class OrderDispatchesController < ApplicationController
 
     params[:q] = JSON.parse params[:q].gsub('=>', ':') if params[:q]&.include?('"')
     if params['assign_rule_name'].present?
-      if params['assign_filter'].present? && params['assign_filter'] == '0'
-        @not_started_orders = (@channel_orders
-          .joins(assign_rule: :mail_service_rule).includes(assign_rule: :mail_service_rule)
-          .where(stage: 'ready_to_dispatch').where.not(channel_type: 'amazon', system_user_id: nil)
-          .where('mail_service_rules.rule_name ILIKE ?',
-                 "%#{params['assign_rule_name']}%")
-          ).where(assign_rule_id: nil).uniq
-      else
+      # if params['assign_filter'].present? && params['assign_filter'] == '0'
+      #   @not_started_orders = (@channel_orders
+      #     .joins(assign_rule: :mail_service_rule).includes(assign_rule: :mail_service_rule)
+      #     .where(stage: 'ready_to_dispatch').where.not(channel_type: 'amazon', system_user_id: nil)
+      #     .where('mail_service_rules.rule_name ILIKE ?',
+      #            "%#{params['assign_rule_name']}%")
+      #     ).where(assign_rule_id: nil).uniq
+      # else
         @not_started_orders = (@channel_orders
           .joins(assign_rule: :mail_service_rule).includes(assign_rule: :mail_service_rule)
           .where(stage: 'ready_to_dispatch').where.not(channel_type: 'amazon', system_user_id: nil)
           .where('mail_service_rules.rule_name ILIKE ?',
                  "%#{params['assign_rule_name']}%")
           ).uniq
-      end
+      # end
       @not_started_order_data = Kaminari.paginate_array(@not_started_orders).page(params[:not_started_page]).per(params[:limit] || 100)
     else
-      if params['assign_filter'].present? && params['assign_filter'] == '1'
+      # if params['assign_filter'].present? && params['assign_filter'] == '1'
+      #   @search = @channel_orders.where(stage: 'ready_to_dispatch')
+      #                            .where.not(channel_type: 'amazon', system_user_id: nil).where.not(assign_rule_id: nil).search(params[:q])
+      # else
         @search = @channel_orders.where(stage: 'ready_to_dispatch')
-                                 .where.not(channel_type: 'amazon', system_user_id: nil).where.not(assign_rule_id: nil).search(params[:q])
-      else
-        @search = @channel_orders.where(stage: 'ready_to_dispatch')
-                                  .where.not(channel_type: 'amazon', system_user_id: nil).where(assign_rule_id: nil).search(params[:q])
-      end
+                                  .where.not(channel_type: 'amazon', system_user_id: nil).search(params[:q])
+      # end
       @not_started_orders = @search.result
       if params[:q].present? && params[:q][:s].present? && params[:q][:s].include?('total_amount')
         @not_started_orders = @not_started_orders.order(:total_amount)
