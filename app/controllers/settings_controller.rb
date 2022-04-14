@@ -20,7 +20,8 @@ class SettingsController < ApplicationController
                       pick_and_pack: OrderBatch.count,
                       product_location_mapping: ProductLocation.count,
                       channel_forecastings: ChannelForecasting.count,
-                      sellings: Selling.count
+                      sellings: Selling.count,
+                      customized_rules: AssignRule.where(save_later: true).count
                      }
   end
 end

@@ -167,8 +167,12 @@
                     <%= render partial: 'update_assign_rule_form', locals: { f: ar }  %>
                   </div>
                   <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary mr-auto" data-dismiss="modal">Close</button>
-                      <%= ar.submit "Assign" , class: 'btn btn-outline-primary create_service_rule_button' %>
+                    <div class='mr-auto'>
+                      <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                      <%= link_to 'Link', rule_path(order.assign_rule), class: 'btn btn-info' %>
+                      <%= ar.submit 'Reset labels', class: 'btn btn-primary ' %>
+                    </div>
+                    <%= ar.submit "Assign" , class: 'btn btn-outline-primary create_service_rule_button' %>
                   </div>
                 </div>
               </div>

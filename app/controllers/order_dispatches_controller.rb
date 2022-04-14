@@ -180,7 +180,7 @@ class OrderDispatchesController < ApplicationController
       @orders = ChannelOrder.where(id: params[:object_ids].excluding('0'), selected: true)
       courier_csv_export(@orders)
     else
-      @assign_rule = AssignRule.create(mail_service_rule_id: params[:rule_id], save_later: true)
+      @assign_rule = AssignRule.create(mail_service_rule_id: params[:rule_id]) # changed save later true unneccassarily
       @service_label = MailServiceLabel.create(height: params[:height], weight: params[:weight],
                                                length: params[:length], width: params[:width], assign_rule_id: @assign_rule.id)
       order_ids = params[:object_ids].excluding('0')
