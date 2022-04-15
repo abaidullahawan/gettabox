@@ -68,7 +68,7 @@ class ChannelOrder < ApplicationRecord
   private
 
   ransacker :id do
-    Arel.sql("to_char(\"#{table_name}\".\"id\", '99999')")
+    Arel.sql("to_char(\"#{table_name}\".\"id\", '9999999999999')")
   end
 
   # ransacker :assign_rule_id do
