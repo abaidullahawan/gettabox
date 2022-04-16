@@ -177,9 +177,9 @@ class CreateChannelOrderJob < ApplicationJob
           when 'greater_then'
             min_weight = rule.rule_value.to_i + 1
           when 'greater_then_equal'
-            min_weight = rule.rule_value
+            min_weight = rule.rule_value.to_i
           when 'less_then_equal'
-            max_weight = rule.rule_value
+            max_weight = rule.rule_value.to_i
           when 'less_then'
             max_weight = rule.rule_value.to_i - 1
           end
@@ -197,18 +197,18 @@ class CreateChannelOrderJob < ApplicationJob
           when 'greater_then'
             min_postage = rule.rule_value.to_f + 0.1
           when 'greater_then_equal'
-            min_postage = rule.rule_value
+            min_postage = rule.rule_value.to_f
           when 'less_then_equal'
-            max_postage = rule.rule_value
+            max_postage = rule.rule_value.to_f
           when 'less_then'
             max_postage = rule.rule_value.to_f - 0.1
           when 'equals'
             equal  = true
           end
           if max_postage == 0 && min_postage == 0
-             type = rule.rule_value.to_f == total_postage ? true : false
+             type = rule.rule_value.to_f == total_postage.to_f ? true : false
           else
-            type = true if total_postage <= max_postage && total_postage >= min_postage || rule.rule_value.to_f == total_postage
+            type = true if total_postage.to_f <= max_postage && total_postage.to_f >= min_postage || rule.rule_value.to_f == total_postage.to_f
           end
         end
       end
