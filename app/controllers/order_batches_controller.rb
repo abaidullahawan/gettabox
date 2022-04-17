@@ -82,10 +82,9 @@ class OrderBatchesController < ApplicationController
         system_user_data[key] = attribute if SystemUser.column_names.excluding(to_be_ignored).include? attribute
         mail_service_label_data[key] = attribute if MailServiceLabel.column_names.excluding(to_be_ignored).include? attribute
         mail_service_rule_data[key] = attribute if MailServiceRule.column_names.excluding(to_be_ignored).include? attribute
-
       end
       attributes = channel_order_item_data.keys + channel_order_data.keys + mail_service_label_data.keys + address_data.keys + system_user_data.keys + mail_service_rule_data.keys
-      attributes = attributes.clear.including('Item Name', 'Value', 'Reference', 'Quantity', 'Weight', 'Height', 'Length', 'Width',	'Name',	'Property', 'Street', 'Locality', 'Town', 'County', 'Postcode', 'Telephone', 'Email', 'SKU')
+      attributes = attributes.clear.including('Item Name', 'Value', 'Reference', 'Quantity', 'Weight', 'Height', 'Length', 'Width',	'Name',	'Property', 'Street', 'Locality', 'Town', 'County', 'Postcode', 'Telephone', 'Email', 'SKU', 'Service')
       @csv = CSV.generate(headers: true) do |csv|
         csv << attributes
         orders.each do |order|
@@ -104,7 +103,7 @@ class OrderBatchesController < ApplicationController
             row[5] = weigth_label_csv.height.to_f
             row[6] = weigth_label_csv.width.to_f
             row[7] = weigth_label_csv.length.to_f
-            row[2] = "#{row[2]} [Copied]" if index.positive?
+            row[2] = "#{row[2]} copy#{index}" if index.positive?
             csv << row
           end
         end
