@@ -128,6 +128,7 @@ Rails.application.routes.draw do
       get 'archive', to: 'system_users#archive'
       post 'restore', to: 'system_users#restore'
       post 'system_user_by_name', to: 'system_users#search_system_user_by_name'
+      post 'import_supplier_products', to: 'system_users#import_supplier_products'
     end
   end
 

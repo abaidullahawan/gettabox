@@ -45,6 +45,13 @@
             <div class='mr-1 float-right'>
               <%= link_to 'Archives', archive_system_users_path, class: 'btn btn-outline-info' %>
             </div>
+            <span class='mr-1 float-right'>
+            <%= form_tag import_supplier_products_system_users_path, multipart: true, method: :post do %>
+              <%= file_field_tag :file, class: 'd-none import-supplier-file' %>
+              <button type='button' class='btn btn-outline-secondary import-supplier-btn'>Import Supplier with products</button>
+              <%= submit_tag "Import", class: 'd-none import-supplier-submit' %>
+            <% end %>
+          </span>
           <h5 class="card-title"> Data</h5>
         </div>
         <%= search_form_for @q, url: system_users_path, method: :get do |f| %>

@@ -206,6 +206,13 @@ $(document).on('turbolinks:load', function () {
     })
   })
 
+  $('.import-supplier-btn').on('click', function () {
+    $('.import-supplier-file').trigger('click')
+    $('.import-supplier-file').on('change', function () {
+      $('.import-supplier-submit').trigger('click')
+    })
+  })
+
   $('.select-all-checkbox').on("click", function () {
     var cbxs = $('input[name="object_ids[]"]');
     cbxs.prop("checked", !cbxs.prop("checked"));
