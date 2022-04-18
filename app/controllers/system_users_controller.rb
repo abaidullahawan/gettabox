@@ -107,6 +107,37 @@ class SystemUsersController < ApplicationController
     redirect_to system_users_path
   end
 
+  def import_supplier_products
+    file = params[:file]
+    if file.present? && file.path.split('.').last.to_s.downcase == 'csv'
+      csv_text = File.read(file).force_encoding('ISO-8859-1').encode('utf-8', replace: nil)
+      csv = CSV.parse(csv_text, headers: true)
+      csv.each do |row|
+        hash = row.to_h.compact
+        product = Product.find_by(sku: hash['VAR_SKU'])
+        next unless product.present?
+
+        hash.select {|k,_| k.include? 'Supplier_Name'}.each do |k, v|
+          num = k.split('_').first
+          supplier_record = hash.select {|k,_| k.include? num}
+          supplier = SystemUser.find_or_initialize_by(user_type: 'supplier', name: v)
+          next if product.product_suppliers.find_by(system_user_id: supplier.id).present?
+
+          product.product_suppliers
+                 .build(
+                   system_user_id: supplier.id,
+                   product_cost: supplier_record.select {|k,_| k.include? 'Price' }.first.last,
+                   product_sku: supplier_record.select {|k,_| k.include? 'Sku' }&.first&.last,
+                   product_vat: 5
+                 ).save if supplier.save
+        end
+      end
+    else
+      flash[:alert] = 'File format no matched! Please change file'
+    end
+    redirect_to system_users_path
+  end
+
   def bulk_method
     redirect_to system_users_path
   end
@@ -178,5 +209,44 @@ class SystemUsersController < ApplicationController
         data.update(user_type: 'supplier')
       end
     end
+  end
+
+  def csv_headers_mapping
+    supplier_name = { 'Barrettine' => '24542_Barrettine_Supplier_Name',
+                      'Bartoline' => '24549_Bartoline_Supplier_Name',
+                      'BestBargain' => '23338_BestBargain_Supplier_Name',
+                      'Bio Bean Limited ' => '26674_Bio Bean Limited _Supplier_Name',
+                      'Bird Brand ' => '25953_Bird Brand _Supplier_Name',
+                      'branded matches ' => '32438_branded matches _Supplier_Name',
+                      'Clearance King' => '23334_Clearance King_Supplier_Name',
+                      'Costco' => '23333_Costco_Supplier_Name',
+                      'costoc sale' => '23341_costoc sale_Supplier_Name',
+                      'CPL' => '31639_CPL_Supplier_Name',
+                      'Decco' => '23345_Decco_Supplier_Name',
+                      'ESG' => '23336_ESG_Supplier_Name',
+                      'Evergreen ' => '26985_Evergreen _Supplier_Name',
+                      'Growth Technology Ltd' => '28050_Growth Technology Ltd_Supplier_Name',
+                      'Home Pack LTD' => '29899_Home Pack LTD_Supplier_Name',
+                      'HomeBase' => '29910_HomeBase_Supplier_Name',
+                      'HS Fuels Ltd' => '31578_HS Fuels Ltd_Supplier_Name',
+                      'Iceland' => '29436_Iceland_Supplier_Name',
+                      'Logs Direct' => '32440_Logs Direct_Supplier_Name',
+                      'Makeup' => '23346_Makeup_Supplier_Name',
+                      'Makro' => '23342_Makro_Supplier_Name',
+                      'Nice Pak' => '32411_Nice Pak_Supplier_Name',
+                      'OTL' => '23347_OTL_Supplier_Name',
+                      'Primark' => '23335_Primark_Supplier_Name',
+                      'Rayburn ' => '26711_Rayburn _Supplier_Name',
+                      'shonn brothers' => '23339_shonn brothers_Supplier_Name',
+                      'Stax' => '23332_Stax_Supplier_Name',
+                      'SWL' => '23337_SWL_Supplier_Name',
+                      'The Vacuum Pouch Company' => '30261_The Vacuum Pouch Company_Supplier_Name',
+                      'Tiger Tim ' => '24288_Tiger Tim _Supplier_Name',
+                      'WE TEXTILES LTD' => '30328_WE TEXTILES LTD_Supplier_Name',
+                      'Wham' => '23340_Wham_Supplier_Name',
+                      'White Horse Energy' => '28869_White Horse Energy_Supplier_Name',
+                      'y  y' => '23344_y  y_Supplier_Name',
+                      'YY' => '23343_YY_Supplier_Name'
+    }
   end
 end
