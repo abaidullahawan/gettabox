@@ -437,12 +437,9 @@ class OrderDispatchesController < ApplicationController
   def recalculate_rule
     orders = ChannelOrder.where(id: params[:orders])
     orders.each do |order|
+      no_rule = false
       total_weight = 0
       total_postage = order.postage.to_f
-      min_weight = 0
-      max_weight = 0
-      min_postage = 0
-      max_postage = 0
       rule_bonus_score = {}
       carrier_type_multi = []
       type = false
@@ -466,6 +463,10 @@ class OrderDispatchesController < ApplicationController
         carrier_type = (carrier_type_multi&.include? 'hermes') ? 'hermes' : (carrier_type_multi&.include? 'yodal') ? 'yodal' : carrier_type_multi&.last
       end
       MailServiceRule.all.each do |mail_rule|
+        min_weight = 0
+        max_weight = 0
+        min_postage = 0
+        max_postage = 0
         mail_rule.rules.each do |rule|
           if rule.rule_field == 'weight_in_gm'
             operator = rule.rule_operator
@@ -482,7 +483,7 @@ class OrderDispatchesController < ApplicationController
             if max_weight == 0 && min_weight == 0
               type = false
             else
-              type = true if total_weight.to_i <= max_weight && total_weight.to_i >= min_weight
+              type = true if total_weight.to_i <= max_weight && total_weight.to_i >= min_weight || min_weight > 0 && max_weight == 0 && mail_rule.rules.count.to_i < 2
             end
           elsif rule.rule_field == 'carrier_type'
             operator = rule.rule_operator
@@ -509,36 +510,41 @@ class OrderDispatchesController < ApplicationController
           end
         end
         rule_bonus_score[mail_rule.bonus_score.to_i] = mail_rule.id if type
+        no_rule = true if type
         type = false
-        if rule_bonus_score.max&.last.present?
-          mail_rule_id = rule_bonus_score.max&.last
-          assign_rule = AssignRule.create(mail_service_rule_id: mail_rule_id)
-          order&.channel_order_items&.each do |item|
-            if item.channel_product&.product_mapping&.product&.product_type == 'multiple'
-              quantity = item&.ordered
-              length = 0
-              weight = 0
-              width = 0
-              height = 0
-              item.channel_product&.product_mapping&.product&.multipack_products.each do |multipack_product|
-                length += multipack_product.child.length.to_f * quantity * multipack_product.quantity
-                weight += multipack_product.child.weight.to_f * quantity * multipack_product.quantity
-                width += multipack_product.child.width.to_f
-                height += multipack_product.child.height.to_f
+        if no_rule
+          if rule_bonus_score.max&.last.present?
+            mail_rule_id = rule_bonus_score.max&.last
+            assign_rule = AssignRule.create(mail_service_rule_id: mail_rule_id)
+            order&.channel_order_items&.each do |item|
+              if item.channel_product&.product_mapping&.product&.product_type == 'multiple'
+                quantity = item&.ordered
+                length = 0
+                weight = 0
+                width = 0
+                height = 0
+                item.channel_product&.product_mapping&.product&.multipack_products.each do |multipack_product|
+                  length += multipack_product.child.length.to_f * quantity * multipack_product.quantity
+                  weight += multipack_product.child.weight.to_f * quantity * multipack_product.quantity
+                  width += multipack_product.child.width.to_f
+                  height += multipack_product.child.height.to_f
+                end
+                @service_label = MailServiceLabel.create(height: height, weight: weight,
+                                                        length: length, width: width, assign_rule_id: assign_rule.id)
+              else
+                quantity = item&.ordered
+                length = item&.channel_product&.product_mapping&.product&.length.to_f * quantity
+                weight = item&.channel_product&.product_mapping&.product&.weight.to_f * quantity
+                width = item&.channel_product&.product_mapping&.product&.width.to_f
+                height = item&.channel_product&.product_mapping&.product&.height.to_f
+                @service_label = MailServiceLabel.create(height: height, weight: weight,
+                                                        length: length, width: width, assign_rule_id: assign_rule.id)
               end
-              @service_label = MailServiceLabel.create(height: height, weight: weight,
-                                                      length: length, width: width, assign_rule_id: assign_rule.id)
-            else
-              quantity = item&.ordered
-              length = item&.channel_product&.product_mapping&.product&.length.to_f * quantity
-              weight = item&.channel_product&.product_mapping&.product&.weight.to_f * quantity
-              width = item&.channel_product&.product_mapping&.product&.width.to_f
-              height = item&.channel_product&.product_mapping&.product&.height.to_f
-              @service_label = MailServiceLabel.create(height: height, weight: weight,
-                                                      length: length, width: width, assign_rule_id: assign_rule.id)
             end
+            order.update(assign_rule_id: assign_rule.id)
           end
-          order.update(assign_rule_id: assign_rule.id)
+        else
+          order.update(assign_rule_id: nil)
         end
       end
     end

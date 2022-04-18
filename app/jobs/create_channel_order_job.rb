@@ -143,10 +143,6 @@ class CreateChannelOrderJob < ApplicationJob
   def assign_rule(order)
     total_weight = 0
     total_postage = order.postage.to_f
-    min_weight = 0
-    max_weight = 0
-    min_postage = 0
-    max_postage = 0
     rule_bonus_score = {}
     carrier_type_multi = []
     type = false
@@ -170,6 +166,10 @@ class CreateChannelOrderJob < ApplicationJob
       carrier_type = (carrier_type_multi&.include? 'hermes') ? 'hermes' : (carrier_type_multi&.include? 'yodal') ? 'yodal' : carrier_type_multi&.last
     end
     MailServiceRule.all.each do |mail_rule|
+      min_weight = 0
+      max_weight = 0
+      min_postage = 0
+      max_postage = 0
       mail_rule.rules.each do |rule|
         if rule.rule_field == 'weight_in_gm'
           operator = rule.rule_operator
@@ -186,7 +186,7 @@ class CreateChannelOrderJob < ApplicationJob
           if max_weight == 0 && min_weight == 0
             type = false
           else
-            type = true if total_weight <= max_weight && total_weight >= min_weight
+            type = true if total_weight.to_i <= max_weight && total_weight.to_i >= min_weight || min_weight > 0 && max_weight == 0 && mail_rule.rules.count.to_i < 2
           end
         elsif rule.rule_field == 'carrier_type'
           operator = rule.rule_operator
