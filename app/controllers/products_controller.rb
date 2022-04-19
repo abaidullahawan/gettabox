@@ -344,18 +344,18 @@ class ProductsController < ApplicationController
   def verify_csv_format(csv)
     found_error = false
     error_message = ''
-    csv.each do |row|
+    csv.each.with_index(2) do |row, index|
       if row['title'].nil?
         found_error = true
-        error_message = 'Title is blank.'
+        error_message = "Title is blank at row number #{index}."
         break
       elsif row['sku'].nil?
         found_error = true
-        error_message = 'Sku is blank.'
+        error_message = "Sku is blank at row number #{index}."
         break
       elsif row['product_type'] == 'single' && row['total_stock'].nil?
         found_error = true
-        error_message = 'Stock is null.'
+        error_message = "Stock is null at row number #{index}."
         break
       end
     end
