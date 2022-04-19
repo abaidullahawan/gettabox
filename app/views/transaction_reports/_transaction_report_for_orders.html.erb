@@ -1,0 +1,73 @@
+<div class="row">
+  <div class="col-xl-12">
+    <div class="card mb-30">
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table m-0 table-hover">
+            <tr>
+              <th class="text-center">Sales Channel</th>
+              <th class="text-center">Customer</th>
+              <th class="text-center">Order ID</th>
+              <th class="text-center">Channel Order ID</th>
+              <th class="text-center">Order Date(order paid)</th>
+              <th class="text-center">Product</th>
+              <th class="text-center">SKU</th>
+              <th class="text-center">Quantity</th>
+              <th class="text-center">Sale Price (GBP) Net</th>
+              <th class="text-center">Cost Price</th>
+              <th class="text-center">Email</th>
+            </tr>
+            <% @channel_orders.each do |order| %>
+              <% order.channel_order_items.each do |product| %>
+                <tr>
+                  <td class="text-center"><%= order.channel_type %></td>
+                  <td class="text-center font-weight-bold"><%=  order.buyer_name %></td>
+                  <td class="text-center"><%= product.channel_order_id %></td>
+                  <td class="text-center"><%= order.order_id %></td>
+                  <td class="text-center"><%= order.created_at.strftime("%m/%d/%Y") %></td>
+                  <% if product.channel_product&.product_mapping&.product&.product_type_single? %>
+                    <td class="text-center"><%= product.channel_product&.product_mapping&.product&.title%></td>
+                    <td class="text-center"><%= product.channel_product&.product_mapping&.product&.sku%></td>
+                    <td class="text-center"><%= product&.ordered.to_i %></td>
+                    <td class="text-center"><%= order.total_amount %></td>
+                    <td class="text-center"><%= product.channel_product&.product_mapping&.product&.cost_price.to_f %></td>
+                  <% else %>
+                    <td class="text-center">
+                      <% product.channel_product&.product_mapping&.product&.multipack_products&.each do |record| %>
+                        <%= record&.child&.title %><br>
+                      <% end %>
+                    </td>
+                    <td class="text-center">
+                      <% product.channel_product&.product_mapping&.product&.multipack_products&.each do |record| %>
+                        <%= record&.child&.sku %><br>
+                      <% end %>
+                    </td>
+                    <td class="text-center">
+                      <% product.channel_product&.product_mapping&.product&.multipack_products&.each do |record| %>
+                        <%= record.quantity * product.ordered.to_i %><br>
+                      <% end %>
+                    </td>
+                    <td class="text-center"><%= order.total_amount %></td>
+                    <td class="text-center">
+                      <% total_cost_price = 0 %>
+                      <% product.channel_product&.product_mapping&.product&.multipack_products&.each do |record| %>
+                        <% qty = record.quantity * product.ordered.to_i %>
+                        <% cost_price = record.child&.cost_price.to_f  %>
+                        <% total_cost_price += qty * cost_price %>
+                      <% end %>
+                      <%= total_cost_price %>
+                    </td>
+                  <% end %>
+                  <td class="text-center"><%= order.channel_type_amazon? ? order['order_data']['BuyerInfo']['BuyerEmail'] : order['order_data']['fulfillmentStartInstructions'].first['shippingStep']['shipTo']['email']%></td>
+                </tr>
+              <% end %>
+            <% end %>
+          </table>
+          <div class="pagination justify-content-center mt-3">
+            <%= paginate @channel_orders, theme: "twitter-bootstrap-4",pagination_class: "pagination-sm",nav_class: "d-inline-b" %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

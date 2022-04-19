@@ -2,74 +2,42 @@
   <div class="col-md-12"><br>
     <div class="row">
       <div class="col-6 form-group">
-        <%= f.label :date_from, "Date From"%>
-        <% if params["/inventory_reports"].present? %>
-          <%= f.date_field :date_from, title: "Select Date From", value: params["/inventory_reports"][:date_from], class:"form-control" %>
-        <% else %>
-          <%= f.date_field :date_from, title: "Select Date From", value: Time.zone.today.strftime("%Y-%m-%d"), class:"form-control" %>
-        <% end %>
+        <%= label_tag :date_from, "Date From"%>
+        <%= params[:date_from].present? ? date_field_tag(:date_from, params[:date_from], class:"form-control") : date_field_tag(:date_from, Time.zone.today.strftime("%Y-%m-%d"), class:"form-control")%>
       </div>
       <div class="col-6 form-group">
-        <%= f.label :date_to, "Date To"%>
-        <% if params["/inventory_reports"].present? %>
-          <%= f.date_field :date_to, title: "Select Date To", value: params["/inventory_reports"][:date_to], class:"form-control" %>
-        <% else %>
-          <%= f.date_field :date_to, title: "Select Date To", value: Time.zone.today.strftime("%Y-%m-%d"), class:"form-control" %>
-        <% end %>
+        <%= label_tag :date_to, "Date To"%>
+        <%= params[:date_to].present? ? date_field_tag(:date_to, params[:date_to], class:"form-control") : date_field_tag(:date_to, Time.zone.today.strftime("%Y-%m-%d"), class:"form-control")%>
       </div>
     </div>
     <div class="row">
       <div class="col-6 form-group">
-        <%= f.label :date_range, "Date Range"%>
-        <% if params["/inventory_reports"].present? %>
-          <%= f.select :date_range, options_for_select(["Today", "Last Week", "This Week", "This Month", "Last Month", "This Year", "Last Year"], params["/inventory_reports"][:date_range]), {}, class:"form-control" %>
-        <% else %>
-          <%= f.select :date_range, options_for_select(["Today", "Last Week", "This Week", "This Month", "Last Month", "This Year", "Last Year"]), {}, class:"form-control" %>
-        <% end %>
+        <%= label_tag :date_range, "Date Range"%>
+        <%= select_tag(:date_range, options_for_select(["Today", "Last Week", "This Week", "This Month", "Last Month", "This Year", "Last Year"], params[:date_range]), class:"form-control") %>
       </div>
       <div class="col-6 form-group">
-        <%= f.label :order_by, "Order By"%>
-        <% if params["/inventory_reports"].present? %>
-          <%= f.select :order_by, options_for_select(["Cover", "Stock", "Sales", "Sales Unit"], params["/inventory_reports"][:order_by]), {}, class:"form-control" %>
-        <% else %>
-          <%= f.select :order_by, options_for_select(["Cover", "Stock", "Sales", "Sales Unit"]), {}, class:"form-control" %>
-        <% end %>
+        <%= label_tag :order_by, "Order By"%>
+        <%= select_tag(:order_by,  options_for_select(["Cover", "Stock", "Sales", "Sales Unit"], params[:order_by]) , class:"form-control") %>
       </div>
     </div>
     <div class="row">
       <div class="col-6 form-group">
-        <%= f.label :asc_desc, "Asc/Desc"%>
-        <% if params["/inventory_reports"].present? %>
-          <%= f.select :asc_desc, options_for_select(@asc_desc.map { |key, value| [value, key]}, params["/inventory_reports"][:asc_desc]), {}, class:"form-control" %>
-        <% else %>
-          <%= f.select :asc_desc, options_for_select(@asc_desc.map { |key, value| [value, key]}), {}, class:"form-control" %>
-        <% end %>
+        <%= label_tag :asc_desc, "Asc/Desc"%>
+        <%= select_tag(:asc_desc, options_for_select(@asc_desc.map { |key, value| [value, key]}, params[:asc_desc]) , class:"form-control") %>
       </div>
       <div class="col-6 form-group">
-        <%= f.label :arrival, "Pending Arrival"%>
-        <% if params["/inventory_reports"].present? %>
-          <%= f.select :arrival, options_for_select(["Include Pending Arrival", "Exclude Pending Arrival"], params["/inventory_reports"][:arrival]), {}, class:"form-control" %>
-        <% else %>
-          <%= f.select :arrival, options_for_select(["Include Pending Arrival", "Exclude Pending Arrival"]), {}, class:"form-control" %>
-        <% end %>
+        <%= label_tag :arrival, "Pending Arrival"%>
+        <%= select_tag(:arrival, options_for_select(["Include Pending Arrival", "Exclude Pending Arrival"], params[:arrival]), class:"form-control") %>
       </div>
     </div>
     <div class="row">
       <div class="col-6 form-group">
-        <%= f.label :channels, "Channels"%>
-        <% if params["/inventory_reports"].present? %>
-          <%= f.select :channels, options_for_select(@sale_channels.map { |key, value| [key.humanize, value]}, params["/inventory_reports"][:channels]),{} , class:"form-control" %>
-        <% else %>
-          <%= f.select :channels, options_for_select(@sale_channels.map { |key, value| [key.humanize, value]}),{} , class:"form-control" %>
-        <% end %>
+        <%= label_tag :channels, "Channels"%>
+        <%= select_tag(:channels, options_for_select(@sale_channels.map { |key, value| [key.humanize, value]}, params[:channels]) , class:"form-control") %>
       </div>
       <div class="col-6 form-group">
-        <%= f.label :supplier, "Supplier"%>
-        <% if params["/inventory_reports"].present? %>
-          <%= f.select :supplier, options_for_select(@suppliers.map { |key, value| [key.humanize, value]}, params["/inventory_reports"][:supplier]), {}, class:"form-control" %>
-        <% else %>
-          <%= f.select :supplier, options_for_select(@suppliers.map { |key, value| [key.humanize, value]}), {}, class:"form-control" %>
-        <% end %>
+        <%= label_tag :supplier, "Supplier"%>
+        <%= select_tag(:supplier, options_for_select(@suppliers.map { |key, value| [key.humanize, value]}, params[:supplier]) , class:"form-control") %>
       </div>
     </div>
     <div class='float-right'>

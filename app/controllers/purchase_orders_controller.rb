@@ -66,8 +66,8 @@ class PurchaseOrdersController < ApplicationController
     pdf = [[@pdf_file, 'Purchase Order']]
     email = @purchase_order.system_user.email
     name = @purchase_order.system_user.name
-    subject = @template.subject
-    body = @template.body
+    subject = @template&.subject
+    body = @template&.body
     PurchaseOrderMailer.send_email(pdf, subject, email, name, body).deliver if email.present?
     @purchase_order.order_status_sent!
   end

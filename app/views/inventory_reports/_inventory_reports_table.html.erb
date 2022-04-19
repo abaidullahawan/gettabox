@@ -1,0 +1,62 @@
+<div class="row">
+  <div class="col-xl-12">
+    <div class="card mb-30">
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table m-0 table-hover">
+            <tr>
+              <th class="text-center">#</th>
+              <th class="text-center">Product Name</th>
+              <th class="text-center">Product SKU</th>
+              <th class="text-center">Sales Units</th>
+              <th class="text-center">Sales £</th>
+              <th class="text-center">Weekly Sales</th>
+              <% if @include_arrivals == true %>
+                <th class="text-center">Pending Arrival</th>
+              <% end %>
+              <th class="text-center">Stock</th>
+              <th class="text-center">Cover(days)</th>
+            </tr>
+            <% @inventory_products_datum&.each do |item| %>
+              <% product = item.last.first[:product] %>
+              <tr>
+                <td class="text-center"><%= product.id %></td>
+                <td class="text-center font-weight-bold"><%= product.title %></td>
+                <td class="text-center"><%= product.sku %></td>
+                <td class="text-center"><%= item.last.pluck(:quantity).sum %></td>
+                <td class="text-center">
+                  <% cost_price = item.last.pluck(:sales) %>
+                  <% quantity = item.last.pluck(:quantity) %>
+                  <% sales = cost_price.zip(quantity).map{|x, y| x.to_f * y}.sum %>
+                  <%= sales.round(2)%>
+                </td>
+                <td class="text-center">
+                  <% number_of_days =  @date.last.split('-').last.to_i - @date.first.split('-').last.to_i + 1%>
+                  <% weekly_sales = (sales.to_f / number_of_days) * 7 %>
+                  <%= weekly_sales.round(2) %>
+                </td>
+                <% if @include_arrivals == true %>
+                  <td class="text-center">
+                  <% pending_arrival = 0 %>
+                  <% product.system_users.last.purchase_orders.where(created_at: @date).each do |purchase_order| %>
+                    <% purchase_order.purchase_order_details.each do |detail| %>
+                      <% pending_arrival += detail.quantity.to_i - detail.missing.to_i - detail.demaged.to_i %>
+                    <% end %>
+                  <% end %>
+                  <%= pending_arrival %></td>
+                <% end %>
+                <td class="text-center"><%= product.total_stock.to_i %></td>
+                <td class="text-center">
+                  <%= ((product.total_stock.to_i + (pending_arrival.present? ? pending_arrival : 0)) / (item.last.pluck(:quantity).sum.to_f / number_of_days)).round(0) %>
+                </td>
+              </tr>
+            <% end %>
+          </table>
+          <div class="pagination justify-content-center mt-3">
+            <%= paginate @inventory_products_datum, theme: "twitter-bootstrap-4",pagination_class: "pagination-sm",nav_class: "d-inline-b" %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

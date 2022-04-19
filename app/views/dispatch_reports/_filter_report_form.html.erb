@@ -1,0 +1,35 @@
+<div class='row'>
+  <div class="col-md-12"><br>
+    <div class="row">
+      <div class="col-6 form-group">
+        <%= label_tag :type, "Type"%>
+        <%= select_tag(:type, options_for_select(["Order", "Product", "Shipment"], params[:type]), class:"form-control") %>
+      </div>
+      <div class="col-6 form-group">
+        <%= label_tag :channels, "Channels"%>
+        <%= select_tag(:channels, options_for_select(@sale_channels.map { |key, value| [key.humanize, value]}, params[:channels]) , class:"form-control") %>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-6 form-group">
+        <%= label_tag :date_from, "Date From"%>
+        <%= params[:date_from].present? ? date_field_tag(:date_from, params[:date_from], class:"form-control") : date_field_tag(:date_from, Time.zone.today.strftime("%Y-%m-%d"), class:"form-control")%>
+      </div>
+      <div class="col-6 form-group">
+        <%= label_tag :date_to, "Date To"%>
+        <%= params[:date_to].present? ? date_field_tag(:date_to, params[:date_to], class:"form-control") : date_field_tag(:date_to, Time.zone.today.strftime("%Y-%m-%d"), class:"form-control")%>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-6 form-group">
+        <%= label_tag :date_range, "Date Range"%>
+        <%= select_tag(:date_range, options_for_select(["Today", "Last Week", "This Week", "This Month", "Last Month", "This Year", "Last Year"], params[:date_range]), class:"form-control") %>
+      </div>
+    </div>
+    <div class='float-right'>
+      <label for="inputState">Per Page</label>
+        <%= select_tag :limit, options_for_select([5, 10, 15, 20], selected: params[:limit] || 10), id: 'change_per_page', class: 'form-control' %>
+        <button type="submit" id="per_page_submit" hidden="hidden"></button>
+    </div>
+  </div>
+</div>

@@ -235,6 +235,9 @@ $(document).on('turbolinks:load', function () {
 
   $('#inventory_export_csv').on('click', function () {
     $('#view_reports').trigger('click')
+    setTimeout(function(){
+      window.location.reload()
+    }, 3000);
   })
 
   $('#export_mapping_table_name').on('change', function () {
