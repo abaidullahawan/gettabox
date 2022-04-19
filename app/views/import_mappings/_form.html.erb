@@ -18,6 +18,7 @@
           <div class="d-flex">
             <div class="form-group">
               <%= label_tag :"#{col_name}" %>
+              <%= '*' if col_name == 'title' || col_name == 'sku' || col_name == 'total_stock' || col_name == 'product_type' %>
             <%= select_tag :"#{col_name}",  options_for_select(header), class: 'chosen-select form-control', prompt: "Select Header"%>
             </div>
           </div>

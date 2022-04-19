@@ -11,7 +11,7 @@ class ImportMappingsController < ApplicationController
     @order = ChannelOrder.new
     @channel_product = ChannelProduct.new
     @tracking = Tracking.new
-    @product_mappings = ImportMapping.where(table_name: 'Product')
+    @product_mappings = ImportMapping.where(table_name: 'Product').order(created_at: :DESC)
     @order_mappings = ImportMapping.where(table_name: 'Channel Order')
     @channel_product_mappings = ImportMapping.where(table_name: 'Channel Product')
     @multi_mappings = ImportMapping.where(mapping_type: 'dual')
