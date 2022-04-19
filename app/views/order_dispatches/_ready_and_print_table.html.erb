@@ -133,19 +133,15 @@
             <% product.channel_product.product_mapping.product&.multipack_products&.each do |record| %>
               <% weight += record&.child&.weight.to_f * record.quantity.to_f * product&.ordered%>
             <% end %>
-            <div class="font-sm d-flex align-items-center" style="width: 3%">
-              <% order.update(total_weight: weight.round(2)) unless order.total_weight.present? %> 
-              <%= order.total_weight %>
-            </div>
           <% else %>
             <% weight += product.channel_product.product_mapping&.product&.weight.to_f * product.ordered.to_f %>
-            <div class="font-sm d-flex align-items-center" style="width: 3%">
-              <% order.update(total_weight: weight.round(2)) unless order.total_weight.present? %>
-              <%= order.total_weight %>
-            </div>
           <% end %>
         <% end %>
       <% end %>
+      <div class="font-sm d-flex align-items-center" style="width: 3%">
+        <% order.update(total_weight: weight.round(2)) unless order.total_weight.present? %>
+        <%= order.total_weight %>
+      </div>
       <div class="font-sm align-items-center" style="width: 8%">
         <% if order.assign_rule.present? %>
           <span class="update-rule-modal click_able_cursor" data-id= "<%= order.id %>"data-index= "<%=index%>">
