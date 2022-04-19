@@ -438,7 +438,7 @@ class OrderDispatchesController < ApplicationController
     orders = ChannelOrder.where(id: params[:orders])
     orders.each do |order|
       no_rule = false
-      total_weight = 0
+      total_weight = order.total_weight.to_i
       total_postage = order.postage.to_f
       rule_bonus_score = {}
       carrier_type_multi = []
@@ -449,11 +449,9 @@ class OrderDispatchesController < ApplicationController
         if item.channel_product&.product_mapping.present?
           if item.channel_product&.product_mapping&.product&.product_type == 'multiple'
             item.channel_product&.product_mapping&.product&.multipack_products.each do |multipack_product|
-              total_weight += multipack_product.child.weight
               carrier_type_multi.push(multipack_product.child&.courier_type)
             end
           else
-            total_weight += item.channel_product&.product_mapping&.product&.weight
             carrier_type = item.channel_product&.product_mapping&.product&.courier_type
           end
         end

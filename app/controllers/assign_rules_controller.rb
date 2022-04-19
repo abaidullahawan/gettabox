@@ -79,14 +79,14 @@ class AssignRulesController < ApplicationController
 
       if product.channel_product.product_mapping.product&.product_type_multiple?
         product.channel_product.product_mapping.product&.multipack_products&.each do |record|
-          @length += record&.child&.length.to_f * record.quantity.to_f
-          @weight += record&.child&.weight.to_f * record.quantity.to_f
+          @length += record&.child&.length.to_f * record.quantity.to_f * product.ordered.to_i
+          @weight += record&.child&.weight.to_f * record.quantity.to_f * product.ordered.to_i
           @height.push(record&.child&.height.to_f)
           @width.push(record&.child&.width.to_f)
         end
       else
-        @length += product.channel_product.product_mapping&.product&.length.to_f
-        @weight += product.channel_product.product_mapping&.product&.weight.to_f
+        @length += product.channel_product.product_mapping&.product&.length.to_f * product.ordered.to_i
+        @weight += product.channel_product.product_mapping&.product&.weight.to_f * product.ordered.to_i
         @height.push( product.channel_product.product_mapping&.product&.height.to_f)
         @width.push( product.channel_product.product_mapping&.product&.width.to_f)
       end
