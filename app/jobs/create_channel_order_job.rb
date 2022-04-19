@@ -151,12 +151,12 @@ class CreateChannelOrderJob < ApplicationJob
     order.channel_order_items.each do |item|
       if item.channel_product&.product_mapping.present?
         if item.channel_product&.product_mapping&.product&.product_type == 'multiple'
-          item.channel_product&.product_mapping&.product&.multipack_products.each do |multipack_product|
-            total_weight += multipack_product.child.weight
+          item.channel_product&.product_mapping&.product&.multipack_products&.each do |multipack_product|
+            total_weight += multipack_product.child.weight.to_f
             carrier_type_multi.push(multipack_product.child&.courier_type)
           end
         else
-          total_weight += item.channel_product&.product_mapping&.product&.weight
+          total_weight += item.channel_product&.product_mapping&.product&.weight.to_f
           carrier_type = item.channel_product&.product_mapping&.product&.courier_type
         end
       end

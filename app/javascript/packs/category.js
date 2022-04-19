@@ -67,8 +67,34 @@ $(document).on('turbolinks:load', function () {
             data: { 'selectedValue': selectedValue },
             dataType: 'json',
             success: function (response) {
-                $('#_inventory_reports_date_from').val(response.start_date);
-                $('#_inventory_reports_date_to').val(response.end_date);
+                $('#date_from').val(response.start_date);
+                $('#date_to').val(response.end_date);
+            }
+          })
+    });
+    $('#date_range').on('change', function () {
+        var selectedValue = $(this).val();
+        $.ajax({
+            url: '/transaction_reports/date_picker_from_to',
+            type: 'GET',
+            data: { 'selectedValue': selectedValue },
+            dataType: 'json',
+            success: function (response) {
+                $('#date_from').val(response.start_date);
+                $('#date_to').val(response.end_date);
+            }
+          })
+    });
+    $('#date_range').on('change', function () {
+        var selectedValue = $(this).val();
+        $.ajax({
+            url: '/dispatch_reports/date_picker_from_to',
+            type: 'GET',
+            data: { 'selectedValue': selectedValue },
+            dataType: 'json',
+            success: function (response) {
+                $('#date_from').val(response.start_date);
+                $('#date_to').val(response.end_date);
             }
           })
     });

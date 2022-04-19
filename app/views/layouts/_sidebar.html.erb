@@ -123,13 +123,45 @@
                     </div>
                 </div>
 
-                <a
-                    class="nav-link <%= active_klass(inventory_reports_path) %>"
-                    href="<%= inventory_reports_path %>"
-                >
-                    <i data-feather="list" class="icon"></i>
-                    <span class="title">Stock Cover Report</span>
-                </a>
+                <div class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <div class="dropdown-title">
+                            <i data-feather="list" class="icon"></i>
+                            <span class="title">
+                                Reports
+                                <i data-feather="chevron-right" class="icon fr"></i>
+                            </span>
+                        </div>
+                    </a>
+
+                    <div class="dropdown-menu">
+
+                        <a
+                            class="dropdown-item <%= active_klass(transaction_reports_path) %>"
+                            href="<%= transaction_reports_path  %>"
+                        >
+                            <i data-feather="chevron-right" class="icon"></i>
+                            Transaction Report
+                        </a>
+
+                        <a
+                            class="dropdown-item <%= active_klass(inventory_reports_path) %>"
+                            href="<%=  inventory_reports_path  %>"
+                        >
+                            <i data-feather="chevron-right" class="icon"></i>
+                            Stock Cover Report
+                        </a>
+
+                         <a
+                            class="dropdown-item <%= active_klass(dispatch_reports_path) %>"
+                            href="<%=  dispatch_reports_path	  %>"
+                        >
+                            <i data-feather="chevron-right" class="icon"></i>
+                            Dispatch Report
+                        </a>
+
+                    </div>
+                </div>
 
                 <a
                     class="nav-link <%= active_klass(discussions_chat_path) %>"

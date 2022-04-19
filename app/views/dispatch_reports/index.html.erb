@@ -1,11 +1,11 @@
 <div class="main-content-header mt-3">
-  <h1>Stock Cover Report</h1>
+  <h1>Dispatch Report</h1>
   <ol class="breadcrumb">
     <li class="breadcrumb-item">
       <a href="<%= home_path %>">Dashboard</a>
     </li>
     <li class="breadcrumb-item active">
-      <span class="active">Stock Cover Report</span>
+      <span class="active">Dispatch Report</span>
     </li>
   </ol>
 </div>
@@ -22,7 +22,7 @@
           <div class="col-md-12"><br>
             <div class="row">
               <div class="col-3">
-                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#filterModal">
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#dispatchReportsFilterModal">
                   Filter Reports
                 </button>
               </div>
@@ -43,25 +43,34 @@
     </div>
   </div>
 </div>
-<% if @inventory_products_datum.present? %>
-  <%= render 'inventory_reports_table' %>
+
+<!-- Table for Product and Order Reports-->
+<% if @channel_products.present?%>
+  <%= render 'dispatch_report_for_products'%>
 <% end %>
-<%= form_tag inventory_reports_path, method: :get do %>
+<% if @channel_orders.present?%>
+  <%= render 'dispatch_reports_for_orders'%>
+<% end %>
+<!-- The End -->
+
+<!-- Report Filters Button -->
+<%= form_tag dispatch_reports_path, method: :get do %>
   <!-- Modal -->
-  <div class="modal fade" id="filterModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal fade" id="dispatchReportsFilterModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="filterModal">Report Filters</h5>
+          <h5 class="modal-title" id="dispatchReportsFilterModal">Report Filters</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
         <div class="modal-body">
-          <%= render 'filter_report_form' %>
+          <%= render 'filter_report_form'%>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <%= hidden_field_tag 'page', params[:page] %>
           <%= submit_tag "View Reports", class:"btn btn-primary" %>
           <%= submit_tag "Export Button", class:"btn btn-primary d-none", id: "view_reports" %>
         </div>
@@ -69,3 +78,4 @@
     </div>
   </div>
 <% end %>
+<!-- The End -->
