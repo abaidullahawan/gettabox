@@ -478,11 +478,6 @@ class OrderDispatchesController < ApplicationController
             when 'less_then'
               max_weight = rule.rule_value.to_i - 1
             end
-            if max_weight == 0 && min_weight == 0
-              type = false
-            else
-              type = true if total_weight.to_i <= max_weight && total_weight.to_i >= min_weight || min_weight > 0 && max_weight == 0 && mail_rule.rules.count.to_i < 2
-            end
           elsif rule.rule_field == 'carrier_type'
             operator = rule.rule_operator
             type = (operator == 'equals' && rule&.rule_value&.downcase == carrier_type&.downcase) ? true : false
@@ -505,6 +500,13 @@ class OrderDispatchesController < ApplicationController
             else
               type = true if total_postage.to_f <= max_postage && total_postage.to_f >= min_postage || rule.rule_value.to_f == total_postage
             end
+          end
+        end
+        if type == false
+          if max_weight == 0 && min_weight == 0
+            type = false
+          else
+            type = true if total_weight.to_i <= max_weight && total_weight.to_i >= min_weight || min_weight > 0 && max_weight == 0 && mail_rule.rules.count.to_i < 2 && total_weight.to_i >= min_weight
           end
         end
         rule_bonus_score[mail_rule.bonus_score.to_i] = mail_rule.id if type
