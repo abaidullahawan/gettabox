@@ -44,12 +44,15 @@
   </div>
 </div>
 
-<!-- Table for Product and Order Reports-->
+<!-- Table for Product, Order and Shipment Reports -->
 <% if @channel_products.present?%>
   <%= render 'dispatch_report_for_products'%>
 <% end %>
 <% if @channel_orders.present?%>
   <%= render 'dispatch_reports_for_orders'%>
+<% end %>
+<% if @channel_shipments.present?%>
+  <%= render 'dispatch_report_for_shipments'%>
 <% end %>
 <!-- The End -->
 
