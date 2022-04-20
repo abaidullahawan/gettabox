@@ -152,12 +152,12 @@ class CreateChannelOrderJob < ApplicationJob
       if item.channel_product&.product_mapping.present?
         if item.channel_product&.product_mapping&.product&.product_type == 'multiple'
           item.channel_product&.product_mapping&.product&.multipack_products&.each do |multipack_product|
-            total_weight += multipack_product.child.weight.to_f
             carrier_type_multi.push(multipack_product.child&.courier_type)
+            total_weight += multipack_product.child.weight.to_i * multipack_product.quantity.to_i * item.ordered.to_i
           end
         else
-          total_weight += item.channel_product&.product_mapping&.product&.weight.to_f
           carrier_type = item.channel_product&.product_mapping&.product&.courier_type
+          total_weight = item.channel_product&.product_mapping&.product.weight.to_i * item.ordered.to_i
         end
       end
     end
@@ -246,9 +246,11 @@ class CreateChannelOrderJob < ApplicationJob
                                                       length: length, width: width, assign_rule_id: assign_rule.id)
             end
           end
+          order.update(total_weight: total_weight) if order.total_weight.nil?
           order.update(assign_rule_id: assign_rule.id)
         end
       else
+        order.update(total_weight: total_weight) if order.total_weight.nil?
         order.update(assign_rule_id: nil)
       end
     end
