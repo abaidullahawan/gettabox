@@ -3,6 +3,7 @@
 # getting new products and map/create
 class ProductMappingsController < ApplicationController
   include NewProduct
+  include AutoAssignRule
 
   before_action :authenticate_user!
   before_action :set_product_mapping, only: %i[show update destroy]
@@ -413,6 +414,7 @@ class ProductMappingsController < ApplicationController
     ids = ChannelOrder.joins(:channel_order_items).includes(:channel_order_items)
                          .where('channel_order_items.channel_product_id': channel_product.id).pluck(:id)
     orders = ChannelOrder.where(id: ids)
+    concern_recalculate_rule(orders)
     orders.each do |order|
       next if order.channel_order_items.map { |i| i.channel_product.status}.any?('unmapped')
 
