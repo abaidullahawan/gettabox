@@ -40,7 +40,7 @@
                     <td class="text-center"><%= order.total_weight.to_i %></td>
                     <td class="text-center"><%= order.total_amount %></td>
                     <td class="text-center"><%= product.channel_product&.product_mapping&.product&.cost_price.to_f %></td>
-                    <td class="text-center"><%= order.postage.present? ? order.postage : 'No Postage' %></td>
+                    <td class="text-center"><%= order.postage.to_f %></td>
                     <td class="text-center"><%= product.channel_product&.product_mapping&.product&.courier_type %></td>
                     <td class="text-center">
                       <% order.trackings.each do |tracking| %>
@@ -73,7 +73,7 @@
                       <%= distributed_cost_price.round(2) %>
                     </td>
                     <td class="text-center"><%= record.child&.cost_price.to_f * record.quantity * product.ordered.to_i %></td>
-                    <td class="text-center"><%= order.postage.present? ? order.postage : 'No Postage' %></td>
+                    <td class="text-center"><%= order.postage.to_f %></td>
                     <td class="text-center"><%= record&.child&.courier_type %></td>
                     <td class="text-center">
                       <% order.trackings.each do |tracking| %>
