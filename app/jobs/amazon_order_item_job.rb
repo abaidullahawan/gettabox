@@ -47,7 +47,7 @@ class AmazonOrderItemJob < ApplicationJob
     result[:body]['payload']['OrderItems'].each do |item|
       channel_item = ChannelOrderItem.find_or_initialize_by(
         channel_order_id: channel_order_id,
-        line_item_id: item['OrderItemId']
+        line_item_id: item['ASIN']
       )
       channel_item.sku = item['SellerSKU']
       channel_item.ordered = item['QuantityOrdered']
