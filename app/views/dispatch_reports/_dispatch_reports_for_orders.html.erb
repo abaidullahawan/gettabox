@@ -20,6 +20,7 @@
               <th class="text-center">Cost Price</th>
               <th class="text-center">Postage</th>
               <th class="text-center">Courier</th>
+              <th class="text-center">Service</th>
               <th class="text-center">Tracking Number</th>
               <th class="text-center">Email</th>
             </tr>
@@ -41,7 +42,16 @@
                     <td class="text-center"><%= order.total_amount %></td>
                     <td class="text-center"><%= product.channel_product&.product_mapping&.product&.cost_price.to_f %></td>
                     <td class="text-center"><%= order.postage.to_f %></td>
-                    <td class="text-center"><%= product.channel_product&.product_mapping&.product&.courier_type %></td>
+                    <td class="text-center">
+                      <% order.trackings.each do |tracking| %>
+                        <%= "'#{tracking.carrier}'" %>
+                      <% end %>
+                    </td>
+                    <td class="text-center">
+                      <% order.trackings.each do |tracking| %>
+                        <%= "'#{tracking.service}'" %>
+                      <% end %>
+                    </td>
                     <td class="text-center">
                       <% order.trackings.each do |tracking| %>
                         <%= "'#{tracking.tracking_no}'" %>
@@ -85,7 +95,16 @@
                       <%= total_cost_price %>
                     </td>
                     <td class="text-center"><%= order.postage.to_f %></td>
-                    <td class="text-center"><%= product.channel_product&.product_mapping&.product&.courier_type %></td>
+                    <td class="text-center">
+                      <% order.trackings.each do |tracking| %>
+                        <%= "'#{tracking.carrier}'" %>
+                      <% end %>
+                    </td>
+                    <td class="text-center">
+                      <% order.trackings.each do |tracking| %>
+                        <%= "'#{tracking.service}'" %>
+                      <% end %>
+                    </td>
                     <td class="text-center">
                       <% order.trackings.each do |tracking| %>
                         <%= "'#{tracking.tracking_no}'" %>
