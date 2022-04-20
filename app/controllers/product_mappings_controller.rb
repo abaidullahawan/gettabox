@@ -438,6 +438,7 @@ class ProductMappingsController < ApplicationController
     product.multipack_products.each do |multi_pack_log|
       multi_pack_log.child.update(change_log: "Product Mapped, #{multi_pack_log.child.sku}, #{channel_product.item_sku}, Mapped, #{channel_product.listing_id}, #{multi_pack_log.child.inventory_balance}")
     end
+    concern_recalculate_rule(orders)
     orders.each do |order|
       order.update(stage: 'ready_to_dispatch')
       product.multipack_products.each do |multi_pack_log|

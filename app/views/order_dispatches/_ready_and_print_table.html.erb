@@ -126,20 +126,7 @@
           <% end %>
         </div>
       </div>
-      <% weight = 0%>
-      <% order.channel_order_items.each do |product|%>
-        <% if product.channel_product&.product_mapping.present? %>
-          <% if product.channel_product.product_mapping.product&.product_type_multiple? %>
-            <% product.channel_product.product_mapping.product&.multipack_products&.each do |record| %>
-              <% weight += record&.child&.weight.to_f * record.quantity.to_f * product&.ordered%>
-            <% end %>
-          <% else %>
-            <% weight += product.channel_product.product_mapping&.product&.weight.to_f * product.ordered.to_f %>
-          <% end %>
-        <% end %>
-      <% end %>
       <div class="font-sm d-flex align-items-center" style="width: 3%">
-        <% order.update(total_weight: weight.round(2)) unless order.total_weight.present? %>
         <%= order.total_weight %>
       </div>
       <div class="font-sm align-items-center" style="width: 8%">

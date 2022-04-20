@@ -7,7 +7,8 @@ module AutoAssignRule
   def concern_recalculate_rule(orders)
     orders.each do |order|
       no_rule = false
-      total_weight = order.total_weight.to_i
+      total_weight = order.total_weight
+      total_weight_1 = 0
       total_postage = order.postage.to_f
       rule_bonus_score = {}
       carrier_type_multi = []
@@ -19,12 +20,15 @@ module AutoAssignRule
           if item.channel_product&.product_mapping&.product&.product_type == 'multiple'
             item.channel_product&.product_mapping&.product&.multipack_products.each do |multipack_product|
               carrier_type_multi.push(multipack_product.child&.courier_type)
+              total_weight_1 += multipack_product.child.weight.to_i * multipack_product.quantity.to_i * item.ordered.to_i
             end
           else
             carrier_type = item.channel_product&.product_mapping&.product&.courier_type
+            total_weight_1 += item.channel_product&.product_mapping&.product.weight.to_i * item.ordered.to_i
           end
         end
       end
+      total_weight = total_weight_1 if total_weight.nil?
       carrier_type_multi.map {|v| v.downcase! if v.is_a? String}
       if carrier_type.blank?
         carrier_type = (carrier_type_multi&.include? 'hermes') ? 'hermes' : (carrier_type_multi&.include? 'yodal') ? 'yodal' : carrier_type_multi&.last
@@ -110,9 +114,11 @@ module AutoAssignRule
                                                         length: length, width: width, assign_rule_id: assign_rule.id)
               end
             end
+            order.update(total_weight: total_weight) if order.total_weight.nil?
             order.update(assign_rule_id: assign_rule.id)
           end
         else
+          order.update(total_weight: total_weight) if order.total_weight.nil?
           order.update(assign_rule_id: nil)
         end
       end
