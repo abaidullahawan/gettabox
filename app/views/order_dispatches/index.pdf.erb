@@ -71,7 +71,7 @@
           <td class="text-center"><%= item&.channel_product&.product_mapping&.product&.title %></td>
           <td class="text-center"><%= item&.channel_product&.product_mapping&.product&.sku %></td>
           <td class="text-center" ><%= item&.ordered %></td>
-          <td class="text-center" ><%= item&.channel_product&.product_mapping&.product&.product_location.location %></td>
+          <td class="text-center" ><%= item&.channel_product&.product_mapping&.product&.product_location&.location %></td>
         </tr>
       <% end %>
     <% end %>
