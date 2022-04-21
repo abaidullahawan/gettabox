@@ -41,11 +41,11 @@
               </tr>
               <tr>
                 <td class="text-left">Courier service</td>
-                <td> <%= batch_order.assign_rule.mail_service_rule.courier.name %> </td>
+                <td> <%= batch_order.assign_rule&.mail_service_rule&.courier&.name %> </td>
               </tr>
               <tr>
                 <td class="text-left">Courier rule</td>
-                <td><%= batch_order.assign_rule.mail_service_rule.rule_name %></td>
+                <td><%= batch_order.assign_rule&.mail_service_rule&.rule_name %></td>
               </tr>
               <tr>
                 <td class="text-left">Total order weight</td>
@@ -99,7 +99,7 @@
              <div class="form-group col-md-12">
               <%= f.label :mail_service_rule %>
               <%= f.select :mail_service_rule, options_for_select(MailServiceRule.all.collect { | c | [c.rule_name, c.id] }), {include_blank: 'Select Rule'}, class: "form-control" %>
-              <%= f.hidden_field :assign_rule_id, value: batch_order.assign_rule.id %>
+              <%= f.hidden_field :assign_rule_id, value: batch_order.assign_rule&.id %>
               <%= f.hidden_field :batch_order_id, value: batch_order.id %>
             </div>
           </div>

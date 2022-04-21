@@ -32,4 +32,7 @@ class OrderBatch < ApplicationRecord
     prepend: 'Prepend',
     append: 'Append'
   }, _prefix: true
+
+  scope :batches_only, -> { where(preset_type: 'batch_name') }
+
 end

@@ -7,7 +7,7 @@ class PickAndPacksController < ApplicationController
 
   def index
     @pick_and_pack = OrderBatch.new
-    @q = OrderBatch.ransack(params[:q])
+    @q = OrderBatch.batches_only.ransack(params[:q])
     @pick_and_packs = @q.result(distinct: true).where.not(batch_name: 'unbatch orders').order(created_at: :desc).page(params[:page]).per(params[:limit])
     export_csv(@pick_and_packs) if params[:export_csv].present?
     @user_list = User.all
@@ -42,8 +42,8 @@ class PickAndPacksController < ApplicationController
   end
 
   def start_packing
-    @batches = OrderBatch.joins(:channel_orders).uniq
-    @q = OrderBatch.ransack(params[:q])
+    @batches = OrderBatch.batches_only.joins(:channel_orders).uniq
+    @q = OrderBatch.batches_only.ransack(params[:q])
     @pick_and_packs = @q.result(distinct: true).order(created_at: :desc).page(params[:page]).per(params[:limit])
     if params[:q].present?
       @orders = @pick_and_packs.last&.channel_orders
@@ -55,8 +55,9 @@ class PickAndPacksController < ApplicationController
   end
 
   def scan_barcode
-    pick_and_packs = OrderBatch.ransack(params[:q]).result(distinct: true)
+    pick_and_packs = OrderBatch.batches_only.ransack(params[:q]).result(distinct: true)
     orders = pick_and_packs.last&.channel_orders
+    byebug
     tracking_order = orders.joins(:trackings).find_by('trackings.tracking_no': params[:tracking_no])
     local_products(tracking_order)
 
@@ -93,7 +94,7 @@ class PickAndPacksController < ApplicationController
   end
 
   def pick_all_items
-    pick_and_packs = OrderBatch.ransack(params[:q]).result(distinct: true)
+    pick_and_packs = OrderBatch.batches_only.ransack(params[:q]).result(distinct: true)
     orders = pick_and_packs.last&.channel_orders
     tracking_order = orders.joins(:trackings).find_by('trackings.tracking_no': params[:tracking_no])
     local_products(tracking_order)
