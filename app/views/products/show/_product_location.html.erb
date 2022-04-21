@@ -7,7 +7,7 @@
     <div class="list-group-item">
       <div class='row'>
         <h5 class="fs-14 mb-1 col-4">Location</h5>
-        <p class="m-0 col-8"><%= @product.product_location.location if  @product.product_location.present? %></p>
+        <p class="m-0 col-8"><%= @product.product_location&.location if  @product.product_location.present? %></p>
       </div>
     </div>
   </div>

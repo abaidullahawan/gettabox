@@ -54,7 +54,7 @@ class ChannelOrder < ApplicationRecord
   end
 
   def self.product_location(product)
-    ChannelProduct.find_by(item_sku: product.sku)&.product_mapping&.product&.product_location.location
+    ChannelProduct.find_by(item_sku: product.sku)&.product_mapping&.product&.product_location&.location
   end
 
   # def self.picture_check(product)
