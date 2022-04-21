@@ -57,7 +57,6 @@ class PickAndPacksController < ApplicationController
   def scan_barcode
     pick_and_packs = OrderBatch.batches_only.ransack(params[:q]).result(distinct: true)
     orders = pick_and_packs.last&.channel_orders
-    byebug
     tracking_order = orders.joins(:trackings).find_by('trackings.tracking_no': params[:tracking_no])
     local_products(tracking_order)
 
