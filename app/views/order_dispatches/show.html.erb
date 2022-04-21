@@ -41,7 +41,7 @@
             <tbody>
               <tr>
                 <td scope="col"><%= @order.id %></td>
-                <td scope="col" class="btn" data-link="<%= customer_path(@order.system_user.id) %>" ><%= @order.system_user&.name %></td>
+                <td scope="col" class="btn" data-link="<%= customer_path(@order.system_user.id)  if @order.system_user.present? %>" ><%= @order.system_user&.name %></td>
                 <td scope="col"><%= @order.order_id %></td>
                 <td scope="col"><%= @order.created_at&.strftime('%m/%d/%Y') %></td>
                 <td scope="col"></td>
@@ -59,6 +59,7 @@
   <button type="button" class="btn btn-primary float-right mr-2" data-toggle="modal" data-target="#create-replacement-order-modal">
     Replacement Order
   </button>
+  <%= link_to 'Download Invoice', invoice_order_dispatches_path(id: @order.id), class: 'btn btn-primary float-right mr-2' if @order.system_user.present? %>
 </div>
 
 <div class="row">
