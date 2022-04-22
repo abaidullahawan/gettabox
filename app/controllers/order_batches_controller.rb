@@ -8,7 +8,7 @@ class OrderBatchesController < ApplicationController
 
   def create
     # @order_batch = OrderBatch.find_or_initialize_by(batch_name: params[:order_batch][:batch_name])
-    orders = ChannelOrder.where(id: params[:order_ids].split(','))
+    orders = ChannelOrder.joins(:channel_order_items).where(id: params[:order_ids].split(',')).order(sku: :asc)
     if params['commit'].eql? 'save'
       @order_batch = OrderBatch.create(order_batch_params)
       @order_batch.update(pick_preset: params['name_of_template'], preset_type: 'pick_preset')
