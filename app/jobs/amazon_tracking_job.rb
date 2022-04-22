@@ -10,6 +10,7 @@ class AmazonTrackingJob < ApplicationJob
     generate_refresh_token_amazon if @refresh_token.present? && remainaing_time == false
 
     order_ids = _args.last[:order_ids]
+    order_ids = ChannelOrder.where(id: order_ids, channel_type: 'amazon').pluck(:id)
     return 'Orders not found' unless order_ids.present?
 
     url = "https://sellingpartnerapi-eu.amazon.com/feeds/2021-06-30/documents"
