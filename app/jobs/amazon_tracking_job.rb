@@ -16,13 +16,15 @@ class AmazonTrackingJob < ApplicationJob
     document ={
       contentType: "text/xml; charset=UTF-8"
     }
-    document_response = AmazonCreateReportService.create_report(@refresh_token.access_token, url, document)
-    return document_response[:error] unless document_response[:status]
+    order_ids.each do |order_id|
+      document_response = AmazonCreateReportService.create_report(@refresh_token.access_token, url, document)
+      return document_response[:error] unless document_response[:status]
 
-    result = upload_document(@refresh_token.access_token, document_response[:body]['url'], order_ids)
-    return result[:error] unless result[:status]
+      result = upload_document(@refresh_token.access_token, document_response[:body]['url'], order_id)
+      return result[:error] unless result[:status]
 
-    create_feed_response(document_response, order_ids)
+      create_feed_response(document_response, order_id)
+    end
   end
 
   def generate_refresh_token_amazon
@@ -37,8 +39,8 @@ class AmazonTrackingJob < ApplicationJob
     )
   end
 
-  def upload_document(access_token, url, order_ids)
-    orders = ChannelOrder.where(id: order_ids, channel_type: 'amazon')
+  def upload_document(access_token, url, id)
+    order = ChannelOrder.find_by(id: id, channel_type: 'amazon')
 
     xml_data = Builder::XmlMarkup.new
     xml_data.instruct!
@@ -49,20 +51,19 @@ class AmazonTrackingJob < ApplicationJob
       end
       xml_data.MessageType 'OrderFulfillment'
       xml_data.Message do
-        orders.each.with_index(1) do |order, index|
-          carrier = order.trackings&.first&.carrier
-          service = order.trackings&.first&.service
-          tracking_no = order.trackings&.first&.tracking_no
-          order_id = order.order_id
-          xml_data.MessageID index
-          xml_data.OrderFulfillment do
-            xml_data.AmazonOrderID order_id
-            xml_data.FulfillmentDate Time.now.strftime('%Y-%m-%dT%H:%M:%S')
-            xml_data.FulfillmentData do
-              xml_data.CarrierCode carrier
-              xml_data.ShippingMethod service
-              xml_data.ShipperTrackingNumber tracking_no
-            end
+        carrier = order.trackings&.first&.carrier
+        service = order.trackings&.first&.service
+        tracking_no = order.trackings&.first&.tracking_no
+        order_id = order.order_id
+        time = Time.zone.now.dst? ? (Time.zone.now - 1.hour).strftime('%Y-%m-%dT%H:%M:%S') : Time.zone.now.strftime('%Y-%m-%dT%H:%M:%S')
+        xml_data.MessageID '1'
+        xml_data.OrderFulfillment do
+          xml_data.AmazonOrderID order_id
+          xml_data.FulfillmentDate time
+          xml_data.FulfillmentData do
+            xml_data.CarrierCode carrier
+            xml_data.ShippingMethod service
+            xml_data.ShipperTrackingNumber tracking_no
           end
         end
       end
@@ -87,7 +88,7 @@ class AmazonTrackingJob < ApplicationJob
     { status: false, error: result['error_description'] }
   end
 
-  def create_feed_response(result, order_ids)
+  def create_feed_response(result, order_id)
     url = "https://sellingpartnerapi-eu.amazon.com/feeds/2021-06-30/feeds"
     document = {
       feedType: "POST_ORDER_FULFILLMENT_DATA",
@@ -99,7 +100,7 @@ class AmazonTrackingJob < ApplicationJob
     feed_response = AmazonCreateReportService.create_report(@refresh_token.access_token, url, document)
     return feed_response[:error] unless feed_response[:status]
 
-    channel_updated(order_ids)
+    channel_updated(order_id)
     # get_feed(feed_response[:body]['feedId'])
   end
 
@@ -111,7 +112,7 @@ class AmazonTrackingJob < ApplicationJob
     # create_order_response(result, url)
   end
 
-  def channel_updated(order_ids)
-    ChannelOrder.where(order_id: order_ids).update_all(update_channel: true)
+  def channel_updated(order_id)
+    ChannelOrder.find_by(id: order_id).update(update_channel: true)
   end
 end
