@@ -23,22 +23,22 @@ class MultiFileMappingJob < ApplicationJob
     # begin
       # @csv = CSV.generate(headers: true) do |csv|
       name = "multi-mapping--#{multifile.created_at.strftime('%d-%m-%Y @ %H:%M:%S')}"
-      csv = CSV.open("/home/deploy/channeldispatch/current/public/uploads/#{name}", "wb") do |csv|
+      csv = CSV.open("/home/deploy/channeldispatch/current/tmp/#{name}", "wb") do |csv|
         csv << attributes
         non_matching1 = []
         non_matching2 = []
         matching1 = []
         matching = []
         if mapping.mapping_rule.present?
-          case_sensitivity(spreadsheet1, spreadsheet2, matchable, mapping, csv, attributes)
+          case_sensitivity(spreadsheet1, spreadsheet2, matchable, mapping, csv, attribute_data)
         else
           spreadsheet1.each do |record1|
             matchable.each do |matched|
               matching = spreadsheet2.select { |row| row if record1[matched[0].gsub('_', ' ')] == row[matched[1].gsub('_', ' ')]}
               next non_matching1 << [record1] unless matching.present?
 
-              row1 = record1.values_at(*attributes).compact
-              row2 = matching.first.values_at(*attributes).compact
+              row1 = record1.values_at(*attribute_data).compact
+              row2 = matching.first.values_at(*attribute_data).compact
               row = row1 + row2
               csv << row
               matching1 << matching
