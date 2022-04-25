@@ -88,8 +88,18 @@ class OrderBatchesController < ApplicationController
       @csv = CSV.generate(headers: true) do |csv|
         csv << attributes
         orders.each do |order|
+          product_sku = []
           next unless order.assign_rule.mail_service_rule.export_mapping_id == rule
 
+          order&.channel_order_items&.each do |item|
+            if item.channel_product&.product_mapping&.product&.product_type == 'multiple'
+              item.channel_product&.product_mapping&.product&.multipack_products.each do |multipack_product|
+                product_sku << multipack_product&.child&.sku
+              end
+            else
+              product_sku << item.channel_product&.product_mapping&.product&.sku
+            end
+          end
           # order.update(stage: 'ready_to_print')
           order_csv = channel_order_data.values.map { |attr| order.send(attr) }
           item_csv = channel_order_item_data.values.map { |attr| order.channel_order_items.first.send(attr) }
@@ -104,6 +114,7 @@ class OrderBatchesController < ApplicationController
             row[6] = weigth_label_csv.width.to_f
             row[7] = weigth_label_csv.length.to_f
             row[2] = "#{row[2]} copy#{index}" if index.positive?
+            row[17] = product_sku.join(",").gsub(",", " + ")
             csv << row
           end
         end
