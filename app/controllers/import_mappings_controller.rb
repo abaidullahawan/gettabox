@@ -26,7 +26,7 @@ class ImportMappingsController < ApplicationController
     @system_user_export_mappings = ExportMapping.where(table_name: 'SystemUser')
     @courier_csv_exports = ExportMapping.where(table_name: 'Courier csv export')
     @consolidations = ImportMapping.where(table_name: 'consolidation')
-    @multifile_mapping = Dir[Rails.root.join('public/uploads/*').to_s]
+    @multifile_mapping = Dir[Rails.root.join('tmp/*').to_s]
     @multifile_mapping_filename = MultifileMapping.all
   end
 
