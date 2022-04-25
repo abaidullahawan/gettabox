@@ -114,7 +114,7 @@ class OrderBatchesController < ApplicationController
             row[6] = weigth_label_csv.width.to_f
             row[7] = weigth_label_csv.length.to_f
             row[2] = "#{row[2]} copy#{index}" if index.positive?
-            row[17] = product_sku
+            row[17] = product_sku.join(",").gsub(",", " + ")
             csv << row
           end
         end
