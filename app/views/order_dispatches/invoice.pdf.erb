@@ -31,18 +31,28 @@
   <h5 class="text-center mt-3">We look forward to doing business with you again.</h5>
   <div class="flex mt-3">
     <div class="flex col-6">
-      <% @addresses.each do |address| %>
+      <%# <% @addresses.each do |address| %>
         <div class="col-6">
-          <h5><b><%= address.address_title %> address:</b></h5>
-          <h5><%= address.name || @order.system_user.name %></h5>
-          <h5><%= address.company%></h5>
-          <h5><%= address.address%></h5>
-          <h5><%= address.postcode%></h5>
-          <h5><%= address.region%></h5>
-          <h5><%= address.city%></h5>
-          <h5><%= address.country%></h5>
+          <h5><b><%= @invoice_address.address_title.capitalize %> Address:</b></h5>
+          <h5><%= @invoice_address.name || @order.system_user.name %></h5>
+          <h5><%= @invoice_address.company%></h5>
+          <h5><%= @invoice_address.address%></h5>
+          <h5><%= @invoice_address.postcode%></h5>
+          <h5><%= @invoice_address.region%></h5>
+          <h5><%= @invoice_address.city%></h5>
+          <h5><%= @invoice_address.country%></h5>
         </div>
-      <% end %>
+        <div class="col-6">
+          <h5><b><%= @delivery_address.address_title.capitalize %> Address:</b></h5>
+          <h5><%= @delivery_address.name || @order.system_user.name %></h5>
+          <h5><%= @delivery_address.company%></h5>
+          <h5><%= @delivery_address.address%></h5>
+          <h5><%= @delivery_address.postcode%></h5>
+          <h5><%= @delivery_address.region%></h5>
+          <h5><%= @delivery_address.city%></h5>
+          <h5><%= @delivery_address.country%></h5>
+        </div>
+      <%# <% end %>
     </div>
    <div class="col-6">
       <div class="flex">
