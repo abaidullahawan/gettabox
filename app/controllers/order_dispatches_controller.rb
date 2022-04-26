@@ -444,7 +444,7 @@ class OrderDispatchesController < ApplicationController
     @order = ChannelOrder.find_by(id: params[:id])
     @addresses = @order.system_user&.addresses
     @delivery_address = @addresses&.where(address_title: 'delivery').last
-    @invoice_address = @addresses&.where(address_title: 'admin')
+    @invoice_address = @addresses&.where(address_title: 'admin').last
     request.format = 'pdf'
     respond_to do |format|
       format.pdf do
