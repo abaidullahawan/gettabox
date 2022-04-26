@@ -83,9 +83,9 @@ class OrderBatchesController < ApplicationController
         mail_service_label_data[key] = attribute if MailServiceLabel.column_names.excluding(to_be_ignored).include? attribute
         mail_service_rule_data[key] = attribute if MailServiceRule.column_names.excluding(to_be_ignored).include? attribute
       end
-      attributes = @export_mapping.mapping_data.compact_blank.keys
+      headers = @export_mapping.mapping_data.compact_blank.keys
       @csv = CSV.generate(headers: true) do |csv|
-        csv << attributes
+        csv << headers
         orders.each do |order|
           product_sku = []
           next unless order.assign_rule.mail_service_rule.export_mapping_id == rule
@@ -110,7 +110,7 @@ class OrderBatchesController < ApplicationController
           order.assign_rule.mail_service_labels.each_with_index do |weigth_label_csv, index|
             row = []
             all_datum.each do |key, value|
-              row[@export_mapping.mapping_data.compact_blank.keys.find_index(key)] =
+              row[headers.find_index(key)] =
                 case key
                 when 'Weight'
                   weigth_label_csv.weight.to_f / 1000
