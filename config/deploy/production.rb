@@ -1,7 +1,13 @@
 # frozen_string_literal: true
 
-server '142.93.32.58', user: 'deploy', roles: %w[app db web]
-
+# server '142.93.32.58', user: 'deploy', roles: %w[app db web]
+set :branch, 'main'
+set :branch ,fetch(:branch, 'main')
+set :stage, :production
+set :rails_env, :production
+server "142.93.32.58",
+  user: "deploy",
+  roles: %w{app db web}
 # server-based syntax
 # ======================
 # Defines a single server with a list of roles and multiple properties.
