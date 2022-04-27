@@ -19,6 +19,11 @@ class OrderBatchesController < ApplicationController
       # orders.update_all(stage: 'ready_to_print', order_batch_id: @order_batch.id)
     elsif check_rule(orders.first) && order_batch_params[:print_courier_labels].to_i.positive?
       courier_csv_export(orders)
+      if orders.first.assign_rule.mail_service_rule.tracking_import.eql? false
+        update_channels if order_batch_params[:update_channels].to_i.positive?
+        mark_order_as_dispatched if order_batch_params[:mark_order_as_dispatched].to_i.positive?
+        update_batch if order_batch_params[:mark_as_batch_name].to_i.positive?
+      end
     else
       flash[:alert] = 'Only Manual Dispatch orders can be printed'
       redirect_to order_dispatches_path(order_filter: 'ready')
@@ -157,6 +162,7 @@ class OrderBatchesController < ApplicationController
 
   def print_packing_list
     order_ids = params[:order_ids]
+    order_ids = order_ids.split(',')
     multiple_products = ChannelOrderItem.where(channel_order_id: order_ids).joins(channel_product: [product_mapping: :product]).where("products.product_type": "multiple").uniq
     single_products = ChannelOrderItem.where(channel_order_id: order_ids).joins(channel_product: [product_mapping: :product]).where("products.product_type": "single").uniq
     products = []
@@ -224,5 +230,18 @@ class OrderBatchesController < ApplicationController
 
     flash[:notice] = 'Order completed successfully.'
     redirect_to request.referrer
+  end
+
+  def update_batch
+    order_ids = params[:order_ids]
+    session[:batch_params]['batch_name'] = 'unbatch orders' if session[:batch_params]['mark_as_batch_name'].to_i.zero?
+    batch = OrderBatch.find_or_initialize_by(batch_name: session[:batch_params]['batch_name'])
+    update_session = session[:batch_params].merge(preset_type: 'batch_name')
+    batch.update(update_session)
+    order_ids.each do |id|
+      order = ChannelOrder.find_by(id: id)
+      order.update(stage: 'ready_to_print', order_batch_id: batch.id, change_log: "Order Exported, #{order.id}, #{order.order_id}, #{current_user.personal_detail.full_name}")
+      order.update(change_log: "Channel Updated, #{order.id}, #{order.order_id}, #{current_user.personal_detail&.full_name}") if batch.update_channels
+    end
   end
 end
