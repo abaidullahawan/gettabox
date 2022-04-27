@@ -425,7 +425,11 @@ $(document).on('turbolinks:load', function () {
   })
 
   $('.upload_trackings').on('click', function () {
-    $('.upload-trackings').modal('show')
+    var object_ids = $('input[name="object_ids[]"]:checked')
+    var tracking = object_ids.map(function (i, e) { return e.dataset.tracking }).toArray();
+    if (tracking[0] == 'true') {
+      $('.upload-trackings').modal('show')
+    }
   })
 
   $('.upload-trackings').on('shown.bs.modal', function () {
