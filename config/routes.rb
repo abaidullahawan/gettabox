@@ -187,6 +187,7 @@ Rails.application.routes.draw do
       post 'season_by_name', to: 'pick_and_packs#search_season_by_name'
       get 'pick_all_items', to: 'pick_and_packs#pick_all_items'
       get 'scan_barcode', to: 'pick_and_packs#scan_barcode'
+      get 'print_packing_list', to: 'pick_and_packs#print_packing_list'
     end
   end
 

@@ -16,10 +16,11 @@ class OrderBatchesController < ApplicationController
       print_packing_list if order_batch_params[:print_packing_list].to_i.positive?
       update_channels if order_batch_params[:update_channels].to_i.positive?
       mark_order_as_dispatched if order_batch_params[:mark_order_as_dispatched].to_i.positive?
+      update_batch if order_batch_params[:mark_as_batch_name].to_i.positive?
       # orders.update_all(stage: 'ready_to_print', order_batch_id: @order_batch.id)
     elsif check_rule(orders.first) && order_batch_params[:print_courier_labels].to_i.positive?
       courier_csv_export(orders)
-      if orders.first.assign_rule.mail_service_rule.tracking_import.eql? false
+      unless orders.first.assign_rule.mail_service_rule.tracking_import
         update_channels if order_batch_params[:update_channels].to_i.positive?
         mark_order_as_dispatched if order_batch_params[:mark_order_as_dispatched].to_i.positive?
         update_batch if order_batch_params[:mark_as_batch_name].to_i.positive?
@@ -234,7 +235,8 @@ class OrderBatchesController < ApplicationController
 
   def update_batch
     order_ids = params[:order_ids]
-    session[:batch_params]['batch_name'] = 'unbatch orders' if session[:batch_params]['mark_as_batch_name'].to_i.zero?
+    order_ids = order_ids.split(',')
+    session[:batch_params]['batch_name'] = 'unbatch orders' if session[:batch_params]['batch_name'].empty?
     batch = OrderBatch.find_or_initialize_by(batch_name: session[:batch_params]['batch_name'])
     update_session = session[:batch_params].merge(preset_type: 'batch_name')
     batch.update(update_session)
