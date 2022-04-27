@@ -16,14 +16,14 @@ class OrderBatchesController < ApplicationController
       print_packing_list if order_batch_params[:print_packing_list].to_i.positive?
       update_channels if order_batch_params[:update_channels].to_i.positive?
       mark_order_as_dispatched if order_batch_params[:mark_order_as_dispatched].to_i.positive?
-      update_batch if order_batch_params[:mark_as_batch_name].to_i.positive?
+      update_batch
       # orders.update_all(stage: 'ready_to_print', order_batch_id: @order_batch.id)
     elsif check_rule(orders.first) && order_batch_params[:print_courier_labels].to_i.positive?
       courier_csv_export(orders)
       unless orders.first.assign_rule.mail_service_rule.tracking_import
         update_channels if order_batch_params[:update_channels].to_i.positive?
         mark_order_as_dispatched if order_batch_params[:mark_order_as_dispatched].to_i.positive?
-        update_batch if order_batch_params[:mark_as_batch_name].to_i.positive?
+        update_batch
       end
     else
       flash[:alert] = 'Only Manual Dispatch orders can be printed'
