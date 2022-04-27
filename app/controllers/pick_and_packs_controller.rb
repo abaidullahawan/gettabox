@@ -92,6 +92,36 @@ class PickAndPacksController < ApplicationController
     )
   end
 
+  def print_packing_list
+    order_ids = OrderBatch.find_by(batch_name: params[:batch_name]).channel_orders.pluck(:id)
+    multiple_products = ChannelOrderItem.where(channel_order_id: order_ids).joins(channel_product: [product_mapping: :product]).where("products.product_type": "multiple").uniq
+    single_products = ChannelOrderItem.where(channel_order_id: order_ids).joins(channel_product: [product_mapping: :product]).where("products.product_type": "single").uniq
+    products = []
+    multiple_products.each do |multiple_product|
+      multiple_product.channel_product.product_mapping.product.multipack_products.each do |multi|
+        product = multi.child
+        # quantity = multi.quantity.to_f * (product.pack_quantity.nil? ? 1 : product.pack_quantity.to_f)
+        # products << { sku: product.sku, product: product, quantity: quantity * multiple_product.ordered }
+        products << { sku: product.sku, product: product, quantity: multi.quantity.to_f * multiple_product.ordered }
+      end
+    end
+
+    single_products.each do |single_product|
+      product = single_product.channel_product.product_mapping.product
+      # quantity = single_product.ordered * (product.pack_quantity.nil? ? 1 : product.pack_quantity.to_f)
+      # products << { sku: product.sku, product: product, quantity: quantity }
+      products << { sku: product.sku, product: product, quantity: single_product.ordered.to_i }
+    end
+
+    @products_group = products.group_by { |d| d[:sku] }
+    request.format = 'pdf'
+    respond_to do |format|
+      format.pdf do
+        render pdf: 'file.pdf', viewport_size: '1280x1024', template: 'order_dispatches/channel_product.pdf.erb'
+      end
+    end
+  end
+
   def pick_all_items
     pick_and_packs = OrderBatch.batches_only.ransack(params[:q]).result(distinct: true)
     orders = pick_and_packs.last&.channel_orders
