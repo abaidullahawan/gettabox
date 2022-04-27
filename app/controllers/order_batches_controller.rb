@@ -236,7 +236,7 @@ class OrderBatchesController < ApplicationController
   def update_batch
     order_ids = params[:order_ids]
     order_ids = order_ids.split(',')
-    session[:batch_params]['batch_name'] = 'unbatch orders' if session[:batch_params]['batch_name'].empty?
+    session[:batch_params]['batch_name'] = 'unbatch orders' if session[:batch_params]['mark_as_batch_name'].to_i.zero?
     batch = OrderBatch.find_or_initialize_by(batch_name: session[:batch_params]['batch_name'])
     update_session = session[:batch_params].merge(preset_type: 'batch_name')
     batch.update(update_session)
