@@ -17,8 +17,11 @@
     <div class="card mb-30">
       <div class="card-body">
         <div class="d-flex mb-2">
-          <%= link_to "Print Packing List", print_packing_list_pick_and_packs_path(batch_name: params[:q].try(:[], :batch_name_eq)) , id: "print_packing_list_id", class: "btn btn-primary float-right ml-auto" %>
-          <%= search_form_for @q, url: start_packing_pick_and_packs_path, method: :get  do |f| %>
+          <% if params[:q].try(:[], :batch_name_eq).present? %>
+            <%= link_to "Print Packing List", print_packing_list_pick_and_packs_path(batch_name: params[:q].try(:[], :batch_name_eq)) , id: "print_packing_list_id", class: "btn btn-primary float-right ml-auto"%>
+          <% end %>
+          <% class_set = params[:q].try(:[], :batch_name_eq).present? ? ' ' : 'ml-auto'%>
+          <%= search_form_for @q, url: start_packing_pick_and_packs_path, method: :get, class: class_set  do |f| %>
             <%= f.select :batch_name_eq, options_for_select(@batches.collect { | batch | [batch.batch_name.titleize, batch.batch_name] }, f.object.batch_name_eq),{include_blank: 'Please select batch'}, class: 'form-control ml-3 batches-select' %>
             <%= f.submit 'check', class: 'batches-button-submit d-none'%>
           <% end %>
