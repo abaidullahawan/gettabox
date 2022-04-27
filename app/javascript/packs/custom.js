@@ -407,13 +407,16 @@ $(document).on('turbolinks:load', function () {
     if (csv_export) {
       var object_ids = $('input[name="object_ids[]"]:checked')
       var rule = object_ids.map(function (i, e) { return e.dataset.courier }).toArray();
+      var tracking = object_ids.map(function (i, e) { return e.dataset.tracking }).toArray();
       var same_rule = rule.every((val, i, arr) => val === arr[0]) && rule[0] == 'Manual Dispatch'
       if (same_rule) {
         var dispatch_button = $('.one-click-dispatch')
         dispatch_button.toggleClass('one-click-dispatch upload_trackings')
         dispatch_button.attr('data-toggle', 'modal')
         dispatch_button.attr('data-target', '.upload-trackings')
-        $('.upload-trackings').modal('show')
+        if (tracking[0] == 'true'){
+          $('.upload-trackings').modal('show')
+        }
       }
       else {
         window.location.reload()

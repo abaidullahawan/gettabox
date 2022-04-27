@@ -120,8 +120,8 @@ class OrderBatchesController < ApplicationController
                   weigth_label_csv.length.to_f
                 when 'Width'
                   weigth_label_csv.width.to_f
-                when 'Reference' && index.positive?
-                  "#{value} copy#{index}"
+                when 'Reference'
+                  index.positive? ? "#{value} copy#{index}" : value
                 when 'SKU'
                   product_sku.join(' + ')
                 else
