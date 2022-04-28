@@ -7,8 +7,9 @@ class MultiFileMappingJob < ApplicationJob
   def perform(*_args)
     spreadsheet1 = _args.last[:spreadsheet1]
     spreadsheet2 = _args.last[:spreadsheet2]
-    mapping = _args.last[:mapping]
+    mapping_id = _args.last[:mapping_id]
     id = _args.last[:multifile_mapping_id]
+    mapping = ImportMapping.find(mapping_id)
     multifile = MultifileMapping.find_by(id: id)
     spreadsheet1 = CSV.parse(spreadsheet1, headers: true)
     spreadsheet2 = CSV.parse(spreadsheet2, headers: true)
@@ -60,6 +61,8 @@ class MultiFileMappingJob < ApplicationJob
     # @multifile_mapping.attach_csv.attach = file.path
     # @multifile_mapping.save
     multifile.update(download: true)
+  rescue StandardError => e
+    multifile.update(error: e, download: false)
   end
 
   def case_sensitivity(spreadsheet1, spreadsheet2, matchable, mapping, csv, attribute_data)

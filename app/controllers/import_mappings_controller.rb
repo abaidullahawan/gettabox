@@ -231,9 +231,22 @@ class ImportMappingsController < ApplicationController
     if file1.present? && file2.present? && (file_type1.include? 'csv') && (file_type2.include? 'csv')
       spreadsheet1 = open_spreadsheet(file1)
       spreadsheet2 = open_spreadsheet(file2)
-      @multifile_mapping = MultifileMapping.create(file1: file1.original_filename, file2: file2.original_filename, download: 0)
-      MultiFileMappingJob.perform_later(spreadsheet1: spreadsheet1, spreadsheet2: spreadsheet2, mapping: mapping, multifile_mapping_id: @multifile_mapping.id)
-      flash[:notice] = 'Job added successfully!'
+      headers_of_file1 = CSV.parse(spreadsheet1, headers: true).headers
+      headers_of_file2 = CSV.parse(spreadsheet2, headers: true).headers
+      headers = headers_of_file1 + headers_of_file2
+      import_mapping_data = mapping.mapping_data.compact_blank.to_a.flatten
+      import_mapping_data.map! { |mapped_data| mapped_data.humanize.downcase.delete(' ') }
+      headers.map! { |header| header.humanize.downcase.delete(' ') }
+      sub_type = mapping.sub_type
+      if (headers & import_mapping_data).eql? import_mapping_data
+        @multifile_mapping = MultifileMapping.create(file1: file1.original_filename, file2: file2.original_filename, download: false, error: nil, sub_type: sub_type )
+        MultiFileMappingJob.perform_later(spreadsheet1: spreadsheet1, spreadsheet2: spreadsheet2, mapping_id: params[:mapping_id], multifile_mapping_id: @multifile_mapping.id)
+        flash[:notice] = 'Job added successfully!'
+      else
+        error = 'Import mapping does not match with the files. Therefore, file is not available for download.'
+        @multifile_mapping = MultifileMapping.create(file1: file1.original_filename, file2: file2.original_filename, download: false, error: error, sub_type: sub_type )
+        flash[:alert] = 'Job not added successfully!'
+      end
     else
       flash[:alert] = 'Try again file not match'
     end
