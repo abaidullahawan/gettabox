@@ -3,6 +3,7 @@
     <table class="table m-0 table-hover">
       <thead>
         <tr>
+          <th class='border-right'>Sub-type</th>
           <th class='border-right'>File 1</th>
           <th class='border-right'>File 2</th>
           <th class='border-right'>Created At</th>
@@ -14,6 +15,7 @@
             <tr>
               <% created_at_filename = multifile_maping_name.created_at.strftime('%d-%m-%Y @ %H:%M:%S') %>
               <% multifile_maping = @multifile_mapping.select { |a| (a.include? 'multi-mapping') && (a.split('/').last.split('--').last == created_at_filename)}%>
+              <td><%= multifile_maping_name.sub_type %></td>
               <td><%= multifile_maping_name.file1 %></td>
               <td><%= multifile_maping_name.file2 %></td>
               <td><%= created_at_filename %></td>
@@ -23,7 +25,9 @@
                   <%= link_to "Delete", download_path(download: false, url: multifile_maping.first, id: multifile_maping_name.id), class: "btn btn-danger text-white", data: {confirm: "Are you sure?"} %>
                 </td>
               <% else %>
-                <td class='border-right'>Not available for download</td>
+                <td class='border-right text-danger'>
+                <%= multifile_maping_name.error.nil? ? "Not available for download" : multifile_maping_name.error %>
+                </td>
               <% end %>
             </tr>
           <% end %>

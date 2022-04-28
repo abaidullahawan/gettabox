@@ -51,7 +51,7 @@ class MailServiceRulesController < ApplicationController
     else
       flash[:alert] = @mail_service_rule.errors.full_messages
     end
-    redirect_to @mail_service_rule
+    redirect_to mail_service_rules_path
   end
 
   # DELETE /mail_service_rules/1 or /mail_service_rules/1.json
@@ -117,7 +117,7 @@ class MailServiceRulesController < ApplicationController
   # Only allow a list of trusted parameters through.
   def mail_service_rule_params
     params.require(:mail_service_rule).permit(
-      :service_name, :rule_name, :channel_order_id, :public_cost, :initial_weight, :additonal_cost_per_kg,
+      :service_name, :rule_name, :channel_order_id, :tracking_import, :public_cost, :initial_weight, :additonal_cost_per_kg,
       :vat_percentage, :label_type, :csv_file, :courier_account, :rule_naming_type, :manual_dispatch_label_template,
       :priority_delivery_days, :is_priority, :estimated_delivery_days, :courier_id, :service_id, :print_queue_type,
       :additional_label, :pickup_address, :bonus_score, :base_weight, :base_weight_max, :export_mapping_id,
