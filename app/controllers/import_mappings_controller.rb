@@ -322,6 +322,21 @@ class ImportMappingsController < ApplicationController
     end
   end
 
+  def competitive_price
+    file = params[:file]
+    file_type = file.present? ? file.path.split('.').last.to_s.downcase : ''
+    if file.present? && (file_type.include? 'csv') || (file_type.include? 'xlsx')
+      spreadsheet = open_spreadsheet(file)
+      # spreadsheet = CSV.parse(spreadsheet, headers: true)
+      @multifile_mapping = MultifileMapping.create(file1: file.original_filename, download: false, error: nil, sub_type: 'competative price job' )
+      CompetitivePriceJob.perform_now(spreadsheet: spreadsheet, multifile_mapping_id: @multifile_mapping.id)
+      flash[:notice] = 'Job added successfully!'
+    else
+      flash[:alert] = 'Try again file not match'
+    end
+    redirect_to request.referrer
+  end
+
   def download
     if params[:download].eql? 'true'
       send_file(
