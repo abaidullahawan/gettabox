@@ -9,56 +9,57 @@ $(document).on('turbolinks:load', function () {
         $('.total-value').text(total_value.toFixed(2))
     })
 
-    $('.filter-name-field').on('change', function(){
-        var selected_value = $(this).val()
-        if(selected_value == "product_sku")
-        {
-            $('.filter-container').removeClass('col-6')
-            $('.filter-by-field-container').removeClass('col-6')
-            $('.filter-by-field').removeClass('d-none')
-            $('.filter-supplier').addClass('d-none')
-            $('.filter-empty').addClass('d-none')
-            $('.custom-number-field').removeClass('d-none')
-            $('.channel-type').addClass('d-none')
-            $('.filter-by-field').removeAttr('disabled')
-            $('.channel-type').attr('disabled', true)
-        }
-        else if(selected_value == "supplier")
-        {
-            $('.filter-container').addClass('col-6')
-            $('.filter-by-field-container').addClass('col-6')
-            $('.filter-by-field').addClass('d-none')
-            $('.filter-supplier').removeClass('d-none')
-            $('.filter-empty').addClass('d-none')
-            $('.channel-type').addClass('d-none')
-            $('.custom-number-field').addClass('d-none')
-            $('.filter-by-field').attr('disabled', true)
-            $('.channel-type').attr('disabled', true)
-        }
-        else if(selected_value == "channel")
-        {
-            $('.filter-container').addClass('col-6')
-            $('.filter-by-field-container').addClass('col-6')
-            $('.filter-by-field').addClass('d-none')
-            $('.filter-supplier').addClass('d-none')
-            $('.filter-empty').addClass('d-none')
-            $('.custom-number-field').addClass('d-none')
-            $('.filter-by-field').attr('disabled', true)
-            $('.channel-type').removeClass('d-none')
-            $('.channel-type').removeAttr('disabled')
-        }
-        else{
-            $('.filter-container').addClass('col-6')
-            $('.filter-by-field-container').addClass('col-6')
-            $('.filter-by-field').addClass('d-none')
-            $('.filter-supplier').addClass('d-none')
-            $('.filter-empty').removeClass('d-none')
-            $('.channel-type').addClass('d-none')
-            $('.custom-number-field').addClass('d-none')
-            $('.filter-by-field').attr('disabled', true)
-            $('.channel-type').attr('disabled', true)
-        }
-    })
+    // $('.filter-name-field').on('change', function(){
+    //     var selected_value = $(this).val()
+    //     if(selected_value == "product_sku")
+    //     {
+    //         $('.filter-container').removeClass('col-6')
+    //         $('.filter-by-field-container').removeClass('col-6')
+    //         $('.filter-by-field').removeClass('d-none')
+    //         $('.filter-supplier').addClass('d-none')
+    //         $('.filter-empty').addClass('d-none')
+    //         $('.custom-number-field').removeClass('d-none')
+    //         $('.channel-type').addClass('d-none')
+    //         $('.filter-by-field').removeAttr('disabled')
+    //         $('.channel-type').attr('disabled', true)
+    //     }
+    //     else if(selected_value == "supplier")
+    //     {
+    //         $('.filter-container').addClass('col-6')
+    //         $('.filter-by-field-container').addClass('col-6')
+    //         $('.filter-by-field').addClass('d-none')
+    //         $('.filter-supplier').removeClass('d-none')
+    //         $('.filter-empty').addClass('d-none')
+    //         $('.channel-type').addClass('d-none')
+    //         $('.custom-number-field').addClass('d-none')
+    //         $('.filter-by-field').attr('disabled', true)
+    //         $('.channel-type').attr('disabled', true)
+    //     }
+    //     else if(selected_value == "channel")
+    //     {
+    //         $('.filter-container').addClass('col-6')
+    //         $('.filter-by-field-container').addClass('col-6')
+    //         $('.filter-by-field').addClass('d-none')
+    //         $('.filter-supplier').addClass('d-none')
+    //         $('.filter-empty').addClass('d-none')
+    //         $('.custom-number-field').addClass('d-none')
+    //         $('.filter-by-field').attr('disabled', true)
+    //         $('.channel-type').removeClass('d-none')
+    //         $('.channel-type').removeAttr('disabled')
+    //     }
+    //     else{
+    //         $('.filter-container').addClass('col-6')
+    //         $('.filter-by-field-container').addClass('col-6')
+    //         $('.filter-by-field').addClass('d-none')
+    //         $('.filter-supplier').addClass('d-none')
+    //         $('.filter-empty').removeClass('d-none')
+    //         $('.channel-type').addClass('d-none')
+    //         $('.custom-number-field').addClass('d-none')
+    //         $('.filter-by-field').attr('disabled', true)
+    //         $('.channel-type').attr('disabled', true)
+    //     }
+    // })
+
     $('#_inventory_reports_date_range').on('change', function () {
         var selectedValue = $(this).val();
         $.ajax({

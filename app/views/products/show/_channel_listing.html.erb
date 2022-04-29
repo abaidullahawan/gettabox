@@ -1,5 +1,14 @@
 <% if @product.product_type_single? %>
   <div class="notifications-card mb-30">
+    <div class="noti-card-title d-flex">
+      <h5 >
+        Buffer Rule >>
+      </h5>
+      <% @product.channel_forecastings.each do |forecasting| %>
+        <b class="ml-2"><%= forecasting.name %></b>
+      <% end %>
+      <i class='lni lni-pencil mt-1 ml-3 cursor-pointer' data-toggle="modal" data-target='#buffer-rule-modal'></i>
+    </div>
     <h5 class="noti-card-title">
       Channel Listing
     </h5>
@@ -16,7 +25,7 @@
                   <th class="text-center">Deduction Unit</th>
                   <th class="text-center">Channel Quantity</th>
                   <th class="text-center">Buffer Quantity</th>
-                  <th class="text-center">Buffer Rule</th>
+                  <!--th class="text-center">Buffer Rule</th-->
                 </tr>
                 <% @product.product_mappings.each.with_index(1) do |mapping, index| %>
                   <% product = mapping.channel_product %>
@@ -33,18 +42,13 @@
                         <td class="text-center"><%= [(@product.inventory_balance.to_f/deduction_unit.to_f).floor, 0].max %></td>
                       <% end %>
                       <td class="text-center">
-                        <% if product.channel_forecasting&.action == 'safe_stock_by' %>
-                          -
-                        <% elsif product.channel_forecasting&.action == 'anticipate_by'  || product.channel_forecasting&.action == 'anticipate_fake_stock_only_by' %>
-                          +
-                        <% end %>
-                        <%= product.channel_forecasting&.type_number %>
+                        <i><%= product.buffer_quantity %></i>
                       </td>
-                      <td class="text-center">
-                        <%= product.channel_forecasting&.name %>
-                        <%= link_to '', buffer_rule_channel_forecastings_path(id: product.id), remote: true, class: 'lni lni-pencil mt-1 ml-3' %>
+                      <!--td class="text-center">
+                        <%#= product.channel_forecasting&.name %>
+                        <%#= link_to '', buffer_rule_channel_forecastings_path(id: product.id), remote: true, class: 'lni lni-pencil mt-1 ml-3' %>
                         <div><p class="badge badge_warning py-1"><%= product.customize.present? ? 'Customized' : nil %></p></div>
-                      </td>
+                      </td-->
                     </tr>
                   </a>
                 <% end %>
@@ -66,18 +70,13 @@
                       <td class="text-center"><%= [deduction_quantity.to_i, 0].max %></td>
                     <% end %>
                     <td class="text-center">
-                      <% if multi_mapping.channel_forecasting&.action == 'safe_stock_by' %>
-                        -
-                      <% elsif multi_mapping.channel_forecasting&.action == 'anticipate_by' || multi_mapping.channel_forecasting&.action == 'anticipate_fake_stock_only_by' %>
-                        +
-                      <% end %>
-                      <%= multi_mapping.channel_forecasting&.type_number %>
+                      <i><%= multi_mapping.buffer_quantity %></i>
                     </td>
-                    <td class="text-center">
-                        <%= multi_mapping.channel_forecasting&.name %>
-                        <%= link_to '', buffer_rule_channel_forecastings_path(id: multi_mapping.id), remote: true, class: 'lni lni-pencil mt-1 ml-3' %>
+                    <!--td class="text-center">
+                        <%#= multi_mapping.channel_forecasting&.name %>
+                        <%#= link_to '', buffer_rule_channel_forecastings_path(id: multi_mapping.id), remote: true, class: 'lni lni-pencil mt-1 ml-3' %>
                         <div><p class="badge badge_warning py-1"><%= multi_mapping.customize.present? ? 'Customized' : nil %></p></div>
-                    </td>
+                    </td-->
                   </tr>
                 <% end %>
               </table>
@@ -88,5 +87,34 @@
     </div>
   </div>
 <% end %>
+
+<%= form_for(@product, url: product_path) do |f| %>
+  <!-- Forecasting Modal -->
+  <div class="modal fade" id="buffer-rule-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Assign Rule</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class='links text-right'>
+            <%= link_to_add_association '<i data-feather="plus" class="icon wh-15"></i>'.html_safe , f, :product_forecastings, partial: 'products/product_forecasting_fields' %>
+          </div>
+          <%= f.fields_for :product_forecastings do |forecasting|%>
+            <%= render 'product_forecasting_fields', f: forecasting %>
+          <% end %>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <%= f.submit "Assign", class: 'btn btn-outline-primary' %>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>
+
 
 <div class="modal fade show" id="buffer-rule-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true"></div>

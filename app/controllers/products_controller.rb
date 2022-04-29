@@ -64,10 +64,33 @@ class ProductsController < ApplicationController
     elsif @product.update(product_params)
       update_log(stock) if product_params[:total_stock].present?
       flash[:notice] = 'Updated successfully.'
+      if product_params[:product_forecastings_attributes].present?
+        buffer_rule(@product)
+      end
       redirect_to product_path(@product)
     else
       load_show
       render 'show'
+    end
+  end
+
+  def buffer_rule(product)
+    channel_forecastings = product.channel_forecastings
+    sigle_listings = ChannelProduct.joins(product_mapping: :product).where('product_mappings.product_id': product.id)
+    multi_listings = ChannelProduct.joins(product_mapping: [product: [multipack_products: :child]]).where('child.id': product.id)
+    sigle_listings.update_all(buffer_quantity: nil)
+    multi_listings.update_all(buffer_quantity: nil)
+    listings = sigle_listings + multi_listings
+    channel_forecastings.each do |channel_forecasting|
+      listings.each do |listing|
+        if listing.channel_type == channel_forecasting.filter_by
+          if channel_forecasting.action == 'safe_stock_by'
+            listing.update(buffer_quantity: -channel_forecasting.type_number)
+          else
+            listing.update(buffer_quantity: channel_forecasting.type_number)
+          end
+        end
+      end
     end
   end
 
@@ -96,7 +119,10 @@ class ProductsController < ApplicationController
     send_data csv_data, filename: "product-logs-#{Date.today}.csv", disposition: :attachment
   end
 
-  def show; end
+  def show
+    @forecasting = ChannelForecasting.all
+    @product.product_forecastings
+  end
 
   def destroy
     if @product.product_mappings.present?
@@ -268,6 +294,8 @@ class ProductsController < ApplicationController
           .permit(:sku, :title, :photo, :total_stock, :fake_stock, :pending_orders, :allocated,
                   :available_stock, :length, :width, :height, :weight, :pack_quantity, :cost_price, :gst, :vat, :courier_type,
                   :minimum, :maximum, :optimal, :category_id, :product_type, :season_id, :description, :product_location_id,
+                  product_forecastings_attributes:
+                  %i[id product_id channel_forecasting_id _destroy],
                   barcodes_attributes:
                   %i[id title _destroy],
                   product_suppliers_attributes:

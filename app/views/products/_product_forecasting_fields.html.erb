@@ -1,0 +1,10 @@
+<div class="nested-fields">
+  <br/>
+  <div class="form-group">
+    <div class="d-flex">
+      <%= f.label 'Forcasting Rule' %>
+      <%= link_to_remove_association 'X', f, class: 'text-danger ml-auto' %>
+    </div>
+    <%= f.select :channel_forecasting_id, options_for_select(@forecasting.collect { | c | [c.name, c.id] }, f.object.channel_forecasting_id), {include_blank: 'Please Select Rule'}, class: "form-control" %>
+  </div>
+</div>
