@@ -2,6 +2,8 @@
 
 # rules assigned to channel order items
 class ChannelForecasting < ApplicationRecord
+  has_many :product_forecastings
+  has_many :products, through: :product_forecastings
 
   enum filter_name: {
     supplier: 0,

@@ -41,7 +41,7 @@
                 <th class="text-center">Name</th>
                 <th class="text-center">Filter Name</th>
                 <th class="text-center">Filter By</th>
-                <th class="text-center">Filter Action</th>
+                <!--th class="text-center">Filter Action</th-->
                 <th class="text-center">Type Number</th>
                 <th class="text-center">Units</th>
                 <th class="text-center">Actions</th>
@@ -49,7 +49,7 @@
               <% @channel_rules.each do |rule| %>
                 <tr>
                   <td class="text-center"><%= rule.name %></td>
-                  <td class="text-center"><%= rule.filter_name&.humanize %></td>
+                  <!--td class="text-center"><%= rule.filter_name&.humanize %></td-->
                   <td class="text-center"><%= rule.filter_by %></td>
                   <td class="text-center"><%= rule.action&.humanize %></td>
                   <td class="text-center"><%= rule.type_number %></td>

@@ -20,6 +20,8 @@ class Product < ApplicationRecord
   has_many :products, through: :multipack_products
   has_many :product_mappings, dependent: :destroy
   has_many :channel_order_items
+  has_many :product_forecastings
+  has_many :channel_forecastings, through: :product_forecastings
 
   belongs_to :category, optional: true
   belongs_to :season, optional: true
@@ -44,6 +46,7 @@ class Product < ApplicationRecord
   }, _prefix: true
 
   accepts_nested_attributes_for :barcodes, allow_destroy: true
+  accepts_nested_attributes_for :product_forecastings, allow_destroy: true
   accepts_nested_attributes_for :product_suppliers, allow_destroy: true
   accepts_nested_attributes_for :multipack_products, allow_destroy: true
   accepts_nested_attributes_for :extra_field_value
