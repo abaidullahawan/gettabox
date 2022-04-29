@@ -599,14 +599,15 @@ class OrderDispatchesController < ApplicationController
       #            "%#{params['assign_rule_name']}%")
       #     ).where(assign_rule_id: nil).uniq
       # else
-        @not_started_orders = (@channel_orders
+        @search = (@channel_orders
           .joins(assign_rule: :mail_service_rule).includes(assign_rule: :mail_service_rule)
           .where(stage: 'ready_to_dispatch').where.not(channel_type: 'amazon', system_user_id: nil)
           .where('mail_service_rules.rule_name ILIKE ?',
                  "%#{params['assign_rule_name']}%")
-          ).uniq
+          ).search(params[:q])
       # end
-      @not_started_order_data = Kaminari.paginate_array(@not_started_orders).page(params[:not_started_page]).per(params[:limit] || 100)
+      @not_started_orders = @search.result
+      @not_started_order_data = @not_started_orders.page(params[:not_started_page]).per(params[:limit] || 100)
     else
       # if params['assign_filter'].present? && params['assign_filter'] == '1'
       #   @search = @channel_orders.where(stage: 'ready_to_dispatch')
@@ -615,7 +616,7 @@ class OrderDispatchesController < ApplicationController
         @search = @channel_orders.where(stage: 'ready_to_dispatch')
                                   .where.not(channel_type: 'amazon', system_user_id: nil).search(params[:q])
       # end
-      @not_started_orders = @search.result
+        @not_started_orders = @search.result
       if params[:q].present? && params[:q][:s].present? && params[:q][:s].include?('total_amount')
         @not_started_orders = @not_started_orders.order(:total_amount)
       else

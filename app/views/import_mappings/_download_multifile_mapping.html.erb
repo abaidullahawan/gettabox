@@ -26,7 +26,8 @@
                 </td>
               <% else %>
                 <td class='border-right text-danger'>
-                <%= multifile_maping_name.error.nil? ? "Not available for download" : multifile_maping_name.error %>
+                <% error = multifile_maping_name.error.nil? ? "Not available for download" : multifile_maping_name.error %>
+                <%= link_to error, download_path(download: false, url: multifile_maping.first, id: multifile_maping_name.id), class: "text-danger", data: {confirm: "Are you sure to delete it?"} %>
                 </td>
               <% end %>
             </tr>
