@@ -27,6 +27,7 @@ class EbaySellingListJob < ApplicationJob
 
       picture_details = @data_xml_re['GetItemResponse']['Item']['PictureDetails']
       item_image = picture_details['GalleryURL'] || picture_details['PictureURL']
+      item_image = item_image.first if item_image.class.eql? Array
       product.update(item_image: item_image)
     end
   end
