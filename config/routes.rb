@@ -240,6 +240,7 @@ Rails.application.routes.draw do
   post 'courier_csv_export', to: 'import_mappings#courier_csv_export'
   post 'tracking_file', to: 'import_mappings#tracking_file'
   post 'consolidation_tool', to: 'import_mappings#consolidation_tool'
+  post 'competitive_price', to: 'import_mappings#competitive_price'
   get 'export_new_consolidation', to: 'import_mappings#export_new_consolidation'
   post 'export_new_consolidation', to: 'import_mappings#export_consolidation'
   post 'consolidation_mapping', to: 'import_mappings#consolidation_mapping'
