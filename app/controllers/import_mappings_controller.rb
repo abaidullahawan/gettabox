@@ -326,11 +326,11 @@ class ImportMappingsController < ApplicationController
     if params[:download].eql? 'true'
       send_file(
         params[:url],
-        filename: "your_custom_file_name.csv",
-        type: "csv"
+        filename: 'your_custom_file_name.csv',
+        type: 'csv'
       )
     else
-      File.delete(params[:url])
+      File.delete(params[:url]) if params[:url]
       MultifileMapping.find_by(id: params[:id]).destroy
       flash[:notice] = 'File deleted!'
       redirect_to import_mappings_path

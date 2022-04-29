@@ -190,6 +190,10 @@
                 <%= f.label 'Enter Carrier Type' %>
                 <%= f.search_field :channel_order_items_channel_product_product_mapping_product_courier_type_or_channel_order_items_channel_product_product_mapping_product_multipack_products_child_courier_type_eq, class:"form-control bg-white text-black", title: 'Search Carrier Type', placeholder: 'Search Carrier Type', value: f.object.channel_order_items_channel_product_product_mapping_product_courier_type_or_channel_order_items_channel_product_product_mapping_product_multipack_products_child_courier_type_eq %>
               </div>
+              <div class="col-md-6 mx-auto form-group">
+                <%= f.label 'Select Allocation' %>
+                <%= f.select :channel_order_items_allocated_eq, options_for_select([["Unallocated", false],["Allocated", true]], f.object.channel_order_items_allocated_eq), {include_blank: "Select Allocation", hide_label:true, required: true }, class:"bg-white form-control", title: 'Select Unallocated or Allocated' %>
+              </div>
             </div>
           </div>
 
