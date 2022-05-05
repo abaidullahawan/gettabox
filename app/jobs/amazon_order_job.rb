@@ -215,7 +215,7 @@ class AmazonOrderJob < ApplicationJob
           end
         else
           carrier_type = item.channel_product&.product_mapping&.product&.courier_type
-          total_weight = item.channel_product&.product_mapping&.product.weight.to_i * item.ordered.to_i
+          total_weight = item.channel_product&.product_mapping&.product&.weight.to_i * item.ordered.to_i
         end
       end
     end
