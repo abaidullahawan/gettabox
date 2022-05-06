@@ -9,21 +9,22 @@ class OrderBatchesController < ApplicationController
   def create
     # @order_batch = OrderBatch.find_or_initialize_by(batch_name: params[:order_batch][:batch_name])
     orders = ChannelOrder.joins(:channel_order_items).where(id: params[:order_ids].split(',')).order(sku: :asc)
+    stage = order_batch_params[:mark_order_as_dispatched].to_i.positive? ? 'completed' : 'ready_to_print'
     if params['commit'].eql? 'save'
       @order_batch = OrderBatch.create(order_batch_params)
       @order_batch.update(pick_preset: params['name_of_template'], preset_type: 'pick_preset')
     elsif order_batch_params[:print_courier_labels].to_i.zero?
       print_packing_list if order_batch_params[:print_packing_list].to_i.positive?
       update_channels if order_batch_params[:update_channels].to_i.positive?
-      mark_order_as_dispatched if order_batch_params[:mark_order_as_dispatched].to_i.positive?
-      update_batch
+      mark_order_as_dispatched(stage) if order_batch_params[:mark_order_as_dispatched].to_i.positive?
+      update_batch(stage)
       # orders.update_all(stage: 'ready_to_print', order_batch_id: @order_batch.id)
     elsif check_rule(orders.first) && order_batch_params[:print_courier_labels].to_i.positive?
       courier_csv_export(orders)
       unless orders.first.assign_rule.mail_service_rule.tracking_import
         update_channels if order_batch_params[:update_channels].to_i.positive?
-        mark_order_as_dispatched if order_batch_params[:mark_order_as_dispatched].to_i.positive?
-        update_batch
+        mark_order_as_dispatched(stage) if order_batch_params[:mark_order_as_dispatched].to_i.positive?
+        update_batch(stage)
       end
     else
       flash[:alert] = 'Only Manual Dispatch orders can be printed'
@@ -198,8 +199,9 @@ class OrderBatchesController < ApplicationController
     EbayCompleteSaleJob.perform_later(order_ids: order_ids)
   end
 
-  def mark_order_as_dispatched
+  def mark_order_as_dispatched(stage)
     order_ids = params[:order_ids]
+    order_ids = order_ids.split(',')
     multiple_products = ChannelOrderItem.where(channel_order_id: order_ids).joins(channel_product: [product_mapping: :product]).where("products.product_type": 'multiple').uniq
     single_products = ChannelOrderItem.where(channel_order_id: order_ids).joins(channel_product: [product_mapping: :product]).where("products.product_type": 'single').uniq
     multiple_products.each do |multiple_product|
@@ -226,14 +228,14 @@ class OrderBatchesController < ApplicationController
       product.update(unshipped: unshipped, allocated: allocated, total_stock: total_stock, unshipped_orders: unshipped_orders, allocated_orders: allocated_orders)
     end
     orders = ChannelOrder.where(id: params[:order_ids].split(','))
-    orders.update_all(stage: 'completed')
+    orders.update_all(stage: stage)
     return unless order_batch_params[:print_packing_list].to_i.zero?
 
     flash[:notice] = 'Order completed successfully.'
     redirect_to request.referrer
   end
 
-  def update_batch
+  def update_batch(stage)
     order_ids = params[:order_ids]
     order_ids = order_ids.split(',')
     session[:batch_params]['batch_name'] = 'unbatch orders' if session[:batch_params]['mark_as_batch_name'].to_i.zero?
@@ -242,7 +244,7 @@ class OrderBatchesController < ApplicationController
     batch.update(update_session)
     order_ids.each do |id|
       order = ChannelOrder.find_by(id: id)
-      order.update(stage: 'ready_to_print', order_batch_id: batch.id, change_log: "Order Exported, #{order.id}, #{order.order_id}, #{current_user.personal_detail.full_name}")
+      order.update(stage: stage, order_batch_id: batch.id, change_log: "Order Exported, #{order.id}, #{order.order_id}, #{current_user.personal_detail.full_name}")
       order.update(change_log: "Channel Updated, #{order.id}, #{order.order_id}, #{current_user.personal_detail&.full_name}") if batch.update_channels
     end
   end

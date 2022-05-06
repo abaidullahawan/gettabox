@@ -118,7 +118,9 @@ class TrackingsController < ApplicationController
     elsif rows.flatten.any? { |a| a.to_s.include?('must') || a.to_s.include?('not found') }
       generate_csv(rows)
     else
-      update_batch(order_ids)
+      stage = session[:batch_params]['mark_order_as_dispatched'].to_i.positive? ? 'completed' : 'ready_to_print'
+
+      update_batch(order_ids, stage)
       return redirect_method if session[:batch_params]['print_packing_list'].to_i.zero?
 
       multiple_products = ChannelOrderItem.where(channel_order_id: order_ids).joins(channel_product: [product_mapping: :product]).where("products.product_type": "multiple").uniq
@@ -170,14 +172,14 @@ class TrackingsController < ApplicationController
     # flash[:alert] = 'Courier CSV Export Done!'
   end
 
-  def update_batch(order_ids)
+  def update_batch(order_ids, stage)
     session[:batch_params]['batch_name'] = 'unbatch orders' if session[:batch_params]['mark_as_batch_name'].to_i.zero?
     batch = OrderBatch.find_or_initialize_by(batch_name: session[:batch_params]['batch_name'])
     update_session = session[:batch_params].merge(preset_type: 'batch_name')
     batch.update(update_session)
     order_ids.each do |id|
       order = ChannelOrder.find_by(id: id)
-      order.update(stage: 'ready_to_print', order_batch_id: batch.id, change_log: "Order Exported, #{order.id}, #{order.order_id}, #{current_user.personal_detail.full_name}")
+      order.update(stage: stage, order_batch_id: batch.id, change_log: "Order Exported, #{order.id}, #{order.order_id}, #{current_user.personal_detail.full_name}")
       order.update(change_log: "Channel Updated, #{order.id}, #{order.order_id}, #{current_user.personal_detail&.full_name}") if batch.update_channels
     end
     AmazonTrackingJob.perform_later(order_ids: order_ids) if batch.update_channels
