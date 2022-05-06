@@ -71,7 +71,7 @@ class ProductMappingsController < ApplicationController
       if @product.product_type == 'multiple'
         update_multi_pack_logs(@channel_product, @product)
       else
-        @product.update(change_log: "Product Mapped, #{@product.sku}, #{@channel_product.item_sku}, Mapped, #{@channel_product.listing_id}, #{@product.inventory_balance}", unshipped_orders: @product.unshipped_orders.to_i + 1)
+        @product.update(change_log: "Product Mapped, #{@product.sku}, #{@channel_product.item_sku}, Mapped, #{@channel_product.listing_id}, #{@product.inventory_balance}")
         update_order_stage(@channel_product, @product)
       end
       allocations
