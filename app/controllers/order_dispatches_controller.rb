@@ -453,6 +453,46 @@ class OrderDispatchesController < ApplicationController
     end
   end
 
+  def cancel_order
+    order = ChannelOrder.find_by(id: params[:id])
+    order_items = order.channel_order_items
+      order_items.each do |item|
+        cancel_unallocate_item(item)
+      end
+      order.update(stage: 'canceled')
+      redirect_to request.referrer
+  end
+
+  def cancel_unallocate_item(order_item)
+    product = order_item.channel_product.product_mapping.product
+    return cancel_multipack_unallocation(order_item, product) if product.product_type.eql? 'multiple'
+
+    if order_item.allocated
+      product.update(available_stock: product.available_stock.to_i + order_item.ordered.to_i,
+                     unshipped: product.unshipped.to_i - order_item.ordered.to_i, unshipped_orders: product.unshipped_orders.to_i - 1,
+                     allocated: product.allocated.to_i - order_item.ordered.to_i, allocated_orders: product.allocated_orders.to_i - 1)
+    else
+      product.update(available_stock: product.available_stock.to_i + order_item.ordered.to_i,
+                     unshipped: product.unshipped.to_i - order_item.ordered.to_i, unshipped_orders: product.unshipped_orders.to_i - 1)
+    end
+  end
+
+  def cancel_multipack_unallocation(order_item, product)
+    product.multipack_products.each do |multipack|
+      child = multipack.child
+      quantity = multipack.quantity
+      ordered = (order_item.ordered * quantity)
+      if order_item.allocated
+        child.update(available_stock: child.available_stock.to_f + ordered,
+                      unshipped: child.unshipped.to_i - ordered, unshipped_orders: child.unshipped_orders.to_i - 1,
+                      allocated: child.allocated.to_f - ordered, allocated_orders: child.allocated_orders.to_i - 1)
+      else
+        child.update(available_stock: child.available_stock.to_f + ordered,
+                     unshipped: child.unshipped.to_i - ordered, unshipped_orders: child.unshipped_orders.to_i - 1)
+      end
+    end
+  end
+
   private
 
   def order_dispatches_params
