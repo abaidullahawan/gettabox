@@ -29,11 +29,22 @@ class TrackingsController < ApplicationController
     if file.present? && file.path.split('.').last.to_s.downcase == 'csv'
       csv_text = File.read(file).force_encoding('ISO-8859-1').encode('utf-8', replace: nil)
       csv = CSV.parse(csv_text, headers: true)
+      count = 0
       csv.each do |row|
         row = row.to_h
-        order = ChannelOrder.joins(system_user: :addresses).includes(system_user: :addresses).find_by('stage': 'ready_to_dispatch', 'buyer_name': row['Shipping Name'], 'addresses.postcode': row['Shipping Address Postcode'].gsub(' ',''))
-        next unless order.present?
+        name = row['Shipping Name'].dup
+        name = name + ' '
+        name = name.gsub!(/[^A-Za-z0-9]/, '')
+        name = name.downcase
+        postcode = row['Shipping Address Postcode'].dup
+        postcode = postcode + ' '
+        postcode = postcode.gsub!(/[^A-Za-z0-9]/, '')
+        postcode = postcode.downcase
+        order = ChannelOrder.joins(system_user: :addresses).includes(system_user: :addresses).find_by("(system_users.name) IS NOT NULL and (addresses.postcode) IS NOT NULL and REGEXP_REPLACE((system_users.name), '[^A-Za-z0-9]', '', 'g') ILIKE ? and REGEXP_REPLACE((addresses.postcode), '[^A-Za-z0-9]', '', 'g') ILIKE ?", name, postcode)
+        # order = ChannelOrder.joins(system_user: :addresses).includes(system_user: :addresses).find_by('lower(system_users.name) LIKE ? and lower(addresses.postcode) LIKE ?', row['Shipping Name'].downcase, row['Shipping Address Postcode'].gsub(' ','').downcase)
+        next unless order.present? && order.stage_ready_to_dispatch?
 
+        count +=1
         tracking_numbers = row['Shipping Tracking Code']&.split(',')
         tracking_numbers.each do |tracking|
           tracking = Tracking.find_or_initialize_by(tracking_no: tracking, channel_order_id: order.id)
@@ -48,10 +59,11 @@ class TrackingsController < ApplicationController
         AmazonTrackingJob.perform_later(order_ids: [order.id])
         EbayCompleteSaleJob.perform_later(order_ids: [order.id])
       end
-      flash[:notice] = 'Orders updated successfully'
+      flash[:notice] = "#{count} orders updated successfully"
     else
       flash[:alert] = 'File format no matched! Please change file'
     end
+    redirect_to request.referrer
   end
 
   private
