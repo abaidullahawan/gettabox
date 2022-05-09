@@ -24,6 +24,36 @@ class TrackingsController < ApplicationController
     # flash[:notice] = 'File Upload Successful!'
   end
 
+  def auto_dispatch
+    file = params[:file]
+    if file.present? && file.path.split('.').last.to_s.downcase == 'csv'
+      csv_text = File.read(file).force_encoding('ISO-8859-1').encode('utf-8', replace: nil)
+      csv = CSV.parse(csv_text, headers: true)
+      csv.each do |row|
+        row = row.to_h
+        order = ChannelOrder.joins(system_user: :addresses).includes(system_user: :addresses).find_by('stage': 'ready_to_dispatch', 'buyer_name': row['Shipping Name'], 'addresses.postcode': row['Shipping Address Postcode'].gsub(' ',''))
+        next unless order.present?
+
+        tracking_numbers = row['Shipping Tracking Code']&.split(',')
+        tracking_numbers.each do |tracking|
+          tracking = Tracking.find_or_initialize_by(tracking_no: tracking, channel_order_id: order.id)
+          shipping_service = find_shipping_service(row['Shipping Service'].downcase)
+          tracking.carrier = shipping_service.try(:[], :carrier)
+          tracking.service = shipping_service.try(:[], :service)
+          tracking.save!
+        end
+        order.update(change_log: "Channel Updated, #{order.id}, #{order.order_id}, #{current_user.personal_detail&.full_name}")
+        order.update(stage: 'completed', change_log: "Order Completed, #{order.id}, #{order.order_id}, #{current_user.personal_detail&.full_name}")
+        update_all_products(order)
+        AmazonTrackingJob.perform_later(order_ids: [order.id])
+        EbayCompleteSaleJob.perform_later(order_ids: [order.id])
+      end
+      flash[:notice] = 'Orders updated successfully'
+    else
+      flash[:alert] = 'File format no matched! Please change file'
+    end
+  end
+
   private
 
   def csv_create_records(csv)
@@ -216,5 +246,27 @@ class TrackingsController < ApplicationController
   def redirect_method
     flash[:notice] = 'Order processed successfully.'
     redirect_to request.referrer
+  end
+
+  def update_all_products(order)
+    order.channel_order_items.each do |order_item|
+      product = order_item.channel_product.product_mapping.product
+      item_quantity = order_item.ordered.to_i
+      next update_product_quantity(product, item_quantity) if product.product_type.eql? 'single'
+
+      product.multipack_products.each do |multi|
+        item_quantity = multi.quantity.to_i * order_item.ordered
+        product = multi.child
+        update_product_quantity(product, item_quantity)
+      end
+    end
+  end
+
+  def update_product_quantity(product, item_quantity)
+    product.update(total_stock: product.total_stock.to_i - item_quantity.to_i,
+                   unshipped: product.unshipped.to_i - item_quantity.to_i,
+                   unshipped_orders: product.unshipped_orders.to_i - 1,
+                   allocated_orders: product.allocated_orders.to_i - 1,
+                   allocated: product.allocated.to_i - item_quantity.to_i)
   end
 end

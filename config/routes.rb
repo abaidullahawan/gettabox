@@ -34,6 +34,7 @@ Rails.application.routes.draw do
   resources :trackings do
     collection do
       post 'import', to: 'trackings#import'
+      post 'auto_dispatch', to: 'trackings#auto_dispatch'
     end
   end
   require 'sidekiq/web'
