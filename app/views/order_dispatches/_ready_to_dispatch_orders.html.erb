@@ -198,6 +198,7 @@
           </div>
 
           <div class="modal-footer">
+            <%= hidden_field_tag 'id_or_order_id_or_order_status_or_buyer_name_or_channel_order_items_sku_cont', params[:q][:id_or_order_id_or_order_status_or_buyer_name_or_channel_order_items_sku_cont] %>
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             <%= f.submit 'Apply filters', class: 'btn btn-primary'%>
           </div>

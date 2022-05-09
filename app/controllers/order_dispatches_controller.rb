@@ -629,6 +629,8 @@ class OrderDispatchesController < ApplicationController
   def not_started_orders
     return unless params[:order_filter].eql? 'ready'
 
+    value = params[:id_or_order_id_or_order_status_or_buyer_name_or_channel_order_items_sku_cont]
+    params[:q] = params[:q].merge(id_or_order_id_or_order_status_or_buyer_name_or_channel_order_items_sku_cont: value) if value.present?
     params[:q] = JSON.parse params[:q].gsub('=>', ':') if params[:q]&.include?('"')
     if params['assign_rule_name'].present?
       # if params['assign_filter'].present? && params['assign_filter'] == '0'
