@@ -32,16 +32,13 @@ class TrackingsController < ApplicationController
       count = 0
       csv.each do |row|
         row = row.to_h
-        name = row['Shipping Name'].dup
-        name = name + ' '
-        name = name.gsub!(/[^A-Za-z0-9]/, '')
-        name = name.downcase
         postcode = row['Shipping Address Postcode'].dup
         postcode = postcode + ' '
         postcode = postcode.gsub!(/[^A-Za-z0-9]/, '')
         postcode = postcode.downcase
-        order = ChannelOrder.joins(system_user: :addresses).includes(system_user: :addresses).find_by("(system_users.name) IS NOT NULL and (addresses.postcode) IS NOT NULL and REGEXP_REPLACE((system_users.name), '[^A-Za-z0-9]', '', 'g') ILIKE ? and REGEXP_REPLACE((addresses.postcode), '[^A-Za-z0-9]', '', 'g') ILIKE ?", name, postcode)
+        orders = ChannelOrder.joins(system_user: :addresses).includes(system_user: :addresses).where("(addresses.postcode) IS NOT NULL and REGEXP_REPLACE((addresses.postcode), '[^A-Za-z0-9]', '', 'g') ILIKE ?", postcode)
         # order = ChannelOrder.joins(system_user: :addresses).includes(system_user: :addresses).find_by('lower(system_users.name) LIKE ? and lower(addresses.postcode) LIKE ?', row['Shipping Name'].downcase, row['Shipping Address Postcode'].gsub(' ','').downcase)
+        order = orders.find_by(stage: 'ready_to_dispatch')
         next unless order.present? && order.stage_ready_to_dispatch?
 
         count +=1
