@@ -83,11 +83,17 @@ class OrderDispatchesController < ApplicationController
   def export_csv(orders)
     if params[:export_mapping].present?
       @export_mapping = ExportMapping.find(params[:export_mapping])
-      attributes = @export_mapping.export_data
+      attributes = @export_mapping.export_data.excluding('order_data', 'product_scan')
       @csv = CSV.generate(headers: true) do |csv|
-        csv << attributes
+        headers = attributes.including('Delivery Name', 'Postcode')
+        csv << headers
         orders.each do |order|
-          csv << attributes.map { |attr| order.send(attr) }
+          data = attributes.map { |attr| order.send(attr) }
+          data.map! { |x| x.nil? ? ' ' : x }
+          delivery_name = order.system_user&.addresses&.where(address_title: 'delivery')&.first&.name
+          postcode = order.system_user&.addresses&.where(address_title: 'delivery')&.first&.postcode
+          data.push(delivery_name, postcode)
+          csv << data
         end
       end
       request.format = 'csv'
