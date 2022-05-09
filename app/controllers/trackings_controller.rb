@@ -42,7 +42,7 @@ class TrackingsController < ApplicationController
         postcode = postcode.downcase
         order = ChannelOrder.joins(system_user: :addresses).includes(system_user: :addresses).find_by("(system_users.name) IS NOT NULL and (addresses.postcode) IS NOT NULL and REGEXP_REPLACE((system_users.name), '[^A-Za-z0-9]', '', 'g') ILIKE ? and REGEXP_REPLACE((addresses.postcode), '[^A-Za-z0-9]', '', 'g') ILIKE ?", name, postcode)
         # order = ChannelOrder.joins(system_user: :addresses).includes(system_user: :addresses).find_by('lower(system_users.name) LIKE ? and lower(addresses.postcode) LIKE ?', row['Shipping Name'].downcase, row['Shipping Address Postcode'].gsub(' ','').downcase)
-        next unless order.present?
+        next unless order.present? && order.stage_ready_to_dispatch?
 
         count +=1
         tracking_numbers = row['Shipping Tracking Code']&.split(',')
