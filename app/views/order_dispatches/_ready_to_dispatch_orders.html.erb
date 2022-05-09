@@ -12,9 +12,10 @@
               <a class="cursor-pointer bulk-assign-rule dropdown-item">Assign Rule</a>
               <a class="cursor-pointer re-calculate-rules dropdown-item showLoader">Recalculate Rule</a>
               <a class="cursor-pointer one-click-dispatch dropdown-item">1-Click Dispatch</a>
-              <a class="cursor-pointer order-dispatch-button dropdown-item">Order Dispatch</a>
+              <%# <a class="cursor-pointer order-dispatch-button dropdown-item">Order Dispatch</a> %>
               <a class="cursor-pointer allocate-button dropdown-item showLoader">Allocate selected</a>
               <%# <a class="upload_trackings dropdown-item" data-toggle="modal" data-target=".upload-trackings">Upload Trackings</a> %>
+              <a class="auto-dispatch dropdown-item" data-toggle="modal" data-target=".dispatchAuto">Auto Dispatch</a>
             </div>
             <button type="submit" id="per_page_submit" hidden="hidden"></button>
           </div>
@@ -145,6 +146,30 @@
           <%#= link_to 'PDF', order_dispatches_path(format: :pdf), class:"btn btn-primary float-right ml-1", type:"button"%>
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
           <%= submit_tag("Upload Trackings", id: "button", class: "btn btn-primary", name: "submit", data: {disable_with: false}) %>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>
+
+<%= form_tag auto_dispatch_trackings_path, multipart: true, method: :post do %>
+  <div class="modal fade dispatchAuto" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Auto Dispatch</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <%= file_field_tag :file, required: true %>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <%= submit_tag("Auto Dispatch", id: "button", class: "btn btn-primary", name: "submit", data: {disable_with: false}) %>
         </div>
       </div>
     </div>

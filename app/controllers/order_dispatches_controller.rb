@@ -420,7 +420,7 @@ class OrderDispatchesController < ApplicationController
         order.system_user.addresses.build(
           address_title: 'delivery', company: row['ship-address-1'].to_s,
           address: row['ship-address-2'].to_s + row['ship-address-3'].to_s,
-          city: row['ship-city'], region: row['ship-state'], postcode: row['ship-postal-code'],
+          city: row['ship-city'], region: row['ship-state'], postcode: row['ship-postal-code'].gsub(' ', ''),
           country: row['ship-country']
         )
         order.save
