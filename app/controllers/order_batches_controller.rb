@@ -95,15 +95,18 @@ class OrderBatchesController < ApplicationController
         csv << headers
         orders.each do |order|
           product_sku = []
+          product_quantity = []
           next unless order.assign_rule.mail_service_rule.export_mapping_id == rule
 
           order&.channel_order_items&.each do |item|
-            if item.channel_product&.product_mapping&.product&.product_type == 'multiple'
-              item.channel_product&.product_mapping&.product&.multipack_products.each do |multipack_product|
+            if item.channel_product&.product_mapping&.product&.product_type_multiple?
+              item.channel_product&.product_mapping&.product&.multipack_products&.each do |multipack_product|
                 product_sku << multipack_product&.child&.sku
+                product_quantity << multipack_product.quantity * item.ordered.to_i
               end
             else
               product_sku << item.channel_product&.product_mapping&.product&.sku
+              product_quantity << item.ordered.to_i
             end
           end
           # order.update(stage: 'ready_to_print')
@@ -131,6 +134,8 @@ class OrderBatchesController < ApplicationController
                   index.positive? ? "#{value} copy#{index}" : value
                 when 'SKU'
                   product_sku.join(' + ')
+                when 'Quantity'
+                  product_quantity.join(' + ')
                 else
                   value || ' '
                 end
