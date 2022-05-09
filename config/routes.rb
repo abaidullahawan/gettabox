@@ -157,6 +157,7 @@ Rails.application.routes.draw do
       post 'import_customer', to: 'order_dispatches#import_customer'
       get 'recalculate_rule', to: 'order_dispatches#recalculate_rule'
       get 'invoice', to: 'order_dispatches#invoice'
+      get 'cancel_order', to: 'order_dispatches#cancel_order'
     end
   end
 
