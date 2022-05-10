@@ -14,7 +14,8 @@ class EbayCompleteSaleJob < ApplicationJob
     orders = ChannelOrder.where(id: order_ids, channel_type: 'ebay')
     return 'Orders not found' unless orders.present?
 
-    orders.each do |order|
+    orders.each.with_index(1) do |order, index|
+      sleep(5.seconds) if index > 1
       result = upload_document(@refresh_token.access_token, order.order_id)
       if result['CompleteSaleResponse']['Ack'].eql? 'Success'
         order.update(update_channel: true)
