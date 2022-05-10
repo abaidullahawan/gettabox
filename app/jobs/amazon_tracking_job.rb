@@ -17,7 +17,7 @@ class AmazonTrackingJob < ApplicationJob
     document ={
       contentType: "text/xml; charset=UTF-8"
     }
-    order_ids.each.with_index(1) do |order_id|
+    order_ids.each.with_index(1) do |order_id, index|
       sleep(10.seconds) if index > 1
       document_response = AmazonCreateReportService.create_report(@refresh_token.access_token, url, document)
       return document_response[:error] unless document_response[:status]
