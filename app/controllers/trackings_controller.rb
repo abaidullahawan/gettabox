@@ -30,13 +30,18 @@ class TrackingsController < ApplicationController
       csv_text = File.read(file).force_encoding('ISO-8859-1').encode('utf-8', replace: nil)
       csv = CSV.parse(csv_text, headers: true)
       count = 0
+      wait_time = 0
       csv.each do |row|
         row = row.to_h
         postcode = row['Shipping Address Postcode'].dup
         postcode = postcode + ' '
         postcode = postcode.gsub!(/[^A-Za-z0-9]/, '')
         postcode = postcode.downcase
-        orders = ChannelOrder.joins(system_user: :addresses).includes(system_user: :addresses).where("(addresses.postcode) IS NOT NULL and REGEXP_REPLACE((addresses.postcode), '[^A-Za-z0-9]', '', 'g') ILIKE ?", postcode)
+        if row["Channel Alt Id"].present?
+          orders = ChannelOrder.where(order_id: row["Channel Alt Id"])
+        else
+          orders = ChannelOrder.joins(system_user: :addresses).includes(system_user: :addresses).where("(addresses.postcode) IS NOT NULL and REGEXP_REPLACE((addresses.postcode), '[^A-Za-z0-9]', '', 'g') ILIKE ?", postcode)
+        end
         # order = ChannelOrder.joins(system_user: :addresses).includes(system_user: :addresses).find_by('lower(system_users.name) LIKE ? and lower(addresses.postcode) LIKE ?', row['Shipping Name'].downcase, row['Shipping Address Postcode'].gsub(' ','').downcase)
         order = orders.find_by(stage: 'ready_to_dispatch')
         next unless order.present? && order.stage_ready_to_dispatch?
@@ -53,8 +58,12 @@ class TrackingsController < ApplicationController
         order.update(change_log: "Channel Updated, #{order.id}, #{order.order_id}, #{current_user.personal_detail&.full_name}")
         order.update(stage: 'completed', change_log: "Order Completed, #{order.id}, #{order.order_id}, #{current_user.personal_detail&.full_name}")
         update_all_products(order)
-        AmazonTrackingJob.perform_later(order_ids: [order.id])
-        EbayCompleteSaleJob.perform_later(order_ids: [order.id])
+        if order.channel_type_amazon?
+          AmazonTrackingJob.set(wait_until: wait_time.seconds).perform_later(order_ids: [order.id])
+        else
+          EbayCompleteSaleJob.set(wait_until: wait_time.seconds).perform_later(order_ids: [order.id])
+        end
+        wait_time += 10
       end
       flash[:notice] = "#{count} orders updated successfully"
     else
