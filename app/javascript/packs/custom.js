@@ -477,6 +477,10 @@ $(document).on('turbolinks:load', function () {
     $('.cover-spin, .loading').removeClass('d-none')
   });
 
+  $('.importMultiFileForm').on('submit', function(){
+    $('.cover-spin, .loading').removeClass('d-none')
+  })
+
 });
 
 // Preloader JS
