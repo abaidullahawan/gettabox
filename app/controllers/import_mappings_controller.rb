@@ -26,8 +26,8 @@ class ImportMappingsController < ApplicationController
     @system_user_export_mappings = ExportMapping.where(table_name: 'SystemUser')
     @courier_csv_exports = ExportMapping.where(table_name: 'Courier csv export')
     @consolidations = ImportMapping.where(table_name: 'consolidation')
-    @multifile_mapping = Dir[Rails.root.join('tmp/*').to_s]
-    @multifile_mapping_filename = MultifileMapping.all
+    @multifile_mapping = Dir[Rails.root.join('public/uploads/*').to_s]
+    @multifile_mapping_filename = MultifileMapping.all.order(updated_at: :desc)
   end
 
   # GET /import_mappings/1 or /import_mappings/1.json
@@ -227,28 +227,34 @@ class ImportMappingsController < ApplicationController
     file2 = params[:file_2]
     file_type1 = file1.present? ? file1.path.split('.').last.to_s.downcase : ''
     file_type2 = file2.present? ? file2.path.split('.').last.to_s.downcase : ''
+    size_of_file1 = file1.size / 1_024_000.to_f
+    size_of_file2 = file2.size / 1_024_000.to_f
     mapping = ImportMapping.find(params[:mapping_id])
     if file1.present? && file2.present? && (file_type1.include? 'csv') && (file_type2.include? 'csv')
-      spreadsheet1 = open_spreadsheet(file1)
-      spreadsheet2 = open_spreadsheet(file2)
-      headers_of_file1 = CSV.parse(spreadsheet1, headers: true).headers
-      headers_of_file2 = CSV.parse(spreadsheet2, headers: true).headers
-      headers = headers_of_file1 + headers_of_file2
-      import_mapping_data = mapping.mapping_data.compact_blank.to_a.flatten
-      import_mapping_data.map! { |mapped_data| mapped_data.humanize.downcase.delete(' ') }
-      headers.map! { |header| header.humanize.downcase.delete(' ') }
-      sub_type = mapping.sub_type
-      if (headers & import_mapping_data).eql? import_mapping_data
-        @multifile_mapping = MultifileMapping.create(file1: file1.original_filename, file2: file2.original_filename, download: false, error: nil, sub_type: sub_type )
-        MultiFileMappingJob.perform_later(spreadsheet1: spreadsheet1, spreadsheet2: spreadsheet2, mapping_id: params[:mapping_id], multifile_mapping_id: @multifile_mapping.id)
-        flash[:notice] = 'Job added successfully!'
+      if (size_of_file1 <= 5) && (size_of_file2 <= 5)
+        spreadsheet1 = open_spreadsheet(file1)
+        spreadsheet2 = open_spreadsheet(file2)
+        headers_of_file1 = CSV.parse(spreadsheet1, headers: true).headers
+        headers_of_file2 = CSV.parse(spreadsheet2, headers: true).headers
+        headers = headers_of_file1 + headers_of_file2
+        import_mapping_data = mapping.mapping_data.compact_blank.to_a.flatten
+        import_mapping_data.map! { |mapped_data| mapped_data.humanize.downcase.delete(' ') }
+        headers.map! { |header| header.humanize.downcase.delete(' ') }
+        sub_type = mapping.sub_type
+        if (headers & import_mapping_data).eql? import_mapping_data
+          @multifile_mapping = MultifileMapping.create(file1: file1.original_filename, file2: file2.original_filename, download: false, error: nil, sub_type: sub_type )
+          MultiFileMappingJob.perform_later(spreadsheet1: spreadsheet1, spreadsheet2: spreadsheet2, mapping_id: params[:mapping_id], multifile_mapping_id: @multifile_mapping.id)
+          flash[:notice] = 'Job added successfully!'
+        else
+          flash[:alert] = 'Import mapping does not match with the files.'
+        end
       else
-        error = 'Import mapping does not match with the files. Therefore, file is not available for download.'
-        @multifile_mapping = MultifileMapping.create(file1: file1.original_filename, file2: file2.original_filename, download: false, error: error, sub_type: sub_type )
-        flash[:alert] = 'Job not added successfully!'
+        file_name_size_error = file1.original_filename if size_of_file1 > 5
+        file_name_size_error = file2.original_filename if size_of_file2 > 5
+        flash[:alert] = "#{file_name_size_error} that file size is greater than 5MB."
       end
     else
-      flash[:alert] = 'Try again file not match'
+      flash[:alert] = 'Try again file not match.'
     end
     redirect_to import_mappings_path
   end

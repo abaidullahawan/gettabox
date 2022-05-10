@@ -470,11 +470,11 @@
                               <div class= 'd-flex'>
                                 <%= link_to 'Destroy', import_mapping, method: :delete, data: { confirm: 'Are you sure?' }, class: "btn btn-danger" %>
                                 <%= link_to 'Edit', edit_import_mapping_path(import_mapping), class: "btn btn-info ml-3 mr-3" %>
-                                <%= form_tag multi_file_path, local:true, multipart: true, method: :post do%>
+                                <%= form_tag multi_file_path, local:true, multipart: true, class: "importMultiFileForm", method: :post do%>
                                   <%= file_field_tag "file_1", :accept => 'csv', required: true%>
                                   <%= file_field_tag "file_2", :accept => 'csv', required: true%>
                                   <%= hidden_field_tag 'mapping_id', import_mapping.id%>
-                                  <%= submit_tag 'Create Mapping', class:"btn btn-primary"%>
+                                  <%= submit_tag 'Use Mapping', class:"btn btn-primary"%>
                                 <% end %>
                               </div>
                               <% @blank, @full = import_mapping&.mapping_data&.partition { |_, v| v.blank? }&.map { |alist| Hash[alist] }%>
