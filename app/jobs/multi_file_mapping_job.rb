@@ -140,10 +140,10 @@ class MultiFileMappingJob < ApplicationJob
   end
 
   def open_spreadsheet(filename)
-    File.read("/home/ali/Projects/gettabox/tmp/#{filename}").force_encoding('ISO-8859-1').encode('utf-8', replace: nil)
+    File.read("home/deploy/channeldispatch/current/tmp/#{filename}").force_encoding('ISO-8859-1').encode('utf-8', replace: nil)
   end
 
   def delete_files(filename)
-    File.delete("/home/ali/Projects/gettabox/tmp/#{filename}")
+    File.delete("home/deploy/channeldispatch/current/tmp/#{filename}")
   end
 end
