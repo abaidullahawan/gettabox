@@ -38,7 +38,7 @@ class TrackingsController < ApplicationController
         postcode = postcode.gsub!(/[^A-Za-z0-9]/, '')
         postcode = postcode.downcase
         if row["Channel Alt Id"].present?
-          orders = ChannelOrder.find_by(order_id: row["Channel Alt Id"])
+          orders = ChannelOrder.where(order_id: row["Channel Alt Id"])
         else
           orders = ChannelOrder.joins(system_user: :addresses).includes(system_user: :addresses).where("(addresses.postcode) IS NOT NULL and REGEXP_REPLACE((addresses.postcode), '[^A-Za-z0-9]', '', 'g') ILIKE ?", postcode)
         end
