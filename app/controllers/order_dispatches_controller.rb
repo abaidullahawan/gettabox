@@ -704,12 +704,17 @@ class OrderDispatchesController < ApplicationController
   end
 
   def csv_export(orders)
-    attributes = ChannelOrder.column_names.excluding('created_at', 'updated_at')
+    attributes = ChannelOrder.column_names.excluding('created_at', 'updated_at', 'order_data', 'product_scan')
     CSV.generate(headers: true) do |csv|
-      csv << attributes
+      headers = attributes.including('Delivery Name', 'Postcode')
+      csv << headers
       orders.each do |channel_order|
-        row = channel_order.attributes.values_at(*attributes)
-        csv << row
+        data = attributes.map { |attr| channel_order.send(attr) }
+        data.map! { |x| x.nil? ? ' ' : x }
+        delivery_name = channel_order.system_user&.addresses&.where(address_title: 'delivery')&.first&.name
+        postcode = channel_order.system_user&.addresses&.where(address_title: 'delivery')&.first&.postcode
+        data.push(delivery_name, postcode)
+        csv << data
       end
     end
   end
