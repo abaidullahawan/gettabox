@@ -57,7 +57,7 @@ class TrackingsController < ApplicationController
         end
         order.update(change_log: "Channel Updated, #{order.id}, #{order.order_id}, #{current_user.personal_detail&.full_name}")
         order.update(stage: 'completed', change_log: "Order Completed, #{order.id}, #{order.order_id}, #{current_user.personal_detail&.full_name}")
-        update_all_products(order)
+        update_all_products(order) unless order.channel_order_items.count.zero?
         if order.channel_type_amazon?
           AmazonTrackingJob.set(wait_until: wait_time.seconds).perform_later(order_ids: [order.id])
         else
@@ -268,7 +268,9 @@ class TrackingsController < ApplicationController
 
   def update_all_products(order)
     order.channel_order_items.each do |order_item|
-      product = order_item.channel_product.product_mapping.product
+      product = order_item.channel_product&.product_mapping&.product
+      next unless product.present?
+
       item_quantity = order_item.ordered.to_i
       next update_product_quantity(product, item_quantity) if product.product_type.eql? 'single'
 
