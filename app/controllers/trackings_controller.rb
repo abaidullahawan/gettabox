@@ -59,9 +59,9 @@ class TrackingsController < ApplicationController
         order.update(stage: 'completed', change_log: "Order Completed, #{order.id}, #{order.order_id}, #{current_user.personal_detail&.full_name}")
         update_all_products(order) unless order.channel_order_items.count.zero?
         if order.channel_type_amazon?
-          AmazonTrackingJob.set(wait_until: wait_time.seconds).perform_later(order_ids: [order.id])
+          AmazonTrackingJob.set(wait: wait_time.seconds).perform_later(order_ids: [order.id])
         else
-          EbayCompleteSaleJob.set(wait_until: wait_time.seconds).perform_later(order_ids: [order.id])
+          EbayCompleteSaleJob.set(wait: wait_time.seconds).perform_later(order_ids: [order.id])
         end
         wait_time += 10
       end
