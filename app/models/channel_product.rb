@@ -19,6 +19,7 @@ class ChannelProduct < ApplicationRecord
   }, _prefix: true
 
   def quantity_update
+    return unless Rails.env.production?
     if channel_type_ebay?
       UpdateEbayProduct.perform_now(listing_id: listing_id, sku: item_sku, quantity: item_quantity)
     else
