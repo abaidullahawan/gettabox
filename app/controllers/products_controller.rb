@@ -85,9 +85,18 @@ class ProductsController < ApplicationController
       listings.each do |listing|
         if listing.channel_type == channel_forecasting.filter_by
           if channel_forecasting.action == 'safe_stock_by'
-            listing.update(buffer_quantity: -channel_forecasting.type_number)
+            channel_quantity = listing.item_quantity.to_i - channel_forecasting.type_number.to_i
+            channel_quantity = 0 if channel_quantity < 0
+            listing.update(buffer_quantity: -channel_forecasting.type_number, item_quantity: channel_quantity)
           else
-            listing.update(buffer_quantity: channel_forecasting.type_number)
+            if listing.channel_type_ebay?
+              channel_quantity = listing.item_quantity.to_i + channel_forecasting.type_number.to_i
+              selling_quantity = Selling&.last&.quantity.to_i
+              channel_quantity = selling_quantity if channel_quantity > selling_quantity
+              listing.update(buffer_quantity: channel_forecasting.type_number, item_quantity: channel_quantity)
+            else
+              listing.update(buffer_quantity: channel_forecasting.type_number, item_quantity: listing.item_quantity.to_i + channel_forecasting.type_number.to_i)
+            end
           end
         end
       end
@@ -354,7 +363,7 @@ class ProductsController < ApplicationController
 
     return unless product.present? && (product.listing_id.eql? '144375988077')
 
-    UpdateEbayProduct.perform_later(product: product, quantity: @product.total_stock)
+    UpdateEbayProduct.perform_later(listing_id: product.listing_id, sku: product.item_sku, quantity: product.item_quantity)
   end
 
   def amazon_update(channel_product, product)

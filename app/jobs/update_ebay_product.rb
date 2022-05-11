@@ -8,8 +8,9 @@ class UpdateEbayProduct < ApplicationJob
     # @page_no = 1
     # @total_pages = 1
     refresh_token = RefreshToken.where(channel: 'ebay').last
-    product = _args.last[:product]
     quantity = _args.last[:quantity]
+    listing_id = _args.last[:listing_id]
+    sku = _args.last[:sku]
 
     require 'net/http'
     require 'base64'
@@ -28,10 +29,10 @@ class UpdateEbayProduct < ApplicationJob
       @xml_data.ErrorLanguage 'en_US'
       @xml_data.WarningLevel 'High'
       @xml_data.Item do
-        @xml_data.ItemID product.listing_id
+        @xml_data.ItemID listing_id
         @xml_data.Variations do
           @xml_data.Variation do
-            @xml_data.SKU product.item_sku
+            @xml_data.SKU sku
             @xml_data.Quantity quantity.to_i
           end
         end

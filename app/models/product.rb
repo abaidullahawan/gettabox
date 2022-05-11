@@ -68,6 +68,43 @@ class Product < ApplicationRecord
 
     update_columns(length: max, height: min, inventory_balance: (total_stock.to_i - unshipped.to_i),
                    unallocated: unshipped.to_i - allocated.to_i, available_stock: total_stock.to_i - allocated.to_i)
+    update_channel_quantity
+  end
+
+  def update_channel_quantity
+    product_mappings.each do |mapping|
+      product = mapping.channel_product
+      deduction_unit = 1
+      if product.channel_type == 'ebay'
+        channel_quantity = Selling&.last&.quantity.to_i < (inventory_balance.to_f/deduction_unit.to_f) ? Selling&.last&.quantity : [(inventory_balance.to_f/deduction_unit.to_f).floor, 0].max
+      else
+        channel_quantity = [(inventory_balance.to_f/deduction_unit.to_f).floor, 0].max
+      end
+      product.update(item_quantity: channel_quantity)
+    end
+    @channel_listings = ChannelProduct.joins(product_mapping: [product: [multipack_products: :child]]).where('child.id': id)
+    @channel_listings.each do |multi_mapping|
+      deduction_unit = multi_mapping.product_mapping&.product&.multipack_products&.find_by(child_id: id)&.quantity.to_i
+      deduction_quantity = [(inventory_balance.to_f/deduction_unit.to_f).floor, 0].max unless deduction_unit.zero?
+      multipack_products = multi_mapping.product_mapping&.product&.multipack_products
+      if multipack_products&.count.to_i > 1
+        deduction_quantity = multi_products_check(multipack_products)
+      end
+      if multi_mapping.channel_type == 'ebay'
+        @channel_quantity =  Selling&.last&.quantity.to_i < deduction_quantity.to_i ? Selling&.last&.quantity.to_i: [deduction_quantity.to_i, 0].max
+      else
+        @channel_quantity = [deduction_quantity.to_i, 0].max
+      end
+      multi_mapping.update(item_quantity: @channel_quantity)
+    end
+  end
+
+  def multi_products_check(multipack_products)
+    deduction_arr = []
+    multipack_products.each do |multipack_product|
+      deduction_arr.push(multipack_product.child.inventory_balance.to_i / multipack_product.quantity.to_i) unless multipack_product.quantity.to_i.zero?
+    end
+    deduction_arr.min
   end
 
   def available_stock_change
