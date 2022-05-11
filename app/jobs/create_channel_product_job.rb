@@ -27,11 +27,10 @@ class CreateChannelProductJob < ApplicationJob
       single_variation_multi_product(item, item['Variations']['Variation'], picture)
     else
       product = ChannelProduct
-              .create_with(channel_type: 'ebay', listing_id: item['ItemID'].to_i,
-                           product_data: item, item_sku: item['SKU'], item_quantity: item['Quantity'],
-                           item_image: picture, item_name: item['Title'], item_price: item['BuyItNowPrice'])
-              .find_or_create_by(channel_type: 'ebay', listing_id: item['ItemID'].to_i, item_sku: item['SKU'])
-    ChannelOrderItem.where(sku: product.item_sku)&.update_all(channel_product_id: product.id)
+                .create_with(channel_type: 'ebay', listing_id: item['ItemID'].to_i,
+                             product_data: item, item_sku: item['SKU'], item_image: picture, item_name: item['Title'], item_price: item['BuyItNowPrice'])
+                .find_or_create_by(channel_type: 'ebay', listing_id: item['ItemID'].to_i, item_sku: item['SKU'])
+      ChannelOrderItem.where(sku: product.item_sku)&.update_all(channel_product_id: product.id)
     end
   end
 
@@ -39,8 +38,7 @@ class CreateChannelProductJob < ApplicationJob
     variations.each do |variation|
       product = ChannelProduct
                 .create_with(channel_type: 'ebay', listing_id: item['ItemID'].to_i, product_data: item,
-                             item_sku: variation['SKU'], item_quantity: variation['Quantity'],
-                             item_image: picture, item_name: variation['VariationTitle'], item_price: item['BuyItNowPrice'])
+                             item_sku: variation['SKU'], item_image: picture, item_name: variation['VariationTitle'], item_price: item['BuyItNowPrice'])
                 .find_or_create_by(channel_type: 'ebay', listing_id: item['ItemID'].to_i, item_sku: variation['SKU'])
       ChannelOrderItem.where(sku: product.item_sku)&.update_all(channel_product_id: product.id)
     end
@@ -49,8 +47,7 @@ class CreateChannelProductJob < ApplicationJob
   def single_variation_multi_product(item, variation, picture)
     product = ChannelProduct
                 .create_with(channel_type: 'ebay', listing_id: item['ItemID'].to_i, product_data: item,
-                             item_sku: variation['SKU'], item_quantity: variation['Quantity'],
-                             item_image: picture, item_name: variation['VariationTitle'], item_price: item['BuyItNowPrice'])
+                             item_sku: variation['SKU'], item_image: picture, item_name: variation['VariationTitle'], item_price: item['BuyItNowPrice'])
                 .find_or_create_by(channel_type: 'ebay', listing_id: item['ItemID'].to_i, item_sku: variation['SKU'])
       ChannelOrderItem.where(sku: product.item_sku)&.update_all(channel_product_id: product.id)
   end
