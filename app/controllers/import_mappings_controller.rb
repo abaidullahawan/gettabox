@@ -243,7 +243,9 @@ class ImportMappingsController < ApplicationController
         sub_type = mapping.sub_type
         if (headers & import_mapping_data).eql? import_mapping_data
           @multifile_mapping = MultifileMapping.create(file1: file1.original_filename, file2: file2.original_filename, download: false, error: nil, sub_type: sub_type )
-          MultiFileMappingJob.perform_later(spreadsheet1: spreadsheet1, spreadsheet2: spreadsheet2, mapping_id: params[:mapping_id], multifile_mapping_id: @multifile_mapping.id)
+          filename1 = save_files_in_tmp(file1)
+          filename2 = save_files_in_tmp(file2)
+          MultiFileMappingJob.perform_later(filename1: filename1, filename2: filename2, mapping_id: params[:mapping_id], multifile_mapping_id: @multifile_mapping.id)
           flash[:notice] = 'Job added successfully!'
         else
           flash[:alert] = 'Import mapping does not match with the files.'
@@ -368,5 +370,13 @@ class ImportMappingsController < ApplicationController
   # Only allow a list of trusted parameters through.
   def import_mapping_params
     params.require(:import_mapping).permit(:table_name, :mapping_data, :sub_type)
+  end
+
+  def save_files_in_tmp(uploaded_file)
+    name = File.basename(uploaded_file.original_filename, File.extname(uploaded_file.original_filename)) + ' -- ' + Time.zone.now.strftime('%d-%m-%Y @ %H:%M:%S') + '.csv'
+    File.open(Rails.root.join('tmp', name), 'wb') do |file|
+      file.write(uploaded_file.read)
+    end
+    name
   end
 end

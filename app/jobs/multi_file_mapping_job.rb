@@ -5,14 +5,14 @@ class MultiFileMappingJob < ApplicationJob
   queue_as :default
 
   def perform(*_args)
-    spreadsheet1 = _args.last[:spreadsheet1]
-    spreadsheet2 = _args.last[:spreadsheet2]
+    filename1 = _args.last[:filename1]
+    filename2 = _args.last[:filename2]
     mapping_id = _args.last[:mapping_id]
     id = _args.last[:multifile_mapping_id]
     mapping = ImportMapping.find(mapping_id)
     multifile = MultifileMapping.find_by(id: id)
-    spreadsheet1 = CSV.parse(spreadsheet1, headers: true)
-    spreadsheet2 = CSV.parse(spreadsheet2, headers: true)
+    spreadsheet1 = CSV.parse(open_spreadsheet(filename1), headers: true)
+    spreadsheet2 = CSV.parse(open_spreadsheet(filename2), headers: true)
     attributes = mapping.data_to_print
     attribute_data = []
     attributes.each do |attribute|
@@ -61,6 +61,8 @@ class MultiFileMappingJob < ApplicationJob
     # @multifile_mapping.attach_csv.attach = file.path
     # @multifile_mapping.save
     multifile.update(download: true)
+    delete_files(filename1)
+    delete_files(filename2)
   rescue StandardError => e
     multifile.update(error: e, download: false)
   end
@@ -135,5 +137,13 @@ class MultiFileMappingJob < ApplicationJob
     unmatched.each do |un|
       csv << un.first.values_at(*attribute_data)
     end
+  end
+
+  def open_spreadsheet(filename)
+    File.read("home/deploy/channeldispatch/current/tmp/#{filename}").force_encoding('ISO-8859-1').encode('utf-8', replace: nil)
+  end
+
+  def delete_files(filename)
+    File.delete("home/deploy/channeldispatch/current/tmp/#{filename}")
   end
 end
