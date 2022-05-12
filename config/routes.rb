@@ -242,6 +242,7 @@ Rails.application.routes.draw do
   post 'courier_csv_export', to: 'import_mappings#courier_csv_export'
   post 'tracking_file', to: 'import_mappings#tracking_file'
   post 'consolidation_tool', to: 'import_mappings#consolidation_tool'
+  get 'consolidation_tool_index', to: 'import_mappings#consolidation_tool_index'
   post 'competitive_price', to: 'import_mappings#competitive_price'
   get 'export_new_consolidation', to: 'import_mappings#export_new_consolidation'
   post 'export_new_consolidation', to: 'import_mappings#export_consolidation'
@@ -320,5 +321,6 @@ Rails.application.routes.draw do
 
   post 'file_mapping', to: 'import_mappings#file_mapping'
   get 'file_mapping_page', to: 'import_mappings#file_mapping_page'
+  get 'multi_file_mapping_index', to: 'import_mappings#multi_file_mapping_index'
   get 'table_name', to: 'export_mappings#table_columns'
 end

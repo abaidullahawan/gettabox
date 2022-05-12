@@ -121,10 +121,11 @@ class ImportMappingsController < ApplicationController
     end
     respond_to do |format|
       if @import_mapping.save
-        format.html { redirect_to import_mappings_path, notice: 'Import mapping was successfully created.' }
+        path = params[:value] == 'multifile_mapping' ? multi_file_mapping_index_path : import_mappings_path
+        format.html { redirect_to path, notice: 'Import mapping was successfully created.' }
         format.json { render :index, status: :created, location: @import_mapping }
       else
-        format.html { redirect_to import_mappings_path, notice: @import_mapping.errors.full_messages }
+        format.html { redirect_to path, notice: @import_mapping.errors.full_messages }
         format.json { render json: @import_mapping.errors, status: :unprocessable_entity }
       end
     end
@@ -160,7 +161,11 @@ class ImportMappingsController < ApplicationController
                                           sub_type: params[:import_mapping][:sub_type])
     end
     respond_to do |format|
-      format.html { redirect_to import_mappings_path, notice: 'Import mapping was successfully updated.' }
+      if params[:multifile_mapping].eql? 'multifile_mapping'
+        format.html { redirect_to multi_file_mapping_index_path, notice: 'Import mapping was successfully updated.' }
+      else
+        format.html { redirect_to import_mappings_path, notice: 'Import mapping was successfully updated.' }
+      end
       format.json { render :show, status: :ok, location: @import_mapping }
     end
   end
@@ -169,9 +174,18 @@ class ImportMappingsController < ApplicationController
   def destroy
     @import_mapping.destroy
     respond_to do |format|
-      format.html { redirect_to import_mappings_url, notice: 'Import mapping was successfully destroyed.' }
+      if params[:value].eql? 'multifile_mapping'
+        format.html { redirect_to multi_file_mapping_index_path, notice: 'Import mapping was successfully destroyed.' }
+      else
+        format.html { redirect_to import_mappings_url, notice: 'Import mapping was successfully destroyed.' }
+      end
       format.json { head :no_content }
     end
+  end
+
+  def consolidation_tool_index
+    @consolidation = ImportMapping.new
+    @consolidations = ImportMapping.where(table_name: 'consolidation')
   end
 
   def consolidation_mapping
@@ -222,6 +236,12 @@ class ImportMappingsController < ApplicationController
     end
   end
 
+  def multi_file_mapping_index
+    @multi_mappings = ImportMapping.where(mapping_type: 'dual')
+    @multifile_mapping = Dir[Rails.root.join('public/uploads/*').to_s]
+    @multifile_mapping_filename = MultifileMapping.all.order(updated_at: :desc)
+  end
+
   def multi_file_mapping
     file1 = params[:file_1]
     file2 = params[:file_2]
@@ -258,7 +278,7 @@ class ImportMappingsController < ApplicationController
     else
       flash[:alert] = 'Try again file not match.'
     end
-    redirect_to import_mappings_path
+    redirect_to multi_file_mapping_index_path
   end
 
   def open_spreadsheet(file)
@@ -356,7 +376,7 @@ class ImportMappingsController < ApplicationController
       File.delete(params[:url]) if params[:url]
       MultifileMapping.find_by(id: params[:id]).destroy
       flash[:notice] = 'File deleted!'
-      redirect_to import_mappings_path
+      redirect_to import_mappings_path(mapping_filter: 'download')
     end
   end
 
@@ -373,7 +393,7 @@ class ImportMappingsController < ApplicationController
   end
 
   def save_files_in_tmp(uploaded_file)
-    name = File.basename(uploaded_file.original_filename, File.extname(uploaded_file.original_filename)) + ' -- ' + Time.zone.now.strftime('%d-%m-%Y @ %H:%M:%S') + '.csv'
+    name = File.basename(uploaded_file.original_filename, File.extname(uploaded_file.original_filename)) + Time.zone.now.strftime('%d-%m-%Y @ %H:%M:%S') + '.csv'
     File.open(Rails.root.join('tmp', name), 'wb') do |file|
       file.write(uploaded_file.read)
     end
