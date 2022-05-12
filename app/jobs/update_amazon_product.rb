@@ -69,7 +69,7 @@ class UpdateAmazonProduct < ApplicationJob
 
   def put_document(data, url)
     body = URI.encode_www_form(data)
-    HTTParty.post(
+    HTTParty.put(
       url.to_str,
       body: body,
       headers: { 'Content-Type' => 'application/json; charset=UTF-8' }
@@ -83,13 +83,13 @@ class UpdateAmazonProduct < ApplicationJob
   end
 
   def create_feed_response(response)
-    url = 'https://sellingpartnerapi-eu.amazon.com/feeds/2021-06-30/documents'
+    url = 'https://sellingpartnerapi-eu.amazon.com/feeds/2021-06-30/feeds'
     document = {
       "feedType" => "JSON_LISTINGS_FEED",
       "marketplaceIds" => [
         "A1F83G8C2ARO7P"
       ],
-      "inputFeedDocumentId" => document_response[:body]['feedDocumentId']
+      "inputFeedDocumentId" => response[:body]['feedDocumentId']
     }
     feed_response = AmazonCreateReportService.create_report(@refresh_token.access_token, url, document)
     return feed_response[:error] unless feed_response[:status]
