@@ -357,7 +357,7 @@ class ImportMappingsController < ApplicationController
       spreadsheet = open_spreadsheet(file)
       # spreadsheet = CSV.parse(spreadsheet, headers: true)
       @multifile_mapping = MultifileMapping.create(file1: file.original_filename, download: false, error: nil, sub_type: 'competative price job' )
-      CompetitivePriceJob.perform_now(spreadsheet: spreadsheet, multifile_mapping_id: @multifile_mapping.id)
+      CompetitivePriceJob.perform_later(spreadsheet: spreadsheet, multifile_mapping_id: @multifile_mapping.id)
       flash[:notice] = 'Job added successfully!'
     else
       flash[:alert] = 'Try again file not match'

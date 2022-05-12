@@ -21,9 +21,9 @@ class ChannelProduct < ApplicationRecord
   def quantity_update
     return unless Rails.env.production?
     if channel_type_ebay?
-      UpdateEbayProduct.perform_now(listing_id: listing_id, sku: item_sku, quantity: item_quantity)
+      UpdateEbayProduct.perform_later(listing_id: listing_id, sku: item_sku, quantity: item_quantity)
     else
-      UpdateAmazonProduct.perform_now(product: item_sku, quantity: item_quantity)
+      UpdateAmazonProduct.perform_later(product: item_sku, quantity: item_quantity)
     end
   end
 end

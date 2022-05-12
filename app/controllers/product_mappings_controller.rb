@@ -450,7 +450,9 @@ class ProductMappingsController < ApplicationController
   end
 
   def allocations
-    order_items = ChannelOrder.find_by(id: params['anything']['channel_order_id']).channel_order_items
+    order_items = ChannelOrder.find_by(id: params['anything']['channel_order_id'])&.channel_order_items
+    return unless order_items.present?
+
     order_items.each do |item|
       allocate_item(item)
     end
