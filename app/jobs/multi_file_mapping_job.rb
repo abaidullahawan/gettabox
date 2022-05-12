@@ -24,7 +24,7 @@ class MultiFileMappingJob < ApplicationJob
     # begin
       # @csv = CSV.generate(headers: true) do |csv|
       name = "multi-mapping--#{multifile.created_at.strftime('%d-%m-%Y @ %H:%M:%S')}"
-      csv = CSV.open("/home/deploy/channeldispatch/current/public/uploads/#{name}", "wb") do |csv|
+      csv = CSV.open("/home/ali/Projects/gettabox/public/uploads/#{name}", "wb")  do |csv|
         csv << attributes
         non_matching1 = []
         non_matching2 = []
@@ -140,10 +140,10 @@ class MultiFileMappingJob < ApplicationJob
   end
 
   def open_spreadsheet(filename)
-    File.read("home/deploy/channeldispatch/current/tmp/#{filename}").force_encoding('ISO-8859-1').encode('utf-8', replace: nil)
+    File.read(Rails.root.join('tmp', filename)).force_encoding('ISO-8859-1').encode('utf-8', replace: nil)
   end
 
   def delete_files(filename)
-    File.delete("home/deploy/channeldispatch/current/tmp/#{filename}")
+    File.delete(Rails.root.join('tmp', filename))
   end
 end

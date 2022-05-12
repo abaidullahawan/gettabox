@@ -1,0 +1,81 @@
+<!-- Main Content Header -->
+<div class="main-content-header">
+    <h1>Muliple File Mapping</h1>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a href="<%= home_path %>">Dashboard</a>
+        </li>
+        <li class="breadcrumb-item active">
+            <span class="active">Muliple File Mapping</span>
+        </li>
+    </ol>
+</div>
+<!-- End Main Content Header -->
+
+<!-- Multi File Accordion -->
+<div class="row">
+  <div class="col-xl-12">
+    <div class="card mb-30">
+      <div class="card-body">
+        <div class="card-header">
+          <button type="button" class="btn btn-primary float-right" data-toggle="modal" data-target="#create-multi-file-mapping-modal">
+              Create
+          </button>
+          <div class='mr-1 float-right'>
+            <%= link_to 'Download', import_mappings_path(mapping_filter: 'download'), class: 'btn btn-outline-info' %>
+          </div>
+          <h5 class="card-title"> Mappings</h5>
+        </div>
+        <table class="table m-0 table-hover">
+          <% @multi_mappings.each do |import_mapping| %>
+            <div class= 'd-flex'>
+              <tr>
+                <td class="text-center font-weight-bold mr-4 font-lg"><%= import_mapping.sub_type %></td>
+                <td>
+                  <%= form_tag multi_file_path, local:true, multipart: true, class: "importMultiFileForm", method: :post do%>
+                    <%= file_field_tag "file_1", :accept => 'csv', required: true%>
+                    <%= file_field_tag "file_2", :accept => 'csv', required: true%>
+                    <%= hidden_field_tag 'mapping_id', import_mapping.id%>
+                    <%= submit_tag 'Use Mapping', class:"btn btn-primary"%>
+                  <% end %>
+                </td>
+                <td>
+                  <%= link_to 'Edit', edit_import_mapping_path(import_mapping, 'multifile_mapping'), class: "btn btn-info ml-3 mr-3 text-white" %>
+                  <% @blank, @full = import_mapping&.mapping_data&.partition { |_, v| v.blank? }&.map { |alist| Hash[alist] }%>
+                </td>
+              </tr>
+            </div>
+          <% end %>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Multi File Accordion End -->
+
+<!-- Create Mapping Modal -->
+<%= form_with url: file_mapping_path, method: :post do |form|%>
+  <div class="modal fade" id="create-multi-file-mapping-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
+    <div class="modal-dialog  modal-dialog-scrollable modal-md" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">New Mapping</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body d-flex" >
+          <%= file_field_tag "file_1", :accept => 'csv', required: true%>
+          <%= form.file_field "file_2", :accept => 'csv', required: true%>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+          <%= form.submit 'Create Mapping', class:"btn btn-primary"%>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>
+
+<!-- Create Mapping Modal End -->

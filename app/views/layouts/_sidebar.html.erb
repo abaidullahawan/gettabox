@@ -164,6 +164,22 @@
                 </div>
 
                 <a
+                    class="nav-link <%= active_klass(multi_file_mapping_index_path) %>"
+                    href="<%= multi_file_mapping_index_path %>"
+                >
+                    <i data-feather="file" class="icon"></i>
+                    <span class="title">Multiple File Mapping</span>
+                </a>
+
+                 <a
+                    class="nav-link <%= active_klass(consolidation_tool_index_path) %>"
+                    href="<%= consolidation_tool_index_path %>"
+                >
+                    <i data-feather="tool" class="icon"></i>
+                    <span class="title">Consolidation Tool</span>
+                </a>
+
+                <a
                     class="nav-link <%= active_klass(discussions_chat_path) %>"
                     href="<%= discussions_chat_path %>"
                 >
