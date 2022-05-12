@@ -68,10 +68,10 @@ class UpdateAmazonProduct < ApplicationJob
   end
 
   def put_document(data, url)
-    body = URI.encode_www_form(data)
+    # body = URI.encode_www_form(data)
     HTTParty.put(
       url.to_str,
-      body: body,
+      body: data.to_json,
       headers: { 'Content-Type' => 'application/json; charset=UTF-8' }
     )
   end
