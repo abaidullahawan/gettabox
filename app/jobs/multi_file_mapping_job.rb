@@ -24,7 +24,7 @@ class MultiFileMappingJob < ApplicationJob
     # begin
       # @csv = CSV.generate(headers: true) do |csv|
       name = "multi-mapping--#{multifile.created_at.strftime('%d-%m-%Y @ %H:%M:%S')}"
-      csv = CSV.open("/home/ali/Projects/gettabox/public/uploads/#{name}", "wb")  do |csv|
+      csv = CSV.open("/home/deploy/channeldispatch/current/public/uploads/#{name}", "wb")  do |csv|
         csv << attributes
         non_matching1 = []
         non_matching2 = []
