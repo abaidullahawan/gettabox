@@ -47,15 +47,16 @@ class ImportMappingsController < ApplicationController
     params_data = params[:table_data].split('_')
     data_arr = []
     params_data.each do |data|
-      data_arr.push( data => params[data] )
+      data_arr.push(data => params[data])
     end
     ImportMapping.create(header_data: params_data, mapping_type: params[:consolidation_field], table_name: 'consolidation', data_to_print: data_arr, sub_type: params[:description])
-    redirect_to import_mappings_path
+    flash[:notice] = 'Consolidation mapping created successfully.'
+    redirect_to consolidation_tool_index_path
   end
 
   # GET /import_mappings/1/edit
   def edit
-    @table_names = ['Product', 'Channel Order', 'Channel Product', 'Tracking']
+    @table_names = ['Product', 'Channel Order', 'Channel Product', 'Tracking', 'Consolidation']
   end
 
   def file_mapping
@@ -152,6 +153,8 @@ class ImportMappingsController < ApplicationController
         end
       end
       @import_mapping.update(data_to_print: header_to_print) if header_to_print.present?
+    elsif params[:import_mapping][:table_name].eql? 'Consolidation'
+      @import_mapping.update(sub_type: params[:import_mapping][:sub_type])
     else
       @table_name = params[:import_mapping][:table_name]
       @table_name.parameterize.underscore.classify.constantize.column_names.each do |col_name|
@@ -163,6 +166,8 @@ class ImportMappingsController < ApplicationController
     respond_to do |format|
       if params[:multifile_mapping].eql? 'multifile_mapping'
         format.html { redirect_to multi_file_mapping_index_path, notice: 'Import mapping was successfully updated.' }
+      elsif params[:consolidation_tool].eql? 'consolidation_tool'
+        format.html { redirect_to consolidation_tool_index_path, notice: 'Import mapping was successfully updated.' }
       else
         format.html { redirect_to import_mappings_path, notice: 'Import mapping was successfully updated.' }
       end
@@ -176,6 +181,8 @@ class ImportMappingsController < ApplicationController
     respond_to do |format|
       if params[:value].eql? 'multifile_mapping'
         format.html { redirect_to multi_file_mapping_index_path, notice: 'Import mapping was successfully destroyed.' }
+      elsif params[:value].eql? 'consolidation_tool'
+        format.html { redirect_to consolidation_tool_index_path, notice: 'Import mapping was successfully destroyed.' }
       else
         format.html { redirect_to import_mappings_url, notice: 'Import mapping was successfully destroyed.' }
       end
@@ -232,7 +239,7 @@ class ImportMappingsController < ApplicationController
       end
     else
       flash[:alert] = 'Please use csv file'
-      redirect_to import_mappings_path
+      redirect_to consolidation_tool_index_path
     end
   end
 
@@ -333,7 +340,6 @@ class ImportMappingsController < ApplicationController
   end
 
   def consolidation_tool
-
     file = params[:file]
     file_type = file.present? ? file.path.split('.').last.to_s.downcase : ''
     if file.present? && (file_type.include? 'csv') || (file_type.include? 'xlsx')

@@ -85,7 +85,7 @@
             </div>
             <%= f.hidden_field :mapping_type, value: 'dual' %>
             <div class="form-group">
-              <%= hidden_field_tag 'multifile_mapping', params[:format].present? ? params[:format] : nil%>
+              <%= hidden_field_tag 'multifile_mapping', params[:format].present? ? params[:format] : nil %>
               <%= f.button :Update, class: 'btn btn-outline-primary' %>
             </div>
           <% end %>
@@ -101,7 +101,7 @@
           <div class="card-header d-flex">
             <h5 class="card-title">Edit Import Mappings</h5>
             <div class="ml-auto">
-              <%= link_to 'Destroy', @import_mapping, method: :delete, data: { confirm: 'Are you sure?' }, class: "text-white btn btn-danger" %>
+              <%= link_to 'Destroy', import_mapping_path(id: @import_mapping.id, value: params[:format]), method: :delete, data: { confirm: 'Are you sure?' }, class: "text-white btn btn-danger" %>
             </div>
           </div>
           <%= form_for @import_mapping do |f| %>
@@ -126,6 +126,7 @@
             <% end %>
 
             <div class="form-group">
+              <%= hidden_field_tag 'consolidation_tool', params[:format].present? ? params[:format] : nil %>
               <%= f.button  :submit%>
             </div>
           <% end %>
