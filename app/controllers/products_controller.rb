@@ -336,6 +336,7 @@ class ProductsController < ApplicationController
         hash.delete(nil)
         hash['product_type'] = hash['product_type']&.downcase
         hash['vat'] = hash['vat'].to_i
+        hash['total_stock'] = hash['total_stock'].to_i
         product = Product.with_deleted.find_or_initialize_by(sku: hash['sku'])
         next product.update(hash) if hash['category_id'].to_i.positive?
 
@@ -349,7 +350,7 @@ class ProductsController < ApplicationController
           product.update(manual_edit_stock: stock, change_log: "Manual Edit, Spreadsheet, #{stock}, Manual Edit, , #{(hash['total_stock'].to_i - product.unshipped.to_i)}")
         end
         product.update!(hash)
-        Barcode.find_or_create_by(product_id: product.id, title: hash['barcode'])
+        Barcode.find_or_create_by(product_id: product.id, title: hash['barcode'])  if hash['barcode'].present?
       end
     else
       flash[:alert] = error_message
