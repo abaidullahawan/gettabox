@@ -108,7 +108,7 @@ class UpdateAmazonProduct < ApplicationJob
   def perform_later_queue(sku, quantity, error)
     credential = Credential.find_by(grant_type: 'wait_time')
     wait_time = credential.created_at
-    wait_time = DateTime.now > wait_time ? DateTime.now : wait_time + 10.seconds
+    wait_time = DateTime.now > wait_time ? DateTime.now + 130.seconds : wait_time + 130.seconds
     credential.update(redirect_uri: 'AmazonTrackingJob', authorization: sku, created_at: wait_time)
     elapsed_seconds = ((wait_time - DateTime.now) * 24 * 60 * 60).to_i
     self.class.set(wait: elapsed_seconds.seconds).perform_later(product: sku, quantity: quantity, error: error)
