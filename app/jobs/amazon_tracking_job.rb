@@ -122,7 +122,7 @@ class AmazonTrackingJob < ApplicationJob
     credential = Credential.find_by(grant_type: 'wait_time')
     wait_time = credential.created_at
     wait_time = DateTime.now > wait_time ? DateTime.now : wait_time + 10.seconds
-    credential.update(redirect_uri: 'AmazonTrackingJob', authorization: tracking_order_id, created_at: wait_time)
+    credential.update(redirect_uri: 'AmazonTrackingJob', authorization: ids, created_at: wait_time)
     elapsed_seconds = ((wait_time - DateTime.now) * 24 * 60 * 60).to_i
     self.class.set(wait: elapsed_seconds.seconds).perform_later(order_ids: ids, error: error)
   end
