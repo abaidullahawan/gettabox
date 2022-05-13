@@ -15,12 +15,12 @@ class UpdateAmazonProduct < ApplicationJob
       "contentType" => "application/json; charset=UTF-8"
     }
     document_response = AmazonCreateReportService.create_report(@refresh_token.access_token, url, document)
-    return document_response[:error] unless document_response[:status]
+    return perform_later_queue(sku, quantity, document_response[:error]) unless document_response[:status]
 
     result = upload_document(@refresh_token.access_token, document_response[:body]['url'], sku, quantity)
-    return result[:error] unless result[:status]
+    return perform_later_queue(sku, quantity, result[:error]) unless result[:status]
 
-    create_feed_response(document_response)
+    create_feed_response(document_response, sku, quantity)
   end
 
   def generate_refresh_token
@@ -82,7 +82,7 @@ class UpdateAmazonProduct < ApplicationJob
     { status: false, error: result['error_description'] }
   end
 
-  def create_feed_response(response)
+  def create_feed_response(response, sku, quantity)
     url = 'https://sellingpartnerapi-eu.amazon.com/feeds/2021-06-30/feeds'
     document = {
       "feedType" => "JSON_LISTINGS_FEED",
@@ -92,7 +92,7 @@ class UpdateAmazonProduct < ApplicationJob
       "inputFeedDocumentId" => response[:body]['feedDocumentId']
     }
     feed_response = AmazonCreateReportService.create_report(@refresh_token.access_token, url, document)
-    return feed_response[:error] unless feed_response[:status]
+    return perform_later_queue(sku, quantity, feed_response[:error]) unless feed_response[:status]
 
     # get_feed(feed_response[:body]['feedId'])
   end
@@ -103,5 +103,14 @@ class UpdateAmazonProduct < ApplicationJob
     # return puts result unless result[:status]
 
     # create_order_response(result, url)
+  end
+
+  def perform_later_queue(sku, quantity, error)
+    credential = Credential.find_by(grant_type: 'wait_time')
+    wait_time = credential.created_at
+    wait_time = DateTime.now > wait_time ? DateTime.now : wait_time + 10.seconds
+    credential.update(redirect_uri: 'AmazonTrackingJob', authorization: tracking_order_id, created_at: wait_time)
+    elapsed_seconds = ((wait_time - DateTime.now) * 24 * 60 * 60).to_i
+    self.class.set(wait: elapsed_seconds.seconds).perform_later(product: sku, quantity: quantity, error: error)
   end
 end
