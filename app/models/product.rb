@@ -8,6 +8,7 @@ class Product < ApplicationRecord
   after_create :re_modulate_dimensions
   after_create :available_stock_change
   after_update :re_modulate_dimensions
+  after_update :update_channel_quantity, if: :saved_change_to_total_stock?
 
   validates :sku, presence: true, uniqueness: { case_sensitive: false }
   validates :title, presence: true
@@ -68,7 +69,6 @@ class Product < ApplicationRecord
 
     update_columns(length: max, height: min, inventory_balance: (total_stock.to_i - unshipped.to_i),
                    unallocated: unshipped.to_i - allocated.to_i, available_stock: total_stock.to_i - allocated.to_i)
-    update_channel_quantity
   end
 
   def update_channel_quantity
@@ -81,6 +81,12 @@ class Product < ApplicationRecord
         channel_quantity = [(inventory_balance.to_f/deduction_unit.to_f).floor, 0].max
       end
       product.update(item_quantity: channel_quantity)
+      return unless Rails.env.production?
+      if product.channel_type_ebay?
+        UpdateEbayProduct.perform_later(listing_id: product.id, sku: product.item_sku, quantity: channel_quantity)
+      else
+        UpdateAmazonProduct.perform_later(product: product.item_sku, quantity: channel_quantity)
+      end
     end
     @channel_listings = ChannelProduct.joins(product_mapping: [product: [multipack_products: :child]]).where('child.id': id)
     @channel_listings.each do |multi_mapping|
@@ -96,6 +102,12 @@ class Product < ApplicationRecord
         @channel_quantity = [deduction_quantity.to_i, 0].max
       end
       multi_mapping.update(item_quantity: @channel_quantity)
+      return unless Rails.env.production?
+      if multi_mapping.channel_type_ebay?
+        UpdateEbayProduct.perform_later(listing_id: multi_mapping.id, sku: multi_mapping.item_sku, quantity: channel_quantity)
+      else
+        UpdateAmazonProduct.perform_later(product: multi_mapping.item_sku, quantity: channel_quantity)
+      end
     end
   end
 
