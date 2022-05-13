@@ -360,7 +360,7 @@ class PickAndPacksController < ApplicationController
     wait_time = credential.created_at
     wait_time = DateTime.now > wait_time ? DateTime.now + 130.seconds : wait_time + 130.seconds
     credential.update(redirect_uri: 'AmazonTrackingJob', authorization: tracking_order_id, created_at: wait_time)
-    elapsed_seconds = ((wait_time - DateTime.now) * 24 * 60 * 60).to_i
+    elapsed_seconds = wait_time - DateTime.now
     AmazonTrackingJob.set(wait: elapsed_seconds.seconds).perform_later(order_ids: [tracking_order_id])
   end
 end
