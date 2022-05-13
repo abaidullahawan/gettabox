@@ -21,6 +21,13 @@
         <div class="card-header">
           <h5 class="card-title">Create</h5>
         </div>
+          <div class='row'>
+            <div class="col-md-3"><br>
+              <div class="dropdown">
+                <input type="text" class="form-control productSearchOrderField" placeholder="Search Product....">
+              </div>
+            </div>
+          </div>
         <%= form_for @purchase_order, url: purchase_orders_path, method: :post do |pd| %>
           <div class='row'>
             <div class='col-3 offset-6'>
@@ -36,7 +43,7 @@
               <!-- Faq accordion -->
               <div class="faq-accordion mb-30">
                 <% @categories.each do |id, name| %>
-                  <ul class="accordion">
+                  <ul class="accordion accordion-container">
                     <li class="accordion-item">
                       <a class="accordion-title" href="javascript:void(0)">
                         <i class="lni-plus"></i>
@@ -69,7 +76,7 @@
                                   <td colspan='3'>
                                     <h5><%= product.title %></h5><br>
                                     <strong>Description: </strong><%= product.description %><br>
-                                    <strong>Product SKU: </strong><%= product.sku %><br>
+                                    <strong>Product SKU: </strong><span class="productSkuSearch"><%= product.sku %></span><br>
                                     <strong>Supplier SKU: </strong><%= product.product_suppliers.find_by(system_user_id: @supplier).product_sku %>
                                   </td>
                                   <td>0/0</td>

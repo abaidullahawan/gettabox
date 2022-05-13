@@ -28,6 +28,27 @@ $(document).on('turbolinks:load', function () {
     $('.edit_purchase_order').submit();
   })
 
+  $('.productSearchOrderField').on('keyup', function(e){
+    $('.accordion-container').removeClass('displayCheck')
+    if (e.key === 'Enter' || e.keyCode === 13) {
+      var product_sku_list = $('.productSkuSearch')
+      for(var i =0; i < product_sku_list.length; i++){
+        if (!product_sku_list[i].textContent.includes($(this).val())){
+          product_sku_list[i].parentElement.parentElement.classList.add('d-none')
+          if (!product_sku_list[i].parentElement.closest('.accordion').classList.contains('displayCheck'))
+          {
+            product_sku_list[i].parentElement.closest('.accordion').classList.add('d-none')
+          }
+        }
+        else{
+          product_sku_list[i].parentElement.parentElement.classList.remove('d-none')
+          product_sku_list[i].parentElement.closest('.accordion').classList.remove('d-none')
+          product_sku_list[i].parentElement.closest('.accordion').classList.add('displayCheck')
+        }
+      }
+    }
+  })
+
 })
 function purchaseOrderTotal() {
   var length = $('.order_item_price').length
