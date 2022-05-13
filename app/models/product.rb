@@ -97,11 +97,11 @@ class Product < ApplicationRecord
         deduction_quantity = multi_products_check(multipack_products)
       end
       if multi_mapping.channel_type == 'ebay'
-        @channel_quantity =  Selling&.last&.quantity.to_i < deduction_quantity.to_i ? Selling&.last&.quantity.to_i: [deduction_quantity.to_i, 0].max
+        channel_quantity =  Selling&.last&.quantity.to_i < deduction_quantity.to_i ? Selling&.last&.quantity.to_i: [deduction_quantity.to_i, 0].max
       else
-        @channel_quantity = [deduction_quantity.to_i, 0].max
+        channel_quantity = [deduction_quantity.to_i, 0].max
       end
-      multi_mapping.update(item_quantity: @channel_quantity)
+      multi_mapping.update(item_quantity: channel_quantity)
       return unless Rails.env.production?
       if multi_mapping.channel_type_ebay?
         UpdateEbayProduct.perform_later(listing_id: multi_mapping.id, sku: multi_mapping.item_sku, quantity: channel_quantity)
