@@ -417,7 +417,7 @@ class ProductsController < ApplicationController
     wait_time = credential.created_at
     wait_time = DateTime.now > wait_time ? DateTime.now + 130.seconds : wait_time + 130.seconds
     credential.update(redirect_uri: 'UpdateAmazonProduct', authorization: sku, created_at: wait_time)
-    elapsed_seconds = ((wait_time - DateTime.now) * 24 * 60 * 60).to_i
+    elapsed_seconds = wait_time - DateTime.now
     UpdateAmazonProduct.set(wait: elapsed_seconds.seconds).perform_later(product: sku, quantity: quantity)
   end
 end
