@@ -19,7 +19,7 @@
       <div class="font-sm d-flex align-items-center" style="width: 3%;">
         <div id="<%=order.id%>" class= 'orders-switch' name="orders-switch">
           <% value_check = order&.assign_rule&.mail_service_rule&.tracking_import.present? ? true : false %>
-          <input id="object_ids[]" class="ml-2 form_field_questions" style="width: 20px; height: 20px;" type="checkbox" data-allocate = '<%= (order.channel_order_items.pluck(:allocated) - [true]).present? %>' data-courier="<%= order.assign_rule&.mail_service_rule&.courier&.name %>" data-tracking= "<%= value_check %>" data-export="<%= order.assign_rule&.mail_service_rule&.export_mapping_id %>" data-item="<%= order.channel_order_items.count %>" value="<%=order.id%>" name="object_ids[]" >
+          <input id="object_ids[]" class="ml-2 form_field_questions update-selected-export" style="width: 20px; height: 20px;" type="checkbox" data-allocate = '<%= (order.channel_order_items.pluck(:allocated) - [true]).present? %>' data-courier="<%= order.assign_rule&.mail_service_rule&.courier&.name %>" data-tracking= "<%= value_check %>" data-export="<%= order.assign_rule&.mail_service_rule&.export_mapping_id %>" data-item="<%= order.channel_order_items.count %>" value="<%=order.id%>" name="object_ids[]" >
           <%# f.check_box 'object_ids[]', {'data-item': order.channel_order_items.count}, order.id %>
         </div>
       </div>

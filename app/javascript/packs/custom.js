@@ -142,11 +142,12 @@ $(document).on('turbolinks:load', function () {
     $('.product-mapping-request').trigger('click')
   })
 
-  $('#customSwitchAll').on('click', function () {
+  $('#customSwitchAll , .update-selected-export').on('click', function () {
     var switches = $('.orders-switch');
     switches.prop("checked", this.checked);
     var selected = []
     var unselected = []
+    var elem = $(this)
     switches.each(function () {
       if (this.checked) {
         selected.push(this.id)
@@ -161,11 +162,13 @@ $(document).on('turbolinks:load', function () {
       data: { 'selected': selected, 'unselected': unselected },
       success: function (response) {
         if (response.result) {
-          $('.jquery-selected-alert').html('All objects updated successfully')
-          $('.jquery-selected-alert').addClass('bg-success').removeClass('d-none').removeClass('bg-danger')
-          $(".jquery-selected-alert").fadeTo(2000, 500).slideUp(500, function () {
-            $(".jquery-selected-alert").slideUp(500);
-          });
+          if (!elem.hasClass('update-selected-export')){
+            $('.jquery-selected-alert').html('All objects updated successfully')
+            $('.jquery-selected-alert').addClass('bg-success').removeClass('d-none').removeClass('bg-danger')
+            $(".jquery-selected-alert").fadeTo(2000, 500).slideUp(500, function () {
+              $(".jquery-selected-alert").slideUp(500);
+            });
+          }
         }
       }
     })

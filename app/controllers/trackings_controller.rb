@@ -30,7 +30,6 @@ class TrackingsController < ApplicationController
       csv_text = File.read(file).force_encoding('ISO-8859-1').encode('utf-8', replace: nil)
       csv = CSV.parse(csv_text, headers: true)
       count = 0
-      wait_time = 0
       csv.each do |row|
         row = row.to_h
         postcode = row['Shipping Address Postcode'].dup
@@ -59,11 +58,10 @@ class TrackingsController < ApplicationController
         order.update(stage: 'completed', change_log: "Order Completed, #{order.id}, #{order.order_id}, #{current_user.personal_detail&.full_name}")
         update_all_products(order) unless order.channel_order_items.count.zero?
         if order.channel_type_amazon?
-          AmazonTrackingJob.set(wait: wait_time.seconds).perform_later(order_ids: [order.id])
+          call_amazon_tracking_job([order.id])
         else
           EbayCompleteSaleJob.set(wait: wait_time.seconds).perform_later(order_ids: [order.id])
         end
-        wait_time += 10
       end
       flash[:notice] = "#{count} orders updated successfully"
     else
@@ -230,7 +228,7 @@ class TrackingsController < ApplicationController
       order.update(stage: stage, order_batch_id: batch.id, change_log: "Order Exported, #{order.id}, #{order.order_id}, #{current_user.personal_detail.full_name}")
       order.update(change_log: "Channel Updated, #{order.id}, #{order.order_id}, #{current_user.personal_detail&.full_name}") if batch.update_channels
     end
-    AmazonTrackingJob.perform_later(order_ids: order_ids) if batch.update_channels
+    call_amazon_tracking_job(order_ids) if batch.update_channels
     EbayCompleteSaleJob.perform_later(order_ids: order_ids) if batch.update_channels
   end
 
@@ -288,5 +286,14 @@ class TrackingsController < ApplicationController
                    unshipped_orders: product.unshipped_orders.to_i - 1,
                    allocated_orders: product.allocated_orders.to_i - 1,
                    allocated: product.allocated.to_i - item_quantity.to_i)
+  end
+
+  def call_amazon_tracking_job(order_id)
+    credential = Credential.find_by(grant_type: 'wait_time')
+    wait_time = credential.created_at
+    wait_time = DateTime.now > wait_time ? DateTime.now : wait_time + 10.seconds
+    credential.update(redirect_uri: 'AmazonTrackingJob', authorization: order_id, created_at: wait_time)
+    elapsed_seconds = ((wait_time - DateTime.now) * 24 * 60 * 60).to_i
+    AmazonTrackingJob.set(wait: elapsed_seconds.seconds).perform_later(order_ids: order_id)
   end
 end

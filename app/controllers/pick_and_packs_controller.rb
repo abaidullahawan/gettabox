@@ -82,7 +82,7 @@ class PickAndPacksController < ApplicationController
 
       update_all_products(tracking_order)
       tracking_order.update(product_scan: total_product_scan, stage: 'completed', order_batch_id: nil, change_log: "Order Completed, #{tracking_order.id}, #{tracking_order.order_id}, #{current_user.personal_detail.full_name}")
-      AmazonTrackingJob.perform_later(order_ids: [tracking_order.id]) unless tracking_order.update_channel
+      call_amazon_tracking_job(tracking_order.id) unless tracking_order.update_channel
       EbayCompleteSaleJob.perform_later(order_ids: [order.id]) unless tracking_order.update_channel
       flash[:notice] = 'Order completed successfully'
     else
@@ -131,7 +131,7 @@ class PickAndPacksController < ApplicationController
     product_scan = @products_group.map{|g| {"#{g.last.first[:product].id}"=> g.last.pluck(:quantity).sum.to_i}}.reduce(:merge)
     tracking_order.update(product_scan: product_scan, stage: 'completed', order_batch_id: nil, change_log: "Order Completed, #{tracking_order.id}, #{tracking_order.order_id}, #{current_user.personal_detail.full_name}")
     update_all_products(tracking_order)
-    AmazonTrackingJob.perform_later(order_ids: [tracking_order.id]) unless tracking_order.update_channel
+    call_amazon_tracking_job(tracking_order.id) unless tracking_order.update_channel
     EbayCompleteSaleJob.perform_later(order_ids: [tracking_order.id]) unless tracking_order.update_channel
     flash[:notice] = 'Order completed successfully'
     redirect_to start_packing_pick_and_packs_path(q: {batch_name_eq: params[:q][:batch_name_eq]})
@@ -353,5 +353,14 @@ class PickAndPacksController < ApplicationController
       q: { batch_name_eq: params[:q][:batch_name_eq] },
       tracking_no: params[:tracking_no]
     )
+  end
+
+  def call_amazon_tracking_job(tracking_order_id)
+    credential = Credential.find_by(grant_type: 'wait_time')
+    wait_time = credential.created_at
+    wait_time = DateTime.now > wait_time ? DateTime.now : wait_time + 10.seconds
+    credential.update(redirect_uri: 'AmazonTrackingJob', authorization: tracking_order_id, created_at: wait_time)
+    elapsed_seconds = ((wait_time - DateTime.now) * 24 * 60 * 60).to_i
+    AmazonTrackingJob.set(wait: elapsed_seconds.seconds).perform_later(order_ids: [tracking_order_id])
   end
 end
