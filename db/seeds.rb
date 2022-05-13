@@ -9,3 +9,6 @@ Credential
   .create(redirect_uri: 'Channel_Dispatc-ChannelD-Channe-flynitdm',
           grant_type: 'refresh_token',
           authorization: 'Basic Q2hhbm5lbEQtQ2hhbm5lbEQtUFJELWRhMjhlYzY5MC00YTlmMzYzYzpQUkQtYTI4ZWM2OTA4ZWE5LTdjNDMtNGZkOS1iZTQzLTBlN2Q=')
+
+Credential
+  .create(grant_type: 'wait_time')

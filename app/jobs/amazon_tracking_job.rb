@@ -20,10 +20,10 @@ class AmazonTrackingJob < ApplicationJob
     order_ids.each.with_index(1) do |order_id, index|
       sleep(10.seconds) if index > 1
       document_response = AmazonCreateReportService.create_report(@refresh_token.access_token, url, document)
-      return document_response[:error] unless document_response[:status]
+      return perform_later_queue([order_id], document_response[:error]) unless document_response[:status]
 
       result = upload_document(@refresh_token.access_token, document_response[:body]['url'], order_id)
-      return result[:error] unless result[:status]
+      return perform_later_queue([order_id], result[:error]) unless result[:status]
 
       create_feed_response(document_response, order_id)
     end
@@ -100,7 +100,7 @@ class AmazonTrackingJob < ApplicationJob
       inputFeedDocumentId: result[:body]['feedDocumentId']
     }
     feed_response = AmazonCreateReportService.create_report(@refresh_token.access_token, url, document)
-    return feed_response[:error] unless feed_response[:status]
+    return perform_later_queue([order_id], feed_response[:error]) unless feed_response[:status]
 
     channel_updated(order_id)
     # get_feed(feed_response[:body]['feedId'])
@@ -116,5 +116,14 @@ class AmazonTrackingJob < ApplicationJob
 
   def channel_updated(order_id)
     ChannelOrder.find_by(id: order_id).update(update_channel: true)
+  end
+
+  def perform_later_queue(ids, error)
+    credential = Credential.find_by(grant_type: 'wait_time')
+    wait_time = credential.created_at
+    wait_time = DateTime.now > wait_time ? DateTime.now : wait_time + 10.seconds
+    credential.update(redirect_uri: 'AmazonTrackingJob', authorization: ids, created_at: wait_time)
+    elapsed_seconds = ((wait_time - DateTime.now) * 24 * 60 * 60).to_i
+    self.class.set(wait: elapsed_seconds.seconds).perform_later(order_ids: ids, error: error)
   end
 end
