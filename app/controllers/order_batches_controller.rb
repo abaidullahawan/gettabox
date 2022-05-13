@@ -201,7 +201,14 @@ class OrderBatchesController < ApplicationController
 
   def update_channels
     order_ids = params[:order_ids].split(',')
-    AmazonTrackingJob.perform_later(order_ids: order_ids)
+
+    credential = Credential.find_by(grant_type: 'wait_time')
+    wait_time = credential.created_at
+    wait_time = DateTime.now > wait_time ? DateTime.now : wait_time + 10.seconds
+    credential.update(redirect_uri: 'AmazonTrackingJob', authorization: order_ids, created_at: wait_time)
+    elapsed_seconds = ((wait_time - DateTime.now) * 24 * 60 * 60).to_i
+
+    AmazonTrackingJob.set(wait: elapsed_seconds.seconds).perform_later(order_ids: order_ids)
     EbayCompleteSaleJob.perform_later(order_ids: order_ids)
   end
 
