@@ -12,19 +12,19 @@ class UpdateAmazonProduct < ApplicationJob
     products = ChannelProduct.where('updated_at > ?', DateTime.now - 1.hour).where(channel_type: 'amazon').pluck(:item_sku, :item_quantity)
     return 'Products not found' if products.nil? || products.empty?
 
-    # remainaing_time = @refresh_token.access_token_expiry.localtime < DateTime.now
-    # generate_refresh_token if @refresh_token.present? && remainaing_time
-    # url = 'https://sellingpartnerapi-eu.amazon.com/feeds/2021-06-30/documents'
-    # document = {
-    #   "contentType" => "application/json; charset=UTF-8"
-    # }
-    # document_response = AmazonCreateReportService.create_report(@refresh_token.access_token, url, document)
-    # return perform_later_queue(products, document_response[:error]) unless document_response[:status]
+    remainaing_time = @refresh_token.access_token_expiry.localtime < DateTime.now
+    generate_refresh_token if @refresh_token.present? && remainaing_time
+    url = 'https://sellingpartnerapi-eu.amazon.com/feeds/2021-06-30/documents'
+    document = {
+      "contentType" => "application/json; charset=UTF-8"
+    }
+    document_response = AmazonCreateReportService.create_report(@refresh_token.access_token, url, document)
+    return perform_later_queue(products, document_response[:error]) unless document_response[:status]
 
-    # result = upload_document(@refresh_token.access_token, document_response[:body]['url'], products)
-    # return perform_later_queue(products, result[:error]) unless result[:status]
+    result = upload_document(@refresh_token.access_token, document_response[:body]['url'], products)
+    return perform_later_queue(products, result[:error]) unless result[:status]
 
-    # create_feed_response(document_response, products)
+    create_feed_response(document_response, products)
   end
 
   def generate_refresh_token
