@@ -6,8 +6,12 @@ class UpdateAmazonProduct < ApplicationJob
 
   def perform(*_args)
     @refresh_token = RefreshToken.where(channel: 'amazon').last
-    sku = _args.last[:product]
-    quantity = _args.last[:quantity]
+    # sku = _args.last[:product]
+    # quantity = _args.last[:quantity]
+    products = _args&.last.try(:[], 'products')
+    products = ChannelProduct.where('updated_at > ?', DateTime.now - 30.minutes).where(channel_type: 'amazon').pluck(:item_sku, :item_quantity)
+    return 'Products not found' if products.nil? || products.empty?
+
     remainaing_time = @refresh_token.access_token_expiry.localtime < DateTime.now
     generate_refresh_token if @refresh_token.present? && remainaing_time
     url = 'https://sellingpartnerapi-eu.amazon.com/feeds/2021-06-30/documents'
@@ -15,12 +19,12 @@ class UpdateAmazonProduct < ApplicationJob
       "contentType" => "application/json; charset=UTF-8"
     }
     document_response = AmazonCreateReportService.create_report(@refresh_token.access_token, url, document)
-    return perform_later_queue(sku, quantity, document_response[:error]) unless document_response[:status]
+    return perform_later_queue(products, document_response[:error]) unless document_response[:status]
 
-    result = upload_document(@refresh_token.access_token, document_response[:body]['url'], sku, quantity)
-    return perform_later_queue(sku, quantity, result[:error]) unless result[:status]
+    result = upload_document(@refresh_token.access_token, document_response[:body]['url'], products)
+    return perform_later_queue(products, result[:error]) unless result[:status]
 
-    create_feed_response(document_response, sku, quantity)
+    create_feed_response(document_response, products)
   end
 
   def generate_refresh_token
@@ -35,33 +39,34 @@ class UpdateAmazonProduct < ApplicationJob
     )
   end
 
-  def upload_document(access_token, url, sku, quantity)
+  def upload_document(access_token, url, products)
     data = {
       "header" => {
         "sellerId" => "A292BGT65ET8F0",
         "version" => "2.0",
         "issueLocale" => "en_US"
       },
-      "messages" => [
-        {
-          "messageId" => 1,
-          "sku" => sku,
-          "operationType" => "PATCH",
-          "productType" => "LUGGAGE",
-          "patches" => [
-            {
-              "op" => "replace",
-              "path" => "/attributes/fulfillment_availability",
-              "value" => [
-                {
-                  "fulfillment_channel_code" => "DEFAULT",
-                  "quantity" => quantity.to_i
-                }
-              ]
-            }
-          ]
-        }
-      ]
+      "messages" =>
+        products.each.with_index(1).map do |product, index|
+          {
+            "messageId" => index,
+            "sku" => product.first,
+            "operationType" => "PATCH",
+            "productType" => "LUGGAGE",
+            "patches" => [
+              {
+                "op" => "replace",
+                "path" => "/attributes/fulfillment_availability",
+                "value" => [
+                  {
+                    "fulfillment_channel_code" => "DEFAULT",
+                    "quantity" => product.last.to_i
+                  }
+                ]
+              }
+            ]
+          }
+        end
     }
     result = put_document(data, url)
     return_response(result)
@@ -82,7 +87,7 @@ class UpdateAmazonProduct < ApplicationJob
     { status: false, error: result['error_description'] }
   end
 
-  def create_feed_response(response, sku, quantity)
+  def create_feed_response(response, products)
     url = 'https://sellingpartnerapi-eu.amazon.com/feeds/2021-06-30/feeds'
     document = {
       "feedType" => "JSON_LISTINGS_FEED",
@@ -92,7 +97,7 @@ class UpdateAmazonProduct < ApplicationJob
       "inputFeedDocumentId" => response[:body]['feedDocumentId']
     }
     feed_response = AmazonCreateReportService.create_report(@refresh_token.access_token, url, document)
-    return perform_later_queue(sku, quantity, feed_response[:error]) unless feed_response[:status]
+    return perform_later_queue(products, feed_response[:error]) unless feed_response[:status]
 
     # get_feed(feed_response[:body]['feedId'])
   end
@@ -105,12 +110,12 @@ class UpdateAmazonProduct < ApplicationJob
     # create_order_response(result, url)
   end
 
-  def perform_later_queue(sku, quantity, error)
+  def perform_later_queue(products, error)
     credential = Credential.find_by(grant_type: 'wait_time')
     wait_time = credential.created_at
     wait_time = DateTime.now > wait_time ? DateTime.now + 130.seconds : wait_time + 130.seconds
     credential.update(redirect_uri: 'AmazonTrackingJob', authorization: sku, created_at: wait_time)
     elapsed_seconds = wait_time - DateTime.now
-    self.class.set(wait: elapsed_seconds.seconds).perform_later(product: sku, quantity: quantity, error: error)
+    self.class.set(wait: elapsed_seconds.seconds).perform_later(products: products, error: error)
   end
 end

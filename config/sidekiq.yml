@@ -38,3 +38,7 @@ staging:
   get_Amazon_orders_from_API:
     cron: '0 0 * * * *' # Runs every hour
     class: AmazonOrderJob
+
+  update_amazon_products:
+    cron: '*/30 * * * *' # Runs every hour
+    class: UpdateAmazonProduct
