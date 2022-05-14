@@ -82,10 +82,11 @@ class Product < ApplicationRecord
       end
       product.update(item_quantity: channel_quantity)
       return unless Rails.env.production?
+
       if product.channel_type_ebay?
         UpdateEbayProduct.perform_later(listing_id: product.id, sku: product.item_sku, quantity: channel_quantity)
       else
-        call_amazon_product_job(product.item_sku, channel_quantity)
+        # call_amazon_product_job(product.item_sku, channel_quantity)
       end
     end
     @channel_listings = ChannelProduct.joins(product_mapping: [product: [multipack_products: :child]]).where('child.id': id)
@@ -103,10 +104,11 @@ class Product < ApplicationRecord
       end
       multi_mapping.update(item_quantity: channel_quantity)
       return unless Rails.env.production?
+
       if multi_mapping.channel_type_ebay?
         UpdateEbayProduct.perform_later(listing_id: multi_mapping.id, sku: multi_mapping.item_sku, quantity: channel_quantity)
       else
-        call_amazon_product_job(multi_mapping.item_sku, channel_quantity)
+        # call_amazon_product_job(multi_mapping.item_sku, channel_quantity)
       end
     end
   end
@@ -129,6 +131,6 @@ class Product < ApplicationRecord
     wait_time = DateTime.now > wait_time ? DateTime.now  + 130.seconds: wait_time + 130.seconds
     credential.update(redirect_uri: 'UpdateAmazonProduct', authorization: sku, created_at: wait_time)
     elapsed_seconds = wait_time - DateTime.now
-    UpdateAmazonProduct.set(wait: elapsed_seconds.seconds).perform_later(product: sku, quantity: quantity)
+    # UpdateAmazonProduct.set(wait: elapsed_seconds.seconds).perform_later(product: sku, quantity: quantity)
   end
 end

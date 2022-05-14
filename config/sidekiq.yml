@@ -23,18 +23,22 @@ staging:
   :concurrency: 15
 
 :schedule:
-  get_eBay_orders_from_API:
-    cron: '0 0 * * * *' # Runs every hour
-    class: CreateChannelOrderResponseJob
+  # get_eBay_orders_from_API:
+  #   cron: '0 0 * * * *' # Runs every hour
+  #   class: CreateChannelOrderResponseJob
 
-  get_eBay_products_from_API:
-    cron: '0 0 1 * * *' # Runs after every day
-    class: CreateChannelProductResponseJob
+  # get_eBay_products_from_API:
+  #   cron: '0 0 1 * * *' # Runs after every day
+  #   class: CreateChannelProductResponseJob
 
-  get_Amazon_products_from_API:
-    cron: '0 0 1 * * *' # Runs after every day
-    class: AmazonProductJob
+  # get_Amazon_products_from_API:
+  #   cron: '0 0 1 * * *' # Runs after every day
+  #   class: AmazonProductJob
 
-  get_Amazon_orders_from_API:
-    cron: '0 0 * * * *' # Runs every hour
-    class: AmazonOrderJob
+  # get_Amazon_orders_from_API:
+  #   cron: '0 0 * * * *' # Runs every hour
+  #   class: AmazonOrderJob
+
+  update_amazon_products:
+    cron: '*/30 * * * *' # Runs every hour
+    class: UpdateAmazonProduct

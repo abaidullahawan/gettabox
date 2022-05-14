@@ -93,7 +93,7 @@ class ProductsController < ApplicationController
             if listing.channel_type_ebay?
               UpdateEbayProduct.perform_later(listing_id: listing.id, sku: listing.item_sku, quantity: channel_quantity)
             else
-              call_amazon_product_job(listing.item_sku, item_quantity)
+              # call_amazon_product_job(listing.item_sku, item_quantity)
             end
           else
             if listing.channel_type_ebay?
@@ -107,7 +107,7 @@ class ProductsController < ApplicationController
               listing.update(buffer_quantity: channel_forecasting.type_number, item_quantity: listing.item_quantity.to_i + channel_forecasting.type_number.to_i)
               return unless Rails.env.production?
 
-              call_amazon_product_job(listing.item_sku, channel_quantity)
+              # call_amazon_product_job(listing.item_sku, channel_quantity)
             end
           end
         end
@@ -418,6 +418,6 @@ class ProductsController < ApplicationController
     wait_time = DateTime.now > wait_time ? DateTime.now + 130.seconds : wait_time + 130.seconds
     credential.update(redirect_uri: 'UpdateAmazonProduct', authorization: sku, created_at: wait_time)
     elapsed_seconds = wait_time - DateTime.now
-    UpdateAmazonProduct.set(wait: elapsed_seconds.seconds).perform_later(product: sku, quantity: quantity)
+    # UpdateAmazonProduct.set(wait: elapsed_seconds.seconds).perform_later(product: sku, quantity: quantity)
   end
 end
