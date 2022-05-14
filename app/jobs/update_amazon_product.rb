@@ -9,7 +9,7 @@ class UpdateAmazonProduct < ApplicationJob
     # sku = _args.last[:product]
     # quantity = _args.last[:quantity]
     products = _args&.last.try(:[], 'products')
-    products = ChannelProduct.where('updated_at > ?', DateTime.now - 1.hour).where(channel_type: 'amazon').pluck(:item_sku, :item_quantity)
+    products = ChannelProduct.where('updated_at > ?', DateTime.now - 30.minutes).where(channel_type: 'amazon').pluck(:item_sku, :item_quantity)
     return 'Products not found' if products.nil? || products.empty?
 
     remainaing_time = @refresh_token.access_token_expiry.localtime < DateTime.now
@@ -97,7 +97,6 @@ class UpdateAmazonProduct < ApplicationJob
       "inputFeedDocumentId" => response[:body]['feedDocumentId']
     }
     feed_response = AmazonCreateReportService.create_report(@refresh_token.access_token, url, document)
-    byebug
     return perform_later_queue(products, feed_response[:error]) unless feed_response[:status]
 
     # get_feed(feed_response[:body]['feedId'])
