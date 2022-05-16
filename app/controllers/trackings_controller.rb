@@ -30,40 +30,45 @@ class TrackingsController < ApplicationController
       csv_text = File.read(file).force_encoding('ISO-8859-1').encode('utf-8', replace: nil)
       csv = CSV.parse(csv_text, headers: true)
       count = 0
-      csv.each do |row|
-        row = row.to_h
-        postcode = row['Shipping Address Postcode'].dup
-        postcode = postcode + ' '
-        postcode = postcode.gsub!(/[^A-Za-z0-9]/, '')
-        postcode = postcode.downcase
-        if row["Channel Alt Id"].present?
-          orders = ChannelOrder.where(order_id: row["Channel Alt Id"])
-        else
-          orders = ChannelOrder.joins(system_user: :addresses).includes(system_user: :addresses).where("(addresses.postcode) IS NOT NULL and REGEXP_REPLACE((addresses.postcode), '[^A-Za-z0-9]', '', 'g') ILIKE ?", postcode)
-        end
-        # order = ChannelOrder.joins(system_user: :addresses).includes(system_user: :addresses).find_by('lower(system_users.name) LIKE ? and lower(addresses.postcode) LIKE ?', row['Shipping Name'].downcase, row['Shipping Address Postcode'].gsub(' ','').downcase)
-        order = orders.find_by(stage: 'ready_to_dispatch')
-        next unless order.present? && order.stage_ready_to_dispatch?
+      subset = ['Shipping Address Postcode', 'Channel Alt Id', 'Shipping Tracking Code']
+      if subset & csv.first.to_h.keys == subset
+        csv.each do |row|
+          row = row.to_h
+          postcode = row['Shipping Address Postcode'].dup
+          postcode = postcode.to_s + ' '
+          postcode = postcode&.gsub!(/[^A-Za-z0-9]/, '')
+          postcode = postcode&.downcase
+          if row["Channel Alt Id"].present?
+            orders = ChannelOrder.where(order_id: row["Channel Alt Id"])
+          else
+            orders = ChannelOrder.joins(system_user: :addresses).includes(system_user: :addresses).where("(addresses.postcode) IS NOT NULL and REGEXP_REPLACE((addresses.postcode), '[^A-Za-z0-9]', '', 'g') ILIKE ?", postcode)
+          end
+          # order = ChannelOrder.joins(system_user: :addresses).includes(system_user: :addresses).find_by('lower(system_users.name) LIKE ? and lower(addresses.postcode) LIKE ?', row['Shipping Name'].downcase, row['Shipping Address Postcode'].gsub(' ','').downcase)
+          order = orders.find_by(stage: 'ready_to_dispatch')
+          next unless order.present? && order.stage_ready_to_dispatch?
 
-        count +=1
-        tracking_numbers = row['Shipping Tracking Code']&.split(',')
-        tracking_numbers.each do |tracking|
-          tracking = Tracking.find_or_initialize_by(tracking_no: tracking, channel_order_id: order.id)
-          shipping_service = find_shipping_service(row['Shipping Service'].downcase)
-          tracking.carrier = shipping_service.try(:[], :carrier)
-          tracking.service = shipping_service.try(:[], :service)
-          tracking.save!
+          count +=1
+          tracking_numbers = row['Shipping Tracking Code']&.split(',')
+          tracking_numbers.each do |tracking|
+            tracking = Tracking.find_or_initialize_by(tracking_no: tracking, channel_order_id: order.id)
+            shipping_service = find_shipping_service(row['Shipping Service'].downcase)
+            tracking.carrier = shipping_service.try(:[], :carrier)
+            tracking.service = shipping_service.try(:[], :service)
+            tracking.save!
+          end
+          order.update(change_log: "Channel Updated, #{order.id}, #{order.order_id}, #{current_user.personal_detail&.full_name}")
+          order.update(stage: 'completed', change_log: "Order Completed, #{order.id}, #{order.order_id}, #{current_user.personal_detail&.full_name}")
+          update_all_products(order) unless order.channel_order_items.count.zero?
+          if order.channel_type_amazon?
+            call_amazon_tracking_job([order.id])
+          else
+            EbayCompleteSaleJob.perform_later(order_ids: [order.id])
+          end
         end
-        order.update(change_log: "Channel Updated, #{order.id}, #{order.order_id}, #{current_user.personal_detail&.full_name}")
-        order.update(stage: 'completed', change_log: "Order Completed, #{order.id}, #{order.order_id}, #{current_user.personal_detail&.full_name}")
-        update_all_products(order) unless order.channel_order_items.count.zero?
-        if order.channel_type_amazon?
-          call_amazon_tracking_job([order.id])
-        else
-          EbayCompleteSaleJob.set(wait: wait_time.seconds).perform_later(order_ids: [order.id])
-        end
+        flash[:notice] = "#{count} orders updated successfully"
+      else
+        flash[:alert] = 'File format no matched! Please change file'
       end
-      flash[:notice] = "#{count} orders updated successfully"
     else
       flash[:alert] = 'File format no matched! Please change file'
     end
