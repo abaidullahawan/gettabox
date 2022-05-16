@@ -5,7 +5,7 @@ set :branch ,fetch(:branch, 'beta')
 set :stage, :beta
 set :rails_env, :beta
 
-server '46.101.90.1', user: 'deploy', roles: %w[app db web]
+server '46.101.90.1', user: 'root', roles: %w[app db web]
 
 
 # server-based syntax
