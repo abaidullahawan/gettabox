@@ -92,7 +92,7 @@ class AmazonOrderJob < ApplicationJob
       channel_item.ordered = item['QuantityOrdered']
       channel_item.item_data = item
       channel_item.title = item['Title']
-      channel_item.channel_product_id = ChannelProduct.find_by(listing_id: channel_item.line_item_id, item_sku: channel_item.sku)&.id || ChannelProduct.find_by(item_sku: channel_item.sku)&.id
+      channel_item.channel_product_id = ChannelProduct.find_by(listing_id: channel_item.line_item_id, item_sku: channel_item.sku, channel_type: 'amazon')&.id || ChannelProduct.find_by(item_sku: channel_item.sku, channel_type: 'amazon')&.id
       channel_item.save
     end
   end
