@@ -591,7 +591,7 @@ class OrderDispatchesController < ApplicationController
     return unless params[:order_filter].eql? 'completed'
 
     @completed = @channel_orders.where(stage: 'completed')
-    @completed_orders = @completed.order(created_at: :desc).page(params[:completed_page]).per(params[:limit] || 100)
+    @completed_orders = @completed.order(created_at: :desc).page(params[:completed_page]).per(params[:limit] || 100).uniq
     return unless params[:export]
 
     @completed = @completed.where(selected: true) if params[:selected]
@@ -655,7 +655,7 @@ class OrderDispatchesController < ApplicationController
           ).search(params[:q])
       # end
       @not_started_orders = @search.result
-      @not_started_order_data = @not_started_orders.page(params[:not_started_page]).per(params[:limit] || 100)
+      @not_started_order_data = @not_started_orders.page(params[:not_started_page]).per(params[:limit] || 100).uniq
     else
       # if params['assign_filter'].present? && params['assign_filter'] == '1'
       #   @search = @channel_orders.where(stage: 'ready_to_dispatch')
@@ -670,7 +670,7 @@ class OrderDispatchesController < ApplicationController
       else
         @not_started_orders = @not_started_orders.order(:order_type, created_at: :desc)
       end
-      @not_started_order_data = @not_started_orders.page(params[:not_started_page]).per(params[:limit] || 100)
+      @not_started_order_data = @not_started_orders.page(params[:not_started_page]).per(params[:limit] || 100).uniq
     end
     return unless (params[:order_filter].eql? 'ready') && params[:export]
 
