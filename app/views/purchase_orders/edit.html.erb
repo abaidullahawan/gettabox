@@ -24,6 +24,13 @@
         <div class="card-header">
           <h5 class="card-title">Edit</h5>
         </div>
+        <div class='row'>
+          <div class="col-md-3"><br>
+            <div class="dropdown">
+              <input type="text" class="form-control productSearchOrderField" placeholder="Search Product....">
+            </div>
+          </div>
+        </div>
         <%= form_for @purchase_order, url: purchase_order_path(@purchase_order)  do |pd| %>
           <div class='row'>
             <div class='col-3 offset-6'>
@@ -57,7 +64,7 @@
                               <th scope="col"><strong>Quantity</strong></th>
                             </tr>
                           </thead>
-                          <tbody>
+                          <tbody class="tbodyCheck">
                             <%= pd.fields_for :purchase_order_details do |f| %>
                               <% if name == f.object.product.category.title %>
                                 <tr>
@@ -69,9 +76,9 @@
                                     <% end %>
                                   </td>
                                   <td colspan='3'>
-                                    <h5><%= f.object.product.title %></h5><br>
+                                    <h5><span class="productSkuSearch"><%= f.object.product.title %></span></h5><br>
                                     <strong>Description: </strong><%= f.object.product.description %><br>
-                                    <strong>Product SKU: </strong><%= f.object.product.sku %><br>
+                                    <strong>Product SKU: </strong><span class="productSkuSearch"><%= f.object.product.sku %></span><br>
                                     <strong>Supplier SKU: </strong><%= f.object.product.product_suppliers.find_by(system_user_id: @supplier).product_sku %>
                                   </td>
                                   <td>0/0</td>

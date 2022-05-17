@@ -180,7 +180,7 @@ class SystemUsersController < ApplicationController
   end
 
   def ransack_system_users
-    @q = SystemUser.suppliers.ransack(params[:q])
+    @q = SystemUser.suppliers.order(:name).ransack(params[:q])
     @system_users = @q.result(distinct: true).order(created_at: :desc).page(params[:page]).per(params[:limit])
   end
 
