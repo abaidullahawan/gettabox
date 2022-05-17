@@ -62,7 +62,7 @@
                               <th scope="col"><strong>Quantity</strong></th>
                             </tr>
                           </thead>
-                          <tbody>
+                          <tbody class="tbodyCheck">
                             <% @products[id].each do |product| %>
                               <%= pd.fields_for :purchase_order_details do |f| %>
                                 <tr>
@@ -74,7 +74,7 @@
                                     <% end %>
                                   </td>
                                   <td colspan='3'>
-                                    <h5><%= product.title %></h5><br>
+                                    <h5><span class="productSkuSearch"><%= product.title %></span></h5><br>
                                     <strong>Description: </strong><%= product.description %><br>
                                     <strong>Product SKU: </strong><span class="productSkuSearch"><%= product.sku %></span><br>
                                     <strong>Supplier SKU: </strong><%= product.product_suppliers.find_by(system_user_id: @supplier).product_sku %>

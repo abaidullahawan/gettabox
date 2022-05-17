@@ -34,10 +34,11 @@ class PurchaseOrdersController < ApplicationController
 
   def create
     @supplier = SystemUser.find(params[:purchase_order][:supplier_id])
-    purchase_order_contain_quantity = purchase_order_params[:purchase_order_details_attributes].select { |k, v| v['quantity'].present? }
-    order_to_create = { supplier_id: purchase_order_params[:supplier_id], total_bill: purchase_order_params[:total_bill],
-                        purchase_order_details_attributes: purchase_order_contain_quantity }
-    @purchase_order = PurchaseOrder.new(order_to_create)
+    @purchase_order = PurchaseOrder.new(purchase_order_params)
+    # purchase_order_contain_quantity = purchase_order_params[:purchase_order_details_attributes].select { |k, v| v['quantity'].present? }
+    # order_to_create = { supplier_id: purchase_order_params[:supplier_id], total_bill: purchase_order_params[:total_bill],
+    #                     purchase_order_details_attributes: purchase_order_contain_quantity }
+    # @purchase_order = PurchaseOrder.new(order_to_create)
     @purchase_order.order_status_created!
     # @purchase_order.delivery_address = @supplier.supplier_address
     # @purchase_order.invoice_address = GeneralSetting.first.address

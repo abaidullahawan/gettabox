@@ -29,19 +29,24 @@ $(document).on('turbolinks:load', function () {
   })
 
   $('.productSearchOrderField').on('keyup', function(e){
-    $('.accordion-container').removeClass('displayCheck')
     if (e.key === 'Enter' || e.keyCode === 13) {
+      $('.displayCheck').removeClass('displayCheck')
+      $('.rowDisplay').removeClass('rowDisplay')
       var product_sku_list = $('.productSkuSearch')
       for(var i =0; i < product_sku_list.length; i++){
         if (!product_sku_list[i].textContent.includes($(this).val())){
-          product_sku_list[i].parentElement.parentElement.classList.add('d-none')
+          if (!product_sku_list[i].closest('tr').classList.contains('rowDisplay'))
+          {
+            product_sku_list[i].closest('tr').classList.add('d-none')
+          }
           if (!product_sku_list[i].parentElement.closest('.accordion').classList.contains('displayCheck'))
           {
             product_sku_list[i].parentElement.closest('.accordion').classList.add('d-none')
           }
         }
         else{
-          product_sku_list[i].parentElement.parentElement.classList.remove('d-none')
+          product_sku_list[i].closest('tr').classList.remove('d-none')
+          product_sku_list[i].closest('tr').classList.add('rowDisplay')
           product_sku_list[i].parentElement.closest('.accordion').classList.remove('d-none')
           product_sku_list[i].parentElement.closest('.accordion').classList.add('displayCheck')
         }
@@ -62,7 +67,7 @@ function purchaseOrderTotal() {
 
     var sum = 0;
     $('.order_item_total').each(function () {
-      var value = (isNaN(this.value)) ? 0 : this.value;
+      var value = (this.value) == '' ? 0 : this.value;
       sum += parseFloat(value).toFixed(2) * 1 ;  // Or this.innerHTML, this.innerText
     });
     $('.order_total').val(sum)
