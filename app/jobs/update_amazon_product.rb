@@ -18,13 +18,18 @@ class UpdateAmazonProduct < ApplicationJob
     document = {
       "contentType" => "application/json; charset=UTF-8"
     }
+    products.each_slice(20).with_index do |chunk, index|
+      next if index.zero?
+
+      perform_later_queue(chunk, 'Updating in chunks')
+    end
     document_response = AmazonCreateReportService.create_report(@refresh_token.access_token, url, document)
-    return perform_later_queue(products, document_response[:error]) unless document_response[:status]
+    return perform_later_queue(products.first(20), document_response[:error]) unless document_response[:status]
 
-    result = upload_document(@refresh_token.access_token, document_response[:body]['url'], products)
-    return perform_later_queue(products, result[:error]) unless result[:status]
+    result = upload_document(@refresh_token.access_token, document_response[:body]['url'], products.first(20))
+    return perform_later_queue(products.first(20), result[:error]) unless result[:status]
 
-    create_feed_response(document_response, products)
+    create_feed_response(document_response, products.first(20))
   end
 
   def generate_refresh_token
@@ -114,7 +119,7 @@ class UpdateAmazonProduct < ApplicationJob
     credential = Credential.find_by(grant_type: 'wait_time')
     wait_time = credential.created_at
     wait_time = DateTime.now > wait_time ? DateTime.now + 130.seconds : wait_time + 130.seconds
-    credential.update(redirect_uri: 'AmazonTrackingJob', authorization: sku, created_at: wait_time)
+    credential.update(redirect_uri: 'AmazonTrackingJob', authorization: products, created_at: wait_time)
     elapsed_seconds = wait_time - DateTime.now
     self.class.set(wait: elapsed_seconds.seconds).perform_later(products: products, error: error)
   end

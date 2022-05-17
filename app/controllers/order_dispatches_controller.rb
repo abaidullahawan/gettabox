@@ -725,10 +725,10 @@ class OrderDispatchesController < ApplicationController
     @today_orders = @channel_orders.where('Date(channel_orders.created_at) = ?', Date.today).count
     @ready_to_pack_count = @channel_orders.where(stage: 'ready_to_print').count
     @not_started_order_count = @not_started_orders&.count || @channel_orders.where(stage: 'ready_to_dispatch')
-                                              .where.not(channel_type: 'amazon', system_user_id: nil).count
+                                              .where.not(channel_type: 'amazon', system_user_id: nil).distinct.count
     @issue_orders_count = @channel_orders.where(stage: 'issue').count
     @unpaid_orders_count = @channel_orders.where(stage: %w[unpaid pending]).count
-    @completed_count = @channel_orders.where(stage: 'completed').count
+    @completed_count = @channel_orders.where(stage: 'completed').distinct.count
     @un_matched_orders_count = @channel_orders.where(stage: 'unmapped_product_sku').count
     @unmatched_sku_count = @channel_orders.where(stage: 'unable_to_find_sku').count
     @miss_customer_count = @channel_orders.where(channel_type: 'amazon', stage: 'ready_to_dispatch', system_user_id: nil)
