@@ -3,6 +3,7 @@
 # Multiple File Mapping Job
 class MultiFileMappingJob < ApplicationJob
   queue_as :default
+  require 'logger'
 
   def perform(*_args)
     filename1 = _args.last[:filename1]
@@ -14,6 +15,7 @@ class MultiFileMappingJob < ApplicationJob
     spreadsheet1 = CSV.parse(open_spreadsheet(filename1), headers: true)
     spreadsheet2 = CSV.parse(open_spreadsheet(filename2), headers: true)
     attributes = mapping.data_to_print
+    logger = Logger.new($stdout)
     attribute_data = []
     attributes.each do |attribute|
       attribute_data.push(attribute.gsub('_', ' '))
@@ -31,7 +33,16 @@ class MultiFileMappingJob < ApplicationJob
         matching1 = []
         matching = []
         if mapping.mapping_rule.present?
+          logger.info 'Start case_sensitivity---------------------------------------------------------------------------'
+          logger.info '----------------------------------------------------------------------------------------------'
+          logger.info '----------------------------------------------------------------------------------------------'
+          logger.info '----------------------------------------------------------------------------------------------'
+
           case_sensitivity(spreadsheet1, spreadsheet2, matchable, mapping, csv, attribute_data)
+          logger.info 'End case_sensitivity---------------------------------------------------------------------------'
+          logger.info '----------------------------------------------------------------------------------------------'
+          logger.info '----------------------------------------------------------------------------------------------'
+          logger.info '----------------------------------------------------------------------------------------------'
         else
           spreadsheet1.each do |record1|
             matchable.each do |matched|
@@ -60,7 +71,15 @@ class MultiFileMappingJob < ApplicationJob
     # )
     # @multifile_mapping.attach_csv.attach = file.path
     # @multifile_mapping.save
+    logger.info 'Before Update Query---------------------------------------------------------------------------'
+    logger.info '----------------------------------------------------------------------------------------------'
+    logger.info '----------------------------------------------------------------------------------------------'
+    logger.info '----------------------------------------------------------------------------------------------'
     multifile.update(download: true)
+    logger.info 'after Update Query---------------------------------------------------------------------------'
+    logger.info '----------------------------------------------------------------------------------------------'
+    logger.info '----------------------------------------------------------------------------------------------'
+    logger.info '----------------------------------------------------------------------------------------------'
     delete_files(filename1)
     delete_files(filename2)
   rescue StandardError => e
@@ -85,6 +104,10 @@ class MultiFileMappingJob < ApplicationJob
         end
       end
     end
+    logger.info 'Before unmatch_csv_data_spreadsheat1 Query---------------------------------------------------------------------------'
+    logger.info '----------------------------------------------------------------------------------------------'
+    logger.info '----------------------------------------------------------------------------------------------'
+    logger.info '----------------------------------------------------------------------------------------------'
     unmatch_csv_data_spreadsheat1(spreadsheet1, matching, non_matching1)
     unmatch_csv_data(spreadsheet2, matching, non_matching2, non_matching1, csv, attribute_data)
   end
@@ -120,6 +143,10 @@ class MultiFileMappingJob < ApplicationJob
   end
 
   def unmatch_csv_data_spreadsheat1(spreadsheet1, matching, non_matching1)
+    logger.info 'Inside unmatch_csv_data_spreadsheat1 Query---------------------------------------------------------------------------'
+    logger.info '----------------------------------------------------------------------------------------------'
+    logger.info '----------------------------------------------------------------------------------------------'
+    logger.info '----------------------------------------------------------------------------------------------'
     spreadsheet1.each do |record1|
       matching.each do |row|
         non_matching1 << [record1] if record1 != row
@@ -128,6 +155,10 @@ class MultiFileMappingJob < ApplicationJob
   end
 
   def unmatch_csv_data(spreadsheet2, matching1, non_matching2, non_matching1, csv, attribute_data)
+    logger.info 'Inside unmatch_csv_data Query---------------------------------------------------------------------------'
+    logger.info '----------------------------------------------------------------------------------------------'
+    logger.info '----------------------------------------------------------------------------------------------'
+    logger.info '----------------------------------------------------------------------------------------------'
     spreadsheet2.each do |record2|
       matching1.each do |row|
         non_matching2 << [record2] if record2 != row
