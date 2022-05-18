@@ -248,7 +248,9 @@ Rails.application.routes.draw do
   post 'export_new_consolidation', to: 'import_mappings#export_consolidation'
   post 'consolidation_mapping', to: 'import_mappings#consolidation_mapping'
   get 'download', to: 'import_mappings#download'
-
+  post 'auto_dispatch', to: 'import_mappings#auto_dispatch'
+  get 'new_auto_dispatch', to: 'import_mappings#new_auto_dispatch'
+  get 'edit_auto_dispatch', to: 'import_mappings#edit_auto_dispatch'
 
   # Order Dispatch Routes
   get 'all_order_data', to: 'order_dispatches#all_order_data'
