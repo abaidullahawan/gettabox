@@ -39,6 +39,14 @@ staging:
     cron: '0 0 * * * *' # Runs every hour
     class: AmazonOrderJob
 
-  update_amazon_products:
-    cron: '*/30 * * * *' # Runs every hour
-    class: UpdateAmazonProduct
+  # update_amazon_products:
+  #   cron: '*/30 * * * *' # Runs 30 minutes
+  #   class: UpdateAmazonProduct
+
+  issue_orders_re_match:
+    cron: '*/30 * * * *' # Runs 30 minutes
+    class: IssueOrdersJob
+
+  amazon_orders_issue:
+    cron: '*/30 * * * *' # Runs 30 minutes
+    class: AmazonOrderItemJob

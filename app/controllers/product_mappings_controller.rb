@@ -413,7 +413,7 @@ class ProductMappingsController < ApplicationController
   def update_order_stage(channel_product, product)
     ids = ChannelOrder.joins(:channel_order_items).includes(:channel_order_items)
                          .where('channel_order_items.channel_product_id': channel_product.id).pluck(:id)
-    orders = ChannelOrder.where(id: ids)
+    orders = ChannelOrder.where(id: ids, stage: ['unmapped_product_sku', 'unable_to_find_sku'])
     concern_recalculate_rule(orders)
     orders.each do |order|
       next if order.channel_order_items.map { |i| i.channel_product.status}.any?('unmapped')
