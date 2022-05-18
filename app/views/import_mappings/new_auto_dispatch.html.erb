@@ -1,0 +1,41 @@
+<div class="row">
+  <div class="col-xl-12">
+    <div class="card mb-30">
+      <div class="card-body">
+        <div class="card-header">
+            <h5 class="card-title">Create Auto Dispatch Mapping</h5>
+        </div>
+        <%= form_with url: '/import_mappings', remote: true do |f| %>
+          <div class="form-group">
+            <%= f.label :table_name %>
+            <%= f.select :table_name, @table_names, {include_blank: 'Please Select'}, class: 'form-control'%>
+          </div>
+          <div class="form-group">
+            <%= f.label :sub_type %>
+            <%= f.text_field :sub_type, class: 'form-control', required: true %>
+          </div>
+          <% arr = '' %>
+          <% params[:db_columns].each do |col_name| %>
+          <div class="d-flex">
+            <div class="form-group">
+              <%= label_tag :"#{col_name}" %>
+              <%= select_tag :"#{col_name}",  options_for_select(params[:header]), class: 'chosen-select form-control', prompt: "Select Header"%>
+            </div>
+            <% arr = arr + "," + col_name %>
+          </div>
+          <% end %>
+          <% headers = '' %>
+          <% params[:header].each do |header|%>
+            <% headers = headers + "+" + header %>
+          <% end %>
+          <%= f.hidden_field :header_data, value: headers %>
+          <%= f.hidden_field :table_data, value: params[:db_columns] %>
+          <%= f.hidden_field :mapping_type, value: 'dual' %>
+          <div class="form-group">
+            <%= f.button :Create, class: 'btn btn-outline-primary' %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

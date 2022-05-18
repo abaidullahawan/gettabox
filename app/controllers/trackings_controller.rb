@@ -26,20 +26,22 @@ class TrackingsController < ApplicationController
 
   def auto_dispatch
     file = params[:file]
+    template_id = params[:auto_dispatch_template].to_i if params[:auto_dispatch_template].present?
+    mapping_data = ImportMapping.find_by(id: template_id).mapping_data
     if file.present? && file.path.split('.').last.to_s.downcase == 'csv'
       csv_text = File.read(file).force_encoding('ISO-8859-1').encode('utf-8', replace: nil)
       csv = CSV.parse(csv_text, headers: true)
       count = 0
-      subset = ['Shipping Address Postcode', 'Channel Alt Id', 'Shipping Tracking Code']
+      subset =  mapping_data.values.excluding(mapping_data[mapping_data.keys.last])
       if subset & csv.first.to_h.keys == subset
         csv.each do |row|
           row = row.to_h
-          postcode = row['Shipping Address Postcode'].dup
-          postcode = postcode.to_s + ' '
+          postcode = row[mapping_data['postcode']].dup
+          postcode = "#{postcode.to_s} + ' '"
           postcode = postcode&.gsub!(/[^A-Za-z0-9]/, '')
           postcode = postcode&.downcase
-          if row["Channel Alt Id"].present?
-            orders = ChannelOrder.where(order_id: row["Channel Alt Id"])
+          if row[mapping_data['order_id']].present?
+            orders = ChannelOrder.where(order_id: row[mapping_data['order_id']])
           else
             orders = ChannelOrder.joins(system_user: :addresses).includes(system_user: :addresses).where("(addresses.postcode) IS NOT NULL and REGEXP_REPLACE((addresses.postcode), '[^A-Za-z0-9]', '', 'g') ILIKE ?", postcode)
           end
@@ -47,11 +49,11 @@ class TrackingsController < ApplicationController
           order = orders.find_by(stage: 'ready_to_dispatch')
           next unless order.present? && order.stage_ready_to_dispatch?
 
-          count +=1
-          tracking_numbers = row['Shipping Tracking Code']&.split(',')
+          count += 1
+          tracking_numbers = row[mapping_data['tracking_no']]&.split(',')
           tracking_numbers.each do |tracking|
             tracking = Tracking.find_or_initialize_by(tracking_no: tracking, channel_order_id: order.id)
-            shipping_service = find_shipping_service(row['Shipping Service'].downcase)
+            shipping_service = find_shipping_service(row[mapping_data['shipping_service']].downcase)
             tracking.carrier = shipping_service.try(:[], :carrier)
             tracking.service = shipping_service.try(:[], :service)
             tracking.save!
