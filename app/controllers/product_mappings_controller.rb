@@ -214,6 +214,7 @@ class ProductMappingsController < ApplicationController
   def import_product_file
     return unless params[:channel_product][:file].present?
 
+    table_name = params[:channel_product][:table_name]
     file = params[:channel_product][:file]
     file_type = file.present? ? file.path.split('.').last.to_s.downcase : ''
     if file.present? && (file_type.include? 'csv') || (file_type.include? 'xlsx')
@@ -223,7 +224,7 @@ class ProductMappingsController < ApplicationController
       @import_mapping = ImportMapping.new
       @table_names = %w['Order Product']
       @db_names = ChannelProduct.column_names
-      redirect_to new_import_mapping_path(db_columns: @db_names, header: @header, import_mapping: @import_mapping)
+      redirect_to new_import_mapping_path(db_columns: @db_names, header: @header, import_mapping: @import_mapping, table_name: table_name)
     else
       flash[:alert] = 'Try again file not match'
       redirect_to import_mappings_path

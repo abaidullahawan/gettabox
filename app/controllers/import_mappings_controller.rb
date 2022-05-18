@@ -118,12 +118,12 @@ class ImportMappingsController < ApplicationController
       @table_name.parameterize.underscore.classify.constantize.column_names.each do |col_name|
         mapping[col_name.to_s] = params[:"#{col_name}"]
       end
-      @import_mapping = ImportMapping.new(table_name: params[:table_name], mapping_data: mapping,
+      @import_mapping = ImportMapping.new(table_name: @table_name, mapping_data: mapping,
                                           sub_type: params[:sub_type], table_data: params[:table_data].split(' '),
                                           header_data: params[:header_data].split(' '))
     end
     respond_to do |format|
-      if @import_mapping.save!
+      if @import_mapping.save
         path = params[:value] == 'multifile_mapping' ? multi_file_mapping_index_path : import_mappings_path(mapping_filter: 'import')
         format.html { redirect_to path, notice: 'Import mapping was successfully created.' }
         format.json { render :index, status: :created, location: @import_mapping }
@@ -302,6 +302,7 @@ class ImportMappingsController < ApplicationController
   def tracking_file
     return unless params[:tracking][:file].present?
 
+    table_name = params[:tracking][:table_name]
     file = params[:tracking][:file]
     file_type = file.present? ? file.path.split('.').last.to_s.downcase : ''
     if file.present? && (file_type.include? 'csv') || (file_type.include? 'xlsx')
@@ -311,7 +312,7 @@ class ImportMappingsController < ApplicationController
       @data = []
       @import_mapping = ImportMapping.new
       @db_names = Tracking.column_names
-      redirect_to new_import_mapping_path(db_columns: @db_names, header: @header, import_mapping: @import_mapping)
+      redirect_to new_import_mapping_path(db_columns: @db_names, header: @header, import_mapping: @import_mapping, table_name: table_name)
     else
       flash[:alert] = 'Try again file not match'
     end
