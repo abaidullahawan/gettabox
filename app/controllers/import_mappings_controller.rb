@@ -375,8 +375,8 @@ class ImportMappingsController < ApplicationController
     if params[:download].eql? 'true'
       send_file(
         params[:url],
-        filename: 'your_custom_file_name.csv',
-        type: 'csv'
+        filename: 'your_custom_file_name.xls',
+        type: 'xls'
       )
     else
       File.delete(params[:url]) if params[:url]
