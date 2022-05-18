@@ -12,9 +12,10 @@ class AssignRulesController < ApplicationController
     @assign_rule.criteria = criteria
     if @assign_rule.update(assign_rule_params)
       if @assign_rule.save_later
-        ChannelOrder.where.not(order_status: %w[FULFILLED Shipped]).each do |order|
+        ChannelOrder.where(stage: "ready_to_dispatch").each do |order|
           check_criteria = order.channel_order_items.map { |h| [h[:sku], h[:ordered]] }
-          order.update(assign_rule_id: @assign_rule.id) if check_criteria == criteria && order.assign_rule.nil?
+          order.update(assign_rule_id: @assign_rule.id) if check_criteria == criteria
+          @assign_rule.update(status: 'customized')
         end
       else
         channel_order.update(assign_rule_id: @assign_rule.id)
@@ -40,7 +41,15 @@ class AssignRulesController < ApplicationController
     return reset_labels if params['commit'].eql? 'Reset labels'
     @assign_rule.new_record? ? @assign_rule.save : @assign_rule.update(assign_rule_params)
     @assign_rule.update(criteria: criteria)
-    @assign_rule.update(status: 'customized') if (params[:status].eql? 'customized') || check_labels(assign_rule_params[:mail_service_labels_attributes]['0']) || assign_rule_params[:mail_service_labels_attributes]['1'].present?
+
+    # @assign_rule.update(status: 'customized') if (params[:status].eql? 'customized') || check_labels(assign_rule_params[:mail_service_labels_attributes]['0']) || assign_rule_params[:mail_service_labels_attributes]['1'].present?
+    if @assign_rule.save_later
+      ChannelOrder.where(stage: "ready_to_dispatch").each do |order|
+        check_criteria = order.channel_order_items.map { |h| [h[:sku], h[:ordered]] }
+        order.update(assign_rule_id: @assign_rule.id) if check_criteria == criteria
+        @assign_rule.update(status: 'customized')
+      end
+    end
     @channel_order.update(assign_rule_id: @assign_rule.id)
     flash[:notice] = 'Mail Service Rule Updated!'
     redirect_to request.referrer
