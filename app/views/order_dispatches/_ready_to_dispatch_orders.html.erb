@@ -127,7 +127,7 @@
   </div>
 <% end %>
 
-<%= form_tag import_trackings_path, multipart: true, method: :post do %>
+<%= form_tag import_trackings_path, multipart: true, class: 'tracking-form', method: :post do %>
   <div class="modal fade upload-trackings" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
@@ -146,6 +146,7 @@
           <%#= link_to 'PDF', order_dispatches_path(format: :pdf), class:"btn btn-primary float-right ml-1", type:"button"%>
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
           <%= submit_tag("Upload Trackings", id: "button", class: "btn btn-primary", name: "submit", data: {disable_with: false}) %>
+          <%= submit_tag("Continue without Tracking", id: "button", class: "btn btn-primary d-none without_tracking_btn", name: "without_trackings", data: {disable_with: false}) %>
         </div>
       </div>
     </div>
