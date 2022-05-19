@@ -12,7 +12,6 @@ class UpdateEbayVariationProductJob < ApplicationJob
     remainaing_time = @refresh_token.access_token_expiry.localtime > DateTime.now
     generate_refresh_token(credential) if credential.present? && remainaing_time == false
 
-    byebug
     quantity = _args.last[:quantity]
     listing_id = _args.last[:listing_id]
     sku = _args.last[:sku]
@@ -76,7 +75,6 @@ class UpdateEbayVariationProductJob < ApplicationJob
   end
 
   def job_status(response, listing_id, quantity, sku)
-    byebug
     if (response['Ack'].eql? 'Failure') && (response['Errors']['ShortMessage'].include? 'Invalid Multi-SKU')
       UpdateEbaySingleProductJob.perform_later(listing_id: listing_id ,quantity: quantity)
     elsif (response['Ack'].eql? 'Failure')
