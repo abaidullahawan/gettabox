@@ -18,4 +18,8 @@ $(document).on('turbolinks:load', function () {
     })
   })
 
+  $('.tracking-form').on('submit', function(){
+    $('.without_tracking_btn').removeClass('d-none')
+  })
+
 })

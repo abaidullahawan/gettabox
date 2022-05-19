@@ -88,27 +88,22 @@ class ProductsController < ApplicationController
             channel_quantity = listing.item_quantity.to_i - channel_forecasting.type_number.to_i
             channel_quantity = 0 if channel_quantity < 0
             listing.update(buffer_quantity: -channel_forecasting.type_number, item_quantity: channel_quantity)
-            return unless Rails.env.production?
-
-            if listing.channel_type_ebay?
-              UpdateEbayProduct.perform_later(listing_id: listing.id, sku: listing.item_sku, quantity: channel_quantity)
-            else
-              # call_amazon_product_job(listing.item_sku, item_quantity)
-            end
           else
             if listing.channel_type_ebay?
               channel_quantity = listing.item_quantity.to_i + channel_forecasting.type_number.to_i
               selling_quantity = Selling&.last&.quantity.to_i
               channel_quantity = selling_quantity if channel_quantity > selling_quantity
               listing.update(buffer_quantity: channel_forecasting.type_number, item_quantity: channel_quantity)
-              return unless Rails.env.production?
-              UpdateEbayProduct.perform_later(listing_id: listing.id, sku: listing.item_sku, quantity: channel_quantity)
             else
               listing.update(buffer_quantity: channel_forecasting.type_number, item_quantity: listing.item_quantity.to_i + channel_forecasting.type_number.to_i)
-              return unless Rails.env.production?
-
-              # call_amazon_product_job(listing.item_sku, channel_quantity)
             end
+          end
+          return unless Rails.env.production?
+
+          if listing.channel_type_ebay? && listing.listing_type.eql? 'variation'
+            UpdateEbayVariationProductJob.perform_later(listing_id: listing.listing_id, sku: listing.item_sku, quantity: listing.item_quantity)
+          elsif listing.channel_type_ebay? && listing.listing_type.eql? 'single'
+            UpdateEbaySingleProductJob.perform_later(listing_id: listing.listing_id, quantity: listing.item_quantity)
           end
         end
       end
