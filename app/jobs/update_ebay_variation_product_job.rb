@@ -1,13 +1,18 @@
 # frozen_string_literal: true
 
 # converting response to products
-class UpdateEbayProduct < ApplicationJob
+class UpdateEbayVariationProductJob < ApplicationJob
   queue_as :default
 
   def perform(*_args)
     # @page_no = 1
     # @total_pages = 1
-    refresh_token = RefreshToken.where(channel: 'ebay').last
+    @refresh_token = RefreshToken.where(channel: 'ebay').last
+    credential = Credential.find_by(grant_type: 'refresh_token')
+    remainaing_time = @refresh_token.access_token_expiry.localtime > DateTime.now
+    generate_refresh_token(credential) if credential.present? && remainaing_time == false
+
+    byebug
     quantity = _args.last[:quantity]
     listing_id = _args.last[:listing_id]
     sku = _args.last[:sku]
@@ -24,7 +29,7 @@ class UpdateEbayProduct < ApplicationJob
     @xml_data.instruct!
     @xml_data.ReviseFixedPriceItemRequest('xmlns' => 'urn:ebay:apis:eBLBaseComponents') do
       @xml_data.RequesterCredentials do
-        @xml_data.eBayAuthToken refresh_token.access_token.to_s
+        @xml_data.eBayAuthToken @refresh_token.access_token.to_s
       end
       @xml_data.ErrorLanguage 'en_US'
       @xml_data.WarningLevel 'High'
@@ -51,5 +56,31 @@ class UpdateEbayProduct < ApplicationJob
                           })
     @xml_response_data = Nokogiri::XML(response.body)
     @data_xml_re = Hash.from_xml(@xml_response_data.to_xml)
+    job_status(@data_xml_re['ReviseFixedPriceItemResponse'], listing_id, quantity, sku)
+  end
+
+  def generate_refresh_token(credential)
+    result = RefreshTokenService.refresh_token_api(@refresh_token, credential)
+    return update_refresh_token(result[:body], @refresh_token) if result[:status]
+
+    puts (result[:error]).to_s
+  rescue StandardError
+    puts 'Please contact your administration for process'
+  end
+
+  def update_refresh_token(result, refresh_token)
+    refresh_token.update(
+      access_token: result['access_token'],
+      access_token_expiry: DateTime.now + result['expires_in'].to_i.seconds
+    )
+  end
+
+  def job_status(response, listing_id, quantity, sku)
+    byebug
+    if (response['Ack'].eql? 'Failure') && (response['Errors']['ShortMessage'].include? 'Invalid Multi-SKU')
+      UpdateEbaySingleProductJob.perform_later(listing_id: listing_id ,quantity: quantity)
+    elsif (response['Ack'].eql? 'Failure')
+      self.class.perform_later(listing_id: listing_id ,quantity: quantity, sku: sku, error: response['Errors']['LongMessage'])
+    end
   end
 end
