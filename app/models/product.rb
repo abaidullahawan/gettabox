@@ -83,9 +83,9 @@ class Product < ApplicationRecord
       product.update(item_quantity: channel_quantity)
       return unless Rails.env.production?
 
-      if product.channel_type_ebay? && product.listing_type.eql? 'variation'
+      if product.channel_type_ebay? && (product.listing_type.eql? 'variation')
         UpdateEbayVariationProductJob.perform_later(listing_id: product.listing_id, sku: product.item_sku, quantity: product.item_quantity)
-      elsif product.channel_type_ebay? && product.listing_type.eql? 'single'
+      elsif product.channel_type_ebay? && (product.listing_type.eql? 'single')
         UpdateEbaySingleProductJob.perform_later(listing_id: product.listing_id, quantity: product.item_quantity)
       end
     end
@@ -105,9 +105,9 @@ class Product < ApplicationRecord
       multi_mapping.update(item_quantity: channel_quantity)
       return unless Rails.env.production?
 
-      if multi_mapping.channel_type_ebay? && multi_mapping.listing_type.eql? 'variation'
+      if multi_mapping.channel_type_ebay? && (multi_mapping.listing_type.eql? 'variation')
         UpdateEbayVariationProductJob.perform_later(listing_id: multi_mapping.listing_id, sku: multi_mapping.item_sku, quantity: multi_mapping.item_quantity)
-      elsif multi_mapping.channel_type_ebay? && multi_mapping.listing_type.eql? 'single'
+      elsif multi_mapping.channel_type_ebay? && (multi_mapping.listing_type.eql? 'single')
         UpdateEbaySingleProductJob.perform_later(listing_id: multi_mapping.listing_id, quantity: multi_mapping.item_quantity)
       end
     end

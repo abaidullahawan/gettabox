@@ -100,9 +100,9 @@ class ProductsController < ApplicationController
           end
           return unless Rails.env.production?
 
-          if listing.channel_type_ebay? && listing.listing_type.eql? 'variation'
+          if listing.channel_type_ebay? && (listing.listing_type.eql? 'variation')
             UpdateEbayVariationProductJob.perform_later(listing_id: listing.listing_id, sku: listing.item_sku, quantity: listing.item_quantity)
-          elsif listing.channel_type_ebay? && listing.listing_type.eql? 'single'
+          elsif listing.channel_type_ebay? && (listing.listing_type.eql? 'single')
             UpdateEbaySingleProductJob.perform_later(listing_id: listing.listing_id, quantity: listing.item_quantity)
           end
         end
