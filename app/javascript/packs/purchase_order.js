@@ -34,7 +34,7 @@ $(document).on('turbolinks:load', function () {
       $('.rowDisplay').removeClass('rowDisplay')
       var product_sku_list = $('.productSkuSearch')
       for(var i =0; i < product_sku_list.length; i++){
-        if (!product_sku_list[i].textContent.includes($(this).val())){
+        if (!product_sku_list[i].textContent.toLocaleLowerCase().includes($(this).val().toLocaleLowerCase())){
           if (!product_sku_list[i].closest('tr').classList.contains('rowDisplay'))
           {
             product_sku_list[i].closest('tr').classList.add('d-none')

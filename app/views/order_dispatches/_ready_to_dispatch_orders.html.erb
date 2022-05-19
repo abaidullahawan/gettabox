@@ -164,6 +164,9 @@
         </div>
 
         <div class="modal-body">
+          <%= label_tag :auto_dispatch_template, "Select the template"%>
+          <%= select_tag(:auto_dispatch_template, options_for_select(@auto_dispatch.map { |key, value| [key, value] }, params[:auto_dispatch_template]), include_blank: 'Please Select', class:"form-control") %>
+          <br>
           <%= file_field_tag :file, required: true %>
         </div>
 

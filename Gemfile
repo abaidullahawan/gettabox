@@ -31,6 +31,7 @@ gem 'devise-i18n'
 
 gem 'font-awesome-rails'
 gem 'roo', '~> 2.8'
+gem 'spreadsheet'
 # Use for nested forms
 gem 'activerecord-import'
 gem 'bootstrap4-kaminari-views'

@@ -28,6 +28,7 @@ class ImportMappingsController < ApplicationController
     @consolidations = ImportMapping.where(table_name: 'consolidation')
     @multifile_mapping = Dir[Rails.root.join('public/uploads/*').to_s]
     @multifile_mapping_filename = MultifileMapping.all.order(updated_at: :desc)
+    @auto_dispatch = ImportMapping.where(table_name: 'Auto-dispatch')
   end
 
   # GET /import_mappings/1 or /import_mappings/1.json
@@ -36,7 +37,7 @@ class ImportMappingsController < ApplicationController
   # GET /import_mappings/new
   def new
     @import_mapping = ImportMapping.new
-    @table_names = ['Product', 'Channel Order', 'Channel Product', 'Tracking']
+    @table_names = ['Product', 'Channel Order', 'Channel Product', 'Tracking', 'Auto-dispatch']
   end
 
   def export_new_consolidation
@@ -56,7 +57,7 @@ class ImportMappingsController < ApplicationController
 
   # GET /import_mappings/1/edit
   def edit
-    @table_names = ['Product', 'Channel Order', 'Channel Product', 'Tracking', 'Consolidation']
+    @table_names = ['Product', 'Channel Order', 'Channel Product', 'Tracking', 'Consolidation', 'Auto-dispatch']
   end
 
   def file_mapping
@@ -95,7 +96,8 @@ class ImportMappingsController < ApplicationController
     mapping = {}
     if params[:mapping_type] == 'dual'
       header_to_print = []
-      @import_mapping = ImportMapping.new(mapping_rule: params[:rules], sub_type: params[:sub_type], table_data: params[:table_data].split(' '), header_data: params[:header_data].split(' '), mapping_data: params[:mapping_data], mapping_type: params[:mapping_type])
+      header_data = params[:table_name] == 'Auto-dispatch' ? params[:header_data].split('+').compact_blank : params[:header_data].split(' ')
+      @import_mapping = ImportMapping.new(mapping_rule: params[:rules], sub_type: params[:sub_type], table_data: params[:table_data].split(' '), header_data: header_data, mapping_data: params[:mapping_data], mapping_type: params[:mapping_type], table_name: params[:table_name])
       @import_mapping.table_data.each do |data|
         mapping[data.to_s] = params[:"#{data}"]
       end
@@ -121,8 +123,8 @@ class ImportMappingsController < ApplicationController
                                           header_data: params[:header_data].split(' '))
     end
     respond_to do |format|
-      if @import_mapping.save
-        path = params[:value] == 'multifile_mapping' ? multi_file_mapping_index_path : import_mappings_path
+      if @import_mapping.save!
+        path = params[:value] == 'multifile_mapping' ? multi_file_mapping_index_path : import_mappings_path(mapping_filter: 'import')
         format.html { redirect_to path, notice: 'Import mapping was successfully created.' }
         format.json { render :index, status: :created, location: @import_mapping }
       else
@@ -169,7 +171,7 @@ class ImportMappingsController < ApplicationController
       elsif params[:consolidation_tool].eql? 'consolidation_tool'
         format.html { redirect_to consolidation_tool_index_path, notice: 'Import mapping was successfully updated.' }
       else
-        format.html { redirect_to import_mappings_path, notice: 'Import mapping was successfully updated.' }
+        format.html { redirect_to import_mappings_path(mapping_filter: 'import'), notice: 'Import mapping was successfully updated.' }
       end
       format.json { render :show, status: :ok, location: @import_mapping }
     end
@@ -184,7 +186,7 @@ class ImportMappingsController < ApplicationController
       elsif params[:value].eql? 'consolidation_tool'
         format.html { redirect_to consolidation_tool_index_path, notice: 'Import mapping was successfully destroyed.' }
       else
-        format.html { redirect_to import_mappings_url, notice: 'Import mapping was successfully destroyed.' }
+        format.html { redirect_to import_mappings_path(mapping_filter: 'import'), notice: 'Import mapping was successfully destroyed.' }
       end
       format.json { head :no_content }
     end
@@ -356,6 +358,33 @@ class ImportMappingsController < ApplicationController
     end
   end
 
+  def auto_dispatch
+    file = params[:file]
+    file_type = file.present? ? file.path.split('.').last.to_s.downcase : ''
+    if file.present? && (file_type.include? 'csv') || (file_type.include? 'xlsx')
+      spreadsheet = open_spreadsheet(file)
+      spreadsheet = CSV.parse(spreadsheet, headers: true)
+      @header = spreadsheet.headers
+      @data = []
+      @import_mapping = ImportMapping.new
+
+      @db_names = ['order_id', 'postcode', 'tracking_no', 'shipping_service']
+      redirect_to new_auto_dispatch_path(db_columns: @db_names, header: @header, import_mapping: @import_mapping)
+    else
+      flash[:alert] = 'Try again file not match'
+    end
+  end
+
+  def new_auto_dispatch
+    @import_mapping = ImportMapping.new
+    @table_names = ['Product', 'Channel Order', 'Channel Product', 'Tracking', 'Auto-dispatch']
+  end
+
+  def edit_auto_dispatch
+    @table_names = ['Product', 'Channel Order', 'Channel Product', 'Tracking', 'Auto-dispatch']
+    @import_mapping = ImportMapping.find(params[:id])
+  end
+
   def competitive_price
     file = params[:file]
     file_type = file.present? ? file.path.split('.').last.to_s.downcase : ''
@@ -375,8 +404,8 @@ class ImportMappingsController < ApplicationController
     if params[:download].eql? 'true'
       send_file(
         params[:url],
-        filename: 'your_custom_file_name.csv',
-        type: 'csv'
+        filename: 'your_custom_file_name.xls',
+        type: 'xls'
       )
     else
       File.delete(params[:url]) if params[:url]

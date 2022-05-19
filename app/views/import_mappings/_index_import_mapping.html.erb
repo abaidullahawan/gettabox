@@ -542,3 +542,66 @@
     </div>
   </div>
 </div>
+
+<!-- Auto Dispatch -->
+<div class="faq-accordion mb-30">
+  <ul class="accordion">
+    <li class="accordion-item">
+      <a class="accordion-title" href="javascript:void(0)">
+        <i class="lni-plus"></i>
+        Auto Dispatch
+      </a>
+      <div class="accordion-content">
+          <div class= "mb-4">
+            <a class="btn btn-primary float-right" data-toggle="modal" data-target='#auto-dispatch-modal'>Create</a>
+          </div>
+          <table class="table m-0 table-hover">
+            <% if @auto_dispatch.present?%>
+              <tr>
+                <td>Sub Type Name</td>
+                <td> Edit </td>
+              </tr>
+            <% end %>
+            <% @auto_dispatch&.each do |auto_dispatch| %>
+              <div class= 'd-flex mb-3'>
+                <tr>
+                  <td class="font-weight-bold mr-4 font-lg"><%= auto_dispatch.sub_type %></td>
+                  <td>
+                    <div class="dropdown dropleft">
+                      <%= link_to 'Edit', edit_auto_dispatch_path(id: auto_dispatch.id), class: "btn btn-primary text-white" %>
+                      <%#= link_to 'Destroy', consolidation, method: :delete, data: { confirm: 'Are you sure?' }, class: "btn btn-danger mx-3" %>
+                  </td>
+                </tr>
+              </div>
+            <% end %>
+          </table>
+      </div>
+    </li>
+  </ul>
+</div>
+<!-- Auto-dispatch End -->
+
+<!--Auto-dispatch Model-->
+<div class="modal" id="auto-dispatch-modal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Auto Dispatch</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <%= form_tag auto_dispatch_path, method: :post, multipart: true do %>
+        <div class="modal-body">
+          <%= label_tag 'Please select a file:' %>
+          <%= file_field_tag :file, style:"width:240px;", class: 'btn', accept: ".csv", required: true %>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          <%= submit_tag 'Create Mapping', class:"btn btn-primary"%>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
+<!--Auto-dispatch Model End-->
