@@ -168,7 +168,7 @@ class TrackingsController < ApplicationController
     if rows.empty?
       flash[:alert] = "Selected order's tracking not found"
       redirect_to order_dispatches_path(order_filter: 'ready')
-    elsif rows.flatten.any? { |a| a.to_s.include?('must') || a.to_s.include?('not found') }
+    elsif (rows.flatten.any? { |a| a.to_s.include?('must') || a.to_s.include?('not found') } && !params[:without_trackings].present?)
       generate_csv(rows)
     else
       stage = session[:batch_params]['mark_order_as_dispatched'].to_i.positive? ? 'completed' : 'ready_to_print'
