@@ -19,12 +19,12 @@ class ApplicationJob < ActiveJob::Base # :nodoc:
 
   def performing
     job = JobStatus.find_or_create_by(job_id: job_id, name: self.class.to_s)
-    job.update(status: 'Busy')
+    job.update(status: 'Busy', perform_in: nil)
     job.update(arguments: arguments.first) if job.arguments.nil?
   end
 
   def proccessed
     job = JobStatus.find_or_create_by(job_id: job_id, name: self.class.to_s)
-    job.update(status: 'Processed')
+    job.update(status: 'Processed', perform_in: 'done')
   end
 end
