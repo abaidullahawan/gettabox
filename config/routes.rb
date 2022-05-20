@@ -223,6 +223,7 @@ Rails.application.routes.draw do
   end
 
   resources :rules
+  resources :job_statuses
   resources :transaction_reports do
     collection do
       get 'date_picker_from_to', to: 'transaction_reports#date_picker_from_to'

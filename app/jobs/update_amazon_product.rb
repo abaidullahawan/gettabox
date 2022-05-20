@@ -9,7 +9,7 @@ class UpdateAmazonProduct < ApplicationJob
     # sku = _args.last[:product]
     # quantity = _args.last[:quantity]
     products = _args&.last.try(:[], 'products')
-    products = ChannelProduct.where('updated_at > ?', DateTime.now - 30.minutes).where(channel_type: 'amazon').pluck(:item_sku, :item_quantity)
+    products = ChannelProduct.where('updated_at > ?', DateTime.now - 30.minutes).where(channel_type: 'amazon').pluck(:item_sku, :item_quantity) if products.nil? || products.empty?
     return 'Products not found' if products.nil? || products.empty?
 
     remainaing_time = @refresh_token.access_token_expiry.localtime < DateTime.now

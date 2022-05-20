@@ -137,7 +137,7 @@ class IssueOrdersJob < ApplicationJob
             when 'equals'
               equal  = true
             end
-            if max_postage == 0 && min_postage == 0
+            if max_postage.zero? && min_postage.zero?
               type = rule.rule_value.to_f == total_postage.to_f ? true : false
             else
               type = true if total_postage.to_f <= max_postage && total_postage.to_f >= min_postage || rule.rule_value.to_f == total_postage
@@ -145,7 +145,7 @@ class IssueOrdersJob < ApplicationJob
           end
         end
         if type == false
-          if max_weight == 0 && min_weight == 0
+          if max_weight.zero? && min_weight.zero?
             type = false
           else
             type = true if total_weight.to_i <= max_weight && total_weight.to_i >= min_weight || min_weight > 0 && max_weight == 0 && mail_rule.rules.count.to_i < 2 && total_weight.to_i >= min_weight
@@ -159,8 +159,8 @@ class IssueOrdersJob < ApplicationJob
             mail_rule_id = rule_bonus_score.max&.last
             assign_rule = AssignRule.create(mail_service_rule_id: mail_rule_id)
             order&.channel_order_items&.each do |item|
+              quantity = item&.ordered
               if item.channel_product&.product_mapping&.product&.product_type == 'multiple'
-                quantity = item&.ordered
                 length = 0
                 weight = 0
                 width = 0
@@ -174,7 +174,6 @@ class IssueOrdersJob < ApplicationJob
                 @service_label = MailServiceLabel.create(height: height, weight: weight,
                                                         length: length, width: width, assign_rule_id: assign_rule.id)
               else
-                quantity = item&.ordered
                 length = item&.channel_product&.product_mapping&.product&.length.to_f * quantity
                 weight = item&.channel_product&.product_mapping&.product&.weight.to_f * quantity
                 width = item&.channel_product&.product_mapping&.product&.width.to_f

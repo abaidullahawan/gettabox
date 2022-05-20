@@ -49,6 +49,7 @@ class AmazonOrderJob < ApplicationJob
                                                            channel_type: 'amazon')
         if channel_order.id.blank? || channel_order.stage_unpaid? || channel_order.stage_pending?
           next if order['PurchaseDate'] < ('2022-03-10T08:00:00Z').to_datetime
+
           channel_order.order_data = order
           channel_order.created_at = order['PurchaseDate']
           channel_order.order_status = order['OrderStatus']
@@ -59,7 +60,7 @@ class AmazonOrderJob < ApplicationJob
           channel_order.postage = order['ShipmentServiceLevelCategory']
           channel_order.fulfillment_instruction = order['FulfillmentChannel']
           # customer_records(channel_order) if channel_order.save
-          return unless channel_order.save
+          next unless channel_order.save
 
           add_product(channel_order.order_id, access_token, channel_order.id)
           criteria = channel_order.channel_order_items.map { |h| [h[:sku], h[:ordered]] }
@@ -316,5 +317,4 @@ class AmazonOrderJob < ApplicationJob
       end
     end
   end
-
 end
