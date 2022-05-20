@@ -80,7 +80,7 @@ class UpdateEbayVariationProductJob < ApplicationJob
       JobStatus.create(job_id: job_data.job_id, name: 'UpdateEbaySingleProductJob', status: 'Retry',
                        arguments: { listing_id: listing_id, quantity: quantity })
     elsif response['Ack'].eql? 'Failure'
-      self.class.perform_later(listing_id: listing_id, quantity: quantity, sku: sku, error: response['Errors']['LongMessage'])
+      job_data = self.class.perform_later(listing_id: listing_id, quantity: quantity, sku: sku, error: response['Errors']['LongMessage'])
       JobStatus.create(job_id: job_data.job_id, name: self.class.to_s, status: 'Retry',
                        arguments: { listing_id: listing_id, quantity: quantity })
     end
