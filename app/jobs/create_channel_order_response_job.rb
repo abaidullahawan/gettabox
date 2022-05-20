@@ -86,6 +86,7 @@ class CreateChannelOrderResponseJob < ApplicationJob
         end
       end
     end
-    CreateChannelOrderJob.perform_later
+    job_data = CreateChannelOrderJob.perform_later
+    JobStatus.create(job_id: job_data.job_id, name: 'CreateChannelOrderJob', status: 'Queued')
   end
 end

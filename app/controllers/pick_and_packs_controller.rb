@@ -83,7 +83,8 @@ class PickAndPacksController < ApplicationController
       update_all_products(tracking_order)
       tracking_order.update(product_scan: total_product_scan, stage: 'completed', order_batch_id: nil, change_log: "Order Completed, #{tracking_order.id}, #{tracking_order.order_id}, #{current_user.personal_detail.full_name}")
       call_amazon_tracking_job(tracking_order.id) unless tracking_order.update_channel
-      EbayCompleteSaleJob.perform_later(order_ids: [order.id]) unless tracking_order.update_channel
+      job_data = EbayCompleteSaleJob.perform_later(order_ids: [order.id]) unless tracking_order.update_channel
+      JobStatus.create(job_id: job_data.job_id, name: 'EbayCompleteSaleJob', status: 'Queued', arguments: { order_ids: order_ids }) unless tracking_order.update_channel
       flash[:notice] = 'Order completed successfully'
     else
       flash[:alert] = 'Product not found'
@@ -132,7 +133,8 @@ class PickAndPacksController < ApplicationController
     tracking_order.update(product_scan: product_scan, stage: 'completed', order_batch_id: nil, change_log: "Order Completed, #{tracking_order.id}, #{tracking_order.order_id}, #{current_user.personal_detail.full_name}")
     update_all_products(tracking_order)
     call_amazon_tracking_job(tracking_order.id) unless tracking_order.update_channel
-    EbayCompleteSaleJob.perform_later(order_ids: [tracking_order.id]) unless tracking_order.update_channel
+    job_data = EbayCompleteSaleJob.perform_later(order_ids: [tracking_order.id]) unless tracking_order.update_channel
+    JobStatus.create(job_id: job_data.job_id, name: 'EbayCompleteSaleJob', status: 'Queued', arguments: { order_ids: [tracking_order.id] }) unless tracking_order.update_channel
     flash[:notice] = 'Order completed successfully'
     redirect_to start_packing_pick_and_packs_path(q: {batch_name_eq: params[:q][:batch_name_eq]})
   end
@@ -361,6 +363,7 @@ class PickAndPacksController < ApplicationController
     wait_time = DateTime.now > wait_time ? DateTime.now + 130.seconds : wait_time + 130.seconds
     credential.update(redirect_uri: 'AmazonTrackingJob', authorization: tracking_order_id, created_at: wait_time)
     elapsed_seconds = wait_time - DateTime.now
-    AmazonTrackingJob.set(wait: elapsed_seconds.seconds).perform_later(order_ids: [tracking_order_id])
+    job_data = AmazonTrackingJob.set(wait: elapsed_seconds.seconds).perform_later(order_ids: [tracking_order_id])
+    JobStatus.create(job_id: job_data.job_id, name: 'AmazonTrackingJob', status: 'Queued', arguments: { order_ids: [tracking_order_id] })
   end
 end

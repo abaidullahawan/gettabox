@@ -154,5 +154,4 @@ class AmazonOrderItemJob < ApplicationJob
       item.update(allocated: false)
     end
   end
-
 end
