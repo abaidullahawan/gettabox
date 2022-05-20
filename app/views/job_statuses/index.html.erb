@@ -19,22 +19,43 @@
         <div class="card-header">
           <h5 class="card-title"> Data</h5>
         </div>
+        <%= search_form_for @q, url: job_statuses_path, method: :get do |f| %>
+          <div class='row'>
+            <div class="col-md-3"><br>
+              <div class="dropdown form-group">
+                <%= f.search_field :status_or_name_cont, class: 'form-control dropdown-toggle', placeholder:"Search in name or status" %>
+              </div>
+            </div>
+            <div class=' col-md-1'>
+              <button type='submit' class='product_type_submit btn btn-primary mt-4 d-none'>Search</button>
+            </div>
+            <div class='col-md-1 offset-9'>
+              <div class='float-right'>
+                <label for="inputState">Per Page</label>
+                <%= select_tag :limit, options_for_select([5, 10, 15, 20], selected: params[:limit] || 10), id: 'change_per_page', class: 'form-control' %>
+                <button type="submit" id="per_page_submit" hidden="hidden"></button>
+              </div>
+            </div>
+          </div><br>
+        <% end %>
         <div class="table-responsive">
           <table class="table m-0 table-hover">
             <tr>
-              <th class="text-center">Job Id</th>
+              <%# <th class="text-center">Job Id</th> %>
               <th class="text-center">Name</th>
               <th class="text-center">Date</th>
               <th class="text-center">Time ago</th>
+              <th class="text-center">Perform In</th>
               <th class="text-center">Arguments</th>
               <th class="text-center">Status</th>
             </tr>
             <% @job_statuses.each do |job_status| %>
               <tr>
-                <td class="text-center"><%= job_status.job_id %></td>
+                <%# <td class="text-center"><%= job_status.job_id %></td> %>
                 <td class="text-center"><%= job_status.name %></td>
                 <td class="text-center"><%= job_status.updated_at.strftime("%m/%d/%Y %H:%M")%></td>
                 <td class="text-center"><%= JobStatus.sec_to_hours( Time.now - job_status.updated_at )%></td>
+                <td class="text-center"><%= job_status.perform_in.nil? ? 'now' : (job_status.perform_in - DateTime.now).round(2).to_s + 'seconds'  %></td>
                 <td class="text-center">
                   <% job_status&.arguments&.each do |arg| %>
                     <b><%= arg.first %></b> : <%= arg.last %>

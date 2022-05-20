@@ -364,6 +364,6 @@ class PickAndPacksController < ApplicationController
     credential.update(redirect_uri: 'AmazonTrackingJob', authorization: tracking_order_id, created_at: wait_time)
     elapsed_seconds = wait_time - DateTime.now
     job_data = AmazonTrackingJob.set(wait: elapsed_seconds.seconds).perform_later(order_ids: [tracking_order_id])
-    JobStatus.create(job_id: job_data.job_id, name: 'AmazonTrackingJob', status: 'Queued', arguments: { order_ids: [tracking_order_id] })
+    JobStatus.create(job_id: job_data.job_id, name: 'AmazonTrackingJob', status: 'Queued', arguments: { order_ids: [tracking_order_id] }, perform_in: DateTime.now + elapsed_seconds.seconds)
   end
 end
