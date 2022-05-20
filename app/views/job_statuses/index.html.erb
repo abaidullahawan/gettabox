@@ -41,7 +41,6 @@
         <div class="table-responsive">
           <table class="table m-0 table-hover">
             <tr>
-              <%# <th class="text-center">Job Id</th> %>
               <th class="text-center">Name</th>
               <th class="text-center">Date</th>
               <th class="text-center">Time ago</th>
@@ -51,7 +50,6 @@
             </tr>
             <% @job_statuses.each do |job_status| %>
               <tr>
-                <%# <td class="text-center"><%= job_status.job_id %></td> %>
                 <td class="text-center"><%= job_status.name %></td>
                 <td class="text-center"><%= job_status.updated_at.strftime("%m/%d/%Y %H:%M")%></td>
                 <td class="text-center"><%= JobStatus.sec_to_hours( Time.now - job_status.updated_at )%></td>
