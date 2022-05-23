@@ -1,5 +1,5 @@
 # frozen_string_literal: true
 
-# FileTwo
+# FileOne
 class FileTwo < ApplicationRecord
 end
