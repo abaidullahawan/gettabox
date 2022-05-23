@@ -17,7 +17,7 @@ class MultiFileMappingJob < ApplicationJob
     # sheet = book.create_worksheet
     # sheet.row(0).concat attributes
     # index = 1
-    CSV.open("/home/ali/Projects/gettabox/public/uploads/#{name}", 'wb') do |csv|
+    CSV.open("/home/deploy/channeldispatch/current/public/uploads/#{name}", 'wb') do |csv|
       csv << attributes
       if mapping.mapping_rule.present?
         case_sensitivity(matchable, csv, attributes)
