@@ -13,7 +13,7 @@
         <tbody>
           <% @multifile_mapping_filename.each do |multifile_maping_name| %>
             <tr>
-              <% created_at_filename = multifile_maping_name.created_at.strftime('%d-%m-%Y @ %H:%M:%S') + '.xls' %>
+              <% created_at_filename = multifile_maping_name.created_at.strftime('%d-%m-%Y @ %H:%M:%S') %>
               <% multifile_maping = @multifile_mapping.select { |a| (a.include? 'multi-mapping') && (a.split('/').last.split('--').last == created_at_filename)}%>
               <td><%= multifile_maping_name.sub_type %></td>
               <td><%= multifile_maping_name.file1 %></td>

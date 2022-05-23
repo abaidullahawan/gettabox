@@ -82,10 +82,10 @@ class ImportMappingsController < ApplicationController
     @csv1_headers = []
     @csv2_headers = []
     params[:csv1].each do |header|
-      @csv1_headers.push(header.gsub('_', ' ').gsub(' ', '_'))
+      @csv1_headers.push(header)
     end
     params[:csv2].each do |header|
-      @csv2_headers.push(header.gsub('_', ' ').gsub(' ', '_'))
+      @csv2_headers.push(header)
     end
     @csv1_headers = @csv1_headers.reject { |c| c.empty? }
     @csv2_headers = @csv2_headers.reject { |c| c.empty? }
@@ -267,16 +267,15 @@ class ImportMappingsController < ApplicationController
         headers_of_file2 = CSV.parse(spreadsheet2, headers: true).headers
         headers = headers_of_file1 + headers_of_file2
         import_mapping_data = mapping.mapping_data.compact_blank.to_a.flatten
-        import_mapping_data.map! { |mapped_data| mapped_data.humanize.downcase.delete(' ') }
-        headers.map! { |header| header.humanize.downcase.delete(' ') }
         sub_type = mapping.sub_type
         if (headers & import_mapping_data).eql? import_mapping_data
           @multifile_mapping = MultifileMapping.create(file1: file1.original_filename, file2: file2.original_filename, download: false, error: nil, sub_type: sub_type )
           filename1 = save_files_in_tmp(file1)
           filename2 = save_files_in_tmp(file2)
-          job_data = MultiFileMappingJob.perform_later(filename1: filename1, filename2: filename2, mapping_id: params[:mapping_id], multifile_mapping_id: @multifile_mapping.id)
-          JobStatus.create(job_id: job_data.job_id, name: 'MultiFileMappingJob', status: 'Queued',
-                           arguments: { mapping_id: params[:mapping_id].to_s, multifile_mapping_id: @multifile_mapping.id.to_s })
+          job_id = AddCsvDataToDbJob.perform_later(filename1: filename1, filename2: filename2, mapping_id: params[:mapping_id], multifile_mapping_id: @multifile_mapping.id)
+          job_id = job_id.job_id
+          FileOne.create(job_id: job_id, filename: 'file1')
+          FileTwo.create(job_id: job_id, filename: 'file2')
           flash[:notice] = 'Job added successfully!'
         else
           flash[:alert] = 'Import mapping does not match with the files.'
@@ -409,8 +408,8 @@ class ImportMappingsController < ApplicationController
     if params[:download].eql? 'true'
       send_file(
         params[:url],
-        filename: 'your_custom_file_name.xls',
-        type: 'xls'
+        filename: 'your_custom_file_name.csv',
+        type: 'csv'
       )
     else
       File.delete(params[:url]) if params[:url]
