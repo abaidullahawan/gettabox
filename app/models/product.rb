@@ -81,13 +81,17 @@ class Product < ApplicationRecord
         channel_quantity = [(inventory_balance.to_f/deduction_unit.to_f).floor, 0].max
       end
       product.update(item_quantity: channel_quantity)
-      return unless Rails.env.production?
+      # next unless Rails.env.production?
 
-      if product.channel_type_ebay? && (product.listing_type.eql? 'variation')
-        UpdateEbayVariationProductJob.perform_later(listing_id: product.listing_id, sku: product.item_sku, quantity: product.item_quantity)
-      elsif product.channel_type_ebay? && (product.listing_type.eql? 'single')
-        UpdateEbaySingleProductJob.perform_later(listing_id: product.listing_id, quantity: product.item_quantity)
-      end
+      # if product.channel_type_ebay? && (product.listing_type.eql? 'variation')
+        # job_data = UpdateEbayVariationProductJob.perform_later(listing_id: product.listing_id, sku: product.item_sku, quantity: product.item_quantity)
+        # JobStatus.create(job_id: job_data.job_id, name: 'UpdateEbayVariationProductJob', status: 'Queued',
+                        #  arguments: { listing_id: product.listing_id, sku: product.item_sku, quantity: product.item_quantity })
+      # elsif product.channel_type_ebay? && (product.listing_type.eql? 'single')
+        # job_data = UpdateEbaySingleProductJob.perform_later(listing_id: product.listing_id, quantity: product.item_quantity)
+        # JobStatus.create(job_id: job_data.job_id, name: 'UpdateEbaySingleProductJob', status: 'Queued',
+                        #  arguments: { listing_id: product.listing_id, quantity: product.item_quantity })
+      # end
     end
     @channel_listings = ChannelProduct.joins(product_mapping: [product: [multipack_products: :child]]).where('child.id': id)
     @channel_listings.each do |multi_mapping|
@@ -103,13 +107,17 @@ class Product < ApplicationRecord
         channel_quantity = [deduction_quantity.to_i, 0].max
       end
       multi_mapping.update(item_quantity: channel_quantity)
-      return unless Rails.env.production?
+      # next unless Rails.env.production?
 
-      if multi_mapping.channel_type_ebay? && (multi_mapping.listing_type.eql? 'variation')
-        UpdateEbayVariationProductJob.perform_later(listing_id: multi_mapping.listing_id, sku: multi_mapping.item_sku, quantity: multi_mapping.item_quantity)
-      elsif multi_mapping.channel_type_ebay? && (multi_mapping.listing_type.eql? 'single')
-        UpdateEbaySingleProductJob.perform_later(listing_id: multi_mapping.listing_id, quantity: multi_mapping.item_quantity)
-      end
+      # if multi_mapping.channel_type_ebay? && (multi_mapping.listing_type.eql? 'variation')
+      #   job_data = UpdateEbayVariationProductJob.perform_later(listing_id: multi_mapping.listing_id, sku: multi_mapping.item_sku, quantity: multi_mapping.item_quantity)
+      #   JobStatus.create(job_id: job_data.job_id, name: 'UpdateEbayVariationProductJob', status: 'Queued',
+      #                    arguments: { listing_id: multi_mapping.listing_id, sku: multi_mapping.item_sku, quantity: multi_mapping.item_quantity })
+      # elsif multi_mapping.channel_type_ebay? && (multi_mapping.listing_type.eql? 'single')
+      #   job_data = UpdateEbaySingleProductJob.perform_later(listing_id: multi_mapping.listing_id, quantity: multi_mapping.item_quantity)
+      #   JobStatus.create(job_id: job_data.job_id, name: 'UpdateEbaySingleProductJob', status: 'Queued',
+      #                    arguments: { listing_id: multi_mapping.listing_id, quantity: multi_mapping.item_quantity })
+      # end
     end
   end
 

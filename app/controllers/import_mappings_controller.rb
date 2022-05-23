@@ -274,7 +274,9 @@ class ImportMappingsController < ApplicationController
           @multifile_mapping = MultifileMapping.create(file1: file1.original_filename, file2: file2.original_filename, download: false, error: nil, sub_type: sub_type )
           filename1 = save_files_in_tmp(file1)
           filename2 = save_files_in_tmp(file2)
-          MultiFileMappingJob.perform_later(filename1: filename1, filename2: filename2, mapping_id: params[:mapping_id], multifile_mapping_id: @multifile_mapping.id)
+          job_data = MultiFileMappingJob.perform_later(filename1: filename1, filename2: filename2, mapping_id: params[:mapping_id], multifile_mapping_id: @multifile_mapping.id)
+          JobStatus.create(job_id: job_data.job_id, name: 'MultiFileMappingJob', status: 'Queued',
+                           arguments: { mapping_id: params[:mapping_id].to_s, multifile_mapping_id: @multifile_mapping.id.to_s })
           flash[:notice] = 'Job added successfully!'
         else
           flash[:alert] = 'Import mapping does not match with the files.'
@@ -392,7 +394,10 @@ class ImportMappingsController < ApplicationController
       spreadsheet = open_spreadsheet(file)
       # spreadsheet = CSV.parse(spreadsheet, headers: true)
       @multifile_mapping = MultifileMapping.create(file1: file.original_filename, download: false, error: nil, sub_type: 'competative price job' )
-      CompetitivePriceJob.perform_later(spreadsheet: spreadsheet, multifile_mapping_id: @multifile_mapping.id)
+      job_data = CompetitivePriceJob.perform_later(spreadsheet: spreadsheet, multifile_mapping_id: @multifile_mapping.id)
+      JobStatus.create(job_id: job_data.job_id, name: 'CompetitivePriceJob', status: 'Queued',
+                       arguments: { multifile_mapping_id: @multifile_mapping.id.to_s })
+
       flash[:notice] = 'Job added successfully!'
     else
       flash[:alert] = 'Try again file not match'

@@ -71,9 +71,13 @@ class UpdateEbaySingleProductJob < ApplicationJob
 
   def job_status(response, listing_id, quantity)
     if (response['Ack'].eql? 'Failure') && (response['Errors']['ShortMessage'].include? 'Item level quantity will be ignored')
-      UpdateEbaySingleProductJob.perform_later(listing_id: listing_id ,quantity: quantity)
+      job_data = UpdateEbaySingleProductJob.perform_later(listing_id: listing_id , quantity: quantity)
+      JobStatus.create(job_id: job_data.job_id, name: 'UpdateEbaySingleProductJob', status: 'Retry',
+                       arguments: { listing_id: listing_id, quantity: quantity })
     else
-      self.class.perform_later(listing_id: listing_id ,quantity: quantity, error: response['Errors']['LongMessage'])
+      self.class.perform_later(listing_id: listing_id , quantity: quantity, error: response['Errors']['LongMessage'])
+      JobStatus.create(job_id: job_data.job_id, name: self.class.to_s, status: 'Retry',
+                       arguments: { listing_id: listing_id, quantity: quantity })
     end
   end
 end

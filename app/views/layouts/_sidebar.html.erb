@@ -180,6 +180,14 @@
                 </a>
 
                 <a
+                    class="nav-link <%= active_klass(job_statuses_path) %>"
+                    href="<%= job_statuses_path %>"
+                >
+                    <i data-feather="tool" class="icon"></i>
+                    <span class="title">Job Statuses</span>
+                </a>
+
+                <a
                     class="nav-link <%= active_klass(discussions_chat_path) %>"
                     href="<%= discussions_chat_path %>"
                 >

@@ -208,8 +208,12 @@ class OrderBatchesController < ApplicationController
     credential.update(redirect_uri: 'AmazonTrackingJob', authorization: order_ids, created_at: wait_time)
     elapsed_seconds = wait_time - DateTime.now
 
-    AmazonTrackingJob.set(wait: elapsed_seconds.seconds).perform_later(order_ids: order_ids)
-    EbayCompleteSaleJob.perform_later(order_ids: order_ids)
+    job_data = AmazonTrackingJob.set(wait: elapsed_seconds.seconds).perform_later(order_ids: order_ids)
+    JobStatus.create(job_id: job_data.job_id, name: 'AmazonTrackingJob', status: 'Queued',
+                     arguments: { order_id: order_ids }, perform_in: DateTime.now + elapsed_seconds.seconds)
+    job_data = EbayCompleteSaleJob.perform_later(order_ids: order_ids)
+    JobStatus.create(job_id: job_data.job_id, name: 'EbayCompleteSaleJob', status: 'Queued',
+                     arguments: { order_ids: order_ids }, perform_in: DateTime.now + elapsed_seconds.seconds)
   end
 
   def mark_order_as_dispatched(stage)

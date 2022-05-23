@@ -86,7 +86,7 @@ class ProductsController < ApplicationController
         if listing.channel_type == channel_forecasting.filter_by
           if channel_forecasting.action == 'safe_stock_by'
             channel_quantity = listing.item_quantity.to_i - channel_forecasting.type_number.to_i
-            channel_quantity = 0 if channel_quantity < 0
+            channel_quantity = 0 if channel_quantity.negative?
             listing.update(buffer_quantity: -channel_forecasting.type_number, item_quantity: channel_quantity)
           else
             if listing.channel_type_ebay?
@@ -98,13 +98,17 @@ class ProductsController < ApplicationController
               listing.update(buffer_quantity: channel_forecasting.type_number, item_quantity: listing.item_quantity.to_i + channel_forecasting.type_number.to_i)
             end
           end
-          return unless Rails.env.production?
+          # next unless Rails.env.production?
 
-          if listing.channel_type_ebay? && (listing.listing_type.eql? 'variation')
-            UpdateEbayVariationProductJob.perform_later(listing_id: listing.listing_id, sku: listing.item_sku, quantity: listing.item_quantity)
-          elsif listing.channel_type_ebay? && (listing.listing_type.eql? 'single')
-            UpdateEbaySingleProductJob.perform_later(listing_id: listing.listing_id, quantity: listing.item_quantity)
-          end
+          # if listing.channel_type_ebay? && (listing.listing_type.eql? 'variation')
+          #   job_data = UpdateEbayVariationProductJob.perform_later(listing_id: listing.listing_id, sku: listing.item_sku, quantity: listing.item_quantity)
+          #   JobStatus.create(job_id: job_data.job_id, name: 'UpdateEbayVariationProductJob', status: 'Queued',
+          #                    arguments: { listing_id: listing.listing_id, sku: listing.item_sku, quantity: listing.item_quantity })
+          # elsif listing.channel_type_ebay? && (listing.listing_type.eql? 'single')
+          #   job_data = UpdateEbaySingleProductJob.perform_later(listing_id: listing.listing_id, quantity: listing.item_quantity)
+          #   JobStatus.create(job_id: job_data.job_id, name: 'UpdateEbaySingleProductJob', status: 'Queued',
+          #                    arguments: { listing_id: listing.listing_id, quantity: listing.item_quantity })
+          # end
         end
       end
     end

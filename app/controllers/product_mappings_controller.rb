@@ -21,10 +21,12 @@ class ProductMappingsController < ApplicationController
 
   def all_product_data
     if params[:amazon]
-      AmazonProductJob.perform_later
+      job_data = AmazonProductJob.perform_later
+      JobStatus.create(job_id: job_data.job_id, name: 'AmazonProductJob', status: 'Queued')
       flash[:notice] = 'Amazon product job created!'
     else
-      CreateChannelProductResponseJob.perform_later
+      job_data = CreateChannelProductResponseJob.perform_later
+      JobStatus.create(job_id: job_data.job_id, name: 'CreateChannelProductResponseJob', status: 'Queued')
       flash[:notice] = 'Call sent to eBay API'
     end
     redirect_to product_mappings_path
