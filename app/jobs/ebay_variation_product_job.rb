@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # converting response to products
-class UpdateEbayVariationProductJob < ApplicationJob
+class EbayVariationProductJob < ApplicationJob
   queue_as :default
 
   def perform(*_args)
@@ -83,6 +83,8 @@ class UpdateEbayVariationProductJob < ApplicationJob
       job_data = self.class.perform_later(listing_id: listing_id, quantity: quantity, sku: sku, error: response['Errors']['LongMessage'])
       JobStatus.create(job_id: job_data.job_id, name: self.class.to_s, status: 'Retry',
                        arguments: { listing_id: listing_id, quantity: quantity, sku: sku, error: response['Errors']['LongMessage'] })
+    elsif response['Ack'].eql? 'Success'
+      ChannelProduct.find_by(listing_id: listing_id, item_sku: sku).update(item_quantity_changed: false)
     end
   end
 end

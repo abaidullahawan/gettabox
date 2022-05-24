@@ -41,13 +41,14 @@ class TrackingsController < ApplicationController
           postcode = postcode&.gsub!(/[^A-Za-z0-9]/, '')
           postcode = postcode&.downcase
           if row[mapping_data['order_id']].present?
-            orders = ChannelOrder.where(order_id: row[mapping_data['order_id']])
+            order = ChannelOrder.find_by(order_id: row[mapping_data['order_id']])
           else
-            orders = ChannelOrder.joins(system_user: :addresses).includes(system_user: :addresses).where("(addresses.postcode) IS NOT NULL and REGEXP_REPLACE((addresses.postcode), '[^A-Za-z0-9]', '', 'g') ILIKE ?", postcode)
+            order = ChannelOrder.joins(system_user: :addresses).includes(system_user: :addresses).find_by("(addresses.postcode) IS NOT NULL and REGEXP_REPLACE((addresses.postcode), '[^A-Za-z0-9]', '', 'g') ILIKE ?", postcode)
           end
           # order = ChannelOrder.joins(system_user: :addresses).includes(system_user: :addresses).find_by('lower(system_users.name) LIKE ? and lower(addresses.postcode) LIKE ?', row['Shipping Name'].downcase, row['Shipping Address Postcode'].gsub(' ','').downcase)
-          order = orders.find_by(stage: 'ready_to_dispatch')
-          next unless order.present? && order.stage_ready_to_dispatch?
+          next unless order.present?
+
+          next unless order.stage_ready_to_dispatch? unless params[:skip_check].present?
 
           count += 1
           tracking_numbers = row[mapping_data['tracking_no']]&.split(',')

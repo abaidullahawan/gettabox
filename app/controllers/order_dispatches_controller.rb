@@ -639,7 +639,6 @@ class OrderDispatchesController < ApplicationController
   def not_started_orders
     return unless params[:order_filter].eql? 'ready'
 
-    @auto_dispatch = ImportMapping.where(table_name: 'Auto-dispatch').map { |s| [s.sub_type, s.id] }.to_h
     value = params[:id_or_order_id_or_order_status_or_buyer_name_or_channel_order_items_sku_cont]
     params[:q] = params[:q].merge(id_or_order_id_or_order_status_or_buyer_name_or_channel_order_items_sku_cont: value) if value.present?
     params[:q] = JSON.parse params[:q].gsub('=>', ':') if params[:q]&.include?('"')
@@ -725,6 +724,7 @@ class OrderDispatchesController < ApplicationController
   end
 
   def load_counts
+    @auto_dispatch = ImportMapping.where(table_name: 'Auto-dispatch').map { |s| [s.sub_type, s.id] }.to_h
     @total_products_count = ChannelProduct.count
     @issue_products_count = ChannelProduct.where(item_sku: nil).count
     @today_orders = @channel_orders.where('Date(channel_orders.created_at) = ?', Date.today).count
