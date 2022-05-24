@@ -9,7 +9,7 @@ class JobStatusesController < ApplicationController
 
   # GET /couriers or /couriers.json
   def index
-    JobStatus.where('Date(created_at) < ?', Date.today - 2.days).destroy_all
+    JobStatus.where('Date(created_at) < ?', Date.today - 2.days).delete_all
     @q = JobStatus.ransack(params[:q])
     @job_statuses = @q.result.order(created_at: :desc).page(params[:page]).per(params[:limit])
     export_csv(@job_statuses) if params[:export_csv].present?

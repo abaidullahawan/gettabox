@@ -87,15 +87,15 @@ class ProductsController < ApplicationController
           if channel_forecasting.action == 'safe_stock_by'
             channel_quantity = listing.item_quantity.to_i - channel_forecasting.type_number.to_i
             channel_quantity = 0 if channel_quantity.negative?
-            listing.update(buffer_quantity: -channel_forecasting.type_number, item_quantity: channel_quantity)
+            listing.update(buffer_quantity: -channel_forecasting.type_number, item_quantity: channel_quantity, item_quantity_changed: true)
           else
             if listing.channel_type_ebay?
               channel_quantity = listing.item_quantity.to_i + channel_forecasting.type_number.to_i
               selling_quantity = Selling&.last&.quantity.to_i
               channel_quantity = selling_quantity if channel_quantity > selling_quantity
-              listing.update(buffer_quantity: channel_forecasting.type_number, item_quantity: channel_quantity)
+              listing.update(buffer_quantity: channel_forecasting.type_number, item_quantity: channel_quantity, item_quantity_changed: true)
             else
-              listing.update(buffer_quantity: channel_forecasting.type_number, item_quantity: listing.item_quantity.to_i + channel_forecasting.type_number.to_i)
+              listing.update(buffer_quantity: channel_forecasting.type_number, item_quantity: listing.item_quantity.to_i + channel_forecasting.type_number.to_i, item_quantity_changed: true)
             end
           end
           # next unless Rails.env.production?

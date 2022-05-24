@@ -25,11 +25,12 @@
         </div>
       </div>
     </div>
-    <div class='col-2 ml-auto'>
+    <div class='col-3 ml-auto'>
       <div class='row'>
         <div>
           <%= link_to 'Refresh', refresh_order_dispatches_path(channel_order_items: true, order_filter: params[:order_filter]), {class: 'btn btn-danger mr-1 d-none', style:"padding:13px;"} %>
           <%= link_to 'Refresh Product', refresh_product_order_dispatches_path(channel_order_items: true, order_filter: params[:order_filter]), {class: 'btn btn-danger mr-1 d-none', style:"padding:13px;"} %>
+          <a class="btn btn-secondary mr-1 auto-dispatch" style="padding:13px;" data-toggle="modal" data-target=".autoDispatch">Auto Dispatch</a>
         </div>
         <div class= ''>
           <button class="btn btn-info" type="button" id="dropdownMenuButton" style="height:41px;" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -154,3 +155,31 @@
     </div>
   </div>
 </div>
+
+<%= form_tag auto_dispatch_trackings_path, multipart: true, method: :post, class: 'importMultiFileForm' do %>
+  <div class="modal fade autoDispatch" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Auto Dispatch</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <%= label_tag :auto_dispatch_template, "Select the template"%>
+          <%= select_tag(:auto_dispatch_template, options_for_select(@auto_dispatch.map { |key, value| [key, value] }, params[:auto_dispatch_template]), include_blank: 'Please Select', class:"form-control") %>
+          <br>
+          <%= file_field_tag :file, required: true %>
+          <%= hidden_field_tag :skip_check, true %>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <%= submit_tag("Auto Dispatch", id: "button", class: "btn btn-primary", name: "submit", data: {disable_with: false}) %>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>

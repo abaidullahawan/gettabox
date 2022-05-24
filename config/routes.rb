@@ -159,6 +159,7 @@ Rails.application.routes.draw do
       get 'recalculate_rule', to: 'order_dispatches#recalculate_rule'
       get 'invoice', to: 'order_dispatches#invoice'
       get 'cancel_order', to: 'order_dispatches#cancel_order'
+      post 'auto_dispatch', to: 'order_dispatches#auto_dispatch'
     end
   end
 
