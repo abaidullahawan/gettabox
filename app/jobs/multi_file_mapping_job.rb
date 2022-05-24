@@ -24,7 +24,7 @@ class MultiFileMappingJob < ApplicationJob
     end
     name = "multi-mapping--#{multifile.created_at.strftime('%d-%m-%Y @ %H:%M:%S')}"
 
-    CSV.open("/home/ali/Projects/gettabox/public/uploads/#{name}", 'wb') do |csv|
+    CSV.open("/home/deploy/channeldispatch/current/public/uploads/#{name}", 'wb') do |csv|
       csv << attributes
       if mapping.mapping_rule.present?
         case_sensitivity(csv, attribute_data, matchable_data, filename1, filename2)
