@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # converting response to products
-class UpdateEbaySingleProductJob < ApplicationJob
+class EbaySingleProductJob < ApplicationJob
   queue_as :default
 
   def perform(*_args)
@@ -12,8 +12,11 @@ class UpdateEbaySingleProductJob < ApplicationJob
     remainaing_time = @refresh_token.access_token_expiry.localtime > DateTime.now
     generate_refresh_token(credential) if credential.present? && remainaing_time == false
 
-    quantity = _args.last[:quantity]
-    listing_id = _args.last[:listing_id]
+    # quantity = _args.last[:quantity]
+    # listing_id = _args.last[:listing_id]
+
+    products = ChannelProduct.where(item_quantity_changed: true, channel_type: 'ebay', listing_type: 'variation').pluck(:item_sku, :item_quantity, :listing_id)
+    return 'Products not found' if products.nil? || products.empty?
 
     require 'net/http'
     require 'base64'

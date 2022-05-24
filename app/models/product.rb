@@ -80,7 +80,7 @@ class Product < ApplicationRecord
       else
         channel_quantity = [(inventory_balance.to_f/deduction_unit.to_f).floor, 0].max
       end
-      product.update(item_quantity: channel_quantity)
+      product.update(item_quantity: channel_quantity, item_quantity_changed: true)
       # next unless Rails.env.production?
 
       # if product.channel_type_ebay? && (product.listing_type.eql? 'variation')
@@ -106,7 +106,7 @@ class Product < ApplicationRecord
       else
         channel_quantity = [deduction_quantity.to_i, 0].max
       end
-      multi_mapping.update(item_quantity: channel_quantity)
+      multi_mapping.update(item_quantity: channel_quantity, item_quantity_changed: true)
       # next unless Rails.env.production?
 
       # if multi_mapping.channel_type_ebay? && (multi_mapping.listing_type.eql? 'variation')
