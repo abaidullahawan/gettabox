@@ -51,24 +51,24 @@ class TrackingsController < ApplicationController
           next unless order.stage_ready_to_dispatch? unless params[:skip_check].present?
 
           count += 1
-          # tracking_numbers = row[mapping_data['tracking_no']]&.split(',')
-          # tracking_numbers.each do |tracking|
-          #   tracking = Tracking.find_or_initialize_by(tracking_no: tracking, channel_order_id: order.id)
-          #   shipping_service = find_shipping_service(row[mapping_data['shipping_service']].downcase)
-          #   tracking.carrier = shipping_service.try(:[], :carrier)
-          #   tracking.service = shipping_service.try(:[], :service)
-          #   tracking.save!
-          # end
-          # order.update(change_log: "Channel Updated, #{order.id}, #{order.order_id}, #{current_user.personal_detail&.full_name}")
-          # order.update(stage: 'completed', change_log: "Order Completed, #{order.id}, #{order.order_id}, #{current_user.personal_detail&.full_name}")
-          # update_all_products(order) unless order.channel_order_items.count.zero?
-          # if order.channel_type_amazon?
-          #   call_amazon_tracking_job([order.id])
-          # else
-          #   job_data = EbayCompleteSaleJob.perform_later(order_ids: [order.id])
-          #   JobStatus.create(job_id: job_data.job_id, name: 'EbayCompleteSaleJob', status: 'Queued',
-          #                    arguments: { order_ids: [order.id] })
-          # end
+          tracking_numbers = row[mapping_data['tracking_no']]&.split(',')
+          tracking_numbers.each do |tracking|
+            tracking = Tracking.find_or_initialize_by(tracking_no: tracking, channel_order_id: order.id)
+            shipping_service = find_shipping_service(row[mapping_data['shipping_service']].downcase)
+            tracking.carrier = shipping_service.try(:[], :carrier)
+            tracking.service = shipping_service.try(:[], :service)
+            tracking.save!
+          end
+          order.update(change_log: "Channel Updated, #{order.id}, #{order.order_id}, #{current_user.personal_detail&.full_name}")
+          order.update(stage: 'completed', change_log: "Order Completed, #{order.id}, #{order.order_id}, #{current_user.personal_detail&.full_name}")
+          update_all_products(order) unless order.channel_order_items.count.zero?
+          if order.channel_type_amazon?
+            call_amazon_tracking_job([order.id])
+          else
+            job_data = EbayCompleteSaleJob.perform_later(order_ids: [order.id])
+            JobStatus.create(job_id: job_data.job_id, name: 'EbayCompleteSaleJob', status: 'Queued',
+                             arguments: { order_ids: [order.id] })
+          end
         end
         flash[:notice] = "#{count} orders updated successfully"
       else
