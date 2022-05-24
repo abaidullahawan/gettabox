@@ -1,0 +1,24 @@
+<% @busy_job.each do |job_status| %>
+  <tr>
+    <td class="text-center"><%= job_status.name %></td>
+    <td class="text-center"><%= job_status.updated_at.strftime("%m/%d/%Y %H:%M")%></td>
+    <td class="text-center"><%= JobStatus.sec_to_hours( Time.now - job_status.updated_at )%></td>
+    <td class="text-center"><%= job_status.perform_in.nil? ? 'now' : (job_status.perform_in - DateTime.now).round(2).to_s + 'seconds'  %></td>
+    <td class="text-center">
+      <% job_status&.arguments&.each do |arg| %>
+        <b><%= arg.first %></b> : <%= arg.last %>
+        <br>
+      <% end %>
+    </td>
+    <td class="text-center"><%= job_status.status %></td>
+  </tr>
+<% end %>
+</table>
+</div>
+
+<div class='float-right'>
+  <%= page_entries_info @busy_job %>
+</div><br>
+<div class="pagination justify-content-center mt-3">
+  <%= paginate @busy_job,theme: "twitter-bootstrap-4",pagination_class: "pagination-sm",nav_class: "d-inline-b" %>
+</div>

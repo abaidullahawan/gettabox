@@ -53,9 +53,9 @@ class CreateChannelProductResponseJob < ApplicationJob
       @page_no += 1
       break if @page_no > @total_pages
     end
-    job_data = CreateChannelProductJob.perform_later
-    JobStatus.create(job_id: job_data.job_id, name: 'CreateChannelProductJob', status: 'Queued')
-    job_data = EbaySellingListJob.perform_later
-    JobStatus.create(job_id: job_data.job_id, name: 'EbaySellingListJob', status: 'Queued')
+    # job_data = CreateChannelProductJob.perform_later
+    JobStatus.create(name: 'CreateChannelProductJob', status: 'inqueue')
+    # job_data = EbaySellingListJob.perform_later
+    JobStatus.create(name: 'EbaySellingListJob', status: 'inqueue')
   end
 end

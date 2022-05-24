@@ -202,18 +202,16 @@ class OrderBatchesController < ApplicationController
   def update_channels
     order_ids = params[:order_ids].split(',')
 
-    credential = Credential.find_by(grant_type: 'wait_time')
-    wait_time = credential.created_at
-    wait_time = DateTime.now > wait_time ? DateTime.now + 130.seconds : wait_time + 130.seconds
-    credential.update(redirect_uri: 'AmazonTrackingJob', authorization: order_ids, created_at: wait_time)
-    elapsed_seconds = wait_time - DateTime.now
+    # credential = Credential.find_by(grant_type: 'wait_time')
+    # wait_time = credential.created_at
+    # wait_time = DateTime.now > wait_time ? DateTime.now + 130.seconds : wait_time + 130.seconds
+    # credential.update(redirect_uri: 'AmazonTrackingJob', authorization: order_ids, created_at: wait_time)
+    # elapsed_seconds = wait_time - DateTime.now
 
-    job_data = AmazonTrackingJob.set(wait: elapsed_seconds.seconds).perform_later(order_ids: order_ids)
-    JobStatus.create(job_id: job_data.job_id, name: 'AmazonTrackingJob', status: 'Queued',
-                     arguments: { order_id: order_ids }, perform_in: DateTime.now + elapsed_seconds.seconds)
-    job_data = EbayCompleteSaleJob.perform_later(order_ids: order_ids)
-    JobStatus.create(job_id: job_data.job_id, name: 'EbayCompleteSaleJob', status: 'Queued',
-                     arguments: { order_ids: order_ids }, perform_in: DateTime.now + elapsed_seconds.seconds)
+    # job_data = AmazonTrackingJob.set(wait: elapsed_seconds.seconds).perform_later(order_ids: order_ids)
+    JobStatus.create(name: 'AmazonTrackingJob', status: 'inqueue', arguments: { order_id: order_ids })
+    # job_data = EbayCompleteSaleJob.set(wait: 5.minutes).perform_later(order_ids: order_ids)
+    JobStatus.create(name: 'EbayCompleteSaleJob', status: 'inqueue', arguments: { order_ids: order_ids })
   end
 
   def mark_order_as_dispatched(stage)
