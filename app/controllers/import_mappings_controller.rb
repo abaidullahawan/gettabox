@@ -82,10 +82,10 @@ class ImportMappingsController < ApplicationController
     @csv1_headers = []
     @csv2_headers = []
     params[:csv1].each do |header|
-      @csv1_headers.push(header)
+      @csv1_headers.push(header.gsub('_', ' ').gsub(' ', '_'))
     end
     params[:csv2].each do |header|
-      @csv2_headers.push(header)
+      @csv2_headers.push(header.gsub('_', ' ').gsub(' ', '_'))
     end
     @csv1_headers = @csv1_headers.reject { |c| c.empty? }
     @csv2_headers = @csv2_headers.reject { |c| c.empty? }
@@ -268,14 +268,16 @@ class ImportMappingsController < ApplicationController
         headers = headers_of_file1 + headers_of_file2
         import_mapping_data = mapping.mapping_data.compact_blank.to_a.flatten
         sub_type = mapping.sub_type
-        if (headers & import_mapping_data).eql? import_mapping_data
-          @multifile_mapping = MultifileMapping.create(file1: file1.original_filename, file2: file2.original_filename, download: false, error: nil, sub_type: sub_type )
+        import_mapping_data.map! { |mapped_data| mapped_data.humanize.downcase.delete(' ') }
+        headers.map! { |header| header.humanize.downcase.delete(' ') }
+        if (headers & import_mapping_data).eql? import_mapping_data.uniq
           filename1 = save_files_in_tmp(file1)
           filename2 = save_files_in_tmp(file2)
-          job_id = AddCsvDataToDbJob.perform_later(filename1: filename1, filename2: filename2, mapping_id: params[:mapping_id], multifile_mapping_id: @multifile_mapping.id)
-          job_id = job_id.job_id
-          FileOne.create(job_id: job_id, filename: 'file1')
-          FileTwo.create(job_id: job_id, filename: 'file2')
+          @multifile_mapping = MultifileMapping.create(file1: filename1, file2: filename2, download: false, error: nil, sub_type: sub_type )
+          job = AddCsvDataToDbJob.perform_later(filename1: filename1, filename2: filename2, mapping_id: params[:mapping_id], multifile_mapping_id: @multifile_mapping.id)
+          jid = job.provider_job_id
+          FileOne.create(job_id: jid, filename: filename1)
+          FileTwo.create(job_id: jid, filename: filename2)
           flash[:notice] = 'Job added successfully!'
         else
           flash[:alert] = 'Import mapping does not match with the files.'
@@ -412,8 +414,12 @@ class ImportMappingsController < ApplicationController
         type: 'csv'
       )
     else
+      filename1 = params[:filename1]
+      filename2 = params[:filename2]
       File.delete(params[:url]) if params[:url]
       MultifileMapping.find_by(id: params[:id]).destroy
+      FileOne.where(filename: filename1).delete_all
+      FileTwo.where(filename: filename2).delete_all
       flash[:notice] = 'File deleted!'
       redirect_to import_mappings_path(mapping_filter: 'download')
     end
@@ -432,7 +438,7 @@ class ImportMappingsController < ApplicationController
   end
 
   def save_files_in_tmp(uploaded_file)
-    name = File.basename(uploaded_file.original_filename, File.extname(uploaded_file.original_filename)) + Time.zone.now.strftime('%d-%m-%Y @ %H:%M:%S') + '.csv'
+    name = File.basename(uploaded_file.original_filename, File.extname(uploaded_file.original_filename)) + '---' + Time.zone.now.strftime('%d-%m-%Y @ %H:%M:%S') + '.csv'
     File.open(Rails.root.join('tmp', name), 'wb') do |file|
       file.write(uploaded_file.read)
     end

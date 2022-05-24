@@ -16,8 +16,8 @@
               <% created_at_filename = multifile_maping_name.created_at.strftime('%d-%m-%Y @ %H:%M:%S') %>
               <% multifile_maping = @multifile_mapping.select { |a| (a.include? 'multi-mapping') && (a.split('/').last.split('--').last == created_at_filename)}%>
               <td><%= multifile_maping_name.sub_type %></td>
-              <td><%= multifile_maping_name.file1 %></td>
-              <td><%= multifile_maping_name.file2 %></td>
+              <td><%= multifile_maping_name.file1.split('---').first %></td>
+              <td><%= multifile_maping_name.file2.split('---').first %></td>
               <td><%= created_at_filename %></td>
               <% if multifile_maping_name.download == true  && multifile_maping.present? %>
                 <td class='border-right'>
@@ -26,8 +26,8 @@
                 </td>
               <% else %>
                 <td class='border-right text-danger'>
-                <% error = multifile_maping_name.error.nil? ? "Not available for download" : multifile_maping_name.error %>
-                <%= link_to error, download_path(download: false, url: multifile_maping.first, id: multifile_maping_name.id), class: "text-danger", data: {confirm: "Are you sure to delete it?"} %>
+                <% error = multifile_maping_name.error.nil? ? "In Processing.." : multifile_maping_name.error %>
+                <%= link_to error, download_path(download: false, url: multifile_maping.first, id: multifile_maping_name.id, filename1: multifile_maping_name.file1, filename2: multifile_maping_name.file2), class: "text-danger", data: {confirm: "Are you sure to delete it?"} %>
                 </td>
               <% end %>
             </tr>

@@ -14,27 +14,30 @@ class AddCsvDataToDbJob < ApplicationJob
     headers1 = spreadsheet1.first
     headers2 = spreadsheet2.first
     headers1.each_with_index do |header, index|
-      FileOne.first.update("column_#{index}": header)
+      FileOne.where(filename: filename1).first.update("column_#{index}": header)
     end
     headers2.each_with_index do |header, index|
-      FileTwo.first.update("column_#{index}": header)
+      FileTwo.where(filename: filename2).first.update("column_#{index}": header)
     end
     job_id = FileOne.first.job_id
     spreadsheet1.drop(1).each do |record|
       file_one = FileOne.create(job_id: job_id)
       record.each_with_index do |data, index|
-        file_one.update("column_#{index}": data, filename: 'file1')
+        file_one.update("column_#{index}": data, filename: filename1)
       end
     end
     spreadsheet2.drop(1).each do |record|
       file_two = FileTwo.create(job_id: job_id)
       record.each_with_index do |data, index|
-        file_two.update("column_#{index}": data, filename: 'file2')
+        file_two.update("column_#{index}": data, filename: filename2)
       end
     end
     delete_files(filename1)
     delete_files(filename2)
-    job_data = MultiFileMappingJob.perform_later(mapping_id: mapping_id, multifile_mapping_id: multifile_mapping_id)
+    job_data = MultiFileMappingJob.perform_later(
+      mapping_id: mapping_id, multifile_mapping_id: multifile_mapping_id,
+      filename1: filename1, filename2: filename2
+    )
     JobStatus.create(job_id: job_data.job_id, name: 'MultiFileMappingJob', status: 'Queued',
       arguments: { mapping_id: mapping_id, multifile_mapping_id: multifile_mapping_id })
   end
