@@ -12,9 +12,10 @@ class WaitingTimeJob < ApplicationJob
     job_status.update(status: 'busy')
     if job_status.name.downcase.include? 'amazon'
       elapsed_seconds = set_elapsed_seconds
-      job_status.name.constantize.set(wait: elapsed_seconds.seconds).perform_later(job_status.arguments.merge(job_status_id: job_status_id))
+      arguments = job_status.arguments.nil? ? {} : job_status.arguments
+      job_status.name.constantize.set(wait: elapsed_seconds.seconds).perform_later(arguments.merge(job_status_id: job_status_id))
     else
-      job_status.name.constantize.perform_later(job_status.arguments.merge(job_status_id: job_status_id))
+      job_status.name.constantize.perform_later(arguments.merge(job_status_id: job_status_id))
     end
   end
 

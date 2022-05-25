@@ -25,7 +25,7 @@ class ApplicationJob < ActiveJob::Base # :nodoc:
   end
 
   def proccessed
-    return unless arguments.first[:job_status_id].present?
+    return unless arguments.first.try(:[],:job_status_id).present?
 
     job = JobStatus.find_by(id: arguments.first[:job_status_id])
     job.update(status: 'processed') if job.present?
