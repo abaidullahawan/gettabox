@@ -26,7 +26,6 @@ class ApplicationJob < ActiveJob::Base # :nodoc:
   end
 
   def proccessed
-    byebug
     return unless arguments.first.try(:[],:job_status_id).present?
 
     job = JobStatus.find_by(id: arguments.first[:job_status_id])
