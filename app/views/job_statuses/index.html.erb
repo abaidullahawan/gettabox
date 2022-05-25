@@ -62,12 +62,12 @@
                     <tr>
                       <th class="text-center">Name</th>
                       <th class="text-center">Date</th>
-                      <th class="text-center">Time ago</th>
-                      <th class="text-center">Perform In</th>
+                      <%# <th class="text-center">Time ago</th> %>
+                      <th class="text-center">Perform at</th>
                       <th class="text-center">Arguments</th>
                       <th class="text-center">Status</th>
                       <% if ['inqueue','retry'].include?(params[:status_filter])%>
-                        <th class="text-center">Time Remaining</th>
+                        <th class="text-center">Action</th>
                       <% end %>
                     </tr>
                     <div class="tab-pane fade <%= 'show active' if params[:status_filter].eql? 'inqueue' %>" id="demo_two_home" role="tabpanel">
