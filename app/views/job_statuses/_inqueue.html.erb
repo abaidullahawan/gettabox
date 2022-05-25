@@ -3,7 +3,7 @@
     <td class="text-center"><%= job_status.name %></td>
     <td class="text-center"><%= job_status.updated_at.strftime("%m/%d/%Y %H:%M")%></td>
     <!--td class="text-center"><%= JobStatus.sec_to_hours( Time.now - job_status.updated_at )%></td-->
-    <td class="text-center"><%= job_status.perform_in.strftime("%m/%d/%Y %H:%M")  %></td>
+    <td class="text-center"><%= job_status.perform_in.strftime("%m/%d/%Y %H:%M:%S")  %></td>
     <td class="text-center">
       <% job_status&.arguments&.each do |arg| %>
         <b><%= arg.first %></b> : <%= arg.last %>

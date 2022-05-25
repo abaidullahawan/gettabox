@@ -41,19 +41,19 @@
             <div class="tabs-style-two">
               <ul class="nav nav-tabs">
                 <li class="nav-item font-sm">
-                  <a class="nav-link <%= 'active' if params[:status_filter].eql? 'inqueue' %>" href=<%= job_statuses_path(status_filter: 'inqueue', q: { status_or_name_or_arguments_cont: params[:q].try(:[], :status_or_name_or_arguments_cont)})%>><%= "Inqueue (#{@inqueue_job.count.to_i})" %></a>
+                  <a class="nav-link <%= 'active' if params[:status_filter].eql? 'inqueue' %>" href=<%= job_statuses_path(status_filter: 'inqueue', q: { status_or_name_or_arguments_cont: params[:q].try(:[], :status_or_name_or_arguments_cont)})%>><%= "Inqueue (#{@inqueue_job_count.to_i})" %></a>
                 </li>
                 <li class="nav-item font-sm">
-                  <a class="nav-link <%= 'active' if params[:status_filter].eql? 'retry' %>" href=<%= job_statuses_path(status_filter: 'retry', q: { status_or_name_or_arguments_cont: params[:q].try(:[], :status_or_name_or_arguments_cont)})%>><%= "Retry (#{@retry_job.count.to_i})" %></a>
+                  <a class="nav-link <%= 'active' if params[:status_filter].eql? 'retry' %>" href=<%= job_statuses_path(status_filter: 'retry', q: { status_or_name_or_arguments_cont: params[:q].try(:[], :status_or_name_or_arguments_cont)})%>><%= "Retry (#{@retry_job_count.to_i})" %></a>
                 </li>
                 <li class="nav-item font-sm">
-                  <a class="nav-link <%= 'active' if params[:status_filter].eql? 'busy' %>" href=<%= job_statuses_path(status_filter: 'busy', q: { status_or_name_or_arguments_cont: params[:q].try(:[], :status_or_name_or_arguments_cont)})%>><%= "Busy (#{@busy_job.count.to_i})" %></a>
+                  <a class="nav-link <%= 'active' if params[:status_filter].eql? 'busy' %>" href=<%= job_statuses_path(status_filter: 'busy', q: { status_or_name_or_arguments_cont: params[:q].try(:[], :status_or_name_or_arguments_cont)})%>><%= "Busy (#{@busy_job_count.to_i})" %></a>
                 </li>
                 <li class="nav-item font-sm">
-                  <a class="nav-link <%= 'active' if params[:status_filter].eql? 'processed' %>" href=<%= job_statuses_path(status_filter: 'processed', q: { status_or_name_or_arguments_cont: params[:q].try(:[], :status_or_name_or_arguments_cont)})%>><%= "Processed (#{@processed_job.count.to_i})"%></a>
+                  <a class="nav-link <%= 'active' if params[:status_filter].eql? 'processed' %>" href=<%= job_statuses_path(status_filter: 'processed', q: { status_or_name_or_arguments_cont: params[:q].try(:[], :status_or_name_or_arguments_cont)})%>><%= "Processed (#{@processed_job_count.to_i})"%></a>
                 </li>
                 <li class="nav-item font-sm">
-                  <a class="nav-link <%= 'active' if params[:status_filter].eql? 'cancelled' %>" href=<%= job_statuses_path(status_filter: 'cancelled', q: { status_or_name_or_arguments_cont: params[:q].try(:[], :status_or_name_or_arguments_cont)})%>><%= "Cancelled (#{@cancelled_job.count.to_i})"%></a>
+                  <a class="nav-link <%= 'active' if params[:status_filter].eql? 'cancelled' %>" href=<%= job_statuses_path(status_filter: 'cancelled', q: { status_or_name_or_arguments_cont: params[:q].try(:[], :status_or_name_or_arguments_cont)})%>><%= "Cancelled (#{@cancelled_job_count.to_i})"%></a>
                 </li>
               </ul>
               <div class="py-4">
