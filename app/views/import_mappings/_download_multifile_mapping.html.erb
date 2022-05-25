@@ -17,7 +17,7 @@
               <% multifile_maping = @multifile_mapping.select { |a| (a.include? 'multi-mapping') && (a.split('/').last.split('--').last == created_at_filename)}%>
               <td><%= multifile_maping_name.sub_type %></td>
               <td><%= multifile_maping_name.file1.split('---').first %></td>
-              <td><%= multifile_maping_name.file2.split('---').first %></td>
+              <td><%= multifile_maping_name&.file2&.split('---')&.first %></td>
               <td><%= created_at_filename %></td>
               <% if multifile_maping_name.download == true  && multifile_maping.present? %>
                 <td class='border-right'>
