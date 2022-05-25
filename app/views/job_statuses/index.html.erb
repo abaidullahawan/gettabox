@@ -23,13 +23,11 @@
           <div class='row'>
             <div class="col-md-3"><br>
               <div class="dropdown form-group">
-                <%= f.search_field :status_or_name_cont, class: 'form-control dropdown-toggle', placeholder:"Search in name or status" %>
+                <%= f.search_field :status_or_name_or_arguments_cont, class: 'form-control dropdown-toggle', placeholder:"Search in name or status" %>
               </div>
             </div>
-            <div class=' col-md-1'>
-              <button type='submit' class='product_type_submit btn btn-primary mt-4 d-none'>Search</button>
-            </div>
-            <div class='col-md-1 offset-9'>
+            <button type='submit' class='product_type_submit btn btn-primary mt-4 d-none'>Search</button>
+            <div class='col-md-1 ml-auto mr-4'>
               <div class='float-right'>
                 <label for="inputState">Per Page</label>
                 <%= select_tag :limit, options_for_select([5, 10, 15, 20], selected: params[:limit] || 10), id: 'change_per_page', class: 'form-control' %>
@@ -38,40 +36,62 @@
             </div>
           </div><br>
         <% end %>
-        <div class="table-responsive">
-          <table class="table m-0 table-hover">
-            <tr>
-              <th class="text-center">Name</th>
-              <th class="text-center">Date</th>
-              <th class="text-center">Time ago</th>
-              <th class="text-center">Perform In</th>
-              <th class="text-center">Arguments</th>
-              <th class="text-center">Status</th>
-            </tr>
-            <% @job_statuses.each do |job_status| %>
-              <tr>
-                <td class="text-center"><%= job_status.name %></td>
-                <td class="text-center"><%= job_status.updated_at.strftime("%m/%d/%Y %H:%M")%></td>
-                <td class="text-center"><%= JobStatus.sec_to_hours( Time.now - job_status.updated_at )%></td>
-                <td class="text-center"><%= job_status.perform_in.nil? ? 'now' : (job_status.perform_in - DateTime.now).round(2).to_s + 'seconds'  %></td>
-                <td class="text-center">
-                  <% job_status&.arguments&.each do |arg| %>
-                    <b><%= arg.first %></b> : <%= arg.last %>
-                    <br>
-                  <% end %>
-                </td>
-                <td class="text-center"><%= job_status.status %></td>
-              </tr>
-            <% end %>
-          </table>
+        <div class="col-lg-12">
+          <div class="card mb-30">
+            <div class="tabs-style-two">
+              <ul class="nav nav-tabs">
+                <li class="nav-item font-sm">
+                  <a class="nav-link <%= 'active' if params[:status_filter].eql? 'inqueue' %>" href=<%= job_statuses_path(status_filter: 'inqueue', q: { status_or_name_or_arguments_cont: params[:q].try(:[], :status_or_name_or_arguments_cont)})%>><%= "Inqueue (#{@inqueue_job.count.to_i})" %></a>
+                </li>
+                <li class="nav-item font-sm">
+                  <a class="nav-link <%= 'active' if params[:status_filter].eql? 'retry' %>" href=<%= job_statuses_path(status_filter: 'retry', q: { status_or_name_or_arguments_cont: params[:q].try(:[], :status_or_name_or_arguments_cont)})%>><%= "Retry (#{@retry_job.count.to_i})" %></a>
+                </li>
+                <li class="nav-item font-sm">
+                  <a class="nav-link <%= 'active' if params[:status_filter].eql? 'busy' %>" href=<%= job_statuses_path(status_filter: 'busy', q: { status_or_name_or_arguments_cont: params[:q].try(:[], :status_or_name_or_arguments_cont)})%>><%= "Busy (#{@busy_job.count.to_i})" %></a>
+                </li>
+                <li class="nav-item font-sm">
+                  <a class="nav-link <%= 'active' if params[:status_filter].eql? 'processed' %>" href=<%= job_statuses_path(status_filter: 'processed', q: { status_or_name_or_arguments_cont: params[:q].try(:[], :status_or_name_or_arguments_cont)})%>><%= "Processed (#{@processed_job.count.to_i})"%></a>
+                </li>
+                <li class="nav-item font-sm">
+                  <a class="nav-link <%= 'active' if params[:status_filter].eql? 'cancelled' %>" href=<%= job_statuses_path(status_filter: 'cancelled', q: { status_or_name_or_arguments_cont: params[:q].try(:[], :status_or_name_or_arguments_cont)})%>><%= "Cancelled (#{@cancelled_job.count.to_i})"%></a>
+                </li>
+              </ul>
+              <div class="py-4">
+                <div class="table-responsive">
+                  <table class="table m-0 table-hover">
+                    <tr>
+                      <th class="text-center">Name</th>
+                      <th class="text-center">Date</th>
+                      <th class="text-center">Time ago</th>
+                      <th class="text-center">Perform In</th>
+                      <th class="text-center">Arguments</th>
+                      <th class="text-center">Status</th>
+                      <% if ['inqueue','retry'].include?(params[:status_filter])%>
+                        <th class="text-center">Time Remaining</th>
+                      <% end %>
+                    </tr>
+                    <div class="tab-pane fade <%= 'show active' if params[:status_filter].eql? 'inqueue' %>" id="demo_two_home" role="tabpanel">
+                      <%= render 'inqueue' if params[:status_filter].eql? 'inqueue' %>
+                    </div>
+                    <div class="tab-pane fade <%= 'show active' if params[:status_filter].eql? 'retry' %>" id="demo_two_home" role="tabpanel">
+                      <%= render 'retry' if params[:status_filter].eql? 'retry' %>
+                    </div>
+                    <div class="tab-pane fade <%= 'show active' if params[:status_filter].eql? 'busy' %>" id="demo_two_home" role="tabpanel">
+                      <%= render 'busy' if params[:status_filter].eql? 'busy' %>
+                    </div>
+                    <div class="tab-pane fade <%= 'show active' if params[:status_filter].eql? 'processed' %>" id="demo_two_home" role="tabpanel">
+                      <%= render 'processed' if params[:status_filter].eql? 'processed' %>
+                    </div>
+                    <div class="tab-pane fade <%= 'show active' if params[:status_filter].eql? 'cancelled' %>" id="demo_two_home" role="tabpanel">
+                      <%= render 'cancelled' if params[:status_filter].eql? 'cancelled' %>
+                    </div>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
         <br>
-        <div class='float-right'>
-          <%= page_entries_info @job_statuses %>
-        </div><br>
-        <div class="pagination justify-content-center mt-3">
-          <%= paginate @job_statuses,theme: "twitter-bootstrap-4",pagination_class: "pagination-sm",nav_class: "d-inline-b" %>
-        </div>
       </div>
     </div>
   </div>
