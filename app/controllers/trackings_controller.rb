@@ -65,9 +65,8 @@ class TrackingsController < ApplicationController
           if order.channel_type_amazon?
             call_amazon_tracking_job([order.id])
           else
-            job_data = EbayCompleteSaleJob.perform_later(order_ids: [order.id])
-            JobStatus.create(job_id: job_data.job_id, name: 'EbayCompleteSaleJob', status: 'Queued',
-                             arguments: { order_ids: [order.id] })
+            # job_data = EbayCompleteSaleJob.perform_later(order_ids: [order.id])
+            JobStatus.create(name: 'EbayCompleteSaleJob', status: 'inqueue', arguments: { order_ids: [order.id] })
           end
         end
         flash[:notice] = "#{count} orders updated successfully"
@@ -239,8 +238,8 @@ class TrackingsController < ApplicationController
       order.update(change_log: "Channel Updated, #{order.id}, #{order.order_id}, #{current_user.personal_detail&.full_name}") if batch.update_channels
     end
     call_amazon_tracking_job(order_ids) if batch.update_channels
-    job_data = EbayCompleteSaleJob.perform_later(order_ids: order_ids) if batch.update_channels
-    JobStatus.create(job_id: job_data.job_id, name: 'EbayCompleteSaleJob', status: 'Queued', arguments: { order_ids: order_ids }) if batch.update_channels
+    # job_data = EbayCompleteSaleJob.perform_later(order_ids: order_ids) if batch.update_channels
+    JobStatus.create(name: 'EbayCompleteSaleJob', status: 'inqueue', arguments: { order_ids: order_ids }) if batch.update_channels
   end
 
   def redirect_response
@@ -305,7 +304,7 @@ class TrackingsController < ApplicationController
     wait_time = DateTime.now > wait_time ? DateTime.now + 130.seconds : wait_time + 130.seconds
     credential.update(redirect_uri: 'AmazonTrackingJob', authorization: order_id, created_at: wait_time)
     elapsed_seconds = wait_time - DateTime.now
-    job_data = AmazonTrackingJob.set(wait: elapsed_seconds.seconds).perform_later(order_ids: order_id)
-    JobStatus.create(job_id: job_data.job_id, name: 'AmazonTrackingJob', status: 'Queued', arguments: { order_ids: order_id }, perform_in: DateTime.now + elapsed_seconds.seconds)
+    # job_data = AmazonTrackingJob.set(wait: elapsed_seconds.seconds).perform_later(order_ids: order_id)
+    JobStatus.create(name: 'AmazonTrackingJob', status: 'inqueue', arguments: { order_ids: order_id })
   end
 end

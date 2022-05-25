@@ -9,7 +9,7 @@ class AmazonTrackingJob < ApplicationJob
     remainaing_time = @refresh_token.access_token_expiry.localtime > DateTime.now
     generate_refresh_token_amazon if @refresh_token.present? && remainaing_time == false
 
-    order_ids = _args.last[:order_ids]
+    order_ids = _args.last['order_ids']
     order_ids = ChannelOrder.where(id: order_ids, channel_type: 'amazon').pluck(:id)
     return 'Orders not found' unless order_ids.present?
 
@@ -19,10 +19,10 @@ class AmazonTrackingJob < ApplicationJob
     }
     order_ids.each.with_index(1) do |order_id, index|
       sleep(10.seconds) if index > 1
-      document_response = AmazonCreateReportService.create_report(@refresh_token.access_token, url, document)
-      return perform_later_queue([order_id], document_response[:error]) unless document_response[:status]
+      # document_response = AmazonCreateReportService.create_report(@refresh_token.access_token, url, document)
+      return perform_later_queue([order_id], "fdsf") unless false
 
-      result = upload_document(@refresh_token.access_token, document_response[:body]['url'], order_id)
+      # result = upload_document(@refresh_token.access_token, document_response[:body]['url'], order_id)
       return perform_later_queue([order_id], result[:error]) unless result[:status]
 
       create_feed_response(document_response, order_id)
@@ -124,7 +124,7 @@ class AmazonTrackingJob < ApplicationJob
     wait_time = DateTime.now > wait_time ? DateTime.now : wait_time + 10.seconds
     credential.update(redirect_uri: 'AmazonTrackingJob', authorization: ids, created_at: wait_time)
     elapsed_seconds = wait_time - DateTime.now
-    job_data = self.class.set(wait: elapsed_seconds.seconds).perform_later(order_ids: ids, error: error)
-    JobStatus.create(job_id: job_data.job_id, name: self.class.to_s, status: 'Queued', arguments: { order_ids: ids }, perform_in: DateTime.now + elapsed_seconds.seconds)
+    # job_data = self.class.set(wait: elapsed_seconds.seconds).perform_later(order_ids: ids, error: error)
+    JobStatus.create(name: self.class.to_s, status: 'inqueue', arguments: { order_ids: ids })
   end
 end

@@ -1,0 +1,45 @@
+<% @retry_job.each do |job_status| %>
+  <tr>
+    <td class="text-center"><%= job_status.name %></td>
+    <td class="text-center"><%= job_status.updated_at.strftime("%m/%d/%Y %H:%M")%></td>
+    <td class="text-center"><%= JobStatus.sec_to_hours( Time.now - job_status.updated_at )%></td>
+    <td class="text-center"><%= job_status.perform_in.nil? ? 'now' : (job_status.perform_in - DateTime.now).round(2).to_s + 'seconds'  %></td>
+    <td class="text-center">
+      <% job_status&.arguments&.each do |arg| %>
+        <b><%= arg.first %></b> : <%= arg.last %>
+        <br>
+      <% end %>
+    </td>
+    <td class="text-center"><%= job_status.status %></td>
+    <% seconds = Time.now() - job_status.created_at %>
+    <td class="text-center"><span class="created_at_time"><%=  JobStatus.sec_to_hours( Time.now - job_status.updated_at - 5.minutes )  %></span><div class="countdown"></div><button class="btn btn-danger">Cancel</button></td>
+  </tr>
+<% end %>
+</table>
+</div>
+
+<div class='float-right'>
+  <%= page_entries_info @retry_job %>
+</div><br>
+<div class="pagination justify-content-center mt-3">
+  <%= paginate @retry_job,theme: "twitter-bootstrap-4",pagination_class: "pagination-sm",nav_class: "d-inline-b" %>
+</div>
+
+<%# <script type="text/javascript">
+var timer2 = $('.created_at_time').text();
+var interval = setInterval(function() {
+  timer2 = $('.created_at_time').text()
+  var timer = timer2.split(':');
+  //by parsing integer, I avoid all extra string processing
+  var minutes = parseInt(timer[0], 10);
+  var seconds = parseInt(timer[1], 10);
+  --seconds;
+  minutes = (seconds < 0) ? --minutes : minutes;
+  if (minutes < 0) clearInterval(interval);
+  seconds = (seconds < 0) ? 59 : seconds;
+  seconds = (seconds < 10) ? '0' + seconds : seconds;
+  //minutes = (minutes < 10) ?  minutes : minutes;
+  $('.countdown').html(minutes + ':' + seconds);
+  timer2 = minutes + ':' + seconds;
+}, 1000);
+</script> %>
