@@ -19,10 +19,10 @@ class AmazonTrackingJob < ApplicationJob
     }
     order_ids.each.with_index(1) do |order_id, index|
       sleep(10.seconds) if index > 1
-      # document_response = AmazonCreateReportService.create_report(@refresh_token.access_token, url, document)
-      return perform_later_queue([order_id], "fdsf") unless false
+      document_response = AmazonCreateReportService.create_report(@refresh_token.access_token, url, document)
+      return perform_later_queue([order_id], document_response[:error]) unless document_response[:status]
 
-      # result = upload_document(@refresh_token.access_token, document_response[:body]['url'], order_id)
+      result = upload_document(@refresh_token.access_token, document_response[:body]['url'], order_id)
       return perform_later_queue([order_id], result[:error]) unless result[:status]
 
       create_feed_response(document_response, order_id)
