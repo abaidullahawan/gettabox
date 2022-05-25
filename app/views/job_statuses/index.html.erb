@@ -66,7 +66,7 @@
                       <th class="text-center">Perform In</th>
                       <th class="text-center">Arguments</th>
                       <th class="text-center">Status</th>
-                      <% if (params[:status_filter].eql? 'inqueue' or 'retry') %>
+                      <% if ['inqueue','retry'].include?(params[:status_filter])%>
                         <th class="text-center">Time Remaining</th>
                       <% end %>
                     </tr>
