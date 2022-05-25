@@ -56,10 +56,15 @@ class JobStatusesController < ApplicationController
   private
 
   def load_statuses
+    @inqueue_job_count = @job_statuses.where(status: 'inqueue').count
     @inqueue_job = @job_statuses.where(status: 'inqueue').order(created_at: :desc).page(params[:page]).per(params[:limit])
+    @retry_job_count = @job_statuses.where(status: 'retry').count
     @retry_job = @job_statuses.where(status: 'retry').order(created_at: :desc).page(params[:page]).per(params[:limit])
+    @busy_job_count = @job_statuses.where(status: 'busy').count
     @busy_job = @job_statuses.where(status: 'busy').order(created_at: :desc).page(params[:page]).per(params[:limit])
+    @processed_job_count = @job_statuses.where(status: 'processed').count
     @processed_job = @job_statuses.where(status: 'processed').order(created_at: :desc).page(params[:page]).per(params[:limit])
+    @cancelled_job_count = @job_statuses.where(status: 'cancelled').count
     @cancelled_job = @job_statuses.where(status: 'cancelled').order(created_at: :desc).page(params[:page]).per(params[:limit])
   end
 
