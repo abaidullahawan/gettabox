@@ -23,8 +23,8 @@ class MultiFileMappingJob < ApplicationJob
       attribute_data.push(attribute.gsub('_', ' ').gsub(' ', '_'))
     end
     name = "multi-mapping--#{multifile.created_at.strftime('%d-%m-%Y @ %H:%M:%S')}"
-
-    CSV.open("/home/deploy/channeldispatch/current/public/uploads/#{name}", 'wb') do |csv|
+    path = Rails.root.join('public/uploads', name.to_s)
+    CSV.open(path.to_s, 'wb') do |csv|
       csv << attributes
       if mapping.mapping_rule.present?
         case_sensitivity(csv, attribute_data, matchable_data, filename1, filename2)
