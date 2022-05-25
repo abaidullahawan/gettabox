@@ -23,8 +23,8 @@ class WaitingTimeJob < ApplicationJob
   def set_elapsed_seconds
     credential = Credential.find_or_create_by(grant_type: 'wait_time')
     wait_time = credential.created_at
-    wait_time = DateTime.now > wait_time ? DateTime.now + 130.seconds : wait_time + 130.seconds
+    wait_time = Time.zone.now > wait_time ? Time.zone.now + 130.seconds : wait_time + 130.seconds
     credential.update(redirect_uri: 'AmazonJob', created_at: wait_time)
-    wait_time - DateTime.now
+    wait_time - Time.zone.now
   end
 end
