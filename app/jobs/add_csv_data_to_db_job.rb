@@ -27,7 +27,7 @@ class AddCsvDataToDbJob < ApplicationJob
       end
     end
     spreadsheet2.drop(1).each do |record|
-      file_two = FileTwo.create(filename: filename1)
+      file_two = FileTwo.create(filename: filename2)
       record.each_with_index do |data, index|
         file_two.update("column_#{index}": data)
       end
