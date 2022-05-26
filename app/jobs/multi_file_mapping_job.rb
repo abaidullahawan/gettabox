@@ -16,7 +16,6 @@ class MultiFileMappingJob < ApplicationJob
     matchable = mapping.mapping_data.select { |_, v| v.present? && v != '' }
     matchable_data = []
     attribute_data = []
-    byebug
     matchable.to_a.flatten.each do |attribute|
       matchable_data.push(attribute.gsub('_', ' ').gsub(' ', '_'))
     end
