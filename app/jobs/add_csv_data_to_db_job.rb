@@ -9,6 +9,7 @@ class AddCsvDataToDbJob < ApplicationJob
     filename2 = _args.last[:filename2]
     mapping_id = _args.last[:mapping_id]
     multifile_mapping_id = _args.last[:multifile_mapping_id]
+    multifile = MultifileMapping.find_by(id: multifile_mapping_id)
     spreadsheet1 = CSV.parse(open_spreadsheet(filename1))
     spreadsheet2 = CSV.parse(open_spreadsheet(filename2))
     headers1 = spreadsheet1.first
@@ -40,6 +41,10 @@ class AddCsvDataToDbJob < ApplicationJob
     )
     JobStatus.create(job_id: job_data.job_id, name: 'MultiFileMappingJob', status: 'Queued',
       arguments: { mapping_id: mapping_id, multifile_mapping_id: multifile_mapping_id })
+
+  rescue StandardError => e
+    multifile.update(error: e, download: false)
+    delete_record(filename1, filename2)
   end
 
   def open_spreadsheet(filename)
@@ -48,5 +53,10 @@ class AddCsvDataToDbJob < ApplicationJob
 
   def delete_files(filename)
     File.delete(Rails.root.join('tmp', filename))
+  end
+
+  def delete_record(filename1, filename2)
+    FileOne.where(filename: filename1).delete_all
+    FileTwo.where(filename: filename2).delete_all
   end
 end

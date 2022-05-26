@@ -46,6 +46,7 @@ class MultiFileMappingJob < ApplicationJob
     non_matching1 = []
     matching2 = []
     non_matching2 = []
+    matching = []
     record1 = []
     record2 = []
     record3 = []
@@ -67,13 +68,13 @@ class MultiFileMappingJob < ApplicationJob
     column_name2 = hash2.invert[matchable_data.last]
     headers2 = hash2.invert.keys
 
-    query = "(Select REGEXP_REPLACE(#{column_name1}, '[^A-Za-z0-9]', '', 'g') from file_ones where file_ones.filename = '#{filename1}' OFFSET 1) Intersect (Select REGEXP_REPLACE(#{column_name2}, '[^A-Za-z0-9]', '', 'g') from file_twos where file_twos.filename = '#{filename2}' OFFSET 1)"
+    query = "(Select REGEXP_REPLACE(LOWER(#{column_name1}), '[^A-Za-z0-9]', '', 'g') from file_ones where file_ones.filename = '#{filename1}' OFFSET 1) Intersect (Select REGEXP_REPLACE(LOWER(#{column_name2}), '[^A-Za-z0-9]', '', 'g') from file_twos where file_twos.filename = '#{filename2}' OFFSET 1)"
     matched_data = ActiveRecord::Base.connection.exec_query(query).rows&.flatten
 
-    match_data_for_one = FileOne.where(filename: filename1).where("REGEXP_REPLACE(#{column_name1}, '[^A-Za-z0-9]', '', 'g') IN (?)", matched_data)
-    unmatch_data_for_one = FileOne.where(filename: filename1).where.not("REGEXP_REPLACE(#{column_name1}, '[^A-Za-z0-9]', '', 'g') IN (?)", matched_data).without(FileOne.where(filename: filename1).first)
-    match_data_for_two = FileTwo.where(filename: filename2).where("REGEXP_REPLACE(#{column_name2}, '[^A-Za-z0-9]', '', 'g') IN (?)", matched_data)
-    unmatch_data_for_two = FileTwo.where(filename: filename2).where.not("REGEXP_REPLACE(#{column_name2}, '[^A-Za-z0-9]', '', 'g') IN (?)", matched_data).without(FileTwo.where(filename: filename2).first)
+    match_data_for_one = FileOne.where(filename: filename1).where("REGEXP_REPLACE(LOWER(#{column_name1}), '[^A-Za-z0-9]', '', 'g') IN (?)", matched_data)
+    unmatch_data_for_one = FileOne.where(filename: filename1).where.not("REGEXP_REPLACE(LOWER(#{column_name1}), '[^A-Za-z0-9]', '', 'g') IN (?)", matched_data).without(FileOne.where(filename: filename1).first)
+    match_data_for_two = FileTwo.where(filename: filename2).where("REGEXP_REPLACE(LOWER(#{column_name2}), '[^A-Za-z0-9]', '', 'g') IN (?)", matched_data)
+    unmatch_data_for_two = FileTwo.where(filename: filename2).where.not("REGEXP_REPLACE(LOWER(#{column_name2}), '[^A-Za-z0-9]', '', 'g') IN (?)", matched_data).without(FileTwo.where(filename: filename2).first)
 
     match_data_for_one.each do |matched|
       matched = matched.attributes.excluding('id', 'job_id', 'filename', 'created_at', 'updated_at')
@@ -104,7 +105,17 @@ class MultiFileMappingJob < ApplicationJob
     matching2.each do |record|
       record2 << headers2.zip(record.values).to_h
     end
-    matching = record1.zip(record2).map { |h1, h2| h1.merge(h2) }
+
+    record1.sort_by! { |hsh| hsh[matchable_data.first].gsub('_', ' ')&.gsub(/[^0-9A-Za-z]/, '')&.downcase&.delete(' ') }
+    record2.sort_by! { |hsh| hsh[matchable_data.last].gsub('_', ' ')&.gsub(/[^0-9A-Za-z]/, '')&.downcase&.delete(' ') }
+
+    record1.each do |rec1|
+      record2.each do |rec2|
+        if rec1[matchable_data.first].gsub('_', ' ')&.gsub(/[^0-9A-Za-z]/, '')&.delete(' ')&.casecmp(rec2[matchable_data.last]&.gsub('_',' ')&.gsub(/[^0-9A-Za-z]/, '')&.delete(' '))&.zero?
+          matching << rec1.merge(rec2)
+        end
+      end
+    end
 
     non_matching1.each do |record|
       record3 << headers1.zip(record.values).to_h
@@ -187,6 +198,10 @@ class MultiFileMappingJob < ApplicationJob
     matching2.each do |record|
       record2 << headers2.zip(record.values).to_h
     end
+
+    record1.sort_by! { |hsh| hsh[matchable_data.first].downcase.delete(' ') }
+    record2.sort_by! { |hsh| hsh[matchable_data.last].downcase.delete(' ') }
+
     matching = record1.zip(record2).map { |h1, h2| h1.merge(h2) }
 
     non_matching1.each do |record|
