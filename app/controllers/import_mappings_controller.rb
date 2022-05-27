@@ -273,11 +273,10 @@ class ImportMappingsController < ApplicationController
         if (headers & import_mapping_data).eql? import_mapping_data.uniq
           filename1 = save_files_in_tmp(file1)
           filename2 = save_files_in_tmp(file2)
+          FileOne.create(filename: filename1)
+          FileTwo.create(filename: filename2)
           @multifile_mapping = MultifileMapping.create(file1: filename1, file2: filename2, download: false, error: nil, sub_type: sub_type )
-          job = AddCsvDataToDbJob.perform_later(filename1: filename1, filename2: filename2, mapping_id: params[:mapping_id], multifile_mapping_id: @multifile_mapping.id)
-          jid = job.provider_job_id
-          FileOne.create(job_id: jid, filename: filename1)
-          FileTwo.create(job_id: jid, filename: filename2)
+          AddCsvDataToDbJob.perform_later(filename1: filename1, filename2: filename2, mapping_id: params[:mapping_id], multifile_mapping_id: @multifile_mapping.id)
           flash[:notice] = 'Job added successfully!'
         else
           flash[:alert] = 'Import mapping does not match with the files.'

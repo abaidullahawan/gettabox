@@ -22,11 +22,11 @@ class CompetitivePriceJob < ApplicationJob
       row['LandedPrice'] = prices.first
       row['ListingPrice'] = prices.last
     end
-
     name = "multi-mapping--#{multifile.created_at.strftime('%d-%m-%Y @ %H:%M:%S')}"
-    csv = CSV.open("/home/deploy/channeldispatch/current/tmp/#{name}", "wb") do |csv|
+    path = Rails.root.join('public/uploads', name.to_s)
+    CSV.open(path.to_s, 'wb') do |csv|
       csv << spreadsheet.headers
-      spreadsheet.each{|row| csv << row}
+      spreadsheet.each { |row| csv << row }
     end
     multifile.update(download: true)
   rescue StandardError => e
