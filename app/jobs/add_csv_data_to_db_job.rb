@@ -5,10 +5,10 @@ class AddCsvDataToDbJob < ApplicationJob
   queue_as :default
 
   def perform(*_args)
-    filename1 = _args.last[:filename1]
-    filename2 = _args.last[:filename2]
-    mapping_id = _args.last[:mapping_id]
-    multifile_mapping_id = _args.last[:multifile_mapping_id]
+    filename1 = _args.last[:filename1] || _args.last['filename1']
+    filename2 = _args.last[:filename2] || _args.last['filename2']
+    mapping_id = _args.last[:mapping_id] || _args.last['mapping_id']
+    multifile_mapping_id = _args.last[:multifile_mapping_id] || _args.last['multifile_mapping_id']
     multifile = MultifileMapping.find_by(id: multifile_mapping_id)
     mapping_headers = ImportMapping.find(mapping_id).mapping_data.compact_blank
     spreadsheet1 = CSV.parse(open_spreadsheet(filename1))
@@ -46,7 +46,7 @@ class AddCsvDataToDbJob < ApplicationJob
       filename1: filename1, filename2: filename2
     )
     # JobStatus.create(job_id: job_data.job_id, name: 'MultiFileMappingJob', status: 'inqueue',
-    #   arguments: { mapping_id: mapping_id, multifile_mapping_id: multifile_mapping_id })
+    #   arguments: { mapping_id: mapping_id, multifile_mapping_id: multifile_mapping_id }, perform_in: 300)
 
   rescue StandardError => e
     delete_record(filename1, filename2)

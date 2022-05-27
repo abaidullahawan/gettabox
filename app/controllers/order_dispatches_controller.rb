@@ -61,11 +61,11 @@ class OrderDispatchesController < ApplicationController
   def all_order_data
     if params[:amazon]
       # job_data = AmazonOrderJob.set(wait: 5.minutes).perform_later
-      JobStatus.create(name: 'AmazonOrderJob', status: 'inqueue')
+      JobStatus.create(name: 'AmazonOrderJob', status: 'inqueue', perform_in: 300)
       flash[:notice] = 'Amazon order job created!'
     else
       # job_data = CreateChannelOrderResponseJob.perform_later
-      JobStatus.create(name: 'CreateChannelOrderResponseJob', status: 'inqueue')
+      JobStatus.create(name: 'CreateChannelOrderResponseJob', status: 'inqueue', perform_in: 300)
       flash[:notice] = 'CALL sent to eBay API'
     end
     redirect_to order_dispatches_path(order_filter: 'unprocessed')
@@ -175,7 +175,7 @@ class OrderDispatchesController < ApplicationController
       flash[:notice] = 'Please CALL eBay Orders.'
     else
       # job_data = CreateChannelOrderJob.perform_later
-      JobStatus.create(name: 'CreateChannelOrderJob', status: 'inqueue')
+      JobStatus.create(name: 'CreateChannelOrderJob', status: 'inqueue', perform_in: 300)
       flash[:notice] = 'eBay Orders are saving . . .'
     end
     redirect_to order_dispatches_path(order_filter: 'unprocessed')
@@ -313,7 +313,7 @@ class OrderDispatchesController < ApplicationController
     end
     update_order_stage
     # job_data = AmazonOrderItemJob.perform_later
-    JobStatus.create(name: 'AmazonOrderItemJob', status: 'inqueue')
+    JobStatus.create(name: 'AmazonOrderItemJob', status: 'inqueue', perform_in: 300)
     flash[:notice] = 'Channel Order Items updated!'
     redirect_to order_dispatches_path(order_filter: params[:order_filter])
   end

@@ -66,7 +66,7 @@ class TrackingsController < ApplicationController
             call_amazon_tracking_job([order.id], [order.order_id])
           else
             # job_data = EbayCompleteSaleJob.perform_later(order_ids: [order.id])
-            JobStatus.create(name: 'EbayCompleteSaleJob', status: 'inqueue', arguments: { order_ids: [order.id] })
+            JobStatus.create(name: 'EbayCompleteSaleJob', status: 'inqueue', arguments: { order_ids: [order.id] }, perform_in: 300)
           end
         end
         flash[:notice] = "#{count} orders updated successfully"
@@ -239,7 +239,7 @@ class TrackingsController < ApplicationController
     end
     call_amazon_tracking_job(order_ids, '') if batch.update_channels
     # job_data = EbayCompleteSaleJob.perform_later(order_ids: order_ids) if batch.update_channels
-    JobStatus.create(name: 'EbayCompleteSaleJob', status: 'inqueue', arguments: { order_ids: order_ids }) if batch.update_channels
+    JobStatus.create(name: 'EbayCompleteSaleJob', status: 'inqueue', arguments: { order_ids: order_ids }, perform_in: 300) if batch.update_channels
   end
 
   def redirect_response
@@ -304,7 +304,7 @@ class TrackingsController < ApplicationController
     wait_time = DateTime.now > wait_time ? DateTime.now + 130.seconds : wait_time + 130.seconds
     credential.update(redirect_uri: 'AmazonTrackingJob', authorization: order_id, created_at: wait_time)
     elapsed_seconds = wait_time - DateTime.now
-    job_data = AmazonTrackingJob.set(wait: elapsed_seconds.seconds).perform_later(order_ids: order_id, channel_order_id: channel_order_id)
-    # JobStatus.create(name: 'AmazonTrackingJob', status: 'inqueue', arguments: { order_ids: order_id }, perform_in: DateTime.now + 5.minutes)
+    # job_data = AmazonTrackingJob.set(wait: elapsed_seconds.seconds).perform_later(order_ids: order_id, channel_order_id: channel_order_id)
+    JobStatus.create(name: 'AmazonTrackingJob', status: 'inqueue', arguments: { order_ids: order_id }, perform_in: elapsed_seconds.seconds)
   end
 end

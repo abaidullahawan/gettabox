@@ -394,9 +394,9 @@ class ImportMappingsController < ApplicationController
       spreadsheet = open_spreadsheet(file)
       # spreadsheet = CSV.parse(spreadsheet, headers: true)
       @multifile_mapping = MultifileMapping.create(file1: file.original_filename, download: false, error: nil, sub_type: 'competative price job' )
-      job_data = CompetitivePriceJob.set(wait: 5.minutes).perform_later(spreadsheet: spreadsheet, multifile_mapping_id: @multifile_mapping.id)
-      JobStatus.create(job_id: job_data.job_id, name: 'CompetitivePriceJob', status: 'inqueue',
-                       arguments: { multifile_mapping_id: @multifile_mapping.id.to_s })
+      job_data = CompetitivePriceJob.perform_later(spreadsheet: spreadsheet, multifile_mapping_id: @multifile_mapping.id)
+      # JobStatus.create(job_id: job_data.job_id, name: 'CompetitivePriceJob', status: 'inqueue',
+      #                  arguments: { multifile_mapping_id: @multifile_mapping.id.to_s }, perform_in: 300)
 
       flash[:notice] = 'Job added successfully!'
     else

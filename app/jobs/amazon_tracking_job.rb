@@ -9,7 +9,7 @@ class AmazonTrackingJob < ApplicationJob
     remainaing_time = @refresh_token.access_token_expiry.localtime > DateTime.now
     generate_refresh_token_amazon if @refresh_token.present? && remainaing_time == false
 
-    order_ids = _args.last[:order_ids]
+    order_ids = _args.last[:order_ids] || _args.last['order_ids']
     order_ids = ChannelOrder.where(id: order_ids, channel_type: 'amazon').pluck(:id)
     return 'Orders not found' unless order_ids.present?
 
@@ -125,6 +125,6 @@ class AmazonTrackingJob < ApplicationJob
     credential.update(redirect_uri: 'AmazonTrackingJob', authorization: ids, created_at: wait_time)
     elapsed_seconds = wait_time - DateTime.now
     # job_data = self.class.set(wait: elapsed_seconds.seconds).perform_later(order_ids: ids, error: error)
-    JobStatus.create(name: self.class.to_s, status: 'inqueue', arguments: { order_ids: ids })
+    JobStatus.create(name: self.class.to_s, status: 'retry', arguments: { order_ids: ids, error: error }, perform_in: elapsed_seconds.seconds)
   end
 end

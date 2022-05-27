@@ -12,8 +12,8 @@ class EbaySingleProductJob < ApplicationJob
     remainaing_time = @refresh_token.access_token_expiry.localtime > DateTime.now
     generate_refresh_token(credential) if credential.present? && remainaing_time == false
 
-    # quantity = _args.last['quantity']
-    # listing_id = _args.last['listing_id']
+    # quantity = _args.last[:quantity] || _args.last['quantity']
+    # listing_id = _args.last[:listing_id] || _args.last['listing_id']
 
     products = ChannelProduct.where(item_quantity_changed: true, channel_type: 'ebay', listing_type: 'variation').pluck(:item_sku, :item_quantity, :listing_id)
     return 'Products not found' if products.nil? || products.empty?
@@ -75,10 +75,12 @@ class EbaySingleProductJob < ApplicationJob
   def job_status(response, listing_id, quantity)
     if (response['Ack'].eql? 'Failure') && (response['Errors']['ShortMessage'].include? 'Item level quantity will be ignored')
       # job_data = UpdateEbaySingleProductJob.perform_later(listing_id: listing_id , quantity: quantity)
-      JobStatus.create(name: 'UpdateEbaySingleProductJob', status: 'retry', arguments: { listing_id: listing_id, quantity: quantity })
+      JobStatus.create(name: 'UpdateEbaySingleProductJob', status: 'retry',
+                       arguments: { listing_id: listing_id, quantity: quantity, error: response['Errors']['ShortMessage'] }, perform_in: 600)
     else
       # self.class.perform_later(listing_id: listing_id , quantity: quantity, error: response['Errors']['LongMessage'])
-      JobStatus.create(name: self.class.to_s, status: 'retry', arguments: { listing_id: listing_id, quantity: quantity })
+      JobStatus.create(name: self.class.to_s, status: 'retry',
+                       arguments: { listing_id: listing_id, quantity: quantity, error: response['Errors']['ShortMessage'] }, perform_in: 600)
     end
   end
 end

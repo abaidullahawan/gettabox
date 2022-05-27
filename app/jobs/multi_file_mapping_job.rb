@@ -6,10 +6,10 @@ class MultiFileMappingJob < ApplicationJob
   # require 'creek'
 
   def perform(*_args)
-    mapping_id = _args.last[:mapping_id]
-    id = _args.last[:multifile_mapping_id]
-    filename1 = _args.last[:filename1]
-    filename2 = _args.last[:filename2]
+    mapping_id = _args.last[:mapping_id] || _args.last['mapping_id']
+    id = _args.last[:multifile_mapping_id] || _args.last['multifile_mapping_id']
+    filename1 = _args.last[:filename1] || _args.last['filename1']
+    filename2 = _args.last[:filename2] || _args.last['filename2']
     mapping = ImportMapping.find(mapping_id)
     multifile = MultifileMapping.find_by(id: id)
     attributes = mapping.data_to_print

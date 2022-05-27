@@ -1,5 +1,5 @@
 <% @busy_job.each do |job_status| %>
-  <tr>
+  <tr class="cursor-pointer header">
     <td class="text-center"><%= job_status.name %></td>
     <td class="text-center"><%= job_status.updated_at.strftime("%m/%d/%Y %H:%M")%></td>
     <td class="text-center"><%= job_status.perform_in.nil? ? 'now' : (job_status.perform_in - DateTime.now).round(2).to_s + 'seconds'  %></td>
@@ -11,6 +11,16 @@
     </td>
     <td class="text-center"><%= job_status.status %></td>
   </tr>
+  <tr class="content-job-status">
+    <th class="text-center" style="background-color: #ccffcc" colspan="3">Status</th>
+    <th style="background-color: #ccffcc" colspan="2">Time</th>
+  </tr>
+  <% job_status.versions.each do |log| %>
+    <tr class="content-job-status">
+      <td class="text-center" style="background-color: #e6ffe6;" colspan="3"><%= log.changeset[:status][1] %></td>
+      <td style="background-color: #e6ffe6;" colspan="2"><%= log.changeset[:updated_at][1].strftime("%m/%d/%Y %H:%M") %></td>
+    </tr>
+  <% end %>
 <% end %>
 </table>
 </div>
