@@ -6,8 +6,8 @@ class CompetitivePriceJob < ApplicationJob
 
   def perform(*_args)
     @refresh_token = RefreshToken.where(channel: 'amazon').last
-    spreadsheet = _args.last[:spreadsheet]
-    multifile_mapping_id = _args.last[:multifile_mapping_id]
+    spreadsheet = _args.last[:spreadsheet] || _args.last['spreadsheet']
+    multifile_mapping_id = _args.last[:multifile_mapping_id] || _args.last['multifile_mapping_id']
     multifile = MultifileMapping.find_by(id: multifile_mapping_id)
     remainaing_time = @refresh_token.access_token_expiry.localtime < DateTime.now
     generate_refresh_token if @refresh_token.present? && remainaing_time

@@ -6,8 +6,8 @@ class UpdateAmazonProduct < ApplicationJob
 
   def perform(*_args)
     @refresh_token = RefreshToken.where(channel: 'amazon').last
-    # sku = _args.last['product']
-    # quantity = _args.last['quantity']
+    # sku = _args.last[:product] || _args.last['product']
+    # quantity = _args.last[:quantity] || _args.last['quantity']
     products = _args&.last.try(:[], 'products')
     products = ChannelProduct.where('updated_at > ?', DateTime.now - 30.minutes).where(channel_type: 'amazon').pluck(:item_sku, :item_quantity) if products.nil? || products.empty?
     return 'Products not found' if products.nil? || products.empty?
@@ -122,6 +122,6 @@ class UpdateAmazonProduct < ApplicationJob
     credential.update(redirect_uri: 'AmazonTrackingJob', authorization: products, created_at: wait_time)
     elapsed_seconds = wait_time - DateTime.now
     # job_data = self.class.set(wait: elapsed_seconds.seconds).perform_later(products: products, error: error)
-    JobStatus.create(name: self.class.to_s, status: 'inqueue', arguments: { products: products }, perform_in: elapsed_seconds.seconds)
+    JobStatus.create(name: self.class.to_s, status: 'retry', arguments: { products: products, error: error }, perform_in: elapsed_seconds.seconds)
   end
 end

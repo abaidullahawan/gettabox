@@ -29,6 +29,6 @@ class JobStatus < ApplicationRecord
   private
 
   def waiting_job_create
-    WaitingTimeJob.set(wait: perform_in.to_i.seconds).perform_later(job_status_id: id)
+    WaitingTimeJob.perform_later(job_status_id: id)
   end
 end

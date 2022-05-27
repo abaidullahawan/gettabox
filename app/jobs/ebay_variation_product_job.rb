@@ -12,9 +12,9 @@ class EbayVariationProductJob < ApplicationJob
     remainaing_time = @refresh_token.access_token_expiry.localtime > DateTime.now
     generate_refresh_token(credential) if credential.present? && remainaing_time == false
 
-    quantity = _args.last['quantity']
-    listing_id = _args.last['listing_id']
-    sku = _args.last['sku']
+    quantity = _args.last[:quantity] || _args.last['quantity']
+    listing_id = _args.last[:listing_id] || _args.last['listing_id']
+    sku = _args.last[:sku] || _args.last['sku']
 
     require 'net/http'
     require 'base64'
@@ -79,12 +79,12 @@ class EbayVariationProductJob < ApplicationJob
       # job_data = UpdateEbaySingleProductJob.perform_later(listing_id: listing_id, quantity: quantity, error: response['Errors']['LongMessage'])
       JobStatus.create(name: 'UpdateEbaySingleProductJob', status: 'retry',
                        arguments: { listing_id: listing_id, quantity: quantity, 
-                       error: response['Errors']['LongMessage'] }, perform_in: 300)
+                       error: response['Errors']['LongMessage'] }, perform_in: 600)
     elsif response['Ack'].eql? 'Failure'
       # job_data = self.class.perform_later(listing_id: listing_id, quantity: quantity, sku: sku, error: response['Errors']['LongMessage'])
       JobStatus.create(name: self.class.to_s, status: 'retry',
                        arguments: { listing_id: listing_id, quantity: quantity, sku: sku,
-                       error: response['Errors']['LongMessage'] }, perform_in: 300)
+                       error: response['Errors']['LongMessage'] }, perform_in: 600)
     elsif response['Ack'].eql? 'Success'
       ChannelProduct.find_by(listing_id: listing_id, item_sku: sku).update(item_quantity_changed: false)
     end
