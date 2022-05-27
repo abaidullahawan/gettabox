@@ -208,7 +208,7 @@ class OrderBatchesController < ApplicationController
     credential.update(redirect_uri: 'AmazonTrackingJob', authorization: order_ids, created_at: wait_time)
     elapsed_seconds = wait_time - DateTime.now
 
-    AmazonTrackingJob.set(wait: elapsed_seconds.seconds).perform_later(order_ids: order_ids)
+    # AmazonTrackingJob.set(wait: elapsed_seconds.seconds).perform_later(order_ids: order_ids)
     JobStatus.create(name: 'AmazonTrackingJob', status: 'inqueue', arguments: { order_id: order_ids }, perform_in: elapsed_seconds.seconds)
     # job_data = EbayCompleteSaleJob.set(wait: 5.minutes).perform_later(order_ids: order_ids)
     JobStatus.create(name: 'EbayCompleteSaleJob', status: 'inqueue', arguments: { order_ids: order_ids }, perform_in: 300)
