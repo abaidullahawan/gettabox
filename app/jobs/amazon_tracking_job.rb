@@ -125,6 +125,6 @@ class AmazonTrackingJob < ApplicationJob
     credential.update(redirect_uri: 'AmazonTrackingJob', authorization: ids, created_at: wait_time)
     elapsed_seconds = wait_time - DateTime.now
     # job_data = self.class.set(wait: elapsed_seconds.seconds).perform_later(order_ids: ids, error: error)
-    JobStatus.create(name: self.class.to_s, status: 'inqueue', arguments: { order_ids: ids })
+    JobStatus.create(name: self.class.to_s, status: 'inqueue', arguments: { order_ids: ids }, perform_in: Time.zone.now + elapsed_seconds.seconds)
   end
 end

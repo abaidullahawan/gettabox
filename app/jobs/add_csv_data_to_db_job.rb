@@ -46,7 +46,7 @@ class AddCsvDataToDbJob < ApplicationJob
       filename1: filename1, filename2: filename2
     )
     # JobStatus.create(job_id: job_data.job_id, name: 'MultiFileMappingJob', status: 'inqueue',
-    #   arguments: { mapping_id: mapping_id, multifile_mapping_id: multifile_mapping_id })
+    #   arguments: { mapping_id: mapping_id, multifile_mapping_id: multifile_mapping_id }, perform_in: 300)
 
   rescue StandardError => e
     delete_record(filename1, filename2)

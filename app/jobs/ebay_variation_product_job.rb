@@ -78,11 +78,13 @@ class EbayVariationProductJob < ApplicationJob
     if (response['Ack'].eql? 'Failure') && (response['Errors']['ShortMessage'].include? 'Invalid Multi-SKU')
       # job_data = UpdateEbaySingleProductJob.perform_later(listing_id: listing_id, quantity: quantity, error: response['Errors']['LongMessage'])
       JobStatus.create(name: 'UpdateEbaySingleProductJob', status: 'retry',
-                       arguments: { listing_id: listing_id, quantity: quantity, error: response['Errors']['LongMessage'] })
+                       arguments: { listing_id: listing_id, quantity: quantity, 
+                       error: response['Errors']['LongMessage'] }, perform_in: 300)
     elsif response['Ack'].eql? 'Failure'
       # job_data = self.class.perform_later(listing_id: listing_id, quantity: quantity, sku: sku, error: response['Errors']['LongMessage'])
       JobStatus.create(name: self.class.to_s, status: 'retry',
-                       arguments: { listing_id: listing_id, quantity: quantity, sku: sku, error: response['Errors']['LongMessage'] })
+                       arguments: { listing_id: listing_id, quantity: quantity, sku: sku,
+                       error: response['Errors']['LongMessage'] }, perform_in: 300)
     elsif response['Ack'].eql? 'Success'
       ChannelProduct.find_by(listing_id: listing_id, item_sku: sku).update(item_quantity_changed: false)
     end
