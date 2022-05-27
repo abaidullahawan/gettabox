@@ -209,7 +209,7 @@ class OrderBatchesController < ApplicationController
     elapsed_seconds = wait_time - DateTime.now
 
     AmazonTrackingJob.set(wait: elapsed_seconds.seconds).perform_later(order_ids: order_ids)
-    JobStatus.create(name: 'AmazonTrackingJob', status: 'inqueue', arguments: { order_id: order_ids }, perform_in: Time.zone.now + elapsed_seconds.seconds)
+    JobStatus.create(name: 'AmazonTrackingJob', status: 'inqueue', arguments: { order_id: order_ids }, perform_in: elapsed_seconds.seconds)
     # job_data = EbayCompleteSaleJob.set(wait: 5.minutes).perform_later(order_ids: order_ids)
     JobStatus.create(name: 'EbayCompleteSaleJob', status: 'inqueue', arguments: { order_ids: order_ids }, perform_in: 300)
   end
