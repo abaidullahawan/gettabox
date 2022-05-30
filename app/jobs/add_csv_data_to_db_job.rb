@@ -26,44 +26,40 @@ class AddCsvDataToDbJob < ApplicationJob
     FileTwo.where(filename: filename2).first.update(headers2)
     column_name1 = FileOne.where(filename: filename1).first.attributes.compact_blank.invert[mapping_headers.keys.first]
 
-    batch_size = 100
-    batch_data_for_first_file = []
-    batch_data_for_second_file = []
+    batch_data = []
 
     # Start insertion in Bulk For 1st File
-    spreadsheet1.drop(1).each do |record|
-      hash = Hash[array1.zip record]
-      if mapping.mapping_rule.present?
-        value = hash[column_name1]
-        hash[column_name1] = value&.gsub(/[^0-9A-Za-z]/, '')&.upcase
+    spreadsheet1.drop(1).each_slice(100) do |maps|
+      maps.each do |record|
+        hash = Hash[array1.zip record]
+        if mapping.mapping_rule.present?
+          value = hash[column_name1]
+          hash[column_name1] = value&.gsub(/[^0-9A-Za-z]/, '')&.upcase
+        end
+        hash.merge!('filename' => filename1)
+        batch_data << hash
       end
-      hash.merge!('filename' => filename1)
-      batch_data_for_first_file << hash
-      if batch_data_for_first_file.size == batch_size
-        FileOne.import batch_data_for_first_file
-        batch_data_for_first_file = []
-      end
+      FileOne.import batch_data
+      batch_data = []
     end
-    FileOne.import batch_data_for_first_file
     # End insertion in Bulk For 1st File
 
     column_name2 = FileTwo.where(filename: filename2).first.attributes.compact_blank.invert[mapping_headers.values.first]
 
     # Start insertion in Bulk For 2nd File
-    spreadsheet2.drop(1).each do |record|
-      hash = Hash[array2.zip record]
-      if mapping.mapping_rule.present?
-        value = hash[column_name2]
-        hash[column_name2] = value&.gsub(/[^0-9A-Za-z]/, '')&.upcase
+    spreadsheet2.drop(1).each_slice(100) do |maps|
+      maps.each do |record|
+        hash = Hash[array2.zip record]
+        if mapping.mapping_rule.present?
+          value = hash[column_name2]
+          hash[column_name2] = value&.gsub(/[^0-9A-Za-z]/, '')&.upcase
+        end
+        hash.merge!('filename' => filename2)
+        batch_data << hash
       end
-      hash.merge!('filename' => filename2)
-      batch_data_for_second_file << hash
-      if batch_data_for_second_file.size == batch_size
-        FileTwo.import batch_data_for_second_file
-        batch_data_for_second_file = []
-      end
+      FileTwo.import batch_data
+      batch_data = []
     end
-    FileOne.import batch_data_for_second_file
     # End insertion in Bulk For 2nd File
 
     delete_files(filename1)
