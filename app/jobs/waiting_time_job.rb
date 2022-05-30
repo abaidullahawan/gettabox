@@ -5,7 +5,6 @@ class WaitingTimeJob < ApplicationJob
   queue_as :default
 
   def perform(*_args)
-    byebug
     job_status_id = _args.last[:job_status_id] || _args.last['job_status_id']
     job_status = JobStatus.find_by(id: job_status_id)
     return unless job_status.present? && job_status.status_busy?
