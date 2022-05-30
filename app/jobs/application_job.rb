@@ -19,19 +19,19 @@ class ApplicationJob < ActiveJob::Base # :nodoc:
   end
 
   def performing
-    return unless arguments.first.try(:[], :job_status_id).present?
+    return unless arguments.first.try(:[], :job_status_id).present? && !(self.class.eql? WaitingTimeJob)
 
     job_status_id = arguments.first.try(:[], :job_status_id)
     job = JobStatus.find_by(id: job_status_id)
-    job&.update(status: 'busy', perform_in: nil)
+    job&.update(status: 'busy')
     job&.update(arguments: arguments.first) if job&.arguments.nil?
   end
 
   def proccessed
-    return unless arguments.first.try(:[], :job_status_id).present?
+    return unless arguments.first.try(:[], :job_status_id).present? && !(self.class.eql? WaitingTimeJob)
 
     job_status_id = arguments.first.try(:[], :job_status_id)
     job = JobStatus.find_by(id: job_status_id)
-    job.update(status: 'processed') if job.present? && job.perform_in.nil?
+    job.update(status: 'processed') if job.present?
   end
 end
