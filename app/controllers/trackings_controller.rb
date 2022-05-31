@@ -32,6 +32,7 @@ class TrackingsController < ApplicationController
       csv_text = File.read(file).force_encoding('ISO-8859-1').encode('utf-8', replace: nil)
       csv = CSV.parse(csv_text, headers: true)
       count = 0
+      amazon_order_ids = []
       subset =  mapping_data.values.excluding(mapping_data[mapping_data.keys.last])
       if subset & csv.first.to_h.keys == subset
         csv.each do |row|
@@ -63,12 +64,13 @@ class TrackingsController < ApplicationController
           order.update(stage: 'completed', change_log: "Order Completed, #{order.id}, #{order.order_id}, #{current_user.personal_detail&.full_name}")
           update_all_products(order) unless order.channel_order_items.count.zero?
           if order.channel_type_amazon?
-            call_amazon_tracking_job([order.id], [order.order_id])
+            amazon_order_ids << order.id
           else
             # job_data = EbayCompleteSaleJob.perform_later(order_ids: [order.id])
             JobStatus.create(name: 'EbayCompleteSaleJob', status: 'inqueue', arguments: { order_ids: [order.id] }, perform_in: 300)
           end
         end
+        bulk_call_amazon_tracking_job(amazon_order_ids) unless amazon_order_ids.length.zero?
         flash[:notice] = "#{count} orders updated successfully"
       else
         flash[:alert] = 'File format no matched! Please change file'
@@ -306,5 +308,17 @@ class TrackingsController < ApplicationController
     elapsed_seconds = wait_time - DateTime.now
     # job_data = AmazonTrackingJob.set(wait: elapsed_seconds.seconds).perform_later(order_ids: order_id, channel_order_id: channel_order_id)
     JobStatus.create(name: 'AmazonTrackingJob', status: 'inqueue', arguments: { order_ids: order_id, channel_order_id: channel_order_id }, perform_in: elapsed_seconds.seconds)
+  end
+
+  def bulk_call_amazon_tracking_job(order_ids)
+    order_ids.each do |id|
+      credential = Credential.find_by(grant_type: 'wait_time')
+      wait_time = credential.created_at
+      wait_time = DateTime.now > wait_time ? DateTime.now + 120.seconds : wait_time + 120.seconds
+      credential.update(redirect_uri: 'AmazonTrackingJob', authorization: id, created_at: wait_time)
+      elapsed_seconds = wait_time - DateTime.now
+      # job_data = AmazonTrackingJob.set(wait: elapsed_seconds.seconds).perform_later(order_ids: order_id, channel_order_id: channel_order_id)
+      JobStatus.create(name: 'AmazonTrackingJob', status: 'inqueue', arguments: { order_ids: id }, perform_in: elapsed_seconds.seconds)
+    end
   end
 end

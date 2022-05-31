@@ -29,7 +29,7 @@ class JobStatus < ApplicationRecord
   private
 
   def waiting_job_create
-    sleep(1)
+    sleep(0.01)
     WaitingTimeJob.perform_later(job_status_id: id)
   end
 end
