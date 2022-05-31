@@ -3,6 +3,9 @@
 # :nodoc:
 class ApplicationController < ActionController::Base
   include DashboardsHelper
+  protect_from_forgery
+
+  before_action :beforeFilter
   before_action :set_paper_trail_whodunnit
   before_action :authenticate_user!
   before_action :authentication_tokens
@@ -111,5 +114,10 @@ class ApplicationController < ActionController::Base
     respond_to do |format|
       format.json { render json: message }
     end
+  end
+
+
+  def beforeFilter
+     $request = request
   end
 end
