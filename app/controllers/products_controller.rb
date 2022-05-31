@@ -414,7 +414,7 @@ class ProductsController < ApplicationController
   def call_amazon_product_job(sku, quantity)
     credential = Credential.find_by(grant_type: 'wait_time')
     wait_time = credential.created_at
-    wait_time = DateTime.now > wait_time ? DateTime.now + 130.seconds : wait_time + 130.seconds
+    wait_time = DateTime.now > wait_time ? DateTime.now + 120.seconds : wait_time + 120.seconds
     credential.update(redirect_uri: 'UpdateAmazonProduct', authorization: sku, created_at: wait_time)
     elapsed_seconds = wait_time - DateTime.now
     # UpdateAmazonProduct.set(wait: elapsed_seconds.seconds).perform_later(product: sku, quantity: quantity)
