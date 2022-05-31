@@ -57,7 +57,7 @@ class AmazonProductJob < ApplicationJob
       )
       channel_product.update(product_data: hash, created_at: hash['open-date'].to_time,
                              item_name: hash['item-name'], item_price: hash['price'] )
-      ChannelOrderItem.where(sku: channel_product.item_sku)&.update_all(channel_product_id: channel_product.id)
+      ChannelOrderItem.where(sku: channel_product.item_sku, line_item_id: channel_product.listing_id)&.update_all(channel_product_id: channel_product.id)
     end
   end
 
