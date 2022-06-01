@@ -35,3 +35,4 @@ class ApplicationJob < ActiveJob::Base # :nodoc:
     job.update(status: 'processed') if job.present?
   end
 end
+['204-2443233-3505919','203-7607513-1755517','026-1655827-2333122','206-7255565-6372325','202-0600682-2587535','205-4535737-1894755']
