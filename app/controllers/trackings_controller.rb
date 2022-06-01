@@ -312,14 +312,14 @@ class TrackingsController < ApplicationController
 
   def bulk_call_amazon_tracking_job(order_ids)
     tracking_order_ids = []
-    order_ids.each do |id|
+    order_ids.each_slice(7) do |ids|
       credential = Credential.find_by(grant_type: 'wait_time')
       wait_time = credential.created_at
       wait_time = DateTime.now > wait_time ? DateTime.now + 120.seconds : wait_time + 120.seconds
-      credential.update(redirect_uri: 'AmazonTrackingJob', authorization: id, created_at: wait_time)
+      credential.update(redirect_uri: 'AmazonTrackingJob', authorization: ids, created_at: wait_time)
       elapsed_seconds = wait_time - DateTime.now
       # job_data = AmazonTrackingJob.set(wait: elapsed_seconds.seconds).perform_later(order_ids: order_id, channel_order_id: channel_order_id)
-      job_status = JobStatus.create(name: 'AmazonTrackingJob', status: 'inqueue', arguments: { order_ids: id }, perform_in: elapsed_seconds.seconds)
+      job_status = JobStatus.create(name: 'AmazonTrackingJob', status: 'inqueue', arguments: { order_ids: ids }, perform_in: elapsed_seconds.seconds)
       tracking_order_ids << job_status.id
     end
     WaitingTimeJob.perform_later(tracking_order_ids: tracking_order_ids)

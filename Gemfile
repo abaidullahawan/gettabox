@@ -56,6 +56,8 @@ gem 'wicked_pdf', github: 'mileszs/wicked_pdf'
 gem 'wkhtmltopdf-binary'
 # Paper Trail
 gem 'paper_trail'
+# for deep nested hash
+gem 'dig-deep'
 
 gem 'http'
 gem 'httparty'
