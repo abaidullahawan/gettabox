@@ -8,8 +8,8 @@ class UpdateAmazonProduct < ApplicationJob
     @refresh_token = RefreshToken.where(channel: 'amazon').last
     # sku = _args.last[:product] || _args.last['product']
     # quantity = _args.last[:quantity] || _args.last['quantity']
-    products = _args&.last.try(:[], 'products')
-    products = ChannelProduct.where('updated_at > ?', DateTime.now - 30.minutes).where(channel_type: 'amazon').pluck(:item_sku, :item_quantity) if products.nil? || products.empty?
+    products = _args&.last.try(:[], :products) || _args&.last.try(:[], 'products')
+    products = ChannelProduct.where(item_quantity_changed: true, channel_type: 'amazon').pluck(:item_sku, :item_quantity) if products.nil? || products.empty?
     return 'Products not found' if products.nil? || products.empty?
 
     remainaing_time = @refresh_token.access_token_expiry.localtime < DateTime.now
@@ -29,7 +29,7 @@ class UpdateAmazonProduct < ApplicationJob
     result = upload_document(@refresh_token.access_token, document_response[:body]['url'], products.first(20))
     return perform_later_queue(products.first(20), result[:error]) unless result[:status]
 
-    create_feed_response(document_response, products.first(20))
+    create_feed_response(document_response[:body], products.first(20))
   end
 
   def generate_refresh_token
@@ -99,29 +99,26 @@ class UpdateAmazonProduct < ApplicationJob
       "marketplaceIds" => [
         "A1F83G8C2ARO7P"
       ],
-      "inputFeedDocumentId" => response[:body]['feedDocumentId']
+      "inputFeedDocumentId" => response['feedDocumentId']
     }
     feed_response = AmazonCreateReportService.create_report(@refresh_token.access_token, url, document)
     return perform_later_queue(products, feed_response[:error]) unless feed_response[:status]
 
-    # get_feed(feed_response[:body]['feedId'])
-  end
-
-  def get_feed(feed_id)
-    url = "https://sellingpartnerapi-eu.amazon.com/feeds/2021-06-30/feeds/#{feed_id}"
-    result = AmazonService.amazon_api(@refresh_token.access_token, url)
-    # return puts result unless result[:status]
-
-    # create_order_response(result, url)
+    AmazonCheckFeedJob.perform_later(feed_id: feed_response[:body]['feedId'], records: products.first(20), job_status_id: @arguments.first.try(:[], :job_status_id))
   end
 
   def perform_later_queue(products, error)
+    job_status = JobStatus.where(name: 'AmazonTrackingJob', status: 'inqueue').order(perform_in: :asc)&.first
+    job = Sidekiq::ScheduledSet.new.find_job(job_status.job_id) if job_status.present?
     credential = Credential.find_by(grant_type: 'wait_time')
     wait_time = credential.created_at
     wait_time = DateTime.now > wait_time ? DateTime.now + 120.seconds : wait_time + 120.seconds
-    credential.update(redirect_uri: 'AmazonTrackingJob', authorization: products, created_at: wait_time)
+    credential.update(redirect_uri: nil, authorization: nil, created_at: wait_time)
     elapsed_seconds = wait_time - DateTime.now
+    job.reschedule(DateTime.now + elapsed_seconds.seconds) if job.present?
+    perform_in = job_status.perform_in || elapsed_seconds
     # job_data = self.class.set(wait: elapsed_seconds.seconds).perform_later(products: products, error: error)
-    JobStatus.create(name: self.class.to_s, status: 'retry', arguments: { products: products, error: error }, perform_in: elapsed_seconds.seconds)
+    JobStatus.create(name: self.class.to_s, status: 'retry', arguments: { products: products, error: error }, perform_in: perform_in)
+    job_status.update(perform_in: elapsed_seconds.seconds) if job.present? && job_status.present?
   end
 end

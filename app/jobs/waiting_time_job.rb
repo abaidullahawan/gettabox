@@ -16,7 +16,7 @@ class WaitingTimeJob < ApplicationJob
 
     arguments = job_status.arguments.nil? ? {} : job_status.arguments
     queue = job_status.name.constantize.set(wait: job_status.perform_in.seconds).perform_later(arguments.merge(job_status_id: job_status_id))
-    job_status.update( job_id: queue.job_id)
+    job_status.update( job_id: queue.provider_job_id)
   end
 
   def bulk_call_amazon_tracking_job(ids)
@@ -26,7 +26,7 @@ class WaitingTimeJob < ApplicationJob
 
     arguments = job.arguments.nil? ? {} : job.arguments
     queue = job.name.constantize.set(wait: job.perform_in.seconds).perform_later(arguments.merge(job_status_id: job.id))
-    job.update( job_id: queue.job_id)
+    job.update( job_id: queue.provider_job_id)
     end
   end
 

@@ -17,10 +17,21 @@ class AmazonOrderJob < ApplicationJob
     return puts result unless result[:status]
 
     create_order_response(result, url)
-    # next_token = result[:body]['payload']['NextToken']
-    # next_orders_amz(next_token, access_token, url) if next_token.present?
+    next_token = result[:body]['payload']['NextToken']
     amazon_orders = ChannelResponseData.where(channel: 'amazon', api_call: 'getOrders', status: 'pending')
     create_amazon_orders(amazon_orders, @refresh_token_amazon.access_token) if amazon_orders.present?
+    next_orders_amz(next_token, url, @refresh_token_amazon.access_token) if next_token.present?
+  end
+
+  def next_orders_amz(next_token, url, access_token)
+    result = AmazonService.next_orders_amz(next_token, access_token, url)
+    return puts result unless result[:status]
+
+    create_order_response(result, url)
+    amazon_orders = ChannelResponseData.where(channel: 'amazon', api_call: 'getOrders', status: 'pending')
+    create_amazon_orders(amazon_orders, access_token) if amazon_orders.present?
+    new_next_token = result[:body]['payload']['NextToken']
+    next_orders_amz(new_next_token, url, access_token) if new_next_token.present?
   end
 
   def generate_refresh_token_amazon
