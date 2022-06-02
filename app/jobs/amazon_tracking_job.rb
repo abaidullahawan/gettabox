@@ -104,7 +104,7 @@ class AmazonTrackingJob < ApplicationJob
     feed_response = AmazonCreateReportService.create_report(@refresh_token.access_token, url, document)
     return perform_later_queue([ids], feed_response[:error]) unless feed_response[:status]
 
-    AmazonCheckFeedJob.perform_later(feed_id: feed_response[:body]['feedId'], order_ids: ids, job_status_id: @arguments.first[:job_status_id])
+    AmazonCheckFeedJob.perform_later(feed_id: feed_response[:body]['feedId'], records: ids, job_status_id: @arguments.first[:job_status_id])
   end
 
   def perform_later_queue(ids, error)

@@ -29,7 +29,7 @@ class JobStatus < ApplicationRecord
   private
 
   def waiting_job_create
-    return if $request.url.include? 'auto_dispatch'
+    return if $request&.url&.include? 'auto_dispatch'
 
     WaitingTimeJob.perform_later(job_status_id: id)
   end
