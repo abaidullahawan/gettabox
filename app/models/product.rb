@@ -8,7 +8,7 @@ class Product < ApplicationRecord
   after_create :re_modulate_dimensions
   after_create :available_stock_change
   after_update :re_modulate_dimensions
-  after_update :update_channel_quantity, if: :saved_change_to_inventory_balance?
+  after_update :update_channel_quantity, if: :saved_change_to_total_stock?
 
   validates :sku, presence: true, uniqueness: { case_sensitive: false }
   validates :title, presence: true
