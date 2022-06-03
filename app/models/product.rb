@@ -8,7 +8,7 @@ class Product < ApplicationRecord
   after_create :re_modulate_dimensions
   after_create :available_stock_change
   after_update :re_modulate_dimensions
-  after_update :update_channel_quantity, if: :saved_change_to_total_stock?
+  after_update :update_channel_quantity, if: :saved_change_to_inventory_balance?
 
   validates :sku, presence: true, uniqueness: { case_sensitive: false }
   validates :title, presence: true
@@ -75,7 +75,7 @@ class Product < ApplicationRecord
     product_mappings.each do |mapping|
       product = mapping.channel_product
       deduction_unit = 1
-      if product.channel_type == 'ebay'
+      if product.channel_type_ebay?
         channel_quantity = Selling&.last&.quantity.to_i < (inventory_balance.to_f/deduction_unit.to_f) ? Selling&.last&.quantity : [(inventory_balance.to_f/deduction_unit.to_f).floor, 0].max
       else
         channel_quantity = [(inventory_balance.to_f/deduction_unit.to_f).floor, 0].max
@@ -101,7 +101,7 @@ class Product < ApplicationRecord
       if multipack_products&.count.to_i > 1
         deduction_quantity = multi_products_check(multipack_products)
       end
-      if multi_mapping.channel_type == 'ebay'
+      if multi_mapping.channel_type_ebay?
         channel_quantity =  Selling&.last&.quantity.to_i < deduction_quantity.to_i ? Selling&.last&.quantity.to_i: [deduction_quantity.to_i, 0].max
       else
         channel_quantity = [deduction_quantity.to_i, 0].max

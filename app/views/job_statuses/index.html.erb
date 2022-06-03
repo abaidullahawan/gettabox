@@ -41,6 +41,9 @@
             <div class="tabs-style-two">
               <ul class="nav nav-tabs">
                 <li class="nav-item font-sm">
+                  <a class="nav-link <%= 'active' if params[:status_filter].eql? 'products_to_inqueue' %>" href=<%= job_statuses_path(status_filter: 'products_to_inqueue', q: { status_or_name_or_arguments_cont: params[:q].try(:[], :status_or_name_or_arguments_cont)})%>><%= "Products to inqueue (#{@products_inqueue_count.to_i})" %></a>
+                </li>
+                <li class="nav-item font-sm">
                   <a class="nav-link <%= 'active' if params[:status_filter].eql? 'inqueue' %>" href=<%= job_statuses_path(status_filter: 'inqueue', q: { status_or_name_or_arguments_cont: params[:q].try(:[], :status_or_name_or_arguments_cont)})%>><%= "Inqueue (#{@inqueue_job_count.to_i})" %></a>
                 </li>
                 <li class="nav-item font-sm">
@@ -70,6 +73,9 @@
                         <th class="text-center">Action</th>
                       <% end %>
                     </tr>
+                    <div class="tab-pane fade <%= 'show active' if params[:status_filter].eql? 'products_to_inqueue' %>" id="demo_two_home" role="tabpanel">
+                      <%= render 'products_to_inqueue' if params[:status_filter].eql? 'products_to_inqueue' %>
+                    </div>
                     <div class="tab-pane fade <%= 'show active' if params[:status_filter].eql? 'inqueue' %>" id="demo_two_home" role="tabpanel">
                       <%= render 'inqueue' if params[:status_filter].eql? 'inqueue' %>
                     </div>
