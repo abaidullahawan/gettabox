@@ -41,15 +41,7 @@ staging:
 
   update_amazon_products:
     cron: '*/30 * * * *' # Runs 30 minutes
-    class: UpdateAmazonProduct
-
-  # update_ebay_variation_products:
-  #   cron: '*/30 * * * *' # Runs every 30 minutes
-  #   class: UpdateEbayVariationProductJob
-
-  # update_ebay_variation_products:
-  #   cron: '*/30 * * * *' # Runs every 30 minutes
-  #   class: UpdateEbaySingleProductJob
+    class: UpdateChannelQuantity
 
   issue_orders_re_match:
     cron: '*/30 * * * *' # Runs 30 minutes

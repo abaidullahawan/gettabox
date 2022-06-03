@@ -56,6 +56,8 @@ class JobStatusesController < ApplicationController
   private
 
   def load_statuses
+    @products_inqueue_count = ChannelProduct.where(item_quantity_changed: true).count
+    @products_inqueue = ChannelProduct.where(item_quantity_changed: true).order(updated_at: :desc).page(params[:page]).per(params[:limit])
     @inqueue_job_count = @job_statuses.where(status: 'inqueue').count
     @inqueue_job = @job_statuses.where(status: 'inqueue').order(created_at: :desc).page(params[:page]).per(params[:limit])
     @retry_job_count = @job_statuses.where(status: 'retry').count
