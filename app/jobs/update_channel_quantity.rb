@@ -13,7 +13,7 @@ class UpdateChannelQuantity < ApplicationJob
   end
 
   def calling_amazon_jobs(products)
-    products.each_slice(2) do |chunk|
+    products.each_slice(20) do |chunk|
       perform_later_queue(chunk, 'Updating in chunks')
     end
   end
