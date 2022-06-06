@@ -80,7 +80,7 @@ class Product < ApplicationRecord
       else
         channel_quantity = [(inventory_balance.to_f/deduction_unit.to_f).floor, 0].max
       end
-      product.update(item_quantity: channel_quantity, item_quantity_changed: true)
+      product.update(item_quantity: channel_quantity, item_quantity_changed: true) unless product.item_quantity.to_i.eql? channel_quantity.to_i
     end
     @channel_listings = ChannelProduct.joins(product_mapping: [product: [multipack_products: :child]]).where('child.id': id)
     @channel_listings.each do |multi_mapping|
@@ -95,7 +95,7 @@ class Product < ApplicationRecord
       else
         channel_quantity = [deduction_quantity.to_i, 0].max
       end
-      multi_mapping.update(item_quantity: channel_quantity, item_quantity_changed: true)
+      multi_mapping.update(item_quantity: channel_quantity, item_quantity_changed: true) unless multi_mapping.item_quantity.to_i.eql? channel_quantity.to_i
     end
   end
 
