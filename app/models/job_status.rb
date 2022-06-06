@@ -29,6 +29,8 @@ class JobStatus < ApplicationRecord
   private
 
   def waiting_job_create
-    WaitingTimeJob.set(wait: 5.minutes).perform_later(job_status_id: id)
+    return if $request&.url&.include? 'auto_dispatch'
+
+    WaitingTimeJob.perform_later(job_status_id: id)
   end
 end

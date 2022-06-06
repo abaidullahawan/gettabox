@@ -5,26 +5,29 @@ class WaitingTimeJob < ApplicationJob
   queue_as :default
 
   def perform(*_args)
-    job_status_id = _args.last[:job_status_id]
+    tracking_order_ids = _args.first[:tracking_order_ids] || _args.first['tracking_order_ids']
+    return bulk_call_amazon_tracking_job(tracking_order_ids) if tracking_order_ids.present?
+
+    job_status_id = _args.last[:job_status_id] || _args.last['job_status_id']
     job_status = JobStatus.find_by(id: job_status_id)
-    return unless job_status.status_busy?
+    return unless job_status.present?
+
+    return if job_status.status_busy?
 
     arguments = job_status.arguments.nil? ? {} : job_status.arguments
-    if job_status.name.downcase.include? 'amazon'
-      elapsed_seconds = set_elapsed_seconds
-      job = job_status.name.constantize.set(wait: elapsed_seconds.seconds).perform_later(arguments.merge(job_status_id: job_status_id))
-      job_status.update( job_id: job.job_id, perform_in: Time.zone.now + elapsed_seconds.seconds, status: 'inqueue')
-    else
-      job = job_status.name.constantize.perform_later(arguments.merge(job_status_id: job_status_id), status: 'inqueue')
-      job_status.update( job_id: job.job_id)
+    queue = job_status.name.constantize.set(wait: job_status.perform_in.seconds).perform_later(arguments.merge(job_status_id: job_status_id))
+    job_status.update( job_id: queue.provider_job_id)
+  end
+
+  def bulk_call_amazon_tracking_job(ids)
+    job_statuses = JobStatus.where(id: ids)
+    job_statuses.each do |job|
+    next if job.status_busy?
+
+    arguments = job.arguments.nil? ? {} : job.arguments
+    queue = job.name.constantize.set(wait: job.perform_in.seconds).perform_later(arguments.merge(job_status_id: job.id))
+    job.update( job_id: queue.provider_job_id)
     end
   end
 
-  def set_elapsed_seconds
-    credential = Credential.find_or_create_by(grant_type: 'wait_time')
-    wait_time = credential.created_at
-    wait_time = Time.zone.now > wait_time ? Time.zone.now + 130.seconds : wait_time + 130.seconds
-    credential.update(redirect_uri: 'AmazonJob', created_at: wait_time)
-    wait_time - Time.zone.now
-  end
 end

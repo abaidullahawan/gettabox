@@ -371,17 +371,7 @@ class ProductsController < ApplicationController
   def update_log(stock)
     @product.update(manual_edit_stock: stock, inventory_balance: (@product.total_stock.to_i - @product.unshipped.to_i), change_log: "Manual Edit, #{params[:reason]}, #{stock}, Manual Edit, #{params[:description]}, #{(@product.total_stock.to_i - @product.unshipped.to_i)}")
     product = @product.product_mappings.last.channel_product if @product.product_mappings.present?
-    # return amazon_update(product, @product) if product&.channel_type&.eql? 'amazon'
-
-    # return unless product.present? && (product.listing_id.eql? '144375988077')
-
-    # UpdateEbayProduct.perform_later(listing_id: product.listing_id, sku: product.item_sku, quantity: product.item_quantity)
   end
-
-  # def amazon_update(channel_product, product)
-  #   # return unless channel_product.item_sku.eql? 'KSB1008'
-  #   UpdateAmazonProduct.perform_later(product: channel_product.item_sku, quantity: product.total_stock)
-  # end
 
   def load_show
     @product.build_extra_field_value if @product.extra_field_value.nil?
@@ -409,14 +399,5 @@ class ProductsController < ApplicationController
       end
     end
     [found_error, error_message]
-  end
-
-  def call_amazon_product_job(sku, quantity)
-    credential = Credential.find_by(grant_type: 'wait_time')
-    wait_time = credential.created_at
-    wait_time = DateTime.now > wait_time ? DateTime.now + 130.seconds : wait_time + 130.seconds
-    credential.update(redirect_uri: 'UpdateAmazonProduct', authorization: sku, created_at: wait_time)
-    elapsed_seconds = wait_time - DateTime.now
-    # UpdateAmazonProduct.set(wait: elapsed_seconds.seconds).perform_later(product: sku, quantity: quantity)
   end
 end

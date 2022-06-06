@@ -12,11 +12,10 @@ class EbaySingleProductJob < ApplicationJob
     remainaing_time = @refresh_token.access_token_expiry.localtime > DateTime.now
     generate_refresh_token(credential) if credential.present? && remainaing_time == false
 
-    # quantity = _args.last['quantity']
-    # listing_id = _args.last['listing_id']
+    quantity = _args.last[:quantity] || _args.last['quantity']
+    listing_id = _args.last[:listing_id] || _args.last['listing_id']
 
-    products = ChannelProduct.where(item_quantity_changed: true, channel_type: 'ebay', listing_type: 'variation').pluck(:item_sku, :item_quantity, :listing_id)
-    return 'Products not found' if products.nil? || products.empty?
+    return 'Product not found' if quantity.nil? || listing_id.nil?
 
     require 'net/http'
     require 'base64'
@@ -53,7 +52,7 @@ class EbaySingleProductJob < ApplicationJob
                           })
     @xml_response_data = Nokogiri::XML(response.body)
     @data_xml_re = Hash.from_xml(@xml_response_data.to_xml)
-    # job_status(@data_xml_re['ReviseItemResponse'], listing_id, quantity)
+    job_status(@data_xml_re['ReviseItemResponse'], listing_id, quantity)
   end
 
   def generate_refresh_token(credential)
@@ -75,10 +74,14 @@ class EbaySingleProductJob < ApplicationJob
   def job_status(response, listing_id, quantity)
     if (response['Ack'].eql? 'Failure') && (response['Errors']['ShortMessage'].include? 'Item level quantity will be ignored')
       # job_data = UpdateEbaySingleProductJob.perform_later(listing_id: listing_id , quantity: quantity)
-      JobStatus.create(name: 'UpdateEbaySingleProductJob', status: 'retry', arguments: { listing_id: listing_id, quantity: quantity })
-    else
+      JobStatus.create(name: 'UpdateEbaySingleProductJob', status: 'retry',
+                       arguments: { listing_id: listing_id, quantity: quantity, error: response['Errors']['ShortMessage'] }, perform_in: 600)
+    elsif response['Ack'].eql? 'Failure'
       # self.class.perform_later(listing_id: listing_id , quantity: quantity, error: response['Errors']['LongMessage'])
-      JobStatus.create(name: self.class.to_s, status: 'retry', arguments: { listing_id: listing_id, quantity: quantity })
+      JobStatus.create(name: self.class.to_s, status: 'retry',
+                       arguments: { listing_id: listing_id, quantity: quantity, error: response['Errors']['ShortMessage'] }, perform_in: 600)
+    elsif response['Ack'].eql? 'Success'
+      ChannelProduct.find_by(listing_id: listing_id, item_sku: sku).update(listing_type: 'single', item_quantity_changed: false)
     end
   end
 end

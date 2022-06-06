@@ -10,7 +10,7 @@ class EbayCompleteSaleJob < ApplicationJob
     remainaing_time = @refresh_token.access_token_expiry.localtime > DateTime.now
     update_refresh_token_call(credential) if @refresh_token.present? && remainaing_time == false
 
-    order_ids = _args.last['order_ids']
+    order_ids = _args.last[:order_ids] || _args.last['order_ids']
     orders = ChannelOrder.where(id: order_ids, channel_type: 'ebay')
     return 'Orders not found' unless orders.present?
 

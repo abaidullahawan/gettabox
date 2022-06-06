@@ -75,23 +75,12 @@ class Product < ApplicationRecord
     product_mappings.each do |mapping|
       product = mapping.channel_product
       deduction_unit = 1
-      if product.channel_type == 'ebay'
+      if product.channel_type_ebay?
         channel_quantity = Selling&.last&.quantity.to_i < (inventory_balance.to_f/deduction_unit.to_f) ? Selling&.last&.quantity : [(inventory_balance.to_f/deduction_unit.to_f).floor, 0].max
       else
         channel_quantity = [(inventory_balance.to_f/deduction_unit.to_f).floor, 0].max
       end
-      product.update(item_quantity: channel_quantity, item_quantity_changed: true)
-      # next unless Rails.env.production?
-
-      # if product.channel_type_ebay? && (product.listing_type.eql? 'variation')
-        # job_data = UpdateEbayVariationProductJob.perform_later(listing_id: product.listing_id, sku: product.item_sku, quantity: product.item_quantity)
-        # JobStatus.create(job_id: job_data.job_id, name: 'UpdateEbayVariationProductJob', status: 'Queued',
-                        #  arguments: { listing_id: product.listing_id, sku: product.item_sku, quantity: product.item_quantity })
-      # elsif product.channel_type_ebay? && (product.listing_type.eql? 'single')
-        # job_data = UpdateEbaySingleProductJob.perform_later(listing_id: product.listing_id, quantity: product.item_quantity)
-        # JobStatus.create(job_id: job_data.job_id, name: 'UpdateEbaySingleProductJob', status: 'Queued',
-                        #  arguments: { listing_id: product.listing_id, quantity: product.item_quantity })
-      # end
+      product.update(item_quantity: channel_quantity, item_quantity_changed: true) unless product.item_quantity.to_i.eql? channel_quantity.to_i
     end
     @channel_listings = ChannelProduct.joins(product_mapping: [product: [multipack_products: :child]]).where('child.id': id)
     @channel_listings.each do |multi_mapping|
@@ -101,23 +90,12 @@ class Product < ApplicationRecord
       if multipack_products&.count.to_i > 1
         deduction_quantity = multi_products_check(multipack_products)
       end
-      if multi_mapping.channel_type == 'ebay'
+      if multi_mapping.channel_type_ebay?
         channel_quantity =  Selling&.last&.quantity.to_i < deduction_quantity.to_i ? Selling&.last&.quantity.to_i: [deduction_quantity.to_i, 0].max
       else
         channel_quantity = [deduction_quantity.to_i, 0].max
       end
-      multi_mapping.update(item_quantity: channel_quantity, item_quantity_changed: true)
-      # next unless Rails.env.production?
-
-      # if multi_mapping.channel_type_ebay? && (multi_mapping.listing_type.eql? 'variation')
-      #   job_data = UpdateEbayVariationProductJob.perform_later(listing_id: multi_mapping.listing_id, sku: multi_mapping.item_sku, quantity: multi_mapping.item_quantity)
-      #   JobStatus.create(job_id: job_data.job_id, name: 'UpdateEbayVariationProductJob', status: 'Queued',
-      #                    arguments: { listing_id: multi_mapping.listing_id, sku: multi_mapping.item_sku, quantity: multi_mapping.item_quantity })
-      # elsif multi_mapping.channel_type_ebay? && (multi_mapping.listing_type.eql? 'single')
-      #   job_data = UpdateEbaySingleProductJob.perform_later(listing_id: multi_mapping.listing_id, quantity: multi_mapping.item_quantity)
-      #   JobStatus.create(job_id: job_data.job_id, name: 'UpdateEbaySingleProductJob', status: 'Queued',
-      #                    arguments: { listing_id: multi_mapping.listing_id, quantity: multi_mapping.item_quantity })
-      # end
+      multi_mapping.update(item_quantity: channel_quantity, item_quantity_changed: true) unless multi_mapping.item_quantity.to_i.eql? channel_quantity.to_i
     end
   end
 
@@ -131,14 +109,5 @@ class Product < ApplicationRecord
 
   def available_stock_change
     update_columns(available_stock: total_stock)
-  end
-
-  def call_amazon_product_job(sku, quantity)
-    credential = Credential.find_by(grant_type: 'wait_time')
-    wait_time = credential.created_at
-    wait_time = DateTime.now > wait_time ? DateTime.now  + 130.seconds: wait_time + 130.seconds
-    credential.update(redirect_uri: 'UpdateAmazonProduct', authorization: sku, created_at: wait_time)
-    elapsed_seconds = wait_time - DateTime.now
-    # UpdateAmazonProduct.set(wait: elapsed_seconds.seconds).perform_later(product: sku, quantity: quantity)
   end
 end

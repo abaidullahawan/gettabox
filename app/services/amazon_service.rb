@@ -52,32 +52,32 @@ class AmazonService
   end
 
   def self.next_orders_amz(next_token, access_token, url)
-    signature = next_signature_generator(access_token, url, next_token)
-    response = next_api_call(signature, access_token, url, next_token)
+    data = {
+      'NextToken' => next_token
+    }
+    url = url + '&' + URI.encode_www_form(data)
+    signature = next_signature_generator(access_token, url)
+    response = next_api_call(signature, access_token, url)
     sleep 5
-    result = return_response(response)
-    return result unless result[:status]
-
-    create_order_response(result, url)
-    new_next_token = result[:body]['payload']['NextToken']
-    next_orders_amz(new_next_token, access_token, url) if new_next_token.present?
+    return_response(response)
   end
 
-  def self.next_signature_generator(access_token, url, next_token)
+  def self.next_signature_generator(access_token, url)
     signer = Aws::Sigv4::Signer.new(access_key_id: Settings.amazon_access_key, region: 'eu-west-1',
                                     secret_access_key: Settings.amazon_secret_key, service: 'execute-api')
-
     signer.sign_request(
       http_method: 'GET', url: url,
       headers: {
         'host' => 'sellingpartnerapi-eu.amazon.com',
         'user-agent' => 'ChannelDispatch (Language=Ruby)',
-        'x-amz-access-token' => access_token, 'next-token' => next_token
+        'x-amz-access-token' => access_token,
+        # 'content-type' => 'application/x-www-form-urlencoded',
+        'accept' => 'application/json'
       }
     )
   end
 
-  def self.next_api_call(signature, access_token, url, next_token)
+  def self.next_api_call(signature, access_token, url)
     HTTParty.send(
       :get, url,
       headers: {
@@ -85,7 +85,9 @@ class AmazonService
         'x-amz-access-token' => access_token,
         'x-amz-content-sha256' => signature.headers['x-amz-content-sha256'],
         'x-amz-date' => signature.headers['x-amz-date'],
-        'authorization' => signature.headers['authorization'], 'next-token' => next_token
+        'authorization' => signature.headers['authorization'],
+        # 'content-type' => 'application/x-www-form-urlencoded',
+        'accept' => 'application/json'
       }
     )
   end
