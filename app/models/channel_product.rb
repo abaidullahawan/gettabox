@@ -40,7 +40,7 @@ class ChannelProduct < ApplicationRecord
                            [deduction_quantity.to_i, 0].max
                          end
     end
-    update_columns(item_quantity: channel_quantity, item_quantity_changed: true)
+    update_columns(item_quantity: channel_quantity, item_quantity_changed: true) unless item_quantity.to_i.eql? channel_quantity.to_i
   end
 
   def multi_products_check(multipack_products)
