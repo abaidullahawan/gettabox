@@ -1,33 +1,19 @@
-<div class="row">
-  <div class="col-12">
+<div class="form-row">
+  <div class="form-group col-12">
     <%= f.label :name %>
-    <%= f.text_field :name, class: 'form-control', placeholder: 'Please enter name for rule', required: true %>
+    <%= f.text_field :name, class: 'form-control', placeholder: 'Please enter name for forecasting', required: true %>
   </div>
-  <!--div class="col-6 col-4 filter-container">
-    <%#= f.label :filter_name %>
-    <%#= f.select :filter_name, options_for_select(ChannelForecasting.filter_names.map { |key, value| [key.humanize, key] }, f.object.filter_name), {include_blank: "Please Select Filter Name"}, class: 'form-control filter-name-field', required: true %>
-  </div-->
-  <div class="col-6 col-4 filter-by-field-container mt-1">
-    <%= f.label :filter_by %>
-    <%#= f.select :filter_by, {}, {include_blank: '-- Please Select Filter Name first --'}, class: "form-control filter-empty", disabled: true %>
-    <%#= f.select :filter_by, options_for_select(ChannelForecasting.filter_by_skus.map { |key, value| [value, key] }, f.object.filter_by_sku), {include_blank: "Please Select Filter"}, class: 'form-control filter-by-field' %>
-    <%= f.select :filter_by, options_for_select(ChannelProduct.channel_types.map { |key, value| [key.humanize, key] }, f.object.filter_by), {include_blank: "Please Select Filter"}, class: 'form-control channel-type' %>
-    <%#= f.select :system_user_id, options_for_select(@supplier.collect { | c | [c.name, c.id] }, f.object.id), {include_blank: 'Please Select Filter'}, class: "form-control filter-supplier" %>
-  </div>
-  <div class="col-4 d-none custom-number-field">
-    <%= f.label :comparison_number, 'Value' %>
-    <%= f.text_field :comparison_number, class: 'form-control', placeholder: 'Please enter value' %>
-  </div>
-  <div class="col-6 mt-1">
-    <%= f.label :action %>
-    <%= f.select :action, options_for_select(ChannelForecasting.actions.map { |key, value| [key.humanize, key] }, f.object.action), {include_blank: "Please Select Action"}, class: 'form-control', required: true %>
-  </div>
-  <div class="col-6 mt-1">
-    <%= f.label :type_number %>
-    <%= f.number_field :type_number, class: 'form-control', placeholder: 'Please enter number', required: true %>
-  </div>
-  <div class="col-6 mt-1 mx-auto">
-    <%= f.label :units %>
-    <%= f.select :units, options_for_select(ChannelForecasting.units.map { |key, value| [key.humanize, key] }, f.object.units), {include_blank: "Please Select Rule"}, class: 'form-control' %>
+  <div class="form-group col-12 mt-3">
+    <div style='border-bottom: 1px solid;'>
+      <h5 class='fs-14'>Filters</h5>
+    </div>
+    <div class="mt-3">
+      <div class='links text-right'>
+        <%= link_to_add_association 'Add Filter +', f, :channel_forecastings, partial: 'channel_forecasting_fields', class: 'nested_fields_btn btn btn-outline-primary rounded'%>
+      </div>
+      <%= f.fields_for :channel_forecastings do |forecasting|%>
+        <%= render 'channel_forecasting_fields', f: forecasting %>
+      <% end %>
+    </div>
   </div>
 </div>

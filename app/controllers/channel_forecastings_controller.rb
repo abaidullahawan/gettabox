@@ -7,21 +7,23 @@ class ChannelForecastingsController < ApplicationController
 
   # GET /couriers or /couriers.json
   def index
-    @q = ChannelForecasting.ransack(params[:q])
+    @q = ProductForecasting.ransack(params[:q])
     @channel_rules = @q.result(distinct: true).order(created_at: :desc).page(params[:page]).per(params[:limit])
     @supplier = SystemUser.where(user_type: 'supplier')
+    @forecasting = ProductForecasting.new
+    @forecasting.channel_forecastings.build
   end
 
   def show; end
 
   def new
-    @forecasting = ChannelForecasting.new
+    @forecasting = ProductForecasting.new
   end
 
   def edit; end
 
   def create
-    @forecasting = ChannelForecasting.new(forecasting_params)
+    @forecasting = ProductForecasting.new(forecasting_params)
     if @forecasting.save
       flash[:notice] = 'Channel Forecasting was successfully created.'
     else
@@ -96,11 +98,14 @@ class ChannelForecastingsController < ApplicationController
   private
 
   def set_channel_forecastings
-    @channel_forecasting = ChannelForecasting.find(params[:id])
+    @channel_forecasting = ProductForecasting.find(params[:id])
     @supplier = SystemUser.where(user_type: 'supplier')
   end
 
   def forecasting_params
-    params.require(:channel_forecasting).permit(:name, :filter_name, :filter_by, :action, :type_number, :units, :system_user_id, :comparison_number)
+    params.require(:product_forecasting)
+          .permit(:name, channel_forecastings_attributes:
+            %i[id filter_name filter_by action type_number units _destroy]
+          )
   end
 end

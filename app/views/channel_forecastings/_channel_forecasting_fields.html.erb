@@ -1,0 +1,29 @@
+<div class="nested-fields">
+  <br/>
+  <div class="form-group">
+    <div class="d-flex">
+      <%= link_to_remove_association 'X', f, class: 'text-danger ml-auto' %>
+    </div>
+    <div class='row'>
+      <div class="col-6 col-4 filter-by-field-container mt-1">
+        <%= f.label :filter_by, 'Channels' %>
+        <%#= f.select :filter_by, {}, {include_blank: '-- Please Select Filter Name first --'}, class: "form-control filter-empty", disabled: true %>
+        <%#= f.select :filter_by, options_for_select(ChannelForecasting.filter_by_skus.map { |key, value| [value, key] }, f.object.filter_by_sku), {include_blank: "Please Select Filter"}, class: 'form-control filter-by-field' %>
+        <%= f.select :filter_by, options_for_select(ChannelProduct.channel_types.map { |key, value| [key.humanize, key] }, f.object.filter_by), {include_blank: "Please Select Filter"}, class: 'form-control channel-type' %>
+        <%#= f.select :system_user_id, options_for_select(@supplier.collect { | c | [c.name, c.id] }, f.object.id), {include_blank: 'Please Select Filter'}, class: "form-control filter-supplier" %>
+      </div>
+      <div class="col-6 mt-1">
+        <%= f.label :action %>
+        <%= f.select :action, options_for_select(ChannelForecasting.actions.map { |key, value| [key.humanize, key] }, f.object.action), {include_blank: "Please Select Action"}, class: 'form-control', required: true %>
+      </div>
+      <div class="col-6 mt-1">
+        <%= f.label :type_number %>
+        <%= f.number_field :type_number, class: 'form-control', placeholder: 'Please enter number', required: true %>
+      </div>
+      <div class="col-6 mt-1 mx-auto">
+        <%= f.label :units %>
+        <%= f.select :units, options_for_select(ChannelForecasting.units.map { |key, value| [key.humanize, key] }, f.object.units), {include_blank: "Please Select Rule"}, class: 'form-control' %>
+      </div>
+      </div>
+    </div>
+</div>
