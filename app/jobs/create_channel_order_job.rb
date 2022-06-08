@@ -6,6 +6,9 @@ class CreateChannelOrderJob < ApplicationJob
 
   def perform(*_args)
     @response_orders = ChannelResponseData.where(api_call: 'getOrders', status: 'pending', channel: 'ebay')
+    channel_orders = []
+    update_channel_orders = []
+    update_change_log = []
     @response_orders.each do |response_order|
       response_order.response['orders'].each do |order|
         creationdate = order['creationDate']
@@ -23,32 +26,36 @@ class CreateChannelOrderJob < ApplicationJob
           channel_order_record.buyer_name = order['fulfillmentStartInstructions'][0]['shippingStep']['shipTo']['fullName']&.capitalize
           channel_order_record.buyer_username = order['buyer']['username']
           channel_order_record.fulfillment_instruction = order['fulfillmentStartInstructions'][0]['shippingStep']['shippingServiceCode']
-          customer_records(channel_order_record) if channel_order_record.save
-          channel_order_record.order_data['lineItems'].each do |order_product|
-            channel_order_item = ChannelOrderItem.find_or_initialize_by(line_item_id: order_product['legacyItemId'], channel_order_id: channel_order_record.id)
-            channel_order_item.sku = order_product['sku']
-            channel_order_item.title = order_product['title']
-            channel_order_item.channel_product_id = ChannelProduct.find_by(listing_id: channel_order_item.line_item_id, item_sku: channel_order_item.sku, channel_type: 'ebay')&.id
-            channel_order_item.item_data = order_product
-            channel_order_item.ordered = order_product['quantity']
-            channel_order_item.save
-          end
+          customer_id = customer_records(channel_order_record)
+          channel_order_record.system_user_id = customer_id
+          channel_items = channel_order_items(channel_order_record)
+          channel_order_record.channel_order_items.build(channel_items)
           criteria = channel_order_record.channel_order_items.map { |h| [h[:sku], h[:ordered]] }
           assign_rules = AssignRule.where(criteria: criteria)&.last
-          channel_order_record.update(assign_rule_id: assign_rules.id) if assign_rules.present?
-          update_order_stage(channel_order_record.channel_order_items.map do |i|
-                              i.channel_product&.status
-                            end, channel_order_record)
-          channel_order_record.update(stage: 'unpaid') if channel_order_record.payment_status.eql? 'UNPAID'
-          channel_order_record.update(stage: 'issue') if channel_order_record.channel_order_items.map(&:sku).any? nil
-          if channel_order_record.payment_status == 'PAID'
-            channel_order_record.update(change_log: "Order Paid, #{channel_order_record.id}, #{channel_order_record.order_id}, ebay")
-          end
+          channel_order_record.assign_rule_id = assign_rules.id if assign_rules.present?
+          channel_order_record.stage = update_order_stage(channel_order_record.channel_order_items.map do |i|
+            i.channel_product&.status end, channel_order_record)
+          channel_order_record.stage = 'unpaid' if channel_order_record.payment_status.eql? 'UNPAID'
+          channel_order_record.stage = 'issue' if channel_order_record.channel_order_items.map(&:sku).any? nil
+          channel_orders << channel_order_record
         end
       end
       response_order.status_executed!
       response_order.status_partial! if response_order.response['orders'].count < 200
     end
+    channel_order_bulk(channel_orders)
+    channel_orders.each do |channel_order|
+      if channel_order.payment_status == 'PAID'
+        channel_order.change_log = "Order Paid, #{channel_order.id}, #{channel_order.order_id}, ebay"
+        update_change_log << channel_order
+      end
+      if channel_order.stage.eql? 'ready_to_dispatch'
+        allocate_or_unallocate(channel_order.channel_order_items)
+        assign_rule(channel_order, update_channel_orders)
+      end
+    end
+    channel_order_bulk(update_change_log)
+    channel_order_bulk(update_channel_orders)
   end
 
   def customer_records(order)
@@ -76,21 +83,21 @@ class CreateChannelOrderJob < ApplicationJob
     customer.sales_channel = 'ebay'
     customer.phone_number = order.order_data['fulfillmentStartInstructions'][0]['shippingStep']['shipTo']['primaryPhone']['phoneNumber']
     customer.email = order.order_data['fulfillmentStartInstructions'][0]['shippingStep']['shipTo']['email']
-    order.update(system_user_id: customer.id) if customer.save
+    customer.id if customer.save
   end
 
-  def update_order_stage(condition, order)
+  def update_order_stage(stage, order)
     return unless order.order_status.eql? 'NOT_STARTED'
 
     if order.stage != 'completed' && order.stage != 'ready_to_print' && order.stage != 'ready_to_dispatch'
-      if condition.any?(nil)
-        order.update(stage: 'unable_to_find_sku')
-      elsif condition.any?('unmapped')
-        order.update(stage: 'unmapped_product_sku')
+      if stage.any?(nil)
+        'unable_to_find_sku'
+      elsif stage.any?('unmapped')
+        'unmapped_product_sku'
       else
-        order.update(stage: 'ready_to_dispatch')
-        allocate_or_unallocate(order.channel_order_items)
-        assign_rule(order)
+        'ready_to_dispatch'
+        # allocate_or_unallocate(order.channel_order_items)
+        # assign_rule(order)
       end
     end
   end
@@ -139,7 +146,8 @@ class CreateChannelOrderJob < ApplicationJob
     end
   end
 
-  def assign_rule(order)
+  def assign_rule(order, update_channel_orders)
+    hash_of_order = {}
     unless order.assign_rule&.save_later
 
       no_rule = false
@@ -163,7 +171,7 @@ class CreateChannelOrderJob < ApplicationJob
           end
         end
       end
-      carrier_type_multi.map {|v| v.downcase! if v.is_a? String}
+      carrier_type_multi.map { |v| v.downcase! if v.is_a? String }
       if carrier_type.blank?
         carrier_type = (carrier_type_multi&.include? 'hermes') ? 'hermes' : (carrier_type_multi&.include? 'yodal') ? 'yodal' : carrier_type_multi&.last
       end
@@ -219,6 +227,7 @@ class CreateChannelOrderJob < ApplicationJob
         rule_bonus_score[mail_rule.bonus_score.to_i] = mail_rule.id if type
         no_rule = true if type
         type = false
+        hash_of_order['id'] = order.id
         if no_rule
           if rule_bonus_score.max&.last.present?
             mail_rule_id = rule_bonus_score.max&.last
@@ -247,14 +256,35 @@ class CreateChannelOrderJob < ApplicationJob
                                                         length: length, width: width, assign_rule_id: assign_rule.id)
               end
             end
-            order.update(total_weight: total_weight) if order.total_weight.nil?
-            order.update(assign_rule_id: assign_rule.id)
+            hash_of_order['total_weight'] = total_weight if order.total_weight.nil?
+            hash_of_order['assign_rule_id'] = assign_rule.id
           end
         else
-          order.update(total_weight: total_weight) if order.total_weight.nil?
-          order.update(assign_rule_id: nil)
+          hash_of_order['total_weight'] = total_weight if order.total_weight.nil?
+          hash_of_order['assign_rule_id'] = nil
         end
       end
     end
+    update_channel_orders << hash_of_order
+  end
+end
+
+def channel_order_items(order)
+  channel_items = []
+  order.order_data['lineItems'].each do |order_product|
+    channel_order_item = ChannelOrderItem.find_or_initialize_by(line_item_id: order_product['legacyItemId'], channel_order_id: order.id)
+    channel_order_item.sku = order_product['sku']
+    channel_order_item.title = order_product['title']
+    channel_order_item.channel_product_id = ChannelProduct.find_by(listing_id: channel_order_item.line_item_id, item_sku: channel_order_item.sku, channel_type: 'ebay')&.id
+    channel_order_item.item_data = order_product
+    channel_order_item.ordered = order_product['quantity']
+    channel_items << channel_order_item.as_json
+  end
+  channel_items
+end
+
+def channel_order_bulk(channel_orders)
+  channel_orders.each_slice(50) do |channel_order|
+    ChannelOrder.import! channel_order, recursive: true, on_duplicate_key_update: { conflict_target: [:id], columns: :all }
   end
 end
