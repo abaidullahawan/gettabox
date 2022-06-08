@@ -392,7 +392,7 @@ class ProductsController < ApplicationController
         found_error = true
         error_message = "Sku is blank at row number #{index}."
         break
-      elsif row['product_type'] == 'single' && row['total_stock'].nil?
+      elsif row['product_type'] == 'single' && row['total_stock'].to_i.negative?
         found_error = true
         error_message = "Stock is null at row number #{index}."
         break
