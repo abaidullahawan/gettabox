@@ -33,6 +33,7 @@ class TrackingsController < ApplicationController
       csv = CSV.parse(csv_text, headers: true)
       count = 0
       amazon_order_ids = []
+      ebay_order_ids = []
       subset =  mapping_data.values.excluding(mapping_data[mapping_data.keys.last])
       if subset & csv.first.to_h.keys == subset
         csv.each do |row|
@@ -66,11 +67,11 @@ class TrackingsController < ApplicationController
           if order.channel_type_amazon?
             amazon_order_ids << order.id
           else
-            # job_data = EbayCompleteSaleJob.perform_later(order_ids: [order.id])
-            JobStatus.create(name: 'EbayCompleteSaleJob', status: 'inqueue', arguments: { order_ids: [order.id] }, perform_in: 300)
+            ebay_order_ids << order.id
           end
         end
         bulk_call_amazon_tracking_job(amazon_order_ids) unless amazon_order_ids.length.zero?
+        bulk_call_ebay_tracking_job(ebay_order_ids) unless ebay_order_ids.length.zero?
         flash[:notice] = "#{count} orders updated successfully"
       else
         flash[:alert] = 'File format no matched! Please change file'
@@ -323,5 +324,13 @@ class TrackingsController < ApplicationController
       tracking_order_ids << job_status.id
     end
     WaitingTimeJob.perform_later(tracking_order_ids: tracking_order_ids)
+  end
+
+  def bulk_call_ebay_tracking_job(order_ids)
+    order_ids.each.with_index(1) do |id, index|
+      job_status = JobStatus.create(name: 'EbayCompleteSaleJob', status: 'inqueue', arguments: { order_ids: id }, perform_in: (10 * index).seconds)
+      job_status_ids << job_status.id
+    end
+    WaitingTimeJob.perform_later(tracking_order_ids: job_status_ids)
   end
 end
