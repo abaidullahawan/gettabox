@@ -327,6 +327,7 @@ class TrackingsController < ApplicationController
   end
 
   def bulk_call_ebay_tracking_job(order_ids)
+    job_status_ids = []
     order_ids.each.with_index(1) do |id, index|
       job_status = JobStatus.create(name: 'EbayCompleteSaleJob', status: 'inqueue', arguments: { order_ids: id }, perform_in: (10 * index).seconds)
       job_status_ids << job_status.id
