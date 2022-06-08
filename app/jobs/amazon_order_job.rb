@@ -54,6 +54,9 @@ class AmazonOrderJob < ApplicationJob
   end
 
   def create_amazon_orders(amazon_orders, access_token)
+    channel_orders = []
+    update_channel_orders = []
+    update_channel_log = []
     amazon_orders.each do |amazon_order|
       amazon_order.response['payload']['Orders'].each do |order|
         channel_order = ChannelOrder.find_or_initialize_by(order_id: order['AmazonOrderId'],
@@ -71,41 +74,53 @@ class AmazonOrderJob < ApplicationJob
           channel_order.postage = order['ShipmentServiceLevelCategory']
           channel_order.fulfillment_instruction = order['FulfillmentChannel']
           # customer_records(channel_order) if channel_order.save
-          next unless channel_order.save
-
-          add_product(channel_order.order_id, access_token, channel_order.id)
+          channel_items = add_product(channel_order.order_id, access_token)
+          channel_order.channel_order_items.build(channel_items)
           criteria = channel_order.channel_order_items.map { |h| [h[:sku], h[:ordered]] }
           assign_rules = AssignRule.where(criteria: criteria)&.last
-          channel_order.update(assign_rule_id: assign_rules.id) if assign_rules.present?
-          update_order_stage(channel_order.channel_order_items.map { |i| i.channel_product&.status }, channel_order)
-          channel_order.update(stage: 'issue') if channel_order.channel_order_items.map(&:sku).any? nil
-          if channel_order.stage == 'unable_to_find_sku' || channel_order.stage == 'unmapped_product_sku' || channel_order.stage == 'ready_to_dispatch'
-            channel_order.update(change_log: "Order Paid, #{channel_order.id}, #{channel_order.order_id}, amazon")
-          end
+          channel_order.assign_rule_id = assign_rules.id if assign_rules.present?
+          channel_order.stage = update_order_stage(channel_order.channel_order_items.map { |i| i.channel_product&.status }, channel_order)
+          channel_order.stage = 'issue' if channel_order.channel_order_items.map(&:sku).any? nil
+          channel_orders << channel_order
         end
         amazon_order.update(status: 'executed')
       end
     end
+
+    channel_order_bulk(channel_orders)
+
+    channel_orders.each do |channel_order|
+      if channel_order.stage.eql? 'ready_to_dispatch'
+        allocate_or_unallocate(channel_order.channel_order_items)
+        assign_rule(channel_order, update_channel_orders)
+      elsif channel_order.stage == 'unable_to_find_sku' || channel_order.stage == 'unmapped_product_sku' || channel_order.stage == 'ready_to_dispatch'
+        channel_order.change_log = "Order Paid, #{channel_order.id}, #{channel_order.order_id}, amazon"
+        update_channel_log << channel_order
+      end
+    end
+    channel_order_bulk(update_channel_orders.uniq)
+    channel_order_bulk(update_channel_log)
+
   end
 
-  def add_product(amazon_order_id, access_token, channel_order_id)
+  def add_product(amazon_order_id, access_token)
+    channel_items = []
     url = "https://sellingpartnerapi-eu.amazon.com/orders/v0/orders/#{amazon_order_id}/orderItems"
     result = AmazonService.amazon_product_api(url, access_token)
-    update_channel_order(result, channel_order_id) if result[:status]
+    update_channel_order(result, channel_items) if result[:status]
+    channel_items
   end
 
-  def update_channel_order(result, channel_order_id)
+  def update_channel_order(result, channel_items)
+    hash = {}
     result[:body]['payload']['OrderItems'].each do |item|
-      channel_item = ChannelOrderItem.find_or_initialize_by(
-        channel_order_id: channel_order_id,
-        line_item_id: item['ASIN']
-      )
-      channel_item.sku = item['SellerSKU']
-      channel_item.ordered = item['QuantityOrdered']
-      channel_item.item_data = item
-      channel_item.title = item['Title']
-      channel_item.channel_product_id = ChannelProduct.find_by(listing_id: channel_item.line_item_id, item_sku: channel_item.sku, channel_type: 'amazon')&.id || ChannelProduct.find_by(item_sku: channel_item.sku, channel_type: 'amazon')&.id
-      channel_item.save
+      hash['line_item_id'] = item['ASIN']
+      hash['sku'] = item['SellerSKU']
+      hash['ordered'] = item['QuantityOrdered']
+      hash['item_data'] = item
+      hash['title'] = item['Title']
+      hash['channel_product_id'] = ChannelProduct.find_by(listing_id: item['ASIN'], item_sku: item['SellerSKU'], channel_type: 'amazon')&.id || ChannelProduct.find_by(item_sku: item['SellerSKU'], channel_type: 'amazon')&.id
+      channel_items << hash
     end
   end
 
@@ -149,18 +164,18 @@ class AmazonOrderJob < ApplicationJob
     stages[order_status]
   end
 
-  def update_order_stage(condition, order)
+  def update_order_stage(stage, order)
     return unless order.order_status.eql? 'Unshipped'
 
     if order.stage != 'completed' && order.stage != 'ready_to_print' && order.stage != 'ready_to_dispatch'
-      if condition.any?(nil)
-        order.update(stage: 'unable_to_find_sku')
-      elsif condition.any?('unmapped')
-        order.update(stage: 'unmapped_product_sku')
+      if stage.any?(nil)
+        'unable_to_find_sku'
+      elsif stage.any?('unmapped')
+        'unmapped_product_sku'
       else
-        order.update(stage: 'ready_to_dispatch')
-        allocate_or_unallocate(order.channel_order_items)
-        assign_rule(order)
+        'ready_to_dispatch'
+        # allocate_or_unallocate(order.channel_order_items)
+        # assign_rule(order)
       end
     end
   end
@@ -209,7 +224,8 @@ class AmazonOrderJob < ApplicationJob
     end
   end
 
-  def assign_rule(order)
+  def assign_rule(order, update_channel_orders)
+    hash_of_order = {}
     unless order.assign_rule&.save_later
 
       no_rule = false
@@ -289,6 +305,7 @@ class AmazonOrderJob < ApplicationJob
         rule_bonus_score[mail_rule.bonus_score.to_i] = mail_rule.id if type
         no_rule = true if type
         type = false
+        hash_of_order['id'] = order.id
         if no_rule
           if rule_bonus_score.max&.last.present?
             mail_rule_id = rule_bonus_score.max&.last
@@ -318,14 +335,22 @@ class AmazonOrderJob < ApplicationJob
                                                         length: length, width: width, assign_rule_id: assign_rule.id)
               end
             end
-            order.update(total_weight: total_weight) if order.total_weight.nil?
-            order.update(assign_rule_id: assign_rule.id)
+            hash_of_order['total_weight'] = total_weight if order.total_weight.nil?
+            hash_of_order['assign_rule_id'] = assign_rule.id
+            update_channel_orders << hash_of_order
           end
         else
-          order.update(total_weight: total_weight) if order.total_weight.nil?
-          order.update(assign_rule_id: nil)
+          hash_of_order['total_weight'] = total_weight if order.total_weight.nil?
+          hash_of_order['assign_rule_id'] = nil
+          update_channel_orders << hash_of_order
         end
       end
+    end
+  end
+
+  def channel_order_bulk(channel_orders)
+    channel_orders.each_slice(50) do |channel_order|
+      ChannelOrder.import channel_order, recursive: true, on_duplicate_key_update: { conflict_target: [:id], columns: :all }
     end
   end
 end
