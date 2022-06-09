@@ -178,8 +178,8 @@
                       <% end %>
                       <td class="text-center font-sm">
                         <div class="dropdown dropleft">
-                          <button class="btn btn-primary p-2" type="button" class="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <i data-feather='bell' class='icon wh-15 mt-minus-3'></i>
+                          <button class="btn btn-primary p-2 rotate" type="button" class="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class='lni lni-more-alt'></i>
                           </button>
                           <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                             <%= f.submit 'Un-map', class: "dropdown-item", data_disable_with: false if item.status_mapped? %>
