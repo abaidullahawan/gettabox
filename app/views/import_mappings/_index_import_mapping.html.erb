@@ -11,6 +11,7 @@
         <div class= "mb-4 border">
           <%= form_for @product, url: product_file_path, method: :post do |f| %>
             <%= f.file_field :file, style:"width:240px;", class: 'btn', accept: ".csv",required: true %>
+            <%= f.hidden_field :table_name, value: 'Product'%>
             <%= f.submit 'Create Mapping', class:"btn btn-primary"%>
           <% end %>
         </div>
@@ -116,6 +117,7 @@
         <div class= "mb-4 border">
           <%= form_for @order, url: order_file_path, method: :post do |f| %>
             <%= f.file_field :file, style:"width:240px;", class: 'btn', accept: ".csv",required: true %>
+            <%= f.hidden_field :table_name, value: 'Channel Order'%>
             <%= f.submit 'Create Mapping', class:"btn btn-primary"%>
           <% end %>
         </div>
@@ -223,6 +225,7 @@
         <div class= "mb-4 border">
           <%= form_for @channel_product, url: channel_product_file_path, method: :post do |f| %>
             <%= f.file_field :file, style:"width:240px;", class: 'btn', accept: ".csv",required: true %>
+            <%= f.hidden_field :table_name, value: 'Channel Product'%>
             <%= f.submit 'Create Mapping', class:"btn btn-primary"%>
           <% end %>
         </div>
@@ -329,6 +332,7 @@
         <div class= "mb-4 border">
           <%= form_for @tracking, url: tracking_file_path, method: :post do |f| %>
             <%= f.file_field :file, style:"width:240px;", class: 'btn', accept: ".csv",required: true %>
+            <%= f.hidden_field :table_name, value: 'Tracking'%>
             <%= f.submit 'Create Mapping', class:"btn btn-primary"%>
           <% end %>
         </div>
