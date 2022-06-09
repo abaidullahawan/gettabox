@@ -198,7 +198,7 @@ class OrderDispatchesController < ApplicationController
         channel_order = ChannelOrder.find(order)
         channel_order&.update(assign_rule_id: @assign_rule.id)
       end
-      redirect_to order_dispatches_path(order_filter: 'ready')
+      redirect_to request.referrer
       flash[:notice] = 'Mail Service Rule Assigned!'
     end
   end
@@ -216,7 +216,7 @@ class OrderDispatchesController < ApplicationController
         order_item.update(mail_service_rule_id: params[:rule_name])
       end
     end
-    redirect_to order_dispatches_path(order_filter: 'ready')
+    redirect_to request.referrer
     flash[:notice] = 'Mail Service Rule Assigned!'
   end
 
@@ -560,7 +560,7 @@ class OrderDispatchesController < ApplicationController
     @channel_orders = ChannelOrder.joins(channel_order_items: :channel_product)
     .includes(channel_order_items: :channel_product)
     .where("REPLACE(channel_products.item_sku, ' ', '') ILIKE REPLACE('%#{name}%', ' ', '')") if name.present?
-    @channel_orders = @q.result  if @channel_orders.nil? || @channel_orders.empty?
+    @channel_orders = @q.result if @channel_orders.nil? || @channel_orders.empty?
     @channel_types = ChannelOrder.channel_types
     @channel_postages = ChannelOrder.pluck(:postage).uniq.compact
     @mail_service_rules = MailServiceRule.all
@@ -642,40 +642,15 @@ class OrderDispatchesController < ApplicationController
     value = params[:id_or_order_id_or_order_status_or_buyer_name_or_channel_order_items_sku_cont]
     params[:q] = params[:q].merge(id_or_order_id_or_order_status_or_buyer_name_or_channel_order_items_sku_cont: value) if value.present?
     params[:q] = JSON.parse params[:q].gsub('=>', ':') if params[:q]&.include?('"')
-    if params['assign_rule_name'].present?
-      # if params['assign_filter'].present? && params['assign_filter'] == '0'
-      #   @not_started_orders = (@channel_orders
-      #     .joins(assign_rule: :mail_service_rule).includes(assign_rule: :mail_service_rule)
-      #     .where(stage: 'ready_to_dispatch').where.not(channel_type: 'amazon', system_user_id: nil)
-      #     .where('mail_service_rules.rule_name ILIKE ?',
-      #            "%#{params['assign_rule_name']}%")
-      #     ).where(assign_rule_id: nil).uniq
-      # else
-        @search = (@channel_orders
-          .joins(assign_rule: :mail_service_rule).includes(assign_rule: :mail_service_rule)
-          .where(stage: 'ready_to_dispatch').where.not(channel_type: 'amazon', system_user_id: nil)
-          .where('mail_service_rules.rule_name ILIKE ?',
-                 "%#{params['assign_rule_name']}%")
-          ).search(params[:q])
-      # end
-      @not_started_orders = @search.result
-      @not_started_order_data = @not_started_orders.distinct.page(params[:not_started_page]).per(params[:limit] || 100)
+    @search = @channel_orders.where(stage: 'ready_to_dispatch')
+                             .where.not(channel_type: 'amazon', system_user_id: nil).search(params[:q])
+    @not_started_orders = @search.result
+    if params[:q].present? && params[:q][:s].present? && params[:q][:s].include?('total_amount')
+      @not_started_orders = @not_started_orders.order(:total_amount)
     else
-      # if params['assign_filter'].present? && params['assign_filter'] == '1'
-      #   @search = @channel_orders.where(stage: 'ready_to_dispatch')
-      #                            .where.not(channel_type: 'amazon', system_user_id: nil).where.not(assign_rule_id: nil).search(params[:q])
-      # else
-        @search = @channel_orders.where(stage: 'ready_to_dispatch')
-                                  .where.not(channel_type: 'amazon', system_user_id: nil).search(params[:q])
-      # end
-        @not_started_orders = @search.result
-      if params[:q].present? && params[:q][:s].present? && params[:q][:s].include?('total_amount')
-        @not_started_orders = @not_started_orders.order(:total_amount)
-      else
-        @not_started_orders = @not_started_orders.order(:order_type, created_at: :desc)
-      end
-      @not_started_order_data = @not_started_orders.distinct.page(params[:not_started_page]).per(params[:limit] || 100)
+      @not_started_orders = @not_started_orders.order(:order_type, created_at: :desc)
     end
+    @not_started_order_data = @not_started_orders.distinct.page(params[:not_started_page]).per(params[:limit] || 100)
     return unless (params[:order_filter].eql? 'ready') && params[:export]
 
     @not_started_orders = @not_started_orders.where(selected: true) if params[:selected]
