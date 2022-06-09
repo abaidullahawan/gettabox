@@ -4,9 +4,7 @@
       <h5 >
         Buffer Rule >>
       </h5>
-      <% @product.channel_forecastings.each do |forecasting| %>
-        <b class="ml-2"><%= forecasting.name %></b>
-      <% end %>
+      <b class="ml-2"><%= @product.product_forecasting&.name  %></b>
       <i class='lni lni-pencil mt-1 ml-3 cursor-pointer' data-toggle="modal" data-target='#buffer-rule-modal'></i>
     </div>
     <h5 class="noti-card-title">
@@ -36,7 +34,7 @@
                       <td class="text-center"><%= product.listing_id %></td>
                       <td class="text-center"><%= product.item_sku %></td>
                       <td class="text-center"><%= deduction_unit %></td>
-                      <td class="text-center"><%= product.item_quantity.to_i %></td>
+                      <td class="text-center"><%= product.channel_quantity.to_i %></td>
                       <td class="text-center">
                         <i><%= product.buffer_quantity %></i>
                       </td>
@@ -87,12 +85,7 @@
           </button>
         </div>
         <div class="modal-body">
-          <div class='links text-right'>
-            <%= link_to_add_association '<i data-feather="plus" class="icon wh-15"></i>'.html_safe , f, :product_forecastings, partial: 'products/product_forecasting_fields' %>
-          </div>
-          <%= f.fields_for :product_forecastings do |forecasting|%>
-            <%= render 'product_forecasting_fields', f: forecasting %>
-          <% end %>
+          <%= f.select :product_forecasting_id, options_for_select(@forecasting.collect { | c | [c.name, c.id] }, f.object.product_forecasting_id), {include_blank: 'Please Select Forecasting'}, class: "form-control" %>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>

@@ -64,9 +64,7 @@ class ProductsController < ApplicationController
     elsif @product.update(product_params)
       update_log(stock) if product_params[:total_stock].present?
       flash[:notice] = 'Updated successfully.'
-      if product_params[:product_forecastings_attributes].present?
-        buffer_rule(@product)
-      end
+      buffer_rule(@product) unless product_params[:product_forecasting_id].nil?
       redirect_to product_path(@product)
     else
       load_show
@@ -75,41 +73,26 @@ class ProductsController < ApplicationController
   end
 
   def buffer_rule(product)
-    channel_forecastings = product.channel_forecastings
-    sigle_listings = ChannelProduct.joins(product_mapping: :product).where('product_mappings.product_id': product.id)
+    product_forecasting = product.product_forecasting
+    single_listings = ChannelProduct.joins(product_mapping: :product).where('product_mappings.product_id': product.id)
     multi_listings = ChannelProduct.joins(product_mapping: [product: [multipack_products: :child]]).where('child.id': product.id)
-    sigle_listings.update_all(buffer_quantity: nil)
-    multi_listings.update_all(buffer_quantity: nil)
-    listings = sigle_listings + multi_listings
-    channel_forecastings.each do |channel_forecasting|
-      listings.each do |listing|
-        if listing.channel_type == channel_forecasting.filter_by
-          if channel_forecasting.action == 'safe_stock_by'
-            channel_quantity = listing.item_quantity.to_i - channel_forecasting.type_number.to_i
-            channel_quantity = 0 if channel_quantity.negative?
-            listing.update(buffer_quantity: -channel_forecasting.type_number, item_quantity: channel_quantity, item_quantity_changed: true)
-          else
-            if listing.channel_type_ebay?
-              channel_quantity = listing.item_quantity.to_i + channel_forecasting.type_number.to_i
-              selling_quantity = Selling&.last&.quantity.to_i
-              channel_quantity = selling_quantity if channel_quantity > selling_quantity
-              listing.update(buffer_quantity: channel_forecasting.type_number, item_quantity: channel_quantity, item_quantity_changed: true)
-            else
-              listing.update(buffer_quantity: channel_forecasting.type_number, item_quantity: listing.item_quantity.to_i + channel_forecasting.type_number.to_i, item_quantity_changed: true)
-            end
-          end
-          # next unless Rails.env.production?
+    selling_quantity = Selling&.last&.quantity.to_i
+    listings = single_listings + multi_listings
+    listings.each do |listing|
+      quantity = (selling_quantity < listing.item_quantity) ? selling_quantity : listing.item_quantity
+      quantity = listing.item_quantity if listing.channel_type_amazon?
+      listing.update(buffer_quantity: 0, channel_quantity: quantity, fake_buffer: false)
+      next if product_forecasting.nil?
 
-          # if listing.channel_type_ebay? && (listing.listing_type.eql? 'variation')
-          #   job_data = UpdateEbayVariationProductJob.perform_later(listing_id: listing.listing_id, sku: listing.item_sku, quantity: listing.item_quantity)
-          #   JobStatus.create(job_id: job_data.job_id, name: 'UpdateEbayVariationProductJob', status: 'Queued',
-          #                    arguments: { listing_id: listing.listing_id, sku: listing.item_sku, quantity: listing.item_quantity })
-          # elsif listing.channel_type_ebay? && (listing.listing_type.eql? 'single')
-          #   job_data = UpdateEbaySingleProductJob.perform_later(listing_id: listing.listing_id, quantity: listing.item_quantity)
-          #   JobStatus.create(job_id: job_data.job_id, name: 'UpdateEbaySingleProductJob', status: 'Queued',
-          #                    arguments: { listing_id: listing.listing_id, quantity: listing.item_quantity })
-          # end
-        end
+      product_forecasting.channel_forecastings.each do |forecasting|
+        next unless listing.channel_type == forecasting.filter_by
+
+        buffer_quantity = forecasting.action_safe_stock_by? ? forecasting.type_number.to_i * -1 : forecasting.type_number.to_i
+        fake_buffer = forecasting.action_anticipate_fake_stock_only_by? ? true : false
+        quantity = listing.item_quantity + buffer_quantity
+        quantity = selling_quantity if listing.channel_type_ebay? && (quantity > selling_quantity)
+
+        listing.update(buffer_quantity: buffer_quantity, channel_quantity: quantity, item_quantity_changed: true, fake_buffer: fake_buffer)
       end
     end
   end
@@ -139,10 +122,7 @@ class ProductsController < ApplicationController
     send_data csv_data, filename: "product-logs-#{Date.today}.csv", disposition: :attachment
   end
 
-  def show
-    @forecasting = ChannelForecasting.all
-    @product.product_forecastings
-  end
+  def show; end
 
   def destroy
     if @product.product_mappings.present?
@@ -311,11 +291,9 @@ class ProductsController < ApplicationController
 
   def product_params
     params.require(:product)
-          .permit(:sku, :title, :photo, :total_stock, :fake_stock, :pending_orders, :allocated,
-                  :available_stock, :length, :width, :height, :weight, :pack_quantity, :cost_price, :gst, :vat, :courier_type,
-                  :minimum, :maximum, :optimal, :category_id, :product_type, :season_id, :description, :product_location_id,
-                  product_forecastings_attributes:
-                  %i[id product_id channel_forecasting_id _destroy],
+          .permit(:sku, :title, :photo, :total_stock, :fake_stock, :pending_orders, :allocated, :available_stock, :length,
+                  :width, :height, :weight, :pack_quantity, :cost_price, :gst, :vat, :courier_type, :minimum, :maximum,
+                  :optimal, :category_id, :product_type, :season_id, :description, :product_location_id, :product_forecasting_id,
                   barcodes_attributes:
                   %i[id title _destroy],
                   product_suppliers_attributes:
@@ -376,7 +354,7 @@ class ProductsController < ApplicationController
   def load_show
     @product.build_extra_field_value if @product.extra_field_value.nil?
     @product_location = ProductLocation.all
-    @forecasting = ChannelForecasting.all
+    @forecasting = ProductForecasting.all
     @channel_listings = ChannelProduct.joins(product_mapping: [product: [multipack_products: :child]]).where('child.id': @product.id)
   end
 

@@ -8,7 +8,7 @@ class Product < ApplicationRecord
   after_create :re_modulate_dimensions
   after_create :available_stock_change
   after_update :re_modulate_dimensions
-  after_update :update_channel_quantity, if: :saved_change_to_total_stock?
+  after_update :update_channel_quantity
 
   validates :sku, presence: true, uniqueness: { case_sensitive: false }
   validates :title, presence: true
@@ -21,7 +21,7 @@ class Product < ApplicationRecord
   has_many :products, through: :multipack_products
   has_many :product_mappings, dependent: :destroy
   has_many :channel_order_items
-  has_many :product_forecastings
+  belongs_to :product_forecasting, optional: true
   has_many :channel_forecastings, through: :product_forecastings
 
   belongs_to :category, optional: true
@@ -47,7 +47,6 @@ class Product < ApplicationRecord
   }, _prefix: true
 
   accepts_nested_attributes_for :barcodes, allow_destroy: true
-  accepts_nested_attributes_for :product_forecastings, allow_destroy: true
   accepts_nested_attributes_for :product_suppliers, allow_destroy: true
   accepts_nested_attributes_for :multipack_products, allow_destroy: true
   accepts_nested_attributes_for :extra_field_value
@@ -72,37 +71,38 @@ class Product < ApplicationRecord
   end
 
   def update_channel_quantity
+    return unless saved_change_to_attribute?(:total_stock) || saved_change_to_attribute?(:fake_stock)
+
+    selling_unit = Selling&.last&.quantity.to_i
     product_mappings.each do |mapping|
       product = mapping.channel_product
       deduction_unit = 1
-      if product.channel_type_ebay?
-        channel_quantity = Selling&.last&.quantity.to_i < (inventory_balance.to_f/deduction_unit.to_f) ? Selling&.last&.quantity : [(inventory_balance.to_f/deduction_unit.to_f).floor, 0].max
-      else
-        channel_quantity = [(inventory_balance.to_f/deduction_unit.to_f).floor, 0].max
-      end
-      product.update(item_quantity: channel_quantity, item_quantity_changed: true) unless product.item_quantity.to_i.eql? channel_quantity.to_i
+      quantity = (inventory_balance.to_f + fake_stock.to_i) / deduction_unit.to_f
+      item_quantity = [quantity.floor, 0].max
+      channel_quantity = item_quantity + product.buffer_quantity.to_i
+      channel_quantity = selling_unit < channel_quantity ? selling_unit : channel_quantity if product.channel_type_ebay?
+      product.update(item_quantity: item_quantity, channel_quantity: channel_quantity, item_quantity_changed: true) unless product.item_quantity.to_i.eql? item_quantity.to_i
     end
     @channel_listings = ChannelProduct.joins(product_mapping: [product: [multipack_products: :child]]).where('child.id': id)
     @channel_listings.each do |multi_mapping|
       deduction_unit = multi_mapping.product_mapping&.product&.multipack_products&.find_by(child_id: id)&.quantity.to_i
-      deduction_quantity = [(inventory_balance.to_f/deduction_unit.to_f).floor, 0].max unless deduction_unit.zero?
+      quantity = (inventory_balance.to_f + fake_stock.to_i) / deduction_unit.to_f
+      deduction_quantity = [quantity.floor, 0].max unless deduction_unit.zero?
       multipack_products = multi_mapping.product_mapping&.product&.multipack_products
       if multipack_products&.count.to_i > 1
         deduction_quantity = multi_products_check(multipack_products)
       end
-      if multi_mapping.channel_type_ebay?
-        channel_quantity =  Selling&.last&.quantity.to_i < deduction_quantity.to_i ? Selling&.last&.quantity.to_i: [deduction_quantity.to_i, 0].max
-      else
-        channel_quantity = [deduction_quantity.to_i, 0].max
-      end
-      multi_mapping.update(item_quantity: channel_quantity, item_quantity_changed: true) unless multi_mapping.item_quantity.to_i.eql? channel_quantity.to_i
+      item_quantity = [deduction_quantity.to_i, 0].max
+      channel_quantity = item_quantity + multi_mapping.buffer_quantity.to_i
+      item_quantity =  selling_unit.to_i < channel_quantity ? selling_unit.to_i : channel_quantity if multi_mapping.channel_type_ebay?
+      multi_mapping.update(item_quantity: item_quantity, channel_quantity: channel_quantity, item_quantity_changed: true) unless multi_mapping.item_quantity.to_i.eql? item_quantity.to_i
     end
   end
 
   def multi_products_check(multipack_products)
     deduction_arr = []
     multipack_products.each do |multipack_product|
-      deduction_arr.push(multipack_product.child.inventory_balance.to_i / multipack_product.quantity.to_i) unless multipack_product.quantity.to_i.zero?
+      deduction_arr.push((multipack_product.child.inventory_balance.to_i + multipack_product.child.fake_stock.to_i) / multipack_product.quantity.to_i) unless multipack_product.quantity.to_i.zero?
     end
     deduction_arr.min
   end

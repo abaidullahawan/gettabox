@@ -110,7 +110,7 @@ class UpdateAmazonProduct < ApplicationJob
     credential.update(redirect_uri: nil, authorization: nil, created_at: wait_time)
     elapsed_seconds = wait_time - DateTime.now
     job.reschedule(DateTime.now + elapsed_seconds.seconds) if job.present?
-    perform_in = job_status.perform_in || elapsed_seconds
+    perform_in = job_status.present? ? job_status.perform_in : elapsed_seconds
     # job_data = self.class.set(wait: elapsed_seconds.seconds).perform_later(products: products, error: error)
     JobStatus.create(name: self.class.to_s, status: 'retry', arguments: { products: products, error: error }, perform_in: perform_in)
     job_status.update(perform_in: elapsed_seconds.seconds) if job.present? && job_status.present?

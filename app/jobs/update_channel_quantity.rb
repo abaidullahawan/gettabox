@@ -5,7 +5,7 @@ class UpdateChannelQuantity < ApplicationJob
   queue_as :default
 
   def perform(*_args)
-    amazon_products = ChannelProduct.where(item_quantity_changed: true, channel_type: 'amazon').pluck(:item_sku, :item_quantity)
+    amazon_products = ChannelProduct.where(item_quantity_changed: true, channel_type: 'amazon').pluck(:item_sku, :channel_quantity)
     ebay_products = ChannelProduct.where(item_quantity_changed: true, channel_type: 'ebay')
 
     calling_amazon_jobs(amazon_products) unless amazon_products.nil?
@@ -36,10 +36,10 @@ class UpdateChannelQuantity < ApplicationJob
   def calling_ebay_jobs(products)
     products.each.with_index(1) do |product, index|
       if product.listing_type.eql? 'variation'
-        JobStatus.create(name: 'EbayVariationProductJob', status: 'inqueue', arguments: { listing_id: product.listing_id, sku: product.item_sku, quantity: product.item_quantity }, perform_in: index * 10)
+        JobStatus.create(name: 'EbayVariationProductJob', status: 'inqueue', arguments: { listing_id: product.listing_id, sku: product.item_sku, quantity: product.channel_quantity }, perform_in: index * 10)
         # job_id = EbayVariationProductJob.perform_later(listing_id: product.listing_id, sku: product.sku, quantity: product.quantity)
       elsif product.listing_type.eql? 'single'
-        JobStatus.create(name: 'EbaySingleProductJob', status: 'inqueue', arguments: { listing_id: product.listing_id, quantity: product.item_quantity }, perform_in: index * 10)
+        JobStatus.create(name: 'EbaySingleProductJob', status: 'inqueue', arguments: { listing_id: product.listing_id, quantity: product.channel_quantity }, perform_in: index * 10)
         # job_id = EbaySingleProductJob.perform_later(listing_id: product.listing_id, quantity: product.quantity)
       end
     end
