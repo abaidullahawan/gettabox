@@ -52,15 +52,6 @@
                         </a>
                     </div>
                 </div>
-
-                <a
-                    class="nav-link <%= active_klass(products_path) %>"
-                    href="<%= products_path %>"
-                >
-                    <i data-feather="inbox" class="icon"></i>
-                    <span class="title">Products</span>
-                </a>
-
                 <a
                     class="nav-link <%= active_klass(customers_path) %>"
                     href="<%= customers_path %>"
@@ -70,11 +61,19 @@
                 </a>
 
                 <a
-                    class="nav-link <%= active_klass(system_users_path) %>"
-                    href="<%= system_users_path %>"
+                    class="nav-link <%= active_klass(order_dispatches_path) %>"
+                    href="<%= order_dispatches_path(order_filter: 'unprocessed') %>"
                 >
-                    <i data-feather="user" class="icon"></i>
-                    <span class="title">Supplier</span>
+                    <i data-feather="shopping-bag" class="icon"></i>
+                    <span class="title">Order Dispatch</span>
+                </a>
+
+                <a
+                    class="nav-link <%= active_klass(products_path) %>"
+                    href="<%= products_path %>"
+                >
+                    <i data-feather="inbox" class="icon"></i>
+                    <span class="title">Products</span>
                 </a>
 
                 <a
@@ -86,42 +85,12 @@
                 </a>
 
                 <a
-                    class="nav-link <%= active_klass(order_dispatches_path) %>"
-                    href="<%= order_dispatches_path(order_filter: 'unprocessed') %>"
+                    class="nav-link <%= active_klass(system_users_path) %>"
+                    href="<%= system_users_path %>"
                 >
-                    <i data-feather="shopping-bag" class="icon"></i>
-                    <span class="title">Order Dispatch</span>
+                    <i data-feather="user" class="icon"></i>
+                    <span class="title">Supplier</span>
                 </a>
-
-                <div class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <div class="dropdown-title">
-                            <i data-feather="grid" class="icon"></i>
-                            <span class="title">
-                                Packing Station
-                                <i data-feather="chevron-right" class="icon fr"></i>
-                            </span>
-                        </div>
-                    </a>
-
-                    <div class="dropdown-menu">
-                        <a
-                            class="dropdown-item <%= active_klass( start_packing_pick_and_packs_path ) %>"
-                            href="<%=  start_packing_pick_and_packs_path  %>"
-                        >
-                            <i data-feather="chevron-right" class="icon"></i>
-                            Start Packing
-                        </a>
-
-                        <a
-                            class="dropdown-item <%= active_klass(pick_and_packs_path) %>"
-                            href="<%= pick_and_packs_path %>"
-                        >
-                            <i data-feather="chevron-right" class="icon"></i>
-                            View Batches
-                        </a>
-                    </div>
-                </div>
 
                 <div class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -163,21 +132,66 @@
                     </div>
                 </div>
 
-                <a
-                    class="nav-link <%= active_klass(multi_file_mapping_index_path) %>"
-                    href="<%= multi_file_mapping_index_path %>"
-                >
-                    <i data-feather="file" class="icon"></i>
-                    <span class="title">Multiple File Mapping</span>
-                </a>
+                <div class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <div class="dropdown-title">
+                            <i data-feather="tool" class="icon"></i>
+                            <span class="title">
+                                Tools
+                                <i data-feather="chevron-right" class="icon fr"></i>
+                            </span>
+                        </div>
+                    </a>
 
-                 <a
-                    class="nav-link <%= active_klass(consolidation_tool_index_path) %>"
-                    href="<%= consolidation_tool_index_path %>"
-                >
-                    <i data-feather="tool" class="icon"></i>
-                    <span class="title">Consolidation Tool</span>
-                </a>
+                    <div class="dropdown-menu">
+                        <a
+                            class="dropdown-item <%= active_klass(multi_file_mapping_index_path) %>"
+                            href="<%= multi_file_mapping_index_path %>"
+                        >
+                            <i data-feather="chevron-right" class="icon"></i>
+                            Multiple File Mapping
+                        </a>
+
+                        <a
+                            class="dropdown-item <%= active_klass(consolidation_tool_index_path) %>"
+                            href="<%= consolidation_tool_index_path %>"
+                        >
+                            <i data-feather="chevron-right" class="icon"></i>
+                            Consolidation Tool
+                        </a>
+
+                    </div>
+                </div>
+
+                <div class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <div class="dropdown-title">
+                            <i data-feather="grid" class="icon"></i>
+                            <span class="title">
+                                Packing Station
+                                <i data-feather="chevron-right" class="icon fr"></i>
+                            </span>
+                        </div>
+                    </a>
+
+                    <div class="dropdown-menu">
+                        <a
+                            class="dropdown-item <%= active_klass( start_packing_pick_and_packs_path ) %>"
+                            href="<%=  start_packing_pick_and_packs_path  %>"
+                        >
+                            <i data-feather="chevron-right" class="icon"></i>
+                            Start Packing
+                        </a>
+
+                        <a
+                            class="dropdown-item <%= active_klass(pick_and_packs_path) %>"
+                            href="<%= pick_and_packs_path %>"
+                        >
+                            <i data-feather="chevron-right" class="icon"></i>
+                            View Batches
+                        </a>
+                    </div>
+                </div>
 
                 <a
                     class="nav-link <%= active_klass(job_statuses_path) %>"
