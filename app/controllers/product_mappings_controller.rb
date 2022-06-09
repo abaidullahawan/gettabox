@@ -73,7 +73,7 @@ class ProductMappingsController < ApplicationController
       if @product.product_type == 'multiple'
         update_multi_pack_logs(@channel_product, @product)
       else
-        @product.update(change_log: "Product Mapped, #{@product.sku}, #{@channel_product.item_sku}, Mapped, #{@channel_product.listing_id}, #{@product.inventory_balance}, #{current_user.personal_detail.full_name}")
+        @product.update(change_log: "Product Mapped, #{@product.sku}, #{@channel_product.item_sku}, Mapped, #{@channel_product.listing_id}, #{@product.inventory_balance}, #{current_user&.personal_detail&.full_name}")
         update_order_stage(@channel_product, @product)
       end
       allocations
@@ -95,7 +95,7 @@ class ProductMappingsController < ApplicationController
       flash[:alert] = 'Please first complete orders to unmapped products.'
     else
       ordered_value = @channel_product.channel_order_items.pluck(:ordered).sum
-      @product.update(change_log: "Product UnMapped, #{@product.sku}, #{@channel_product.item_sku}, UnMapped, #{@channel_product.listing_id}, #{current_user.personal_detail.full_name}", unshipped: (@product.unshipped.to_i - ordered_value.to_i), available_stock: (@product.total_stock.to_i - @product.unshipped.to_i))
+      @product.update(change_log: "Product UnMapped, #{@product.sku}, #{@channel_product.item_sku}, UnMapped, #{@channel_product.listing_id}, #{current_user&.personal_detail&.full_name}", unshipped: (@product.unshipped.to_i - ordered_value.to_i), available_stock: (@product.total_stock.to_i - @product.unshipped.to_i))
       if @product_mapping&.destroy
         channel_order_ids = ChannelOrderItem.where(channel_product_id: 2855).pluck(:channel_order_id)
         ChannelOrder.where(id: channel_order_ids).update_all(stage: 'unmapped_product_sku')
@@ -129,7 +129,7 @@ class ProductMappingsController < ApplicationController
       if params['product']['product_type'] == 'multiple'
         update_multi_pack_logs(cd, @product)
       else
-        @product.update(change_log: "Product Mapped, #{@product.sku}, #{cd.item_sku}, Mapped, #{cd.listing_id}, #{@product.inventory_balance}")
+        @product.update(change_log: "Product Mapped, #{@product.sku}, #{cd.item_sku}, Mapped, #{cd.listing_id}, #{@product.inventory_balance}, #{current_user&.personal_detail&.full_name}")
         update_order_stage(cd, @product)
       end
       attach_photo(cd) unless @product.photo.attached? || cd.product_data['PictureDetails'].nil?
@@ -439,7 +439,7 @@ class ProductMappingsController < ApplicationController
     orders = ChannelOrder.joins(:channel_order_items).includes(:channel_order_items)
                          .where('channel_order_items.channel_product_id': channel_product.id)
     product.multipack_products.each do |multi_pack_log|
-      multi_pack_log.child.update(change_log: "Product Mapped, #{multi_pack_log.child.sku}, #{channel_product.item_sku}, Mapped, #{channel_product.listing_id}, #{multi_pack_log.child.inventory_balance}, #{current_user.personal_detail.full_name}")
+      multi_pack_log.child.update(change_log: "Product Mapped, #{multi_pack_log.child.sku}, #{channel_product.item_sku}, Mapped, #{channel_product.listing_id}, #{multi_pack_log.child.inventory_balance}, #{current_user&.personal_detail&.full_name}")
     end
     concern_recalculate_rule(orders)
     orders.each do |order|

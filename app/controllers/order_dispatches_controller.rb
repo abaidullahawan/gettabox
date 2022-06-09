@@ -47,9 +47,9 @@ class OrderDispatchesController < ApplicationController
         end
         current_order = ChannelOrder.find_by(id: params[:channel_order]['id'])
         replacement_id = "R#{current_order.order_replacements.count + 1}-#{current_order.id}"
-        @order.update(replacement_id: replacement_id, change_log: "Order Paid, #{@order.id}, #{@order.order_id}, #{current_user.personal_detail.full_name}", stage: 'ready_to_dispatch')
+        @order.update(replacement_id: replacement_id, change_log: "Order Paid, #{@order.id}, #{@order.order_id}, #{current_user&.personal_detail&.full_name}", stage: 'ready_to_dispatch')
         OrderReplacement.create(channel_order_id: current_order.id, order_replacement_id: @order.id, order_id: replacement_id)
-        current_order.update(change_log: "Replacement, #{replacement_id}, #{current_order.order_id}, #{current_user.personal_detail.full_name}")
+        current_order.update(change_log: "Replacement, #{replacement_id}, #{current_order.order_id}, #{current_user&.personal_detail&.full_name}")
       end
       flash[:notice] = 'Order Created!'
     else
@@ -74,7 +74,7 @@ class OrderDispatchesController < ApplicationController
   def update
     order = ChannelOrder.find_by(id: params[:channel_order]['id'])
     if order.update(order_dispatches_params)
-      order.update(change_log: "Refund, #{params[:channel_order]['refund_amount'].to_f+params[:channel_order]['concession_amount'].to_f}, #{order.order_id}, #{current_user.personal_detail.full_name}")
+      order.update(change_log: "Refund, #{params[:channel_order]['refund_amount'].to_f+params[:channel_order]['concession_amount'].to_f}, #{order.order_id}, #{current_user&.personal_detail&.full_name}")
       flash[:notice] = 'Order refunded successfuly'
     else
       flash[:alert] = @order.errors.full_messages

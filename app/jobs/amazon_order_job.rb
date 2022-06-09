@@ -198,8 +198,7 @@ class AmazonOrderJob < ApplicationJob
 
   def update_available_stock(item, product, inventory_balance, ordered)
     unshipped = product.unshipped + ordered if product.unshipped.present?
-    channel_order_id = item.channel_order_id
-    channel_type = ChannelOrder.find(channel_order_id).channel_type
+    channel_type = item.channel_order.channe_type
     product.update(change_log: "API, #{item.channel_product.item_sku}, #{item.channel_order.order_id}, Order Paid,
         #{item.channel_product.listing_id}, #{unshipped}, #{product.inventory_balance}, #{channel_type} ", unshipped: unshipped, unshipped_orders: product.unshipped_orders.to_i + 1,
         inventory_balance: inventory_balance)
