@@ -55,8 +55,8 @@
                   <td class="text-center"><%= multi_mapping.item_sku %></td>
                   <td class="text-center"><%= deduction_unit %></td>
                   <td class="text-center"><%= multi_mapping.item_quantity.to_i %></td>
-                  <td class="text-center"><%= product.buffer_quantity.to_i.positive? ? ('+' + product.buffer_quantity) : product.buffer_quantity  %></td>
-                  <td class="text-center"><%= product.channel_quantity.to_i %></td>
+                  <td class="text-center"><%= multi_mapping.buffer_quantity.to_i.positive? ? ('+' + multi_mapping.buffer_quantity) : multi_mapping.buffer_quantity  %></td>
+                  <td class="text-center"><%= multi_mapping.channel_quantity.to_i %></td>
                   <!--td class="text-center">
                       <%#= multi_mapping.channel_forecasting&.name %>
                       <%#= link_to '', buffer_rule_channel_forecastings_path(id: multi_mapping.id), remote: true, class: 'lni lni-pencil mt-1 ml-3' %>
