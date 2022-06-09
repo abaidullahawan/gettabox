@@ -73,15 +73,11 @@ class Product < ApplicationRecord
   def update_channel_quantity
     return unless saved_change_to_attribute?(:total_stock) || saved_change_to_attribute?(:fake_stock)
 
-    selling_unit = Selling&.last&.quantity.to_i
     product_mappings.each do |mapping|
       product = mapping.channel_product
       deduction_unit = 1
       quantity = (inventory_balance.to_f + fake_stock.to_i) / deduction_unit.to_f
-      item_quantity = [quantity.floor, 0].max
-      channel_quantity = item_quantity + product.buffer_quantity.to_i
-      channel_quantity = selling_unit < channel_quantity ? selling_unit : channel_quantity if product.channel_type_ebay?
-      product.update(item_quantity: item_quantity, channel_quantity: channel_quantity, item_quantity_changed: true) unless product.item_quantity.to_i.eql? item_quantity.to_i
+      product.update(item_quantity: quantity, item_quantity_changed: true) unless product.item_quantity.to_i.eql? quantity.to_i
     end
     @channel_listings = ChannelProduct.joins(product_mapping: [product: [multipack_products: :child]]).where('child.id': id)
     @channel_listings.each do |multi_mapping|
@@ -93,9 +89,7 @@ class Product < ApplicationRecord
         deduction_quantity = multi_products_check(multipack_products)
       end
       item_quantity = [deduction_quantity.to_i, 0].max
-      channel_quantity = item_quantity + multi_mapping.buffer_quantity.to_i
-      item_quantity =  selling_unit.to_i < channel_quantity ? selling_unit.to_i : channel_quantity if multi_mapping.channel_type_ebay?
-      multi_mapping.update(item_quantity: item_quantity, channel_quantity: channel_quantity, item_quantity_changed: true) unless multi_mapping.item_quantity.to_i.eql? item_quantity.to_i
+      multi_mapping.update(item_quantity: item_quantity, item_quantity_changed: true) unless multi_mapping.item_quantity.to_i.eql? item_quantity.to_i
     end
   end
 

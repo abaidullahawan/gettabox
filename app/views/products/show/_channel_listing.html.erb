@@ -20,8 +20,9 @@
                 <th class="text-center">Listing Id</th>
                 <th class="text-center">Listing SKU</th>
                 <th class="text-center">Deduction Unit</th>
-                <th class="text-center">Channel Quantity</th>
+                <th class="text-center">Listing Quantity</th>
                 <th class="text-center">Buffer Quantity</th>
+                <th class="text-center">Channel Quantity</th>
                 <!--th class="text-center">Buffer Rule</th-->
               </tr>
               <% if @product.product_mappings.present? %>
@@ -34,10 +35,9 @@
                       <td class="text-center"><%= product.listing_id %></td>
                       <td class="text-center"><%= product.item_sku %></td>
                       <td class="text-center"><%= deduction_unit %></td>
+                      <td class="text-center"><%= product.item_quantity %></td>
+                      <td class="text-center"><%= product.buffer_quantity.to_i.positive? ? ('+' + product.buffer_quantity) : product.buffer_quantity  %></td>
                       <td class="text-center"><%= product.channel_quantity.to_i %></td>
-                      <td class="text-center">
-                        <i><%= product.buffer_quantity %></i>
-                      </td>
                       <!--td class="text-center">
                         <%#= product.channel_forecasting&.name %>
                         <%#= link_to '', buffer_rule_channel_forecastings_path(id: product.id), remote: true, class: 'lni lni-pencil mt-1 ml-3' %>
