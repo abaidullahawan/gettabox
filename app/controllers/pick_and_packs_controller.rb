@@ -81,7 +81,7 @@ class PickAndPacksController < ApplicationController
       return product_scan_successfully unless total_product_scan == product_scan
 
       update_all_products(tracking_order)
-      tracking_order.update(product_scan: total_product_scan, stage: 'completed', order_batch_id: nil, change_log: "Order Completed, #{tracking_order.id}, #{tracking_order.order_id}, #{current_user.personal_detail.full_name}")
+      tracking_order.update(product_scan: total_product_scan, stage: 'completed', order_batch_id: nil, change_log: "Order Completed, #{tracking_order.id}, #{tracking_order.order_id}, #{current_user&.personal_detail&.full_name}")
       call_amazon_tracking_job(tracking_order.id) unless tracking_order.update_channel
       # job_data = EbayCompleteSaleJob.perform_later(order_ids: [order.id]) unless tracking_order.update_channel
       JobStatus.create(name: 'EbayCompleteSaleJob', status: 'inqueue', arguments: { order_ids: order_ids }, perform_in: 300) unless tracking_order.update_channel
@@ -130,7 +130,7 @@ class PickAndPacksController < ApplicationController
     tracking_order = orders.joins(:trackings).find_by('trackings.tracking_no': params[:tracking_no])
     local_products(tracking_order)
     product_scan = @products_group.map{|g| {"#{g.last.first[:product].id}"=> g.last.pluck(:quantity).sum.to_i}}.reduce(:merge)
-    tracking_order.update(product_scan: product_scan, stage: 'completed', order_batch_id: nil, change_log: "Order Completed, #{tracking_order.id}, #{tracking_order.order_id}, #{current_user.personal_detail.full_name}")
+    tracking_order.update(product_scan: product_scan, stage: 'completed', order_batch_id: nil, change_log: "Order Completed, #{tracking_order.id}, #{tracking_order.order_id}, #{current_user&.personal_detail&.full_name}")
     update_all_products(tracking_order)
     call_amazon_tracking_job(tracking_order.id) unless tracking_order.update_channel
     # job_data = EbayCompleteSaleJob.perform_later(order_ids: [tracking_order.id]) unless tracking_order.update_channel
