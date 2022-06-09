@@ -79,9 +79,7 @@ class ProductsController < ApplicationController
     selling_quantity = Selling&.last&.quantity.to_i
     listings = single_listings + multi_listings
     listings.each do |listing|
-      quantity = (selling_quantity < listing.item_quantity) ? selling_quantity : listing.item_quantity
-      quantity = listing.item_quantity if listing.channel_type_amazon?
-      listing.update(buffer_quantity: 0, channel_quantity: quantity, fake_buffer: false)
+      listing.update(buffer_quantity: 0, fake_buffer: false)
       next if product_forecasting.nil?
 
       product_forecasting.channel_forecastings.each do |forecasting|
@@ -89,10 +87,8 @@ class ProductsController < ApplicationController
 
         buffer_quantity = forecasting.action_safe_stock_by? ? forecasting.type_number.to_i * -1 : forecasting.type_number.to_i
         fake_buffer = forecasting.action_anticipate_fake_stock_only_by? ? true : false
-        quantity = listing.item_quantity + buffer_quantity
-        quantity = selling_quantity if listing.channel_type_ebay? && (quantity > selling_quantity)
 
-        listing.update(buffer_quantity: buffer_quantity, channel_quantity: quantity, item_quantity_changed: true, fake_buffer: fake_buffer)
+        listing.update(buffer_quantity: buffer_quantity, item_quantity_changed: true, fake_buffer: fake_buffer)
       end
     end
   end
