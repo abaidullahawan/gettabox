@@ -90,40 +90,40 @@
                     </thead>
                     <tbody>
                       <%= pd.fields_for :purchase_order_details do |f| %>
-                        <%if f.object.purchase_order.purchase_order_details.where(product_id: f.object.product.id).first.quantity.present? %>
-                          <tr>
-                            <td>
-                              <%= f.object.product.sku%>
-                            </td>
-                            <td>
-                              <%= f.object.purchase_order&.system_user&.product_suppliers&.first&.product_sku %>
-                            </td>
-                            <td>
-                              <%= f.object.product.title %>
-                            </td>
-                            <td>
-                              <%= f.object.purchase_order.purchase_order_details.where(product_id: f.object.product.id).first.quantity %>
-                            </td>
-                            <td>
-                              <%= @demaged[f.object.product_id] %>
-                            </td>
-                            <td>
-                              <%= @missing[f.object.product_id] %>
-                            </td>
-                            <td>
-                              <%= @deliverd[f.object.product_id]%>
-                            </td>
-                            <td>
-                              £ <%= f.object.cost_price %>
-                            </td>
-                            <td>
-                              £ <%= f.object.quantity * f.object.cost_price if f.object.cost_price.present? && f.object.quantity.present? %>
-                            </td>
-                            <td>
-                              <%= f.object.purchase_order.created_at.strftime("%d/ %m/ %Y") %>
-                            </td>
-                          </tr>
-                        <% end %>
+                        <% next if f.object.quantity.nil? %>
+
+                        <tr>
+                          <td>
+                            <%= f.object.product.sku%>
+                          </td>
+                          <td>
+                            <%= f.object.purchase_order&.system_user&.product_suppliers&.first&.product_sku %>
+                          </td>
+                          <td>
+                            <%= f.object.product.title %>
+                          </td>
+                          <td>
+                            <%= f.object.quantity %>
+                          </td>
+                          <td>
+                            <%= @demaged[f.object.product_id] %>
+                          </td>
+                          <td>
+                            <%= @missing[f.object.product_id] %>
+                          </td>
+                          <td>
+                            <%= @deliverd[f.object.product_id]%>
+                          </td>
+                          <td>
+                            £ <%= f.object.cost_price %>
+                          </td>
+                          <td>
+                            £ <%= f.object.quantity * f.object.cost_price if f.object.cost_price.present? && f.object.quantity.present? %>
+                          </td>
+                          <td>
+                            <%= f.object.purchase_order.created_at.strftime("%d/ %m/ %Y") %>
+                          </td>
+                        </tr>
                       <% end %>
                       <tr>
                         <td colspan="7"></td>

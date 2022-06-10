@@ -34,7 +34,7 @@ class CreateChannelOrderJob < ApplicationJob
             channel_order_item.save
           end
           criteria = channel_order_record.channel_order_items.map { |h| [h[:sku], h[:ordered]] }
-          assign_rules = AssignRule.where(criteria: criteria)&.last
+          assign_rules = AssignRule.where('criteria = ?', criteria.to_json)&.last
           channel_order_record.update(assign_rule_id: assign_rules.id) if assign_rules.present?
           update_order_stage(channel_order_record.channel_order_items.map do |i|
                               i.channel_product&.status

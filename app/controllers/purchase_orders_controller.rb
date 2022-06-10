@@ -58,7 +58,7 @@ class PurchaseOrdersController < ApplicationController
       respond_to do |format|
         format.html
         format.pdf do
-          render pdf: 'file.pdf', viewport_size: '1280x1024', template: 'purchase_orders/show.pdf.erb'
+          render pdf: 'file.pdf', viewport_size: '1280x1024', template: 'purchase_orders/show.pdf.erb', orientation: 'Landscape'
         end
       end
     end

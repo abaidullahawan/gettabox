@@ -57,9 +57,15 @@ $(document).on('turbolinks:load', function () {
 })
 function purchaseOrderTotal() {
   var length = $('.order_item_price').length
+  var item_price_ids = $('.order_item_price').map(function () {
+    return $(this).attr('id');
+  }).get();
+  var item_quantity_ids = $('.order_item_quantity').map(function () {
+    return $(this).attr('id');
+  }).get();
   for (var i = 0; i < length; ++i) {
-    var cost_price_id = "purchase_order_purchase_order_details_attributes_" + i + "_cost_price"
-    var quantity_id = "purchase_order_purchase_order_details_attributes_" + i + "_quantity"
+    var cost_price_id = item_price_ids[i]
+    var quantity_id = item_quantity_ids[i]
     var quantity = $("#" + quantity_id).val()
     var cost = $("#" + cost_price_id).val()
     var item_total = (isNaN(parseFloat(quantity) * parseFloat(cost))) ? 0 : parseFloat(quantity) * parseFloat(cost);

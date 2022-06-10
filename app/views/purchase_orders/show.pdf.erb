@@ -69,6 +69,8 @@
                     </thead>
                     <tbody>
                       <%= pd.fields_for :purchase_order_details do |f| %>
+                        <% next if f.object.quantity.nil? %>
+
                         <tr>
                           <td>
                             <%= f.object.product.sku%>
@@ -83,13 +85,13 @@
                             <%= f.object.quantity %>
                           </td>
                           <td>
-                            <%= f.object.purchase_order.purchase_order_details.where(product_id: f.object.product.id).first.quantity %>
-                          </td>
-                          <td>
                             <%= @demaged[f.object.product_id] %>
                           </td>
                           <td>
                             <%= @missing[f.object.product_id] %>
+                          </td>
+                          <td>
+                            <%= @deliverd[f.object.product_id]%>
                           </td>
                           <td>
                             £ <%= f.object.cost_price %>

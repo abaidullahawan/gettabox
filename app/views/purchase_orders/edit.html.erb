@@ -37,7 +37,7 @@
               <h5 class='float-right pt-2'>Total Price</h5>
             </div>
             <div class='col-3'>
-              <%= pd.number_field :total_bill, step: :any, min: 0, class: 'form-control order_total', placeholder: 'Total' %>
+              <%= pd.number_field :total_bill, value: pd.object.total_bill, step: :any, class: 'form-control order_total', placeholder: 'Total' %>
               <%= pd.number_field :supplier_id, value: @supplier, class: 'form-control d-none' %>
             </div>
           </div><br>
@@ -77,7 +77,7 @@
                                   </td>
                                   <td colspan='3'>
                                     <h5><span class="productSkuSearch"><%= f.object.product.title %></span></h5><br>
-                                    <strong>Description: </strong><%= f.object.product.description %><br>
+                                    <strong>Description: </strong><%= f.object.product.description&.truncate(100, omission: '... (continued)') %><br>
                                     <strong>Product SKU: </strong><span class="productSkuSearch"><%= f.object.product.sku %></span><br>
                                     <strong>Supplier SKU: </strong><%= f.object.product.product_suppliers.find_by(system_user_id: @supplier).product_sku %>
                                   </td>
@@ -96,7 +96,7 @@
                                     <%= f.number_field :quantity, step: :any, class: 'form-control order_item_quantity', placeholder: 'Quantity' %>
                                   </td>
                                   <td>
-                                    <input class="form-control order_item_total" type="text" placeholder="Total" style="width: 70px;">
+                                    <input class="form-control order_item_total" value= "<%=f.object.cost_price.to_f * f.object.quantity.to_f %>" type="text" placeholder="Total" style="width: 70px;">
                                   </td>
                                 </tr>
                               <% end %>

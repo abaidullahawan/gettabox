@@ -15,7 +15,7 @@ class AmazonOrderItemJob < ApplicationJob
 
       add_product(order.order_id, @refresh_token_amazon.access_token, order.id)
       criteria = order.channel_order_items.map { |h| [h[:sku], h[:ordered]] }
-      assign_rules = AssignRule.where(criteria: criteria)&.last
+      assign_rules = AssignRule.where('criteria = ?', criteria.to_json)&.last
       order.update(assign_rule_id: assign_rules.id) if assign_rules.present?
       update_order_stage(order.channel_order_items.map { |i| i.channel_product&.status }, order)
       order.update(stage: 'issue') if order.channel_order_items.map(&:sku).any? nil
