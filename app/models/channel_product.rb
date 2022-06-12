@@ -49,7 +49,7 @@ class ChannelProduct < ApplicationRecord
     multipack_products.each do |multipack_product|
       next if multipack_product.quantity.to_i.zero?
 
-      deduction_arr.push((multipack_product.child.inventory_balance.to_i + multipack_products.child.fake_stock.to_i) / multipack_product.quantity.to_i)
+      deduction_arr.push((multipack_product.child.inventory_balance.to_i + multipack_product.child.fake_stock.to_i) / multipack_product.quantity.to_i)
     end
     deduction_arr.min
   end
