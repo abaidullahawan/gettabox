@@ -68,19 +68,20 @@ class Product < ApplicationRecord
 
     update_columns(length: max, height: min, inventory_balance: (total_stock.to_i - unshipped.to_i),
                    unallocated: unshipped.to_i - allocated.to_i, available_stock: total_stock.to_i - allocated.to_i)
+    update_channel_quantity
   end
 
   def update_channel_quantity
-    return unless saved_change_to_attribute?(:total_stock) || saved_change_to_attribute?(:fake_stock)
+    return unless saved_change_to_attribute?(:total_stock) || saved_change_to_attribute?(:fake_stock) || saved_change_to_attribute?(:inventory_balance)
 
-    product_mappings.each do |mapping|
+    product_mappings&.each do |mapping|
       product = mapping.channel_product
       deduction_unit = 1
       quantity = (inventory_balance.to_f + fake_stock.to_i) / deduction_unit.to_f
       product.update(item_quantity: quantity, item_quantity_changed: true) unless product.item_quantity.to_i.eql? quantity.to_i
     end
     @channel_listings = ChannelProduct.joins(product_mapping: [product: [multipack_products: :child]]).where('child.id': id)
-    @channel_listings.each do |multi_mapping|
+    @channel_listings&.each do |multi_mapping|
       deduction_unit = multi_mapping.product_mapping&.product&.multipack_products&.find_by(child_id: id)&.quantity.to_i
       quantity = (inventory_balance.to_f + fake_stock.to_i) / deduction_unit.to_f
       deduction_quantity = [quantity.floor, 0].max unless deduction_unit.zero?
