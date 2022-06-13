@@ -348,8 +348,8 @@ class OrderDispatchesController < ApplicationController
     return multipack_unallocation(order_item, product) if product.product_type.eql? 'multiple'
 
     product.update(available_stock: product.available_stock.to_f + order_item.ordered,
-                    allocated: product.allocated.to_f - order_item.ordered, allocated_orders: product.allocated_orders.to_i - 1)
-                  #  change_log: "#{order_item.channel_order.channel_type} API, #{order_item.channel_order.id}, #{order_item.channel_order.order_id}, UnAllocate, #{order_item.channel_product.listing_id}")
+                   allocated: product.allocated.to_f - order_item.ordered, allocated_orders: product.allocated_orders.to_i - 1)
+    #  change_log: "#{order_item.channel_order.channel_type} API, #{order_item.channel_order.id}, #{order_item.channel_order.order_id}, UnAllocate, #{order_item.channel_product.listing_id}")
     order_item.update(allocated: false)
     flash[:notice] = 'Unallocation successful!'
   end
@@ -360,11 +360,11 @@ class OrderDispatchesController < ApplicationController
 
     if product&.available_stock.to_i >= order_item.ordered
       product.update(available_stock: product.available_stock.to_f - order_item.ordered,
-                      allocated: product.allocated.to_f + order_item.ordered, allocated_orders: product.allocated_orders.to_i + 1)
-      #                change_log: "#{order_item.channel_order.channel_type} API, #{order_item.channel_order.id}, #{order_item.channel_order.order_id}, Allocated, #{order_item.channel_product.listing_id}")
+                     allocated: product.allocated.to_f + order_item.ordered, allocated_orders: product.allocated_orders.to_i + 1)
+      # change_log: "#{order_item.channel_order.channel_type} API, #{order_item.channel_order.id}, #{order_item.channel_order.order_id}, Allocated, #{order_item.channel_product.listing_id}")
       order_item.update(allocated: true)
     else
-      (@not_allocated.class.eql? Array) ? (@not_allocated << order_item.channel_order&.order_id) : flash[:alert] = 'Available stock is not enough!'
+      @not_allocated.instance_of?(Array) ? (@not_allocated << order_item.channel_order&.order_id) : flash[:alert] = 'Available stock is not enough!'
     end
   end
 
@@ -373,9 +373,9 @@ class OrderDispatchesController < ApplicationController
       child = multipack.child
       quantity = multipack.quantity
       ordered = (order_item.ordered * quantity)
-        child.update(available_stock: child.available_stock.to_f + ordered,
-                      allocated: child.allocated.to_f - ordered, allocated_orders: child.allocated_orders.to_i - 1)
-                    #,change_log: "#{order_item.channel_order.channel_type} API, #{order_item.channel_order.id}, #{order_item.channel_order.order_id}, UnAllocate, #{order_item.channel_product.listing_id}"
+      child.update(available_stock: child.available_stock.to_f + ordered,
+                   allocated: child.allocated.to_f - ordered, allocated_orders: child.allocated_orders.to_i - 1)
+      # ,change_log: "#{order_item.channel_order.channel_type} API, #{order_item.channel_order.id}, #{order_item.channel_order.order_id}, UnAllocate, #{order_item.channel_product.listing_id}"
     end
     order_item.update(allocated: false)
     flash[:notice] = 'Unallocation successful!'
@@ -392,18 +392,18 @@ class OrderDispatchesController < ApplicationController
         ordered = (order_item.ordered * quantity)
         child.update(available_stock: child.available_stock.to_f - ordered,
                      allocated: child.allocated.to_f + ordered, allocated_orders: child.allocated_orders.to_i + 1)
-                    #  change_log: "#{order_item.channel_order.channel_type} API, #{order_item.channel_order.id}, #{order_item.channel_order.order_id}, Allocated, #{order_item.channel_product.listing_id}")
+        # change_log: "#{order_item.channel_order.channel_type} API, #{order_item.channel_order.id}, #{order_item.channel_order.order_id}, Allocated, #{order_item.channel_product.listing_id}")
       end
       order_item.update(allocated: true)
     else
-      (@not_allocated.class.eql? Array) ? (@not_allocated << order_item.channel_order&.order_id): flash[:alert] = 'Available stock is not enough!'
+      @not_allocated.instance_of?(Array) ? (@not_allocated << order_item.channel_order&.order_id) : flash[:alert] = 'Available stock is not enough!'
     end
   end
 
   def allocate(product, ordered)
     product.update(available_stock: product.available_stock.to_f - ordered,
                    allocated: product.allocated.to_f + ordered)
-                  #  change_log: "#{order_item.channel_order.channel_type} API, #{order_item.channel_order.id}, #{order_item.channel_order.order_id}, Allocated, #{order_item.channel_product.listing_id}")
+    #  change_log: "#{order_item.channel_order.channel_type} API, #{order_item.channel_order.id}, #{order_item.channel_order.order_id}, Allocated, #{order_item.channel_product.listing_id}")
   end
 
   def version
