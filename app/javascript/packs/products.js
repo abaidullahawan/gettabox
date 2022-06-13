@@ -230,6 +230,7 @@ $(document).on('turbolinks:load', function () {
   }
 
   window.bulk_update_selected = function (url, class_name, event) {
+    debugger
     var target = event.target
     var switches = $('input[name="select-switch"]');
     switches.prop("checked", target.checked);
@@ -275,4 +276,13 @@ $(document).on('turbolinks:load', function () {
     $('.reason-modal').modal('show');
   })
 
+  $('.export-all').on('click', function () {
+    debugger
+    $('.bulk-method-export-all-objects').trigger('click');
+  })
+
+  $('.export-selected').on('click', function () {
+    debugger
+    $('.bulk-method-export-selected-objects').trigger('click');
+  })
 })

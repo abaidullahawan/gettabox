@@ -5,8 +5,8 @@ Unable to Find SKU's
       <tr>
         <th>
           <div class="custom-control custom-switch">
-            <input type="checkbox" class="custom-control-input" id="customSwitchAll">
-            <label class="custom-control-label" for="customSwitchAll"></label>
+            <input type="checkbox" class= 'customSwitchAll' id='customSwitchAll' style= 'width:25px; height:25px;'>
+            <label for="customSwitchAll"></label>
           </div>
         </th>
         <th scope="col">Channel</th>
@@ -23,8 +23,8 @@ Unable to Find SKU's
         <tr>
           <td>
             <div class="custom-control custom-switch">
-              <input type="checkbox" class="custom-control-input customSwitch1" name="orders-switch" id="<%=order.id%>" <%= order.selected? ? 'checked': ''%>>
-              <label class="custom-control-label" for="<%=order.id%>"></label>
+              <input type="checkbox" class="customSwitch" name="orders-switch" style= 'width:25px; height:25px;' id="<%=order.id%>" <%= order.selected? ? 'checked': ''%>>
+              <label for="<%=order.id%>"></label>
             </div>
           </td>
           <td style = "width: 15%">
@@ -76,8 +76,8 @@ Unmapped Product SKU's
       <tr>
         <th>
           <div class="custom-control custom-switch">
-            <input type="checkbox" class="custom-control-input" id="customSwitchAll">
-            <label class="custom-control-label" for="customSwitchAll"></label>
+            <input type="checkbox" class= 'customSwitchAllForUnmapped' id='customSwitchAllForUnmapped' style= 'width:25px; height:25px;'>
+            <label for="customSwitchAllForUnmapped"></label>
           </div>
         </th>
         <th scope="col">Channel</th>
@@ -94,8 +94,8 @@ Unmapped Product SKU's
         <tr>
           <td>
             <div class="custom-control custom-switch">
-              <input type="checkbox" class="custom-control-input customSwitch1" name="orders-switch" id="<%=order.id%>" <%= order.selected? ? 'checked': ''%>>
-              <label class="custom-control-label" for="<%=order.id%>"></label>
+              <input type="checkbox" class="customSwitch" name="orders-switch1" style= 'width:25px; height:25px;' id="<%=order.id%>" <%= order.selected? ? 'checked': ''%>>
+              <label for="<%=order.id%>"></label>
             </div>
           </td>
           <td style = "width: 15%">

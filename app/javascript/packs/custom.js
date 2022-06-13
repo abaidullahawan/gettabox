@@ -142,9 +142,14 @@ $(document).on('turbolinks:load', function () {
     $('.product-mapping-request').trigger('click')
   })
 
-  $('#customSwitchAll , .update-selected-export').on('click', function () {
+  $('#customSwitchAllForReady , .update-selected-export').on('click', function () {
     var switches = $('.orders-switch');
-    switches.prop("checked", this.checked);
+    if ($(this).hasClass('update-selected-export')){
+      $(this).parent().prop("checked", this.checked)
+    }
+    else{
+      switches.prop("checked", this.checked);
+    }
     var selected = []
     var unselected = []
     var elem = $(this)
@@ -163,19 +168,86 @@ $(document).on('turbolinks:load', function () {
       success: function (response) {
         if (response.result) {
           if (!elem.hasClass('update-selected-export')){
-            $('.jquery-selected-alert').html('All objects updated successfully')
-            $('.jquery-selected-alert').addClass('bg-success').removeClass('d-none').removeClass('bg-danger')
-            $(".jquery-selected-alert").fadeTo(2000, 500).slideUp(500, function () {
-              $(".jquery-selected-alert").slideUp(500);
-            });
+            // $('.jquery-selected-alert').html('All objects updated successfully')
+            // $('.jquery-selected-alert').addClass('bg-success').removeClass('d-none').removeClass('bg-danger')
+            // $(".jquery-selected-alert").fadeTo(2000, 500).slideUp(500, function () {
+            //   $(".jquery-selected-alert").slideUp(500);
+            // });
           }
         }
       }
     })
   })
 
-  $('.customSwitch1').on('click', function () {
+  $('#customSwitchAll').on('click', function () {
+    debugger
+    var switches = $('input[name="orders-switch"]');
+    switches.prop("checked", !switches.prop("checked"));
+    var selected = []
+    var unselected = []
+    var elem = $(this)
+    switches.each(function () {
+      if (this.checked) {
+        selected.push(this.id)
+      }
+      else {
+        unselected.push(this.id)
+      }
+    })
+    $.ajax({
+      url: '/order_dispatches/bulk_update_selected',
+      type: 'GET',
+      data: { 'selected': selected, 'unselected': unselected },
+      success: function (response) {
+        if (response.result) {
+          if (!elem.hasClass('update-selected-export')){
+            // $('.jquery-selected-alert').html('All objects updated successfully')
+            // $('.jquery-selected-alert').addClass('bg-success').removeClass('d-none').removeClass('bg-danger')
+            // $(".jquery-selected-alert").fadeTo(2000, 500).slideUp(500, function () {
+            //   $(".jquery-selected-alert").slideUp(500);
+            // });
+          }
+        }
+      }
+    })
+  })
+
+  $('#customSwitchAllForUnmapped').on('click', function () {
+    debugger
+    var switches = $('input[name="orders-switch1"]');
+    switches.prop("checked", !switches.prop("checked"));
+    var selected = []
+    var unselected = []
+    var elem = $(this)
+    switches.each(function () {
+      if (this.checked) {
+        selected.push(this.id)
+      }
+      else {
+        unselected.push(this.id)
+      }
+    })
+    $.ajax({
+      url: '/order_dispatches/bulk_update_selected',
+      type: 'GET',
+      data: { 'selected': selected, 'unselected': unselected },
+      success: function (response) {
+        if (response.result) {
+          if (!elem.hasClass('update-selected-export')){
+            // $('.jquery-selected-alert').html('All objects updated successfully')
+            // $('.jquery-selected-alert').addClass('bg-success').removeClass('d-none').removeClass('bg-danger')
+            // $(".jquery-selected-alert").fadeTo(2000, 500).slideUp(500, function () {
+            //   $(".jquery-selected-alert").slideUp(500);
+            // });
+          }
+        }
+      }
+    })
+  })
+
+  $('.customSwitch').on('click', function () {
     var value = this.checked
+    debugger
     var order_id = this.id
 
     $.ajax({
@@ -183,21 +255,21 @@ $(document).on('turbolinks:load', function () {
       type: "GET",
       data: { 'selected': value, 'order_id': order_id },
       success: function (response) {
-        if (response.result) {
-          $('.jquery-selected-alert').html('Object updated successfully')
-          $('.jquery-selected-alert').addClass('bg-success').removeClass('d-none').removeClass('bg-danger')
-          $(".jquery-selected-alert").fadeTo(2000, 500).slideUp(500, function () {
-            $(".jquery-selected-alert").slideUp(500);
-          });
-        }
-        else {
-          $('.jquery-selected-alert').html('Object cannot be updated! ' + response.errors[0])
-          $('.jquery-selected-alert').addClass('bg-danger').removeClass('d-none')
-          $('.jquery-selected-alert').alert('show')
-          $(".jquery-selected-alert").fadeTo(2000, 500).slideUp(500, function () {
-            $(".jquery-selected-alert").slideUp(500);
-          });
-        }
+        // if (response.result) {
+        //   $('.jquery-selected-alert').html('Object updated successfully')
+        //   $('.jquery-selected-alert').addClass('bg-success').removeClass('d-none').removeClass('bg-danger')
+        //   $(".jquery-selected-alert").fadeTo(2000, 500).slideUp(500, function () {
+        //     $(".jquery-selected-alert").slideUp(500);
+        //   });
+        // }
+        // else {
+        //   $('.jquery-selected-alert').html('Object cannot be updated! ' + response.errors[0])
+        //   $('.jquery-selected-alert').addClass('bg-danger').removeClass('d-none')
+        //   $('.jquery-selected-alert').alert('show')
+        //   $(".jquery-selected-alert").fadeTo(2000, 500).slideUp(500, function () {
+        //     $(".jquery-selected-alert").slideUp(500);
+        //   });
+        // }
       }
     })
   })
@@ -217,7 +289,8 @@ $(document).on('turbolinks:load', function () {
   })
 
   $('.select-all-checkbox').on("click", function () {
-    var cbxs = $('input[name="object_ids[]"]');
+    debugger;
+    var cbxs = $('input[name=""]');
     cbxs.prop("checked", !cbxs.prop("checked"));
   });
 

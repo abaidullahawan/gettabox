@@ -148,7 +148,7 @@ class ProductsController < ApplicationController
     else
       request.format = 'csv'
       respond_to do |format|
-        format.csv { send_data products.to_csv, filename: "products-#{Date.today}.csv" }
+        format.csv { send_data products.to_csv, disposition: 'attachment', filename: "products-#{Date.today}.csv" }
       end
     end
   end
@@ -165,7 +165,13 @@ class ProductsController < ApplicationController
   end
 
   def bulk_method
-    redirect_to products_path
+    if params[:commit].eql? 'export_selected'
+      products = Product.where(id: params[:object_ids])
+    else
+      products = Product.all
+    end
+    export_csv(products)
+    redirect_to products_path if params[:commit].eql? 'delete'
   end
 
   def archive
@@ -299,7 +305,13 @@ class ProductsController < ApplicationController
   end
 
   def ransack_products
-    @q = Product.ransack(params[:q])
+    if params[:q].present? && !params[:q][:product_type_eq].eql?('2')
+      @q = Product.ransack(params[:q])
+    elsif params[:q].present? && params[:q][:product_type_eq].eql?('2')
+      @q = Product.ransack
+    else
+      @q = Product.where(product_type: 'single').ransack(params[:q])
+    end
     @products = @q.result(distinct: true).order(created_at: :desc).page(params[:page]).per(params[:limit])
     @product_exports = ExportMapping.where(table_name: 'Product')
   end
