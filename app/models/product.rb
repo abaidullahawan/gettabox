@@ -72,8 +72,6 @@ class Product < ApplicationRecord
   end
 
   def update_channel_quantity
-    return unless saved_change_to_attribute?(:total_stock) || saved_change_to_attribute?(:fake_stock) || saved_change_to_attribute?(:inventory_balance)
-
     product_mappings&.each do |mapping|
       product = mapping.channel_product
       deduction_unit = 1
