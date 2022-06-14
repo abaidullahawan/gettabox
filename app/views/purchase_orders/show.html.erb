@@ -200,6 +200,8 @@
           <%= f.number_field :invoice_number, class: "form-control" %>
           <%= f.label :invoice %>
           <%= f.file_field :invoice, class: "form-control" %>
+          <%= f.object.invoice.filename if f.object.invoice.attached? %>
+          <%= link_to 'Download existing invoice', f.object.invoice, download: "User_#{f.object.id}_avatar", class: 'btn btn-primary mt-2' if f.object.invoice.attached? %>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
