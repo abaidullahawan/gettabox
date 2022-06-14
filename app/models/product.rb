@@ -68,12 +68,9 @@ class Product < ApplicationRecord
 
     update_columns(length: max, height: min, inventory_balance: (total_stock.to_i - unshipped.to_i),
                    unallocated: unshipped.to_i - allocated.to_i, available_stock: total_stock.to_i - allocated.to_i)
-    update_channel_quantity
   end
 
   def update_channel_quantity
-    return unless saved_change_to_attribute?(:total_stock) || saved_change_to_attribute?(:fake_stock) || saved_change_to_attribute?(:inventory_balance)
-
     product_mappings&.each do |mapping|
       product = mapping.channel_product
       deduction_unit = 1
