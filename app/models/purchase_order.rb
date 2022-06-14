@@ -8,6 +8,8 @@ class PurchaseOrder < ApplicationRecord
   has_many :purchase_order_details, dependent: :destroy
   has_many :purchase_deliveries, dependent: :destroy
 
+  has_one_attached :invoice
+
   accepts_nested_attributes_for :purchase_order_details, allow_destroy: true
 
   enum order_status: {

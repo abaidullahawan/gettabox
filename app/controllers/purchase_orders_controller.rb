@@ -151,7 +151,7 @@ class PurchaseOrdersController < ApplicationController
 
   def purchase_order_params
     params.require(:purchase_order).permit(
-      :supplier_id, :total_bill, :payment_method,
+      :supplier_id, :total_bill, :payment_method, :invoice_number, :invoice,
       # :delivery_address,
       # :invoice_address,
       purchase_order_details_attributes: %i[
