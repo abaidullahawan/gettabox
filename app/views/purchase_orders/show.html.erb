@@ -54,7 +54,7 @@
                 <p class="col-8"><%= @purchase_order&.system_user&.delivery_method.present? ? @purchase_order.system_user.delivery_method : 'Not Specified' %></p>
                 <h5 class="fs-14 mb-1 col-4">Payment Method</h5>
                 <p class="col-8"><%= @purchase_order&.system_user&.payment_method&.capitalize %></p>
-                <% if @purchase_order&.system_user&.payment_method&.capitalize == "Debit" %>
+                <% if @purchase_order&.system_user&.payment_method_debit? %>
                   <h5 class="fs-14 mb-1 col-4">Unpaid / Paid</h5>
                   <div class='col-8'>
                     <label class="switch">
@@ -64,6 +64,12 @@
                     </label>
                   </div>
                 <% end %>
+                <br>
+                <h5 class="fs-14 mb-1 col-4">Invoice No.</h5>
+                <div class="col-8">
+                  <%= @purchase_order.invoice_number %>
+                  <i class='lni lni-pencil mt-1 ml-3 cursor-pointer' data-toggle="modal" data-target='#invoice_modal'></i>
+                </div>
               </div>
             </div>
           </div>
@@ -177,4 +183,31 @@
   </div>
 </div>
 
-
+<%#= form_for(@product, url: product_path) do |f| %>
+<%= form_for @purchase_order, url: purchase_order_path(@purchase_order)  do |f| %>
+  <!-- Invoice Modal -->
+  <div class="modal fade" id="invoice_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Assign Rule</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <%= f.label :invoice_number %>
+          <%= f.number_field :invoice_number, class: "form-control" %>
+          <%= f.label :invoice %>
+          <%= f.file_field :invoice, class: "form-control" %>
+          <%= f.object.invoice.filename if f.object.invoice.attached? %>
+          <%= link_to 'Download existing invoice', f.object.invoice, download: "User_#{f.object.id}_avatar", class: 'btn btn-primary mt-2' if f.object.invoice.attached? %>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <%= f.submit "Update", class: 'btn btn-outline-primary' %>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>
