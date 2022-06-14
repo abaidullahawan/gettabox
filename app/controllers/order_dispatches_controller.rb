@@ -477,28 +477,48 @@ class OrderDispatchesController < ApplicationController
     product = order_item.channel_product.product_mapping.product
     return cancel_multipack_unallocation(order_item, product) if product.product_type.eql? 'multiple'
 
+    inventory_balance = product.inventory_balance.to_i + order_item.ordered.to_i
+    channel_type = order_item.channel_order.channel_type
     if order_item.allocated
-      product.update(available_stock: product.available_stock.to_i + order_item.ordered.to_i,
-                     unshipped: product.unshipped.to_i - order_item.ordered.to_i, unshipped_orders: product.unshipped_orders.to_i - 1,
-                     allocated: product.allocated.to_i - order_item.ordered.to_i, allocated_orders: product.allocated_orders.to_i - 1)
+      product.update(
+        change_log: "Cancel Order, #{order_item.channel_product.item_sku}, #{order_item.channel_order.order_id},
+        Cancel Order, #{order_item.channel_product.listing_id}, #{order_item.ordered.to_i}, #{inventory_balance},
+        #{channel_type}", available_stock: product.available_stock.to_i + order_item.ordered.to_i,
+        unshipped: product.unshipped.to_i - order_item.ordered.to_i, unshipped_orders: product.unshipped_orders.to_i - 1,
+        allocated: product.allocated.to_i - order_item.ordered.to_i, allocated_orders: product.allocated_orders.to_i - 1
+      )
     else
-      product.update(available_stock: product.available_stock.to_i + order_item.ordered.to_i,
-                     unshipped: product.unshipped.to_i - order_item.ordered.to_i, unshipped_orders: product.unshipped_orders.to_i - 1)
+      product.update(
+        change_log: "Cancel Order, #{order_item.channel_product.item_sku}, #{order_item.channel_order.order_id},
+        Cancel Order, #{order_item.channel_product.listing_id}, #{order_item.ordered.to_i}, #{inventory_balance},
+        #{channel_type}", available_stock: product.available_stock.to_i + order_item.ordered.to_i,
+        unshipped: product.unshipped.to_i - order_item.ordered.to_i, unshipped_orders: product.unshipped_orders.to_i - 1
+      )
     end
   end
 
   def cancel_multipack_unallocation(order_item, product)
+    channel_type = order_item.channel_order.channel_type
     product.multipack_products.each do |multipack|
       child = multipack.child
       quantity = multipack.quantity
       ordered = (order_item.ordered * quantity)
+      inventory_balance = child.inventory_balance.to_i + ordered
       if order_item.allocated
-        child.update(available_stock: child.available_stock.to_f + ordered,
-                      unshipped: child.unshipped.to_i - ordered, unshipped_orders: child.unshipped_orders.to_i - 1,
-                      allocated: child.allocated.to_f - ordered, allocated_orders: child.allocated_orders.to_i - 1)
+        child.update(
+          change_log: "Cancel Order, #{order_item.channel_product.item_sku}, #{order_item.channel_order.order_id},
+          Cancel Order, #{order_item.channel_product.listing_id}, #{ordered}, #{inventory_balance},
+          #{channel_type}", available_stock: child.available_stock.to_f + ordered,
+          unshipped: child.unshipped.to_i - ordered, unshipped_orders: child.unshipped_orders.to_i - 1,
+          allocated: child.allocated.to_f - ordered, allocated_orders: child.allocated_orders.to_i - 1
+        )
       else
-        child.update(available_stock: child.available_stock.to_f + ordered,
-                     unshipped: child.unshipped.to_i - ordered, unshipped_orders: child.unshipped_orders.to_i - 1)
+        child.update(
+          change_log: "Cancel Order, #{order_item.channel_product.item_sku}, #{order_item.channel_order.order_id},
+          Cancel Order, #{order_item.channel_product.listing_id}, #{ordered}, #{inventory_balance},
+          #{channel_type}", available_stock: child.available_stock.to_f + ordered,
+          unshipped: child.unshipped.to_i - ordered, unshipped_orders: child.unshipped_orders.to_i - 1
+        )
       end
     end
   end
@@ -671,6 +691,14 @@ class OrderDispatchesController < ApplicationController
 
   def ready_to_print_orders
     @orders = @channel_orders.where(stage: 'ready_to_print').order(created_at: :desc)
+    return unless (params[:order_filter].eql? 'assignment') && params[:export]
+
+    @orders = @orders.where(selected: true) if params[:selected]
+    export_csv(@orders)
+    respond_to do |format|
+      format.html
+      format.csv
+    end
   end
 
   def customer_info
