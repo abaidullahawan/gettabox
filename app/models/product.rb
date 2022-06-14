@@ -68,7 +68,6 @@ class Product < ApplicationRecord
 
     update_columns(length: max, height: min, inventory_balance: (total_stock.to_i - unshipped.to_i),
                    unallocated: unshipped.to_i - allocated.to_i, available_stock: total_stock.to_i - allocated.to_i)
-    update_channel_quantity
   end
 
   def update_channel_quantity
