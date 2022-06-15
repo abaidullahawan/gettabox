@@ -1,19 +1,34 @@
-<p id="notice"><%= notice %></p>
-
-<p>
-  <strong>Name:</strong>
-  <%= @general_setting.name %>
-</p>
-
-<p>
-  <strong>Display name:</strong>
-  <%= @general_setting.display_name %>
-</p>
-
-<p>
-  <strong>Phone:</strong>
-  <%= @general_setting.phone %>
-</p>
-
-<%= link_to 'Edit', edit_general_setting_path(@general_setting) %> |
-<%= link_to 'Back', general_settings_path %>
+<!-- Main Content Header -->
+<div class="main-content-header">
+  <h1>Services</h1>
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item">
+      <a href="<%= home_path %>">Dashboard</a>
+    </li>
+    <li class="breadcrumb-item">
+      <a href="<%= settings_path %>">Settings</a>
+    </li>
+    <li class="breadcrumb-item active">
+      <a href="<%= general_settings_path %>">General Settings</a>
+    </li>
+    <li class="breadcrumb-item active">
+      <span class="active">Edit</span>
+    </li>
+  </ol>
+</div>
+<!-- End Main Content Header -->
+<div class="row">
+  <div class="col-xl-12">
+    <div class="card mb-30">
+      <div class="card-body">
+        <div class="card-header">
+          <h5 class="card-title">Edit</h5>
+        </div>
+        <%= form_for @general_setting, url: general_setting_path(@general_setting) do |f| %>
+          <%= render 'form', f: f %>
+          <%= f.submit class: 'btn btn-success mt-4 float-right' %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

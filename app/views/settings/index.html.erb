@@ -84,7 +84,7 @@
           <h3 class="mb-0 fs-25"><%= @total_counts[:extra_field_count] %></h3>
         </div>
         <div class="avatar avatar-cyan ">
-          <i data-feather="link"></i>
+          <i data-feather="activity"></i>
         </div>
       </div>
     </div>
@@ -100,7 +100,7 @@
           <h3 class="mb-0 fs-25"><%= @total_counts[:email_count] %></h3>
         </div>
         <div class="avatar avatar-cyan ">
-          <i data-feather="link"></i>
+          <i data-feather="dollar-sign"></i>
         </div>
       </div>
     </div>
@@ -116,7 +116,7 @@
           <h3 class="mb-0 fs-25"><%= @total_counts[:import_mapping] +  @total_counts[:export_mapping]%></h3>
         </div>
         <div class="avatar avatar-cyan ">
-          <i data-feather="link"></i>
+          <i data-feather="trash"></i>
         </div>
       </div>
     </div>
@@ -132,7 +132,7 @@
           <h3 class="mb-0 fs-25"><%= @total_counts[:courier] %></h3>
         </div>
         <div class="avatar avatar-cyan ">
-          <i data-feather="link"></i>
+          <i data-feather="trending-up"></i>
         </div>
       </div>
     </div>
@@ -148,7 +148,7 @@
           <h3 class="mb-0 fs-25"><%= @total_counts[:service] %></h3>
         </div>
         <div class="avatar avatar-cyan ">
-          <i data-feather="link"></i>
+          <i data-feather="trending-down"></i>
         </div>
       </div>
     </div>
@@ -164,7 +164,7 @@
           <h3 class="mb-0 fs-25"><%= @total_counts[:mail_service_rule] %></h3>
         </div>
         <div class="avatar avatar-cyan ">
-          <i data-feather="link"></i>
+          <i data-feather="database"></i>
         </div>
       </div>
     </div>
@@ -180,7 +180,7 @@
           <h3 class="mb-0 fs-25"><%= @total_counts[:product_location_mapping] %></h3>
         </div>
         <div class="avatar avatar-cyan ">
-          <i data-feather="link"></i>
+          <i data-feather="check-circle"></i>
         </div>
       </div>
     </div>
@@ -196,7 +196,7 @@
             <h3 class="mb-0 fs-25"><%= @total_counts[:channel_forecastings] %></h3>
           </div>
           <div class="avatar avatar-cyan ">
-            <i data-feather="link"></i>
+            <i data-feather="bar-chart"></i>
           </div>
         </div>
       </div>
@@ -212,7 +212,7 @@
             <h3 class="mb-0 fs-25"><%= @total_counts[:sellings] %></h3>
           </div>
           <div class="avatar avatar-cyan ">
-            <i data-feather="link"></i>
+            <i data-feather="smile"></i>
           </div>
         </div>
       </div>
@@ -228,11 +228,26 @@
             <h3 class="mb-0 fs-25"><%= @total_counts[:customized_rules].to_i %></h3>
           </div>
           <div class="avatar avatar-cyan ">
-            <i data-feather="link"></i>
+            <i data-feather="paperclip"></i>
           </div>
         </div>
       </div>
     <% end %>
   </div>
 
+  <div class="col-lg-4 col-sm-6">
+      <%= link_to general_settings_path do %>
+        <div class="stats-card-two hover-card mb-30">
+          <div class="media align-items-center justify-content-between">
+            <div class="ml-0">
+              <p class="mb-10 line-height-1">General Settings</p>
+              <h3 class="mb-0 fs-25"><%= @total_counts[:customized_rules].to_i %></h3>
+            </div>
+            <div class="avatar avatar-cyan ">
+              <i data-feather="eye"></i>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
 </div>
