@@ -6,7 +6,11 @@ class GeneralSettingsController < ApplicationController
 
   # GET /general_settings or /general_settings.json
   def index
-    @general_settings = GeneralSetting.all
+    @q = GeneralSetting.ransack(params[:q])
+    @general_settings = @q.result(distinct: true).order(created_at: :desc).page(params[:page]).per(params[:limit])
+    export_csv(@general_settings) if params[:export_csv].present?
+    @general_setting = GeneralSetting.new
+    @general_setting.addresses.build
   end
 
   # GET /general_settings/1 or /general_settings/1.json
@@ -25,27 +29,22 @@ class GeneralSettingsController < ApplicationController
   def create
     @general_setting = GeneralSetting.new(general_setting_params)
 
-    respond_to do |format|
       if @general_setting.save
-        format.html { redirect_to @general_setting, notice: 'General setting was successfully created.' }
-        format.json { render :show, status: :created, location: @general_setting }
+        flash[:notice] = 'General setting was successfully created.'
       else
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @general_setting.errors, status: :unprocessable_entity }
+        flash[:alert] = @general_setting.errors
       end
-    end
+      redirect_to general_settings_path
   end
 
   # PATCH/PUT /general_settings/1 or /general_settings/1.json
   def update
-    respond_to do |format|
-      if @general_setting.update(general_setting_params)
-        format.html { redirect_to @general_setting, notice: 'General setting was successfully updated.' }
-        format.json { render :show, status: :ok, location: @general_setting }
-      else
-        format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @general_setting.errors, status: :unprocessable_entity }
-      end
+    if @general_setting.update(general_setting_params)
+      flash[:notice] = 'General setting was successfully updated.'
+      redirect_to general_setting_path(@general_setting)
+    else
+      flash.now[:alert] = @general_setting.errors.full_messages
+      render :show
     end
   end
 
@@ -67,15 +66,9 @@ class GeneralSettingsController < ApplicationController
 
   # Only allow a list of trusted parameters through.
   def general_setting_params
-    params.require(:general_setting).permit(:name, :display_name, :phone,
-                                            address_attributes: %i[
-                                              id
-                                              company
-                                              address
-                                              city
-                                              region
-                                              postcode
-                                              country
-                                            ])
+    params.require(:general_setting)
+          .permit(:name, :display_name, :phone, :vat_reg_no, :company_reg_no,
+            addresses_attributes: %i[ id address_title company address city region postcode country _destroy ]
+          )
   end
 end
