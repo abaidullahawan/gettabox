@@ -21,7 +21,8 @@ class SettingsController < ApplicationController
                       product_location_mapping: ProductLocation.count,
                       channel_forecastings: ChannelForecasting.count,
                       sellings: Selling.count,
-                      customized_rules: AssignRule.where(save_later: true).count
+                      customized_rules: AssignRule.where(save_later: true).count,
+                      general_settings: GeneralSetting.count
                      }
   end
 end
