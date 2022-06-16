@@ -227,7 +227,7 @@ class ImportMappingsController < ApplicationController
             when ""
               row << value.map{ |a| a[val.to_a[0][0]]}
             when "Sum"
-              row << value.map{ |a| a[val.to_a[0][0]].to_i}.sum
+              row << value.map{ |a| a[val.to_a[0][0]].to_f}.sum
             when "Consolidation"
               row << value.map{ |a| a[val.to_a[0][0]]}.uniq.first
             end
