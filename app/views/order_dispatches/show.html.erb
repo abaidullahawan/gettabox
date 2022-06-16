@@ -60,7 +60,7 @@
     Replacement Order
   </button>
   <%= link_to 'Download Invoice', invoice_order_dispatches_path(id: @order.id), class: 'btn btn-primary float-right mr-2' if @order.system_user.present? %>
-  <%= link_to 'Cancel Order', cancel_order_order_dispatches_path(id: @order.id), class: "btn btn-danger float-right mr-2 #{@order.stage == 'canceled' ? 'disabled' : nil}" %>
+  <%= link_to 'Cancel Order', cancel_order_order_dispatches_path(id: @order.id), class: "btn btn-danger float-right mr-2 #{@order.stage == 'canceled' ? 'disabled' : nil}", data: { confirm: 'Are you sure you want to cancel this order. This order cannot be reverted' } %>
 </div>
 
 <div class="row">
