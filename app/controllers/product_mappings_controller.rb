@@ -442,7 +442,7 @@ class ProductMappingsController < ApplicationController
 
   def update_multi_pack_logs(channel_product, product)
     orders = ChannelOrder.joins(:channel_order_items).includes(:channel_order_items)
-                         .where('channel_order_items.channel_product_id': channel_product.id)
+                         .where('channel_order_items.channel_product_id': channel_product.id, stage: %w[unmapped_product_sku unable_to_find_sku])
     product.multipack_products.each do |multi_pack_log|
       multi_pack_log.child.update(change_log: "Product Mapped, #{multi_pack_log.child.sku}, #{channel_product.item_sku}, Mapped, #{channel_product.listing_id}, #{multi_pack_log.child.inventory_balance}, #{current_user&.personal_detail&.full_name}")
     end
