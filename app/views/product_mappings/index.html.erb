@@ -182,7 +182,7 @@
                             <i class='lni lni-more-alt'></i>
                           </button>
                           <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                            <%= f.submit 'Un-map', class: "dropdown-item", data_disable_with: false if item.status_mapped? %>
+                            <%= f.submit 'Un-map', class: "dropdown-item", onclick: "return confirm('Are you sure you want to unmapped?')" if item.status_mapped? %>
                             <%= link_to 'Logs', version_product_mappings_path(id: item.id), class: 'dropdown-item' %>
                             <% if item.status_unmapped? %>
                               <%= f.submit 'Map', class: "dropdown-item map-submit-button" , data_disable_with: false %>
@@ -279,3 +279,23 @@
     </div>
   </div>
 <% end %>
+
+<div class="modal" id="unmapped-modal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Are you sure?</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want permanent delete selected categories?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-danger bulk-destroy-objects">Confirm</button>
+      </div>
+    </div>
+  </div>
+</div>
