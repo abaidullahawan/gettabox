@@ -182,7 +182,7 @@
                             <i class='lni lni-more-alt'></i>
                           </button>
                           <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                            <%= f.submit 'Un-map', class: "dropdown-item", onclick: "return confirm('Are you sure you want to unmapped?')" if item.status_mapped? %>
+                            <%= f.submit 'Un-map', class: "dropdown-item", onclick: 'return confirm("Are you sure you want to unmapped? \nAny incompleted order will go back in unprocessed orders.")' if item.status_mapped? %>
                             <%= link_to 'Logs', version_product_mappings_path(id: item.id), class: 'dropdown-item' %>
                             <% if item.status_unmapped? %>
                               <%= f.submit 'Map', class: "dropdown-item map-submit-button" , data_disable_with: false %>
