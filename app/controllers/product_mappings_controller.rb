@@ -76,7 +76,6 @@ class ProductMappingsController < ApplicationController
         @product.update(change_log: "Product Mapped, #{@product.sku}, #{@channel_product.item_sku}, Mapped, #{@channel_product.listing_id}, #{@product.inventory_balance}, #{current_user&.personal_detail&.full_name}")
         update_order_stage(@channel_product, @product)
       end
-      allocations
       flash[:notice] = 'Product mapped successfully'
     else
       flash[:alert] = 'Please select product to map'
@@ -432,6 +431,7 @@ class ProductMappingsController < ApplicationController
     orders.each do |order|
       next if order.channel_order_items.map { |i| i.channel_product.status }.any?('unmapped')
 
+      allocations(order.channel_order_items)
       order.update(stage: 'ready_to_dispatch')
       channel_type = order.channel_type
       unshipped = product.unshipped + order.channel_order_items.pluck(:ordered).sum if product.unshipped.present?
@@ -448,6 +448,7 @@ class ProductMappingsController < ApplicationController
     end
     concern_recalculate_rule(orders)
     orders.each do |order|
+      allocations(order.channel_order_items)
       channel_type = order.channel_type
       order.update(stage: 'ready_to_dispatch')
       product.multipack_products.each do |multi_pack_log|
@@ -459,8 +460,7 @@ class ProductMappingsController < ApplicationController
     end
   end
 
-  def allocations
-    order_items = ChannelOrder.find_by(id: params['anything']['channel_order_id'])&.channel_order_items
+  def allocations(order_items)
     return unless order_items.present?
 
     order_items.each do |item|
