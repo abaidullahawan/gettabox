@@ -19,11 +19,11 @@
     <h5 class='fs-14'>Address</h5>
   </div>
   <div class="form-group col-md-12">
-  <div class='links add_fields_div text-right'>
-    <%= link_to_add_association '+', f, :addresses, partial: 'address_fields', class: 'nested_fields_btn btn btn-outline-primary rounded'%>
-  </div>
     <%= f.fields_for :addresses do |address|%>
       <%= render 'address_fields', f: address %>
     <% end %>
+    <div class='links add_fields_div text-right'>
+      <%= link_to_add_association 'Add More +', f, :addresses, partial: 'address_fields_copy', class: 'nested_fields_btn btn btn-outline-primary rounded'%>
+    </div>
   </div>
 </div>
