@@ -180,7 +180,6 @@ $(document).on('turbolinks:load', function () {
   })
 
   $('#customSwitchAll').on('click', function () {
-    debugger
     var switches = $('input[name="orders-switch"]');
     switches.prop("checked", !switches.prop("checked"));
     var selected = []
@@ -213,7 +212,6 @@ $(document).on('turbolinks:load', function () {
   })
 
   $('#customSwitchAllForUnmapped').on('click', function () {
-    debugger
     var switches = $('input[name="orders-switch1"]');
     switches.prop("checked", !switches.prop("checked"));
     var selected = []
@@ -247,7 +245,6 @@ $(document).on('turbolinks:load', function () {
 
   $('.customSwitch').on('click', function () {
     var value = this.checked
-    debugger
     var order_id = this.id
 
     $.ajax({
@@ -289,8 +286,7 @@ $(document).on('turbolinks:load', function () {
   })
 
   $('.select-all-checkbox').on("click", function () {
-    debugger;
-    var cbxs = $('input[name=""]');
+    var cbxs = $('input[name="object_ids[]"]');
     cbxs.prop("checked", !cbxs.prop("checked"));
   });
 

@@ -76,8 +76,8 @@
               <tr>
                 <th>
                   <div class="custom-control custom-switch">
-                    <input type="checkbox" class="custom-control-input" id="selectSwitchAll" onclick="bulk_update_selected('/bulk_update_selected', '<%= @body&.first&.class&.name %>', event)">
-                    <label class="custom-control-label" for="selectSwitchAll"></label>
+                    <input type="checkbox" class="selectSwitchAll" id="selectSwitchAll" style= 'width:25px; height:25px;' onclick="bulk_update_selected('/bulk_update_selected', '<%= @body&.first&.class&.name %>', event)">
+                    <label for="selectSwitchAll"></label>
                   </div>
                 </th>
                 <th class="font-sm">Channel</th>
@@ -98,8 +98,8 @@
                     <tr class=''>
                       <td class="font-sm">
                         <div class="custom-control custom-switch">
-                          <input type="checkbox" class="custom-control-input selectSwitch" name="select-switch" id="<%=item.id%>" <%= item.selected? ? 'checked': ''%> onclick="update_selected('/update_selected', '<%= item.class.name %>', event)">
-                          <label class="custom-control-label" for="<%=item.id%>"></label>
+                          <input type="checkbox" class="selectSwitch" name="select-switch" style= 'width:25px; height:25px;' id="<%=item.id%>" <%= item.selected? ? 'checked': ''%> onclick="update_selected('/update_selected', '<%= item.class.name %>', event)">
+                          <label for="<%=item.id%>"></label>
                         </div>
                       </td>
                       <td class="font-sm" style = "width: 5%">

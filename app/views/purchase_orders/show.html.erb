@@ -94,28 +94,28 @@
 
                         <tr>
                           <td>
-                            <%= f.object.product.sku%>
+                            <%= f.object&.product&.sku%>
                           </td>
                           <td>
                             <%= f.object.purchase_order&.system_user&.product_suppliers&.first&.product_sku %>
                           </td>
                           <td>
-                            <%= f.object.product.title %>
+                            <%= f.object&.product&.title %>
                           </td>
                           <td>
-                            <%= f.object.quantity %>
+                            <%= f.object&.quantity %>
                           </td>
                           <td>
-                            <%= @demaged[f.object.product_id] %>
+                            <%= @demaged[f.object&.product_id] %>
                           </td>
                           <td>
-                            <%= @missing[f.object.product_id] %>
+                            <%= @missing[f.object&.product_id] %>
                           </td>
                           <td>
-                            <%= @deliverd[f.object.product_id]%>
+                            <%= @deliverd[f.object&.product_id]%>
                           </td>
                           <td>
-                            £ <%= f.object.cost_price %>
+                            £ <%= f.object&.cost_price %>
                           </td>
                           <td>
                             £ <%= f.object.quantity * f.object.cost_price if f.object.cost_price.present? && f.object.quantity.present? %>

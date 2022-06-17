@@ -203,34 +203,33 @@ $(document).on('turbolinks:load', function () {
         data: { 'selected': value, 'id': id, class_name: class_name },
         success: function (response) {
           if (response.result) {
-            $('.jquery-selected-alert').html('Object updated successfully')
-            $('.jquery-selected-alert').addClass('bg-success').removeClass('d-none').removeClass('bg-danger')
-            $(".jquery-selected-alert").fadeTo(2000, 500).slideUp(500, function () {
-              $(".jquery-selected-alert").slideUp(500);
-            });
+            // $('.jquery-selected-alert').html('Object updated successfully')
+            // $('.jquery-selected-alert').addClass('bg-success').removeClass('d-none').removeClass('bg-danger')
+            // $(".jquery-selected-alert").fadeTo(2000, 500).slideUp(500, function () {
+            //   $(".jquery-selected-alert").slideUp(500);
+            // });
           }
           else{
-            $('.jquery-selected-alert').html('Object cannot be updated! '+ response.errors[0])
-            $('.jquery-selected-alert').addClass('bg-danger').removeClass('d-none')
-            $('.jquery-selected-alert').alert('show')
-            $(".jquery-selected-alert").fadeTo(2000, 500).slideUp(500, function () {
-              $(".jquery-selected-alert").slideUp(500);
-            });
+            // $('.jquery-selected-alert').html('Object cannot be updated! '+ response.errors[0])
+            // $('.jquery-selected-alert').addClass('bg-danger').removeClass('d-none')
+            // $('.jquery-selected-alert').alert('show')
+            // $(".jquery-selected-alert").fadeTo(2000, 500).slideUp(500, function () {
+            //   $(".jquery-selected-alert").slideUp(500);
+            // });
           }
         }
       })
     }
     else {
-      $('.jquery-selected-alert').html('Cannot update object, please refresh and try again.')
-      $('.jquery-selected-alert').addClass('bg-danger').removeClass('d-none')
-      $(".jquery-selected-alert").fadeTo(2000, 500).slideUp(500, function () {
-        $(".jquery-selected-alert").slideUp(500);
-      });
+      // $('.jquery-selected-alert').html('Cannot update object, please refresh and try again.')
+      // $('.jquery-selected-alert').addClass('bg-danger').removeClass('d-none')
+      // $(".jquery-selected-alert").fadeTo(2000, 500).slideUp(500, function () {
+      //   $(".jquery-selected-alert").slideUp(500);
+      // });
     }
   }
 
   window.bulk_update_selected = function (url, class_name, event) {
-    debugger
     var target = event.target
     var switches = $('input[name="select-switch"]');
     switches.prop("checked", target.checked);
@@ -252,21 +251,21 @@ $(document).on('turbolinks:load', function () {
         data: { 'selected': selected, 'unselected': unselected, class_name: class_name },
         success: function (response) {
           if (response.result) {
-            $('.jquery-selected-alert').html('All objects updated successfully')
-            $('.jquery-selected-alert').addClass('bg-success').removeClass('d-none').removeClass('bg-danger')
-            $(".jquery-selected-alert").fadeTo(2000, 500).slideUp(500, function () {
-              $(".jquery-selected-alert").slideUp(500);
-            });
+            // $('.jquery-selected-alert').html('All objects updated successfully')
+            // $('.jquery-selected-alert').addClass('bg-success').removeClass('d-none').removeClass('bg-danger')
+            // $(".jquery-selected-alert").fadeTo(2000, 500).slideUp(500, function () {
+            //   $(".jquery-selected-alert").slideUp(500);
+            // });
           }
         }
       })
     }
     else {
-      $('.jquery-selected-alert').html('Cannot update object, please refresh and try again.')
-      $('.jquery-selected-alert').addClass('bg-danger').removeClass('d-none')
-      $(".jquery-selected-alert").fadeTo(2000, 500).slideUp(500, function () {
-        $(".jquery-selected-alert").slideUp(500);
-      });
+      // $('.jquery-selected-alert').html('Cannot update object, please refresh and try again.')
+      // $('.jquery-selected-alert').addClass('bg-danger').removeClass('d-none')
+      // $(".jquery-selected-alert").fadeTo(2000, 500).slideUp(500, function () {
+      //   $(".jquery-selected-alert").slideUp(500);
+      // });
     }
   }
 
@@ -277,12 +276,10 @@ $(document).on('turbolinks:load', function () {
   })
 
   $('.export-all').on('click', function () {
-    debugger
     $('.bulk-method-export-all-objects').trigger('click');
   })
 
   $('.export-selected').on('click', function () {
-    debugger
     $('.bulk-method-export-selected-objects').trigger('click');
   })
 })

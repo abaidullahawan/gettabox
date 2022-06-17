@@ -21,9 +21,9 @@
       <div class="card-body">
         <div class="card-header">
           <div class="mr-1 float-right dropdown">
-            <button class="btn btn-outline-primary" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <!--button class="btn btn-outline-primary" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               Export
-            </button>
+            </button-->
             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
               <%= link_to 'Export All', rules_path(all: true, format: :csv, export_csv: true), class: 'dropdown-item' %>
               <%= link_to 'Export Selected', rules_path(selected: true, format: :csv, export_csv: true), class: 'dropdown-item' %>
@@ -68,7 +68,7 @@
           <div class="table-responsive">
             <table class="table m-0 table-hover">
               <tr>
-                <th>
+                <!--th>
                   <div class='row' style='max-width: 65px'>
                     <div class='col-6 p-0  mt-1'>
                       <input type="checkbox" id="" name="" value="" class='col-6 select-all-checkbox'>
@@ -80,7 +80,7 @@
                       </div>
                     </div>
                   </div>
-                </th>
+                </th-->
                 <th class="text-center">Mail Service Rule</th>
                 <th class="text-center">Product Sku</th>
                 <th class="text-center">Quantity</th>
@@ -88,7 +88,7 @@
               </tr>
               <% @rules&.each&.with_index(1) do |rule, index| %>
                 <tr class=''>
-                  <td>
+                  <!--td>
                     <div class='row' style='max-width: 65px'>
                       <div class='col-6 p-0 mt-1'>
                         <%= f.check_box 'object_ids[]', {}, rule.id %>
@@ -100,10 +100,10 @@
                         </div>
                       </div>
                     </div>
-                  </td>
-                  <td class="text-center"><%= rule.mail_service_rule.rule_name %></td>
-                  <td class="text-center"><%= rule.criteria.map(&:first) %></td>
-                  <td class="text-center"><%= rule.criteria.map(&:last) %></td>
+                  </td-->
+                  <td class="text-center"><%= rule&.mail_service_rule&.rule_name %></td>
+                  <td class="text-center"><%= rule&.criteria&.map(&:first) %></td>
+                  <td class="text-center"><%= rule&.criteria&.map(&:last) %></td>
 
                   <td class="text-center">
                     <div class="dropdown dropleft">
