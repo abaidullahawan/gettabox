@@ -106,8 +106,8 @@ class CustomersController < ApplicationController
     @csv = CSV.generate(headers: true) do |csv|
       csv << attributes + order_item + tracking
       customers.each do |system_user|
-        sys_user_data = attributes.map { |attr| system_user.send(attr) }
-        order_item_data = order_item.map { |attr| system_user.channel_orders.last.channel_order_items.last.send(attr) }
+        sys_user_data = attributes.map { |attr| system_user&.send(attr) }
+        order_item_data = order_item.map { |attr| system_user&.channel_orders&.last&.channel_order_items&.last&.send(attr) }
         # tracking_data = tracking.map { |attr| system_user.channel_orders.last.trackings.last.send(attr) } if system_user.channel_orders.last.trackings.present?
         csv << sys_user_data + order_item_data
       end

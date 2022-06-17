@@ -241,7 +241,8 @@ class OrderDispatchesController < ApplicationController
   def update_selected
     if params[:order_id].present? || params[:selected].present?
       order = ChannelOrder.find_by(id: params[:order_id])
-      order&.update(selected: true)
+      order&.update(selected: true) if params[:selected].eql? 'true'
+      order&.update(selected: false) if params[:selected].eql? 'false'
       message = { result: true }
       message = { result: false, errors: order.errors.full_messages } if order.errors.any?
     else

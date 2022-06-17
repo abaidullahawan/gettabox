@@ -148,7 +148,7 @@ class ProductsController < ApplicationController
     else
       request.format = 'csv'
       respond_to do |format|
-        format.csv { send_data products.to_csv, filename: "products-#{Date.today}.csv" }
+        format.csv { send_data products.to_csv, disposition: 'attachment', filename: "products-#{Date.today}.csv" }
       end
     end
   end
@@ -165,7 +165,13 @@ class ProductsController < ApplicationController
   end
 
   def bulk_method
-    redirect_to products_path
+    if params[:commit].eql? 'export_selected'
+      products = Product.where(id: params[:object_ids])
+    else
+      products = Product.all
+    end
+    export_csv(products)
+    redirect_to products_path if params[:commit].eql? 'delete'
   end
 
   def archive

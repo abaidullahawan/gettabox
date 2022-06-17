@@ -9,7 +9,9 @@ module ImportExport
   end
 
   def klass_bulk_method
-    name = controller_name.classify
+    export = %w[export_selected export_all]
+    return if export.include? params[:commit]
+
     object_ids = params[:object_ids]
     if object_ids.present?
       object_ids.each do |p|
