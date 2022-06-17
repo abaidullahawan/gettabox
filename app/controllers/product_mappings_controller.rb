@@ -429,9 +429,9 @@ class ProductMappingsController < ApplicationController
     orders = ChannelOrder.where(id: ids, stage: %w[unmapped_product_sku unable_to_find_sku])
     concern_recalculate_rule(orders)
     orders.each do |order|
-      allocations(order.channel_order_items)
       next if order.channel_order_items.map { |i| i.channel_product.status }.any?('unmapped')
 
+      allocations(order.channel_order_items)
       order.update(stage: 'ready_to_dispatch')
       channel_type = order.channel_type
       unshipped = product.unshipped + order.channel_order_items.pluck(:ordered).sum if product.unshipped.present?
