@@ -14,7 +14,7 @@ class CustomersController < ApplicationController
   def index
     if params[:q].present?
       params[:q][:name_or_email_or_phone_number_or_sales_channel_or_addresses_address_or_addresses_postcode_or_channel_orders_id_or_channel_orders_order_id_or_channel_orders_order_status_i_cont_any] =
-        params[:q][:name_or_email_or_phone_number_or_sales_channel_or_addresses_address_or_addresses_postcode_or_channel_orders_id_or_channel_orders_order_id_or_channel_orders_order_status_i_cont_any].split("\r\n")
+        params[:q][:name_or_email_or_phone_number_or_sales_channel_or_addresses_address_or_addresses_postcode_or_channel_orders_id_or_channel_orders_order_id_or_channel_orders_order_status_i_cont_any]&.split("\r\n")
     end
     @q = SystemUser.customers.ransack(params[:q])
     @customers = @q.result(distinct: true).order(flagging_date: :asc).page(params[:page]).per(params[:limit])

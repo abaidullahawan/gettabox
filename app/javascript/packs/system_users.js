@@ -19,4 +19,5 @@ $(document).on('turbolinks:load', function () {
     $('.payment-method-button').trigger('click')
   })
 
+  $('#general_setting_addresses_attributes_0__destroy').parent().find('a').addClass('d-none')
 })

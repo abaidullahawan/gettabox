@@ -52,6 +52,7 @@ class PurchaseOrdersController < ApplicationController
   end
 
   def show
+    @general_setting = GeneralSetting.last
     if params[:single_csv].present?
       single_csv(@purchase_order)
     else
