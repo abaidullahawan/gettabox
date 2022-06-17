@@ -32,8 +32,7 @@ class Product < ApplicationRecord
 
   enum product_type: {
     single: 0,
-    multiple: 1,
-    all: 2
+    multiple: 1
   }, _prefix: true
 
   enum vat: {
