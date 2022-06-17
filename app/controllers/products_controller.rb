@@ -305,13 +305,7 @@ class ProductsController < ApplicationController
   end
 
   def ransack_products
-    if params[:q].present? && !params[:q][:product_type_eq].eql?('2')
-      @q = Product.ransack(params[:q])
-    elsif params[:q].present? && params[:q][:product_type_eq].eql?('2')
-      @q = Product.ransack
-    else
-      @q = Product.where(product_type: 'single').ransack(params[:q])
-    end
+    @q = Product.ransack(params[:q])
     @products = @q.result(distinct: true).order(created_at: :desc).page(params[:page]).per(params[:limit])
     @product_exports = ExportMapping.where(table_name: 'Product')
   end
