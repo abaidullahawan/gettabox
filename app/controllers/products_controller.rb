@@ -65,7 +65,7 @@ class ProductsController < ApplicationController
       update_log(stock) if product_params[:total_stock].present?
       flash[:notice] = 'Updated successfully.'
       buffer_rule(@product) unless product_params[:product_forecasting_id].nil?
-      redirect_to product_path(@product)
+      redirect_to request.referrer
     else
       load_show
       render 'show'

@@ -13,11 +13,11 @@
   <div class="form-group row">
     <div class="col-4">
       <%= f.label  'Product Cost' %>
-      <%= f.number_field :product_cost, step: :any, placeholde: 'Please enter product cost', class: 'form-control' %>
+      <%= f.number_field :product_cost, step: :any, placeholder: 'Please enter product cost', class: 'form-control', required: true %>
     </div>
     <div class="col-4">
       <%= f.label  'Supplier SKU' %>
-      <%= f.text_field :product_sku, placeholde: 'Please enter product sku', class: 'form-control' %>
+      <%= f.text_field :product_sku, placeholder: 'Please enter product sku', class: 'form-control', required: true %>
     </div>
     <div class="col-4">
       <%= f.label  'Product Vat' %>

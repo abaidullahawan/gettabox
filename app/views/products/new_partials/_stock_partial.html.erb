@@ -33,7 +33,7 @@
       <%= link_to_add_association '+', f, :product_suppliers, partial: 'products/product_supplier_fields', class: 'nested_fields_btn btn btn-outline-primary rounded'%>
     </div>
     <%= f.fields_for :product_suppliers do |supplier|%>
-      <%#= render 'product_supplier_fields', f: supplier %>
+      <%= render 'products/product_supplier_fields', f: supplier  unless f.object.new_record? %>
     <% end %>
   </div>
 </div>

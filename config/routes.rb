@@ -117,6 +117,7 @@ end
       get 'archive', to: 'purchase_orders#archive'
       post 'restore', to: 'purchase_orders#restore'
       post 'send_email', to: 'purchase_orders#send_mail_to_supplier'
+      post 'add_product', to: 'purchase_orders#add_product'
     end
   end
 
