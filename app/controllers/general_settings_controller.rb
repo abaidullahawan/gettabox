@@ -10,7 +10,9 @@ class GeneralSettingsController < ApplicationController
     @general_settings = @q.result(distinct: true).order(created_at: :desc).page(params[:page]).per(params[:limit])
     export_csv(@general_settings) if params[:export_csv].present?
     @general_setting = GeneralSetting.new
-    @general_setting.addresses.build
+    @general_setting.addresses.build(address_title: 'admin')
+    @general_setting.addresses.build(address_title: 'delivery')
+    @general_setting.addresses.build(address_title: 'billing')
   end
 
   # GET /general_settings/1 or /general_settings/1.json

@@ -20,10 +20,38 @@
   </div>
   <div class="form-group col-md-12">
     <%= f.fields_for :addresses do |address|%>
-      <%= render 'address_fields', f: address %>
+      <%= render 'address_fields_copy', f: address %>
     <% end %>
-    <div class='links add_fields_div text-right'>
-      <%= link_to_add_association 'Add More +', f, :addresses, partial: 'address_fields_copy', class: 'nested_fields_btn btn btn-outline-primary rounded'%>
-    </div>
   </div>
 </div>
+<script>
+  $(".nested_fields_btn").
+    data("association-insertion-method", 'after')
+
+  $('.same_as_above').on('change', function () {
+    nested_fields = this.closest('.nested-fields')
+    if (this.checked){
+      company = $('#general_setting_addresses_attributes_0_company').val()
+      address = $('#general_setting_addresses_attributes_0_address').val()
+      city = $('#general_setting_addresses_attributes_0_city').val()
+      region = $('#general_setting_addresses_attributes_0_region').val()
+      postcode = $('#general_setting_addresses_attributes_0_postcode').val()
+      country = $('#general_setting_addresses_attributes_0_country').val()
+    }
+    else {
+      company = ''
+      address = ''
+      city = ''
+      region = ''
+      postcode = ''
+      country = ''
+    }
+
+    $(nested_fields).find('.company_field').val(company)
+    $(nested_fields).find('.address_field').val(address)
+    $(nested_fields).find('.city_field').val(city)
+    $(nested_fields).find('.region_field').val(region)
+    $(nested_fields).find('.postcode_field').val(postcode)
+    $(nested_fields).find('.country_field').val(country)
+  })
+</script>
