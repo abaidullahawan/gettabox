@@ -93,7 +93,7 @@
                                     <%= f.number_field :cost_price, step: :any, value: f.object.cost_price, class: 'form-control order_item_price', placeholder: 'Price' %>
                                   </td>
                                   <td>
-                                    <%= f.number_field :quantity, step: :any, class: 'form-control order_item_quantity', placeholder: 'Quantity' %>
+                                    <%= f.number_field :quantity, step:1, class: 'form-control order_item_quantity', placeholder: 'Quantity' %>
                                   </td>
                                   <td>
                                     <input class="form-control order_item_total" value= "<%=f.object.cost_price.to_f * f.object.quantity.to_f %>" type="text" placeholder="Total" style="width: 70px;">

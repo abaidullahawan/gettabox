@@ -69,7 +69,7 @@
                             <%= f.number_field :cost_price, step: :any, class: 'form-control order_item_price', placeholder: 'Price' %>
                           </td>
                           <td>
-                            <%= f.number_field :quantity, step: :any, class: 'form-control order_item_quantity', placeholder: 'Quantity' %>
+                            <%= f.number_field :quantity, step:1, class: 'form-control order_item_quantity', placeholder: 'Quantity' %>
                             <%= f.number_field :product_id, value: f.object.product.id, class: 'form-control d-none' %>
                           </td>
                           <td>

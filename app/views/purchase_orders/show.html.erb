@@ -103,7 +103,7 @@
 
                         <tr>
                           <td>
-                            <% if f.object.product.product_type.nil?%>
+                            <% if f&.object&.product&.product_type&.nil?%>
                               <div class="dropdown dropleft">
                                 <button class="btn btn-primary rotate" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Actions">
                                   <i class='lni lni-more-alt'></i>

@@ -12,7 +12,7 @@ class Product < ApplicationRecord
 
   validates :sku, presence: true, uniqueness: { case_sensitive: false }
   validates :title, presence: true
-  attribute :allocated, :float, default: 0.0
+  attribute :allocated, :integer, default: 0
   validates :total_stock, numericality: { greater_than_or_equal_to: :allocated }, if: -> { product_type_single? }
   has_many :barcodes, dependent: :destroy
   has_many :product_suppliers, dependent: :destroy

@@ -90,7 +90,7 @@
                   <td scope="col"><%= local_product&.title %></td>
                   <td scope="col"><%= local_product&.sku %> </td>
                   <td scope="col"><%= product.channel_product&.item_price %> </td>
-                  <td scope="col"><%= product.ordered %></td>
+                  <td scope="col"><%= product.ordered.to_i %></td>
                   <td scope="col"><%= @order.total_amount %></td>
                   <td scope="col"><%= percent  =  Product.vats[local_product&.vat].to_i%>%</td>
                   <% totalvalue = @order.total_amount.to_f %>

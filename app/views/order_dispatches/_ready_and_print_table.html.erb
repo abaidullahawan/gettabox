@@ -180,8 +180,8 @@
                 <% if product.channel_product&.product_mapping.present? %>
                   <% if product.channel_product.product_mapping.product&.product_type_multiple? %>
                     <% product.channel_product.product_mapping.product&.multipack_products&.each do |record| %>
-                      <% @length += record&.child&.length.to_f * record.quantity.to_f %>
-                      <% @weight += record&.child&.weight.to_f * record.quantity.to_f%>
+                      <% @length += record&.child&.length.to_f * record.quantity.to_i %>
+                      <% @weight += record&.child&.weight.to_f * record.quantity.to_i %>
                       <% @height.push(record&.child&.height.to_f)%>
                       <% @width.push(record&.child&.width.to_f)%>
                     <% end %>

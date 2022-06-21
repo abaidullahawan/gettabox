@@ -80,7 +80,7 @@
       <% total = 0 %>
       <% @order.channel_order_items.each do |item| %>
         <tr>
-          <td class="text-left pb-3" style="font-size: 16px;"><%= item.ordered %></td>
+          <td class="text-left pb-3" style="font-size: 16px;"><%= item&.ordered.to_i %></td>
           <td class="text-left pb-3" style="font-size: 16px;"><%= item.title %></td>
           <% item_price = item.item_data['ItemPrice'].try(:[], 'Amount') || item.item_data['lineItemCost'].try(:[], 'value') %>
           <td class="text-left pb-3" style="font-size: 16px;"><%= image_tag image_url('pound.svg'), class: 'mr-1 mb-1', height: '11px', width: '10px' %><%= item_price.to_f / item.ordered %></td>
