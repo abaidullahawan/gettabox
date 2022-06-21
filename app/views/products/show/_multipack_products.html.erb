@@ -18,7 +18,7 @@
                   <div class='row'>
                     <p class="mb-1 fs-14 col-1"><strong><%= index %></strong></p>
                     <p class="mb-1 fs-14 col-8"><%= product.child.title %></p>
-                    <p class="mb-1 fs-14 col-3"><%= product.quantity %></p>
+                    <p class="mb-1 fs-14 col-3"><%= product.quantity.to_i %></p>
                   </div><hr>
                 </a>
               <% end %>

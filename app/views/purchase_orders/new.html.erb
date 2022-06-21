@@ -91,7 +91,7 @@
                                     <%= f.number_field :cost_price, step: :any, value: product.product_suppliers.first.product_cost, class: 'form-control order_item_price', placeholder: 'Price' %>
                                   </td>
                                   <td>
-                                    <%= f.number_field :quantity, step: :any, class: 'form-control order_item_quantity', placeholder: 'Quantity' %>
+                                    <%= f.number_field :quantity, step:1, class: 'form-control order_item_quantity', placeholder: 'Quantity' %>
                                   </td>
                                   <td>
                                     <input class="form-control order_item_total" type="text" placeholder="Total" style="width: 70px;">
