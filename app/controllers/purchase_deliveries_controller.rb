@@ -23,7 +23,7 @@ class PurchaseDeliveriesController < ApplicationController
     if @purchase_order.order_status == 'completed'
       flash[:notice] = 'Order Delivery is already completed.'
       redirect_to purchase_order_path(@purchase_order)
-    elsif @purchase_order.purchase_order_details.map {|p| p.quantity.nil? ? '' : p.product.product_type}.any? nil?
+    elsif @purchase_order.purchase_order_details.map {|p| p.quantity.nil? ? '' : p.product.product_type}.any? nil
       flash[:notice] = 'Please create temporary products first.'
       redirect_to purchase_order_path(@purchase_order)
     else

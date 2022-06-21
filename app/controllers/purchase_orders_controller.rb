@@ -55,7 +55,7 @@ class PurchaseOrdersController < ApplicationController
 
   def show
     @general_setting = GeneralSetting.last
-    @temp_product = Product.new(sku: SecureRandom.alphanumeric, title: SecureRandom.alphanumeric)
+    @temp_product = Product.new
     @temp_product.product_suppliers.build(system_user_id: @purchase_order.supplier_id)
     @system_users = SystemUser.where(user_type: 'supplier')
     if params[:single_csv].present?
