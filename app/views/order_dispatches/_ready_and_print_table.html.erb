@@ -225,7 +225,7 @@
                 <i class='lni lni-more-alt'></i>
               </button>
               <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                <a class="dropdown-item" href="<%= order_dispatch_path(order)%>" >Show</a>
+                <a class="dropdown-item" href="<%= order_dispatch_path(order)%>" >View</a>
                 <% if (order.channel_order_items.map{|i| i.allocated} & [true]).any? %>
                   <%= link_to 'Unallocate', allocations_order_dispatches_path(allocate: false, listing_id: order.id, order_filter: params[:order_filter]), class: 'dropdown-item' %>
                 <% else %>
