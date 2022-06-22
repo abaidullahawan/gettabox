@@ -429,21 +429,15 @@ class ProductMappingsController < ApplicationController
     orders = ChannelOrder.where(id: ids, stage: %w[unmapped_product_sku unable_to_find_sku])
     concern_recalculate_rule(orders)
     orders.each do |order|
+      allocations(order.channel_order_items)
       next if order.channel_order_items.map { |i| i.channel_product.status }.any?('unmapped')
 
       order.update(stage: 'ready_to_dispatch')
-      unshipped = order.channel_order_items.pluck(:ordered).sum
       channel_type = order.channel_type
-      if product&.product_type == 'multiple'
-        product.multipack_products.each do |multi|
-          unshipped = multi&.child&.unshipped + unshipped if multi&.child&.unshipped&.present?
-          multi&.child.update(change_log: " Order Paid, #{channel_product.item_sku}, #{order.order_id}, Order Paid, #{channel_product.listing_id}, #{unshipped}, #{product.inventory_balance}, #{channel_type} ", unshipped: unshipped, inventory_balance: (multi&.child&.total_stock.to_i - unshipped.to_i), unshipped_orders: multi&.child&.unshipped_orders.to_i + 1)
-        end
-      else
-        unshipped = product.unshipped + unshipped if product.unshipped.present?
-        product.update(change_log: " Order Paid, #{channel_product.item_sku}, #{order.order_id}, Order Paid, #{channel_product.listing_id}, #{unshipped}, #{product.inventory_balance}, #{channel_type} ", unshipped: unshipped, inventory_balance: (product.total_stock.to_i - unshipped.to_i), unshipped_orders: product.unshipped_orders.to_i + 1)
-        allocations(order.channel_order_items)
-      end
+      unshipped = product.unshipped + order.channel_order_items.pluck(:ordered).sum if product.unshipped.present?
+      inventory_balance = product.total_stock.to_i - unshipped.to_i
+      product.update(change_log: " Order Paid, #{channel_product.item_sku}, #{order.order_id}, Order Paid, #{channel_product.listing_id}, #{unshipped}, #{inventory_balance}, #{channel_type} ", unshipped: unshipped, inventory_balance: inventory_balance, unshipped_orders: product.unshipped_orders.to_i + 1)
+      allocations(order.channel_order_items)
     end
   end
 

@@ -35,7 +35,6 @@ class PurchaseOrder < ApplicationRecord
   end
 
   def self.to_single_csv(purchase_order)
-    byebug
     supplier_attr = purchase_order.system_user.attributes.keys
     product_attr = purchase_order.system_user.products.column_names
     delivery_detail_attr = purchase_order.purchase_deliveries.column_names
@@ -49,7 +48,6 @@ class PurchaseOrder < ApplicationRecord
   end
 
   def self.supplier_records(csv, attributes, purchase_order)
-    byebug
     csv << ['', 'Supplier Record']
     put_empty_line(csv, attributes)
     csv << attributes
