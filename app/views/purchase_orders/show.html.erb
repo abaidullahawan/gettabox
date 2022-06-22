@@ -28,9 +28,14 @@
             </button>
             <%= link_to "PDF", purchase_order_path(format: :pdf), class:"btn btn-primary float-right ml-1", type:"button",style: "color: white" %>
             <%= link_to "Send Email", send_email_purchase_orders_path(id: @purchase_order), method: :post, class:"btn btn-primary float-right ml-1", type:"button",style: "color: white" %>
-            <button type="button" class="btn btn-primary float-right" data-toggle="modal" data-target="#add-new-product-modal">
+            <button type="button" class="btn btn-primary float-right" data-toggle="modal" data-target="#add-new-product-modal" <%= @purchase_order.order_status_completed? ? 'disabled' : ''%>>
               Create product
             </button>
+            <% if @purchase_order.order_status_completed? %>
+              <div class="d-flex w-full">
+                <i data-feather="lock" class="icon mx-auto" style="margin-top: -27px;"></i>
+              </div>
+            <% end %>
             <h5 class="card-title">View</h5>
           </div>
 
