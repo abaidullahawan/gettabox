@@ -429,7 +429,6 @@ class ProductMappingsController < ApplicationController
     orders = ChannelOrder.where(id: ids, stage: %w[unmapped_product_sku unable_to_find_sku])
     concern_recalculate_rule(orders)
     orders.each do |order|
-      allocations(order.channel_order_items)
       next if order.channel_order_items.map { |i| i.channel_product.status }.any?('unmapped')
 
       order.update(stage: 'ready_to_dispatch')
@@ -449,6 +448,8 @@ class ProductMappingsController < ApplicationController
     end
     concern_recalculate_rule(orders)
     orders.each do |order|
+      next if order.channel_order_items.map { |i| i.channel_product.status }.any?('unmapped')
+
       channel_type = order.channel_type
       order.update(stage: 'ready_to_dispatch')
       product.multipack_products.each do |multi_pack_log|
