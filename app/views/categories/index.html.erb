@@ -14,7 +14,7 @@
   </ol>
 </div>
 <!-- End Main Content Header -->
-<div class="alert alert-dismissible fade show text-white jquery-selected-alert d-none " style="position: fixed; width:93%; z-index:99999;" role="alert"></div>
+<div class="alert alert-dismissible fade View text-white jquery-selected-alert d-none " style="position: fixed; width:93%; z-index:99999;" role="alert"></div>
 <div class="row">
   <div class="col-xl-12">
     <div class="card mb-30">
@@ -107,7 +107,7 @@
                         </button>
                         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                           <%= link_to 'Logs',  version_categories_path(id: category.id), class: 'dropdown-item' %>
-                          <a class="dropdown-item" href="<%= category_path(category)%>">Show</a>
+                          <a class="dropdown-item" href="<%= category_path(category)%>">View</a>
                           <%= link_to 'Archive', category_path(category), method: 'delete', data: {confirm: "Are you sure you want to archive"}, class: "dropdown-item"%>
                         </div>
                       </div>

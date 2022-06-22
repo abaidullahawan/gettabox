@@ -14,7 +14,7 @@
   </ol>
 </div>
 <!-- End Main Content Header -->
-<div class="alert alert-dismissible fade show text-white jquery-selected-alert d-none " style="position: fixed; width:93%; z-index:99999;" role="alert"></div>
+<div class="alert alert-dismissible fade View text-white jquery-selected-alert d-none " style="position: fixed; width:93%; z-index:99999;" role="alert"></div>
 <div class="row">
   <div class="col-xl-12">
     <div class="card mb-30">
@@ -104,7 +104,7 @@
                         <i class='lni lni-more-alt'></i>
                       </button>
                       <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                        <a class="dropdown-item" href="<%= courier_path(courier)%>">Show</a>
+                        <a class="dropdown-item" href="<%= courier_path(courier)%>">View</a>
                         <%= link_to 'Archive', courier_path(courier), method: 'delete', data: {confirm: "Are you sure you want to archive"}, class: "dropdown-item"%>
                       </div>
                     </div>

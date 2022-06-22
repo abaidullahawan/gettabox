@@ -35,19 +35,21 @@ class PurchaseOrder < ApplicationRecord
   end
 
   def self.to_single_csv(purchase_order)
+    byebug
     supplier_attr = purchase_order.system_user.attributes.keys
     product_attr = purchase_order.system_user.products.column_names
     delivery_detail_attr = purchase_order.purchase_deliveries.column_names
     CSV.generate(headers: true) do |csv|
-      supplier_records(csv, supplier_attr)
+      supplier_records(csv, supplier_attr, purchase_order)
 
-      product_records(csv, product_attr)
+      product_records(csv, product_attr, purchase_order)
 
-      delivery_details(csv, delivery_detail_attr)
+      delivery_details_records(csv, delivery_detail_attr, purchase_order)
     end
   end
 
-  def supplier_records(csv, attributes)
+  def self.supplier_records(csv, attributes, purchase_order)
+    byebug
     csv << ['', 'Supplier Record']
     put_empty_line(csv, attributes)
     csv << attributes
@@ -56,7 +58,7 @@ class PurchaseOrder < ApplicationRecord
     put_empty_line(csv, attributes)
   end
 
-  def product_records(csv, attributes)
+  def self.product_records(csv, attributes, purchase_order)
     csv << ['', 'Products Record']
     put_empty_line(csv, attributes)
     csv << attributes
@@ -67,7 +69,7 @@ class PurchaseOrder < ApplicationRecord
     put_empty_line(csv, attributes)
   end
 
-  def delivery_details_records(csv, attributes)
+  def self.delivery_details_records(csv, attributes, purchase_order)
     csv << ['', 'Delivery Details']
     put_empty_line(csv, attributes)
     csv << attributes
@@ -76,7 +78,7 @@ class PurchaseOrder < ApplicationRecord
     end
   end
 
-  def put_empty_line(csv, attributes)
+  def self.put_empty_line(csv, attributes)
     csv << attributes.map { nil }
   end
 end

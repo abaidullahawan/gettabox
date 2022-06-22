@@ -22,7 +22,7 @@
       <a href="<%= products_path %>">Products</a>
     </li>
     <li class="breadcrumb-item active">
-      <span class="active">Show</span>
+      <span class="active">View</span>
     </li>
     <li class="ml-auto">
       <%= link_to 'Logs', version_products_path(id: @product.id), class: 'btn btn-primary text-white' if @product.product_type != 'multiple'%>

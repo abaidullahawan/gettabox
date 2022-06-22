@@ -9,7 +9,7 @@
       <a href="<%= purchase_orders_path %>">Purchase Orders</a>
     </li>
     <li class="breadcrumb-item active">
-      <span class="active">Show</span>
+      <span class="active">View</span>
     </li>
   </ol>
 </div>
@@ -29,9 +29,9 @@
             <%= link_to "PDF", purchase_order_path(format: :pdf), class:"btn btn-primary float-right ml-1", type:"button",style: "color: white" %>
             <%= link_to "Send Email", send_email_purchase_orders_path(id: @purchase_order), method: :post, class:"btn btn-primary float-right ml-1", type:"button",style: "color: white" %>
             <button type="button" class="btn btn-primary float-right" data-toggle="modal" data-target="#add-new-product-modal">
-              Add new product
+              Create product
             </button>
-            <h5 class="card-title"> Show</h5>
+            <h5 class="card-title">View</h5>
           </div>
 
           <div class='row'>
