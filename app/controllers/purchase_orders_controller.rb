@@ -6,15 +6,15 @@ class PurchaseOrdersController < ApplicationController
   include NewProduct
 
   before_action :authenticate_user!
-  before_action :find_purchase_order, only: %i[show edit update destroy send_mail_to_supplier]
+  before_action :find_purchase_order, only: %i[show edit update destroy send_mail_to_supplier quick_edit]
   before_action :build_purchase_order, only: %i[new]
   before_action :find_supplier, only: %i[show edit send_mail_to_supplier]
-  before_action :sum_of_stock, only: %i[show send_mail_to_supplier]
+  before_action :sum_of_stock, only: %i[show send_mail_to_supplier quick_edit]
   before_action :filter_object_ids, only: %i[bulk_method restore]
   before_action :klass_bulk_method, only: %i[bulk_method]
   before_action :klass_restore, :restore_childs, only: %i[restore]
   before_action :klass_import, only: %i[import]
-  before_action :product_load_resources, :new_product, only: %i[show]
+  before_action :product_load_resources, :new_product, only: %i[show quick_edit]
 
   def index
     @q = PurchaseOrder.ransack(params[:q])
@@ -55,9 +55,6 @@ class PurchaseOrdersController < ApplicationController
 
   def show
     @general_setting = GeneralSetting.last
-    @temp_product = Product.new
-    @temp_product.product_suppliers.build(system_user_id: @purchase_order.supplier_id)
-    @system_users = SystemUser.where(user_type: 'supplier')
     if params[:single_csv].present?
       single_csv(@purchase_order)
     else
@@ -68,6 +65,10 @@ class PurchaseOrdersController < ApplicationController
         end
       end
     end
+  end
+
+  def quick_edit
+    @system_users = SystemUser.where(user_type: 'supplier')
   end
 
   def send_mail_to_supplier
@@ -162,6 +163,9 @@ class PurchaseOrdersController < ApplicationController
 
   def find_purchase_order
     @purchase_order = PurchaseOrder.find(params[:id])
+    @temp_product = Product.new
+    @temp_product.product_suppliers.build(system_user_id: @purchase_order.supplier_id)
+    @system_users = SystemUser.where(user_type: 'supplier')
   end
 
   def restore_childs
