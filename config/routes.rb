@@ -119,6 +119,9 @@ end
       post 'send_email', to: 'purchase_orders#send_mail_to_supplier'
       post 'add_product', to: 'purchase_orders#add_product'
     end
+    member do
+      get 'quick_edit', to: 'purchase_orders#quick_edit'
+    end
   end
 
   resources :purchase_deliveries do
