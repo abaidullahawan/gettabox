@@ -85,7 +85,8 @@
 </style>
 
 <%= wicked_pdf_stylesheet_link_tag ("pdf") -%>
-<div class="row">
+<div class="row" style="margin: 10px 18px 0 0">
+  <%= wicked_pdf_image_tag asset_url('gettabox-logo.jpeg'), height: '60px', width: '70px' %>
   <div style="margin-left: 1100px;">
     <p><strong class='text-primary'>Vat Reg No:</strong><%= @general_setting&.vat_reg_no %></p>
     <p><strong class='text-primary'>Company Reg No:</strong><%= @general_setting&.company_reg_no %></p>
@@ -161,13 +162,9 @@
                 <th class='text-center'><strong>SKU</strong></th>
                 <th class='text-center'><strong>Supplier SKU</strong></th>
                 <th class='text-center'><strong>Category-Product</strong></th>
-                <th class='text-center'><strong>Deliverd</strong></th>
                 <th class='text-center'><strong>Ordered</strong></th>
-                <th class='text-center'><strong>Damaged</strong></th>
-                <th class='text-center'><strong>Missing</strong></th>
                 <th class='text-center'><strong>Price[FOB]</strong></th>
                 <th class='text-center'><strong>Total</strong></th>
-                <th class='text-center'><strong>Ex Fact</strong></th>
               </tr>
             </thead>
             <tbody>
@@ -188,22 +185,10 @@
                     <%= f.quantity %>
                   </td>
                   <td class='text-center' >
-                    <%= @demaged[f.product_id] %>
-                  </td>
-                  <td class='text-center' >
-                    <%= @missing[f.product_id] %>
-                  </td>
-                  <td class='text-center' >
-                    <%= @deliverd[f.product_id]%>
-                  </td>
-                  <td class='text-center' >
                     <%= image_tag image_url('pound.svg'), class: 'mr-1 mb-1', height: '11px', width: '10px' %><%= f.cost_price %>
                   </td>
                   <td class='text-center' >
                     <%= image_tag image_url('pound.svg'), class: 'mr-1 mb-1', height: '11px', width: '10px' %><%= f.quantity * f.cost_price if f.cost_price.present? && f.quantity.present? %>
-                  </td>
-                  <td class='text-center' >
-                    <%= f.purchase_order.created_at.strftime("%d/ %m/ %Y") %>
                   </td>
                 </tr>
               <% end %>
@@ -214,7 +199,7 @@
       <!-- End Faq accordion -->
     </div>
   </div>
-  <h2 class='text-right'>Delivery Details</h2>
+  <!--h2 class='text-right'>Delivery Details</h2>
   <div class="row">
       <div class="col-lg-12">
         <div class="table-responsive accordion-content">
@@ -241,4 +226,4 @@
         </div>
       </div>
   </div>
-</div>
+</div-->

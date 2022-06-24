@@ -74,13 +74,13 @@ class Product < ApplicationRecord
     product_mappings&.each do |mapping|
       product = mapping.channel_product
       deduction_unit = 1
-      quantity = (inventory_balance.to_f + fake_stock.to_i) / deduction_unit.to_f
+      quantity = (inventory_balance.to_i + fake_stock.to_i) / deduction_unit.to_i
       product.update(item_quantity: quantity, item_quantity_changed: true) unless product.item_quantity.to_i.eql? quantity.to_i
     end
     @channel_listings = ChannelProduct.joins(product_mapping: [product: [multipack_products: :child]]).where('child.id': id)
     @channel_listings&.each do |multi_mapping|
       deduction_unit = multi_mapping.product_mapping&.product&.multipack_products&.find_by(child_id: id)&.quantity.to_i
-      quantity = (inventory_balance.to_f + fake_stock.to_i) / deduction_unit.to_f
+      quantity = (inventory_balance.to_i + fake_stock.to_i) / deduction_unit.to_i
       deduction_quantity = [quantity.floor, 0].max unless deduction_unit.zero?
       multipack_products = multi_mapping.product_mapping&.product&.multipack_products
       if multipack_products&.count.to_i > 1

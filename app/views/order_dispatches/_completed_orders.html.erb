@@ -138,7 +138,7 @@
               <%= weight.round(2) %>
             </div>
           <% else %>
-            <% weight += product.channel_product.product_mapping&.product&.weight.to_f * product.ordered.to_f %>
+            <% weight += product.channel_product.product_mapping&.product&.weight.to_f * product.ordered.to_i %>
             <div class="font-sm d-flex" style="width: 10%">
               <%= weight.round(2) %>
             </div>

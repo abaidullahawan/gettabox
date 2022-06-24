@@ -118,7 +118,7 @@
                             £ <%= f.object&.cost_price %>
                           </td>
                           <td>
-                            <input class="form-control order_item_total" value= "<%=f.object.cost_price.to_f * f.object.quantity.to_f %>" type="text">
+                            <input class="form-control order_item_total" value= "<%=f.object.cost_price.to_f * f.object.quantity.to_i %>" type="text">
                             <%# £ <%= f.object.quantity * f.object.cost_price if f.object.cost_price.present? && f.object.quantity.present? %>
                           </td>
                           <td>

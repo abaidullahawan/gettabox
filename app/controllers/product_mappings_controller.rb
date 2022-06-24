@@ -456,7 +456,8 @@ class ProductMappingsController < ApplicationController
         unshipped_log = multi_pack_log.quantity.to_i * order.channel_order_items.pluck(:ordered).sum
         unshipped = multi_pack_log.child.unshipped.to_i + unshipped_log.to_i
         inventory_balance = multi_pack_log.child.total_stock.to_i - unshipped.to_i
-        multi_pack_log.child.update(change_log: " Order Paid, #{channel_product.item_sku}, #{order.order_id}, Order Paid, #{channel_product.listing_id}, #{unshipped}, #{inventory_balance}, #{channel_type} ", unshipped: unshipped, inventory_balance: inventory_balance, unshipped_orders: multi_pack_log.child&.unshipped_orders.to_i + 1)
+        child = Product.find(multi_pack_log.child.id)
+        child.update(change_log: " Order Paid, #{channel_product.item_sku}, #{order.order_id}, Order Paid, #{channel_product.listing_id}, #{unshipped}, #{inventory_balance}, #{channel_type} ", unshipped: unshipped, inventory_balance: inventory_balance, unshipped_orders: multi_pack_log.child&.unshipped_orders.to_i + 1)
       end
       allocations(order.channel_order_items)
     end
@@ -477,13 +478,13 @@ class ProductMappingsController < ApplicationController
     return unless product&.available_stock.to_i >= order_item.ordered
 
     product = Product.find(product.id)
-    product.update(available_stock: product.available_stock.to_f - order_item.ordered,
-                   allocated: product.allocated.to_f + order_item.ordered, allocated_orders: product.allocated_orders.to_i + 1)
+    product.update(allocated: product.allocated.to_i + order_item.ordered, allocated_orders: product.allocated_orders.to_i + 1)
     # change_log: "#{order_item.channel_order.channel_type} API, #{order_item.channel_order.id}, #{order_item.channel_order.order_id}, Allocated, #{order_item.channel_product.listing_id}")
     order_item.update(allocated: true)
   end
 
   def multipack_allocation(order_item, product)
+    product = Product.find(product.id)
     available = product.multipack_products.map { |m| m.child.available_stock.to_i }
     required = product.multipack_products.map { |m| m.quantity.to_i * order_item.ordered }
     check = available.zip(required).all? { |a, b| a >= b }
@@ -492,10 +493,10 @@ class ProductMappingsController < ApplicationController
     product.multipack_products.each do |multipack|
       child = multipack.child
       child = Product.find(child.id)
+
       quantity = multipack.quantity
       ordered = (order_item.ordered * quantity)
-      child.update(available_stock: child.available_stock.to_f - ordered,
-                   allocated: child.allocated.to_f + ordered, allocated_orders: child.allocated_orders.to_i + 1)
+      child.update!(allocated: child.allocated.to_i + ordered, allocated_orders: child.allocated_orders.to_i + 1)
       # change_log: "#{order_item.channel_order.channel_type} API, #{order_item.channel_order.id}, #{order_item.channel_order.order_id}, Allocated, #{order_item.channel_product.listing_id}")
     end
     order_item.update(allocated: true)
@@ -514,7 +515,7 @@ class ProductMappingsController < ApplicationController
       if product.present?
         next multipack_allocation_unmapped(item, product) unless product.product_type.eql? 'single'
 
-        inventory_balance = product.inventory_balance.to_f + item.ordered
+        inventory_balance = product.inventory_balance.to_i + item.ordered
         update_available_stock(item, product, inventory_balance, item.ordered)
       end
     end
@@ -524,12 +525,13 @@ class ProductMappingsController < ApplicationController
     product.multipack_products.each do |multipack|
       quantity = multipack.quantity
       child = multipack.child
-      inventory_balance = child.inventory_balance.to_f + (item.ordered * quantity)
+      inventory_balance = child.inventory_balance.to_i + (item.ordered * quantity)
       update_available_stock(item, child, inventory_balance, (item.ordered * quantity))
     end
   end
 
   def update_available_stock(item, product, inventory_balance, ordered)
+    product = Product.find(product.id)
     unshipped = product.unshipped.to_i - ordered
     product.update(
       change_log: "Product Unmapped, #{item.channel_product.item_sku}, #{item.channel_order.order_id}, Unmapped,
