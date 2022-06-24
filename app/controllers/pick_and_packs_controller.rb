@@ -104,7 +104,7 @@ class PickAndPacksController < ApplicationController
         product = multi.child
         # quantity = multi.quantity.to_f * (product.pack_quantity.nil? ? 1 : product.pack_quantity.to_f)
         # products << { sku: product.sku, product: product, quantity: quantity * multiple_product.ordered }
-        products << { sku: product.sku, product: product, quantity: multi.quantity.to_f * multiple_product.ordered }
+        products << { sku: product.sku, product: product, quantity: multi.quantity.to_i * multiple_product.ordered }
       end
     end
 
@@ -315,7 +315,7 @@ class PickAndPacksController < ApplicationController
     multiple_products.each do |multiple_product|
       multiple_product.channel_product.product_mapping.product.multipack_products.each do |multi|
         product = multi.child
-        products << { sku: product.sku, product: product, quantity: multi.quantity.to_f * multiple_product.ordered }
+        products << { sku: product.sku, product: product, quantity: multi.quantity.to_i * multiple_product.ordered }
       end
     end
 

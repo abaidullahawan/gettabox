@@ -144,7 +144,7 @@ class InventoryReportsController < ApplicationController
       multiple_product.channel_order_items.each do |item|
         item.channel_product.product_mapping.product.multipack_products.each do |multi|
           product = multi.child
-          products << { sku: product.sku, title: product.title, product: product, sales: product.cost_price, quantity: multi.quantity.to_f * item.ordered }
+          products << { sku: product.sku, title: product.title, product: product, sales: product.cost_price, quantity: multi.quantity.to_i * item.ordered }
         end
       end
     end

@@ -101,7 +101,7 @@ class CreateChannelOrderJob < ApplicationJob
       if product.present?
         next multipack_product(item, product) unless product.product_type.eql? 'single'
 
-        inventory_balance = product.inventory_balance.to_f - item.ordered
+        inventory_balance = product.inventory_balance.to_i - item.ordered
         update_available_stock(item, product, inventory_balance, item.ordered)
       end
     end
@@ -121,13 +121,14 @@ class CreateChannelOrderJob < ApplicationJob
       quantity = multipack.quantity
       child = multipack.child
 
-      inventory_balance = child.inventory_balance.to_f - (item.ordered * quantity)
+      inventory_balance = child.inventory_balance.to_i - (item.ordered * quantity)
       update_available_stock(item, child, inventory_balance, (item.ordered * quantity))
     end
   end
 
   def update_available_stock(item, product, inventory_balance, ordered)
-    unshipped = product.unshipped + ordered if product.unshipped.present?
+    product = Product.find(product.id)
+    unshipped = product.unshipped.to_i + ordered
     channel_type = item.channel_order.channel_type
     product.update(change_log: "API, #{item.channel_product.item_sku}, #{item.channel_order.order_id}, Order Paid,
         #{item.channel_product.listing_id}, #{unshipped}, #{inventory_balance}, #{channel_type}", unshipped: unshipped,

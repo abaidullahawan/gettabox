@@ -117,7 +117,7 @@ class AmazonOrderItemJob < ApplicationJob
       if product.present?
         next multipack_product(item, product) unless product.product_type.eql? 'single'
 
-        inventory_balance = product.inventory_balance.to_f - item.ordered
+        inventory_balance = product.inventory_balance.to_i - item.ordered
         update_available_stock(item, product, inventory_balance, item.ordered)
       end
     end

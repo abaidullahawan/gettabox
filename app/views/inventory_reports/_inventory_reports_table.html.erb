@@ -47,7 +47,7 @@
                 <% end %>
                 <td class="text-center"><%= product.total_stock.to_i %></td>
                 <td class="text-center">
-                  <%= ((product.total_stock.to_i + (pending_arrival.present? ? pending_arrival : 0)) / (item.last.pluck(:quantity).sum.to_f / number_of_days)).round(0) %>
+                  <%= ((product.total_stock.to_i + (pending_arrival.present? ? pending_arrival : 0)) / (item.last.pluck(:quantity).sum.to_i / number_of_days)).round(0) %>
                 </td>
               </tr>
             <% end %>
