@@ -9,10 +9,13 @@ class Product < ApplicationRecord
   after_create :available_stock_change
   after_update :re_modulate_dimensions
   after_update :update_channel_quantity
+  after_update :pack_and_pallet_quantity
 
   validates :sku, presence: true, uniqueness: { case_sensitive: false }
   validates :title, presence: true
   attribute :allocated, :integer, default: 0
+  attribute :pack_quantity, minimum: 1
+  attribute :pallet_quantity, minimum: 1
   validates :total_stock, numericality: { greater_than_or_equal_to: :allocated }, if: -> { product_type_single? }
   has_many :barcodes, dependent: :destroy
   has_many :product_suppliers, dependent: :destroy
@@ -21,6 +24,7 @@ class Product < ApplicationRecord
   has_many :products, through: :multipack_products
   has_many :product_mappings, dependent: :destroy
   has_many :channel_order_items
+  has_many :purchase_order_details, dependent: :destroy
   belongs_to :product_forecasting, optional: true
   has_many :channel_forecastings, through: :product_forecastings
 
@@ -101,5 +105,11 @@ class Product < ApplicationRecord
 
   def available_stock_change
     update_columns(available_stock: total_stock)
+  end
+
+  def pack_and_pallet_quantity
+    return unless product_type_single? && (saved_change_to_attribute(:pallet_quantity) || saved_change_to_attribute(:pack_quantity))
+
+    update_columns(pack_quantity: 1) if pack_quantity.nil? && pallet_quantity.present?
   end
 end

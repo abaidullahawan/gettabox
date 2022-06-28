@@ -121,7 +121,7 @@ class ProductsController < ApplicationController
   def show; end
 
   def destroy
-    if @product.product_mappings.present?
+    if @product.product_mappings.present? || @product.multipack_products.present? || @product.purchase_order_details.present?
       flash[:alert] = 'Cannot archive mapped product'
     else
       @product.destroy
@@ -294,7 +294,7 @@ class ProductsController < ApplicationController
   def product_params
     params.require(:product)
           .permit(:sku, :title, :photo, :total_stock, :fake_stock, :pending_orders, :allocated, :available_stock, :length,
-                  :width, :height, :weight, :pack_quantity, :cost_price, :gst, :vat, :courier_type, :minimum, :maximum,
+                  :width, :height, :weight, :pack_quantity, :cost_price, :gst, :vat, :courier_type, :minimum, :maximum, :pallet_quantity,
                   :optimal, :category_id, :product_type, :season_id, :description, :product_location_id, :product_forecasting_id,
                   barcodes_attributes:
                   %i[id title _destroy],

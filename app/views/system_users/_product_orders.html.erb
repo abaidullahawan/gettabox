@@ -18,9 +18,9 @@
             <i class='lni lni-more-alt'></i>
           </button>
           <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            <a href="<%= new_purchase_delivery_path(purchase_order_id: purchase_order) %>" class="dropdown-item">Place Delivery</a>
             <a class="dropdown-item" href="<%= purchase_order_path(purchase_order)%>">View</a>
             <%= link_to 'Archive', purchase_order_path(purchase_order), method: 'delete', data: {confirm: "Are you sure you want to archive"}, class: "dropdown-item"%>
-            <a href="<%= new_purchase_delivery_path(purchase_order_id: purchase_order) %>" class="dropdown-item">Place Order</a>
           </div>
         </div>
       </td>

@@ -94,10 +94,12 @@
                         <th scope="col"><strong>SKU</strong></th>
                         <th scope="col"><strong>Supplier SKU</strong></th>
                         <th scope="col"><strong>Category-Product</strong></th>
-                        <th scope="col"><strong>Ordered</strong></th>
-                        <th scope="col"><strong>Damaged</strong></th>
-                        <th scope="col"><strong>Missing</strong></th>
-                        <th scope="col"><strong>Deliverd</strong></th>
+                        <th scope="col"><strong>Pallet</strong></th>
+                        <th scope="col"><strong>Pack</strong></th>
+                        <th scope="col"><strong>Singles</strong></th>
+                        <%# <th scope="col"><strong>Damaged</strong></th> %>
+                        <%# <th scope="col"><strong>Missing</strong></th> %>
+                        <%# <th scope="col"><strong>Deliverd</strong></th> %>
                         <th scope="col"><strong>Price[FOB]</strong></th>
                         <th scope="col"><strong>Total</strong></th>
                         <th scope="col"><strong>Ex Fact</strong></th>
@@ -109,7 +111,7 @@
 
                         <tr>
                           <td>
-                            <% if f&.object&.product&.product_type&.nil?%>
+                            <% if f.object&.product&.product_type.nil?%>
                               <div class="dropdown dropleft">
                                 <button class="btn btn-primary rotate" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Actions">
                                   <i class='lni lni-more-alt'></i>
@@ -142,36 +144,18 @@
                               </div>
                             <% end %>
                           </td>
-                          <td>
-                            <%= f.object&.product&.sku%>
-                          </td>
-                          <td>
-                            <%= f.object.product&.product_suppliers&.first&.product_sku %>
-                          </td>
-                          <td>
-                            <%= f.object&.product&.title %>
-                          </td>
-                          <td>
-                            <%= f.object&.quantity %>
-                          </td>
-                          <td>
-                            <%= @demaged[f.object&.product_id] %>
-                          </td>
-                          <td>
-                            <%= @missing[f.object&.product_id] %>
-                          </td>
-                          <td>
-                            <%= @deliverd[f.object&.product_id]%>
-                          </td>
-                          <td>
-                            £ <%= f.object&.cost_price %>
-                          </td>
-                          <td>
-                            £ <%= f.object.quantity * f.object.cost_price if f.object.cost_price.present? && f.object.quantity.present? %>
-                          </td>
-                          <td>
-                            <%= f.object.purchase_order.created_at.strftime("%d/ %m/ %Y") %>
-                          </td>
+                          <td class='clickable-row cursor-pointer' data-href='<%= product_path(f.object.product_id)%>'><%= f.object&.product&.sku%></td>
+                          <td class='clickable-row cursor-pointer' data-href='<%= product_path(f.object.product_id)%>'><%= f.object.product&.product_suppliers&.first&.product_sku %></td>
+                          <td class='clickable-row cursor-pointer' data-href='<%= product_path(f.object.product_id)%>'><%= f.object&.product&.title %></td>
+                          <td class='clickable-row cursor-pointer' data-href='<%= product_path(f.object.product_id)%>'><%= pallet_quantity(f.object.product_id, f.object&.quantity, f.object.quantity_type) %></td>
+                          <td class='clickable-row cursor-pointer' data-href='<%= product_path(f.object.product_id)%>'><%= pack_quantity(f.object.product_id, f.object&.quantity, f.object.quantity_type) %></td>
+                          <td class='clickable-row cursor-pointer' data-href='<%= product_path(f.object.product_id)%>'><%= single_quantity(f.object.product_id, f.object&.quantity, f.object.quantity_type) %></td>
+                          <!--td><%= @demaged[f.object&.product_id] %></td>
+                          <td><%= @missing[f.object&.product_id] %></td>
+                          <td><%= @deliverd[f.object&.product_id]%></td-->
+                          <td class='clickable-row cursor-pointer' data-href='<%= product_path(f.object.product_id)%>'>£ <%= f.object&.cost_price %></td>
+                          <td class='clickable-row cursor-pointer' data-href='<%= product_path(f.object.product_id)%>'>£ <%= f.object.total|| f.object.quantity * f.object.cost_price %></td>
+                          <td class='clickable-row cursor-pointer' data-href='<%= product_path(f.object.product_id)%>'><%= f.object.purchase_order.created_at.strftime("%d/ %m/ %Y") %></td>
                         </tr>
                       <% end %>
                       <tr>
