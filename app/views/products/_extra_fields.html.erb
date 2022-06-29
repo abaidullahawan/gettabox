@@ -10,7 +10,11 @@
 
 <div class="form-group">
   <%= f.label :pack_quantity %>
-  <%= f.text_field :pack_quantity, class: 'form-control', placeholder: 'Enter Pack Quantity' %>
+  <%= f.number_field :pack_quantity, min: 1, class: 'form-control', placeholder: 'Enter Pack Quantity' %>
+</div>
+<div class="form-group">
+  <%= f.label :pallet_quantity %>
+  <%= f.number_field :pallet_quantity, min: 1, class: 'form-control', placeholder: 'Enter Pallet Quantity' %>
 </div>
 
 <!--div class="form-group">

@@ -12,3 +12,9 @@ Credential
 
 Credential
   .create(grant_type: 'wait_time')
+
+User.new(email: 'developer@devbox.co', password: 'devbox123', password_confirmation: 'devbox123', role: 'super_admin')
+    .build_personal_detail(first_name: 'Devbox', last_name: 'Developer')
+    .save
+
+Category.create(title: 'temporary products')

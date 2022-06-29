@@ -58,6 +58,7 @@
                               <th scope="col"><strong>Stock</strong></th>
                               <th scope="col"><strong>Vat</strong></th>
                               <th scope="col"><strong>Cost Price</strong></th>
+                              <th scope="col"><strong>Quantity Type</strong></th>
                               <th scope="col"><strong>Quantity</strong></th>
                             </tr>
                           </thead>
@@ -89,10 +90,14 @@
                                     <%= f.number_field :cost_price, step: :any, value: product.product_suppliers.first.product_cost, class: 'form-control order_item_price', placeholder: 'Price' %>
                                   </td>
                                   <td>
+                                    <%= f.select :quantity_type, options_for_select(product_quantities(product.id).map { |key, value| [key.humanize, key] }, f.object.quantity_type), {include_blank: 'Please select quantity type'}, class: 'form-control quantity_type' %>
+                                    <%= select_tag :quantity_type_hidden, options_for_select(product_quantities(product.id).map { |key, value| [key.humanize, value] }), class: 'form-control quantity_type_hidden d-none' %>
+                                  </td>
+                                  <td>
                                     <%= f.number_field :quantity, step:1, class: 'form-control order_item_quantity', placeholder: 'Quantity' %>
                                   </td>
                                   <td>
-                                    <input class="form-control order_item_total" type="text" placeholder="Total" style="width: 70px;" readonly="true">
+                                    <%= f.number_field :total, class: 'form-control order_item_total', placeholder: 'Total', readonly: true %>
                                   </td>
                                 </tr>
                               <% end %>

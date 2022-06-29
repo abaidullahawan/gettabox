@@ -89,7 +89,7 @@
                     </thead>
                     <tbody>
                       <%= pd.fields_for :purchase_order_details do |f| %>
-                        <% next if f.object.quantity.nil? %>
+                        <% next if f.object.quantity.to_i.zero? %>
 
                         <tr>
                           <td>

@@ -6,19 +6,23 @@
   <div class="list-group">
     <div class="list-group-item">
       <div class='row'>
-        <div class='col-4'>
+        <div class='col-3'>
           <h5 class="fs-14 mb-1">Pack Quantity</h5>
           <p class="m-0"><%= @product.pack_quantity %></p>
+        </div>
+        <div class='col-3'>
+          <h5 class="fs-14 mb-1">Pallet Quantity</h5>
+          <p class="m-0"><%= @product.pallet_quantity %></p>
         </div>
         <!--div class='col-4'>
           <h5 class="fs-14 mb-1">Cost Price</h5>
           <p class="m-0"><%= @product.cost_price %></p>
         </div-->
-        <div class='col-4'>
+        <div class='col-3'>
           <h5 class="fs-14 mb-1">Carrier Type</h5>
           <p class="m-0"><%= @product&.courier_type %></p>
         </div>
-        <div class='col-4'>
+        <div class='col-3'>
           <h5 class="fs-14 mb-1">Season</h5>
           <p class="m-0"><%= @product.season.name if @product.season.present? %></p>
         </div>

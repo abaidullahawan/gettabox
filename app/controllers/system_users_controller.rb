@@ -185,7 +185,7 @@ class SystemUsersController < ApplicationController
   end
 
   def purchase_orders
-    @purchase_orders = PurchaseOrder.all
+    @purchase_orders = PurchaseOrder.all.order(created_at: :desc)
   end
 
   def build_system_user

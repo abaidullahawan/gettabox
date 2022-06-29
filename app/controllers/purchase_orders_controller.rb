@@ -157,6 +157,7 @@ class PurchaseOrdersController < ApplicationController
     else
       flash[:alert] = product.errors.full_messages
     end
+    redirect_to request.referrer
   end
 
   private
@@ -179,8 +180,8 @@ class PurchaseOrdersController < ApplicationController
       # :delivery_address,
       # :invoice_address,
       purchase_order_details_attributes: %i[
-        id purchase_order_id product_id
-        cost_price vat quantity missing deleted_at demaged
+        id purchase_order_id product_id total
+        cost_price vat quantity missing deleted_at demaged quantity_type
       ],
       addresses_attributes: %i[
         id company address city region postcode country
