@@ -179,7 +179,7 @@ class OrderBatchesController < ApplicationController
         product = multi.child
         # quantity = multi.quantity.to_f * (product.pack_quantity.nil? ? 1 : product.pack_quantity.to_f)
         # products << { sku: product.sku, product: product, quantity: quantity * multiple_product.ordered }
-        products << { sku: product.sku, product: product, quantity: multi.quantity.to_f * multiple_product.ordered }
+        products << { sku: product.sku, product: product, quantity: multi.quantity.to_i * multiple_product.ordered }
       end
     end
 
@@ -259,7 +259,7 @@ class OrderBatchesController < ApplicationController
     batch.update(update_session)
     order_ids.each do |id|
       order = ChannelOrder.find_by(id: id)
-      order.update(stage: stage, order_batch_id: batch.id, change_log: "Order Exported, #{order.id}, #{order.order_id}, #{current_user.personal_detail.full_name}")
+      order.update(stage: stage, order_batch_id: batch.id, change_log: "Order Exported, #{order.id}, #{order.order_id}, #{current_user&.personal_detail&.full_name}")
       order.update(change_log: "Channel Updated, #{order.id}, #{order.order_id}, #{current_user.personal_detail&.full_name}") if batch.update_channels
     end
   end

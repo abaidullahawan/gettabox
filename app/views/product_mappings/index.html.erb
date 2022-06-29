@@ -76,8 +76,8 @@
               <tr>
                 <th>
                   <div class="custom-control custom-switch">
-                    <input type="checkbox" class="custom-control-input" id="selectSwitchAll" onclick="bulk_update_selected('/bulk_update_selected', '<%= @body&.first&.class&.name %>', event)">
-                    <label class="custom-control-label" for="selectSwitchAll"></label>
+                    <input type="checkbox" class="selectSwitchAll" id="selectSwitchAll" style= 'width:25px; height:25px;' onclick="bulk_update_selected('/bulk_update_selected', '<%= @body&.first&.class&.name %>', event)">
+                    <label for="selectSwitchAll"></label>
                   </div>
                 </th>
                 <th class="font-sm">Channel</th>
@@ -98,8 +98,8 @@
                     <tr class=''>
                       <td class="font-sm">
                         <div class="custom-control custom-switch">
-                          <input type="checkbox" class="custom-control-input selectSwitch" name="select-switch" id="<%=item.id%>" <%= item.selected? ? 'checked': ''%> onclick="update_selected('/update_selected', '<%= item.class.name %>', event)">
-                          <label class="custom-control-label" for="<%=item.id%>"></label>
+                          <input type="checkbox" class="selectSwitch" name="select-switch" style= 'width:25px; height:25px;' id="<%=item.id%>" <%= item.selected? ? 'checked': ''%> onclick="update_selected('/update_selected', '<%= item.class.name %>', event)">
+                          <label for="<%=item.id%>"></label>
                         </div>
                       </td>
                       <td class="font-sm" style = "width: 5%">
@@ -178,11 +178,11 @@
                       <% end %>
                       <td class="text-center font-sm">
                         <div class="dropdown dropleft">
-                          <button class="btn btn-primary p-2" type="button" class="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <i data-feather='bell' class='icon wh-15 mt-minus-3'></i>
+                          <button class="btn btn-primary p-2 rotate" type="button" class="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class='lni lni-more-alt'></i>
                           </button>
                           <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                            <%= f.submit 'Un-map', class: "dropdown-item", data_disable_with: false if item.status_mapped? %>
+                            <%= f.submit 'Un-map', class: "dropdown-item", onclick: 'return confirm("Are you sure you want to unmapped? \nAny incompleted order will go back in unprocessed orders.")' if item.status_mapped? %>
                             <%= link_to 'Logs', version_product_mappings_path(id: item.id), class: 'dropdown-item' %>
                             <% if item.status_unmapped? %>
                               <%= f.submit 'Map', class: "dropdown-item map-submit-button" , data_disable_with: false %>

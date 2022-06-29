@@ -87,13 +87,10 @@
               <tr>
                 <th>
                   <div class='row' style='max-width: 65px'>
-                    <div class='col-6 p-0  mt-1'>
-                      <input type="checkbox" id="" name="" value="" class='col-6 select-all-checkbox'>
-                    </div>
                     <div class='col-6 p-0'>
                       <div class="custom-control custom-switch">
-                        <input type="checkbox" class="custom-control-input" id="selectSwitchAll" onclick="bulk_update_selected('/bulk_update_selected', '<%= @customers&.first&.class&.name %>', event)">
-                        <label class="custom-control-label" for="selectSwitchAll"></label>
+                        <input type="checkbox" class="selectSwitchAll" id="selectSwitchAll" style= 'width:25px; height:25px;' onclick="bulk_update_selected('/bulk_update_selected', '<%= @customers&.first&.class&.name %>', event)">
+                        <label for="selectSwitchAll"></label>
                       </div>
                     </div>
                   </div>
@@ -112,13 +109,10 @@
                 <tr class=''>
                   <td>
                     <div class='row' style='max-width: 65px'>
-                      <div class='col-6 p-0 mt-1'>
-                        <%= f.check_box 'object_ids[]', {}, customer.id %>
-                      </div>
                       <div class='col-6 p-0'>
                         <div class="custom-control custom-switch">
-                          <input type="checkbox" class="custom-control-input selectSwitch" name="select-switch" id="<%=customer.id%>" <%= customer.selected? ? 'checked': ''%> onclick="update_selected('/update_selected', '<%= customer.class.name %>', event)">
-                          <label class="custom-control-label" for="<%=customer.id%>"></label>
+                          <input type="checkbox" class=" selectSwitch" name="select-switch" style= 'width:25px; height:25px;' id="<%=customer.id%>" <%= customer.selected? ? 'checked': ''%> onclick="update_selected('/update_selected', '<%= customer.class.name %>', event)">
+                          <label for="<%=customer.id%>"></label>
                         </div>
                       </div>
                     </div>
@@ -133,11 +127,11 @@
                   <td class="text-center"><%= customer.flagging_date&.strftime('%Y-%m-%d') %></td>
                   <td class="text-center">
                     <div class="dropdown dropleft">
-                      <button class="btn btn-primary" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Actions">
-                        <i data-feather='bell' class='icon wh-15 mt-minus-3'></i>
+                      <button class="btn btn-primary rotate" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Actions">
+                        <i class='lni lni-more-alt'></i>
                       </button>
                       <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                        <a class="dropdown-item" href="<%= customer_path(customer)%>">Show</a>
+                        <a class="dropdown-item" href="<%= customer_path(customer)%>">View</a>
                         <%= link_to 'Logs',  version_customers_path(id: customer.id), class: 'dropdown-item' %>
                         <%= link_to 'Archive', customer_path(customer), method: 'delete', data: {confirm: "Are you sure you want to archive"}, class: "dropdown-item"%>
                         <a class="dropdown-item add-flagging-button"  data-id= "<%= customer.id %>">Add Flagging</a>

@@ -1,51 +1,57 @@
-<div class="row">
-  <div class="col-xl-12">
-    <div class="card mb-30">
-      <div class="card-body">
-        <div class="card-header">
-          <h5 class="card-title">Create</h5>
-        </div>
-            <%= form_for @general_setting, method: :post do |f| %>
-            <div class="form-group">
-                <%= f.label :name %>
-                <%= f.text_field :name, autofocus: true, required: true, class: 'form-control', placeholder: 'Enter Name' %>
-            </div>
-            <div class="form-group">
-                <%= f.label :display_name%>
-                <%= f.text_field :display_name , step: 0.01, class: 'form-control', placeholder: ' Display Name'%>
-            </div>
-            <div class="form-group">
-                <%= f.label :phone%>
-                <%= f.text_field :phone , step: 0.01, class: 'form-control', placeholder: 'Enter Phone Number'%>
-            </div>
-            <%= f.fields_for :address do |pd|%>
-            <div class="form-group">
-            <%= pd.label :address %>
-            <%= pd.text_field :address, step: 0.01, class: 'form-control', placeholder: 'Enter Address' %>
-            </div>
-            <div class="form-group">
-            <%= pd.label :city %>
-            <%= pd.text_field :city, step: 0.01, class: 'form-control', placeholder: 'Enter City' %>
-            </div>
-            <div class="form-group">
-            <%= pd.label :region %>
-            <%= pd.text_field :region, step: 0.01, class: 'form-control', placeholder: 'Enter Region' %>
-            </div>
-            <div class="form-group">
-            <%= pd.label :postcode %>
-            <%= pd.text_field :postcode, step: 0.01, class: 'form-control', placeholder: 'Enter Postal Code' %>
-            </div>
-            <div class="form-group">
-            <%= pd.label :country %>
-            <%= pd.text_field :country, step: 0.01, class: 'form-control', placeholder: 'Enter Country' %>
-            </div>
-            <% end %>
-
-            <div class="form-group">
-            <%= f.submit %>
-            </div>
-            <% end %>
-            </div>
-    </div>
+<div class='form-row'>
+  <div class="form-group col-6">
+    <%= f.label :name %>
+    <%= f.text_field :name, autofocus: true, required: true, class: 'form-control', placeholder: 'Enter Name' %>
   </div>
 </div>
+<div class='form-row'>
+  <div class="form-group col-6">
+    <%= f.label :vat_reg_no %>
+    <%= f.text_field :vat_reg_no , step: 0.01, class: 'form-control', placeholder: 'Please Enter VAT Reg. No.'%>
+  </div>
+  <div class="form-group col-6">
+    <%= f.label :company_reg_no %>
+    <%= f.text_field :company_reg_no , step: 0.01, class: 'form-control', placeholder: 'Please Enter Company Reg. No.'%>
+  </div>
+</div>
+<div class="form-row">
+  <div class='form-group col-md-12' style='border-bottom: 1px solid;'>
+    <h5 class='fs-14'>Address</h5>
+  </div>
+  <div class="form-group col-md-12">
+    <%= f.fields_for :addresses do |address|%>
+      <%= render 'address_fields_copy', f: address %>
+    <% end %>
+  </div>
+</div>
+<script>
+  $(".nested_fields_btn").
+    data("association-insertion-method", 'after')
+
+  $('.same_as_above').on('change', function () {
+    nested_fields = this.closest('.nested-fields')
+    if (this.checked){
+      company = $('#general_setting_addresses_attributes_0_company').val()
+      address = $('#general_setting_addresses_attributes_0_address').val()
+      city = $('#general_setting_addresses_attributes_0_city').val()
+      region = $('#general_setting_addresses_attributes_0_region').val()
+      postcode = $('#general_setting_addresses_attributes_0_postcode').val()
+      country = $('#general_setting_addresses_attributes_0_country').val()
+    }
+    else {
+      company = ''
+      address = ''
+      city = ''
+      region = ''
+      postcode = ''
+      country = ''
+    }
+
+    $(nested_fields).find('.company_field').val(company)
+    $(nested_fields).find('.address_field').val(address)
+    $(nested_fields).find('.city_field').val(city)
+    $(nested_fields).find('.region_field').val(region)
+    $(nested_fields).find('.postcode_field').val(postcode)
+    $(nested_fields).find('.country_field').val(country)
+  })
+</script>

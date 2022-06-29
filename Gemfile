@@ -120,3 +120,7 @@ gem 'tzinfo-data', platforms: %i[mingw mswin x64_mingw jruby]
 # ADD TRANSPILER TO USE ES6
 gem 'sprockets'
 gem 'sprockets-es6'
+
+group :production, :beta do
+  gem 'bugsnag'
+end

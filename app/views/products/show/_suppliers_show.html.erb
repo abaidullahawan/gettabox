@@ -22,7 +22,7 @@
                     <p class="mb-1 fs-14 col-2"><%= supplier.system_user.name %></p>
                     <p class="mb-1 fs-14 col-3"><%= supplier.product_cost %></p>
                     <p class="mb-1 fs-14 col-3"><%= supplier.product_sku %></p>
-                    <p class="mb-1 fs-14 col-3"><%= supplier.product_vat %></p>
+                    <p class="mb-1 fs-14 col-3"><%= supplier.read_attribute_before_type_cast(:product_vat) %></p>
 
                   </div><hr>
                 </a>

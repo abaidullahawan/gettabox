@@ -38,26 +38,16 @@
           <div class="table-responsive">
             <table class="table m-0 table-hover">
               <tr>
-                <th class="text-center">Name</th>
-                <th class="text-center">Filter Name</th>
-                <th class="text-center">Filter By</th>
-                <!--th class="text-center">Filter Action</th-->
-                <th class="text-center">Type Number</th>
-                <th class="text-center">Units</th>
-                <th class="text-center">Actions</th>
+                <th class="text-center" colspan="2">Name</th>
+                <th class="text-center" colspan="2">Actions</th>
               </tr>
               <% @channel_rules.each do |rule| %>
-                <tr>
-                  <td class="text-center"><%= rule.name %></td>
-                  <!--td class="text-center"><%= rule.filter_name&.humanize %></td-->
-                  <td class="text-center"><%= rule.filter_by %></td>
-                  <td class="text-center"><%= rule.action&.humanize %></td>
-                  <td class="text-center"><%= rule.type_number %></td>
-                  <td class="text-center"><%= rule.units&.humanize %></td>
-                  <td class="text-center">
+                <tr class='cursor-pointer header'>
+                  <td class="text-center" colspan="2"><%= rule.name %></td>
+                  <td class="text-center" colspan="2">
                     <div class="dropdown dropleft">
-                      <button class="btn btn-primary" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Actions">
-                        <i data-feather='bell' class='icon wh-15 mt-minus-3'></i>
+                      <button class="btn btn-primary rotate" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Actions">
+                         <i class='lni lni-more-alt'></i>
                       </button>
                       <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                         <%= link_to 'Edit', edit_channel_forecasting_path(id: rule.id), class: 'dropdown-item' %>
@@ -66,6 +56,20 @@
                     </div>
                   </td>
                 </tr>
+                <tr class="content-job-status">
+                  <th class="text-center" style="background-color: #ccffcc">Filter By</th>
+                  <th class="text-center" style="background-color: #ccffcc">Action</th>
+                  <th class="text-center" style="background-color: #ccffcc">Type Number</th>
+                  <th class="text-center" style="background-color: #ccffcc">Units</th>
+                </tr>
+                <% rule.channel_forecastings.each do |forecasting| %>
+                  <tr class="content-job-status">
+                    <td class="text-center" style="background-color: #e6ffe6;" ><%= forecasting.filter_by %></td>
+                    <td class="text-center" style="background-color: #e6ffe6;"><%= forecasting.action  %></td>
+                    <td class="text-center" style="background-color: #e6ffe6;" ><%= forecasting.type_number %></td>
+                    <td class="text-center" style="background-color: #e6ffe6;" ><%= forecasting.units %></td>
+                  </tr>
+                <% end %>
               <% end %>
             </table>
           </div>
@@ -81,7 +85,7 @@
   </div>
 </div>
 
-<%= form_for ChannelForecasting.new, url: channel_forecastings_path, method: :post do |f| %>
+<%= form_for @forecasting, url: channel_forecastings_path, method: :post do |f| %>
   <div class="modal fade" id="courier-create-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
       <div class="modal-content">

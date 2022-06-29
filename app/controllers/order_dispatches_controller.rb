@@ -47,9 +47,9 @@ class OrderDispatchesController < ApplicationController
         end
         current_order = ChannelOrder.find_by(id: params[:channel_order]['id'])
         replacement_id = "R#{current_order.order_replacements.count + 1}-#{current_order.id}"
-        @order.update(replacement_id: replacement_id, change_log: "Order Paid, #{@order.id}, #{@order.order_id}, #{current_user.personal_detail.full_name}", stage: 'ready_to_dispatch')
+        @order.update(replacement_id: replacement_id, change_log: "Order Paid, #{@order.id}, #{@order.order_id}, #{current_user&.personal_detail&.full_name}", stage: 'ready_to_dispatch')
         OrderReplacement.create(channel_order_id: current_order.id, order_replacement_id: @order.id, order_id: replacement_id)
-        current_order.update(change_log: "Replacement, #{replacement_id}, #{current_order.order_id}, #{current_user.personal_detail.full_name}")
+        current_order.update(change_log: "Replacement, #{replacement_id}, #{current_order.order_id}, #{current_user&.personal_detail&.full_name}")
       end
       flash[:notice] = 'Order Created!'
     else
@@ -74,7 +74,7 @@ class OrderDispatchesController < ApplicationController
   def update
     order = ChannelOrder.find_by(id: params[:channel_order]['id'])
     if order.update(order_dispatches_params)
-      order.update(change_log: "Refund, #{params[:channel_order]['refund_amount'].to_f+params[:channel_order]['concession_amount'].to_f}, #{order.order_id}, #{current_user.personal_detail.full_name}")
+      order.update(change_log: "Refund, #{params[:channel_order]['refund_amount'].to_f+params[:channel_order]['concession_amount'].to_f}, #{order.order_id}, #{current_user&.personal_detail&.full_name}")
       flash[:notice] = 'Order refunded successfuly'
     else
       flash[:alert] = @order.errors.full_messages
@@ -198,7 +198,7 @@ class OrderDispatchesController < ApplicationController
         channel_order = ChannelOrder.find(order)
         channel_order&.update(assign_rule_id: @assign_rule.id)
       end
-      redirect_to order_dispatches_path(order_filter: 'ready')
+      redirect_to request.referrer
       flash[:notice] = 'Mail Service Rule Assigned!'
     end
   end
@@ -216,7 +216,7 @@ class OrderDispatchesController < ApplicationController
         order_item.update(mail_service_rule_id: params[:rule_name])
       end
     end
-    redirect_to order_dispatches_path(order_filter: 'ready')
+    redirect_to request.referrer
     flash[:notice] = 'Mail Service Rule Assigned!'
   end
 
@@ -241,7 +241,8 @@ class OrderDispatchesController < ApplicationController
   def update_selected
     if params[:order_id].present? || params[:selected].present?
       order = ChannelOrder.find_by(id: params[:order_id])
-      order&.update(selected: true)
+      order&.update(selected: true) if params[:selected].eql? 'true'
+      order&.update(selected: false) if params[:selected].eql? 'false'
       message = { result: true }
       message = { result: false, errors: order.errors.full_messages } if order.errors.any?
     else
@@ -347,9 +348,9 @@ class OrderDispatchesController < ApplicationController
     product = order_item.channel_product.product_mapping.product
     return multipack_unallocation(order_item, product) if product.product_type.eql? 'multiple'
 
-    product.update(available_stock: product.available_stock.to_f + order_item.ordered,
-                    allocated: product.allocated.to_f - order_item.ordered, allocated_orders: product.allocated_orders.to_i - 1)
-                  #  change_log: "#{order_item.channel_order.channel_type} API, #{order_item.channel_order.id}, #{order_item.channel_order.order_id}, UnAllocate, #{order_item.channel_product.listing_id}")
+    product.update(available_stock: product.available_stock.to_i + order_item.ordered,
+                   allocated: product.allocated.to_i - order_item.ordered, allocated_orders: product.allocated_orders.to_i - 1)
+    #  change_log: "#{order_item.channel_order.channel_type} API, #{order_item.channel_order.id}, #{order_item.channel_order.order_id}, UnAllocate, #{order_item.channel_product.listing_id}")
     order_item.update(allocated: false)
     flash[:notice] = 'Unallocation successful!'
   end
@@ -359,12 +360,12 @@ class OrderDispatchesController < ApplicationController
     return multipack_allocation(order_item, product) if product&.product_type.eql? 'multiple'
 
     if product&.available_stock.to_i >= order_item.ordered
-      product.update(available_stock: product.available_stock.to_f - order_item.ordered,
-                      allocated: product.allocated.to_f + order_item.ordered, allocated_orders: product.allocated_orders.to_i + 1)
-      #                change_log: "#{order_item.channel_order.channel_type} API, #{order_item.channel_order.id}, #{order_item.channel_order.order_id}, Allocated, #{order_item.channel_product.listing_id}")
+      product.update(available_stock: product.available_stock.to_i - order_item.ordered,
+                     allocated: product.allocated.to_i + order_item.ordered, allocated_orders: product.allocated_orders.to_i + 1)
+      # change_log: "#{order_item.channel_order.channel_type} API, #{order_item.channel_order.id}, #{order_item.channel_order.order_id}, Allocated, #{order_item.channel_product.listing_id}")
       order_item.update(allocated: true)
     else
-      (@not_allocated.class.eql? Array) ? (@not_allocated << order_item.channel_order&.order_id) : flash[:alert] = 'Available stock is not enough!'
+      @not_allocated.instance_of?(Array) ? (@not_allocated << order_item.channel_order&.order_id) : flash[:alert] = 'Available stock is not enough!'
     end
   end
 
@@ -373,9 +374,9 @@ class OrderDispatchesController < ApplicationController
       child = multipack.child
       quantity = multipack.quantity
       ordered = (order_item.ordered * quantity)
-        child.update(available_stock: child.available_stock.to_f + ordered,
-                      allocated: child.allocated.to_f - ordered, allocated_orders: child.allocated_orders.to_i - 1)
-                    #,change_log: "#{order_item.channel_order.channel_type} API, #{order_item.channel_order.id}, #{order_item.channel_order.order_id}, UnAllocate, #{order_item.channel_product.listing_id}"
+      child.update(available_stock: child.available_stock.to_i + ordered,
+                   allocated: child.allocated.to_i - ordered, allocated_orders: child.allocated_orders.to_i - 1)
+      # ,change_log: "#{order_item.channel_order.channel_type} API, #{order_item.channel_order.id}, #{order_item.channel_order.order_id}, UnAllocate, #{order_item.channel_product.listing_id}"
     end
     order_item.update(allocated: false)
     flash[:notice] = 'Unallocation successful!'
@@ -390,20 +391,20 @@ class OrderDispatchesController < ApplicationController
         child = multipack.child
         quantity = multipack.quantity
         ordered = (order_item.ordered * quantity)
-        child.update(available_stock: child.available_stock.to_f - ordered,
-                     allocated: child.allocated.to_f + ordered, allocated_orders: child.allocated_orders.to_i + 1)
-                    #  change_log: "#{order_item.channel_order.channel_type} API, #{order_item.channel_order.id}, #{order_item.channel_order.order_id}, Allocated, #{order_item.channel_product.listing_id}")
+        child.update(available_stock: child.available_stock.to_i - ordered,
+                     allocated: child.allocated.to_i + ordered, allocated_orders: child.allocated_orders.to_i + 1)
+        # change_log: "#{order_item.channel_order.channel_type} API, #{order_item.channel_order.id}, #{order_item.channel_order.order_id}, Allocated, #{order_item.channel_product.listing_id}")
       end
       order_item.update(allocated: true)
     else
-      (@not_allocated.class.eql? Array) ? (@not_allocated << order_item.channel_order&.order_id): flash[:alert] = 'Available stock is not enough!'
+      @not_allocated.instance_of?(Array) ? (@not_allocated << order_item.channel_order&.order_id) : flash[:alert] = 'Available stock is not enough!'
     end
   end
 
   def allocate(product, ordered)
-    product.update(available_stock: product.available_stock.to_f - ordered,
-                   allocated: product.allocated.to_f + ordered)
-                  #  change_log: "#{order_item.channel_order.channel_type} API, #{order_item.channel_order.id}, #{order_item.channel_order.order_id}, Allocated, #{order_item.channel_product.listing_id}")
+    product.update(available_stock: product.available_stock.to_i - ordered,
+                   allocated: product.allocated.to_i + ordered)
+    #  change_log: "#{order_item.channel_order.channel_type} API, #{order_item.channel_order.id}, #{order_item.channel_order.order_id}, Allocated, #{order_item.channel_product.listing_id}")
   end
 
   def version
@@ -477,28 +478,48 @@ class OrderDispatchesController < ApplicationController
     product = order_item.channel_product.product_mapping.product
     return cancel_multipack_unallocation(order_item, product) if product.product_type.eql? 'multiple'
 
+    inventory_balance = product.inventory_balance.to_i + order_item.ordered.to_i
+    channel_type = order_item.channel_order.channel_type
     if order_item.allocated
-      product.update(available_stock: product.available_stock.to_i + order_item.ordered.to_i,
-                     unshipped: product.unshipped.to_i - order_item.ordered.to_i, unshipped_orders: product.unshipped_orders.to_i - 1,
-                     allocated: product.allocated.to_i - order_item.ordered.to_i, allocated_orders: product.allocated_orders.to_i - 1)
+      product.update(
+        change_log: "Cancel Order, #{order_item.channel_product.item_sku}, #{order_item.channel_order.order_id},
+        Cancel Order, #{order_item.channel_product.listing_id}, #{order_item.ordered.to_i}, #{inventory_balance},
+        #{channel_type}", available_stock: product.available_stock.to_i + order_item.ordered.to_i,
+        unshipped: product.unshipped.to_i - order_item.ordered.to_i, unshipped_orders: product.unshipped_orders.to_i - 1,
+        allocated: product.allocated.to_i - order_item.ordered.to_i, allocated_orders: product.allocated_orders.to_i - 1
+      )
     else
-      product.update(available_stock: product.available_stock.to_i + order_item.ordered.to_i,
-                     unshipped: product.unshipped.to_i - order_item.ordered.to_i, unshipped_orders: product.unshipped_orders.to_i - 1)
+      product.update(
+        change_log: "Cancel Order, #{order_item.channel_product.item_sku}, #{order_item.channel_order.order_id},
+        Cancel Order, #{order_item.channel_product.listing_id}, #{order_item.ordered.to_i}, #{inventory_balance},
+        #{channel_type}", available_stock: product.available_stock.to_i + order_item.ordered.to_i,
+        unshipped: product.unshipped.to_i - order_item.ordered.to_i, unshipped_orders: product.unshipped_orders.to_i - 1
+      )
     end
   end
 
   def cancel_multipack_unallocation(order_item, product)
+    channel_type = order_item.channel_order.channel_type
     product.multipack_products.each do |multipack|
       child = multipack.child
       quantity = multipack.quantity
       ordered = (order_item.ordered * quantity)
+      inventory_balance = child.inventory_balance.to_i + ordered
       if order_item.allocated
-        child.update(available_stock: child.available_stock.to_f + ordered,
-                      unshipped: child.unshipped.to_i - ordered, unshipped_orders: child.unshipped_orders.to_i - 1,
-                      allocated: child.allocated.to_f - ordered, allocated_orders: child.allocated_orders.to_i - 1)
+        child.update(
+          change_log: "Cancel Order, #{order_item.channel_product.item_sku}, #{order_item.channel_order.order_id},
+          Cancel Order, #{order_item.channel_product.listing_id}, #{ordered}, #{inventory_balance},
+          #{channel_type}", available_stock: child.available_stock.to_i + ordered,
+          unshipped: child.unshipped.to_i - ordered, unshipped_orders: child.unshipped_orders.to_i - 1,
+          allocated: child.allocated.to_i - ordered, allocated_orders: child.allocated_orders.to_i - 1
+        )
       else
-        child.update(available_stock: child.available_stock.to_f + ordered,
-                     unshipped: child.unshipped.to_i - ordered, unshipped_orders: child.unshipped_orders.to_i - 1)
+        child.update(
+          change_log: "Cancel Order, #{order_item.channel_product.item_sku}, #{order_item.channel_order.order_id},
+          Cancel Order, #{order_item.channel_product.listing_id}, #{ordered}, #{inventory_balance},
+          #{channel_type}", available_stock: child.available_stock.to_i + ordered,
+          unshipped: child.unshipped.to_i - ordered, unshipped_orders: child.unshipped_orders.to_i - 1
+        )
       end
     end
   end
@@ -560,7 +581,7 @@ class OrderDispatchesController < ApplicationController
     @channel_orders = ChannelOrder.joins(channel_order_items: :channel_product)
     .includes(channel_order_items: :channel_product)
     .where("REPLACE(channel_products.item_sku, ' ', '') ILIKE REPLACE('%#{name}%', ' ', '')") if name.present?
-    @channel_orders = @q.result  if @channel_orders.nil? || @channel_orders.empty?
+    @channel_orders = @q.result if @channel_orders.nil? || @channel_orders.empty?
     @channel_types = ChannelOrder.channel_types
     @channel_postages = ChannelOrder.pluck(:postage).uniq.compact
     @mail_service_rules = MailServiceRule.all
@@ -642,40 +663,15 @@ class OrderDispatchesController < ApplicationController
     value = params[:id_or_order_id_or_order_status_or_buyer_name_or_channel_order_items_sku_cont]
     params[:q] = params[:q].merge(id_or_order_id_or_order_status_or_buyer_name_or_channel_order_items_sku_cont: value) if value.present?
     params[:q] = JSON.parse params[:q].gsub('=>', ':') if params[:q]&.include?('"')
-    if params['assign_rule_name'].present?
-      # if params['assign_filter'].present? && params['assign_filter'] == '0'
-      #   @not_started_orders = (@channel_orders
-      #     .joins(assign_rule: :mail_service_rule).includes(assign_rule: :mail_service_rule)
-      #     .where(stage: 'ready_to_dispatch').where.not(channel_type: 'amazon', system_user_id: nil)
-      #     .where('mail_service_rules.rule_name ILIKE ?',
-      #            "%#{params['assign_rule_name']}%")
-      #     ).where(assign_rule_id: nil).uniq
-      # else
-        @search = (@channel_orders
-          .joins(assign_rule: :mail_service_rule).includes(assign_rule: :mail_service_rule)
-          .where(stage: 'ready_to_dispatch').where.not(channel_type: 'amazon', system_user_id: nil)
-          .where('mail_service_rules.rule_name ILIKE ?',
-                 "%#{params['assign_rule_name']}%")
-          ).search(params[:q])
-      # end
-      @not_started_orders = @search.result
-      @not_started_order_data = @not_started_orders.distinct.page(params[:not_started_page]).per(params[:limit] || 100)
+    @search = @channel_orders.where(stage: 'ready_to_dispatch')
+                             .where.not(channel_type: 'amazon', system_user_id: nil).search(params[:q])
+    @not_started_orders = @search.result
+    if params[:q].present? && params[:q][:s].present? && params[:q][:s].include?('total_amount')
+      @not_started_orders = @not_started_orders.order(:total_amount)
     else
-      # if params['assign_filter'].present? && params['assign_filter'] == '1'
-      #   @search = @channel_orders.where(stage: 'ready_to_dispatch')
-      #                            .where.not(channel_type: 'amazon', system_user_id: nil).where.not(assign_rule_id: nil).search(params[:q])
-      # else
-        @search = @channel_orders.where(stage: 'ready_to_dispatch')
-                                  .where.not(channel_type: 'amazon', system_user_id: nil).search(params[:q])
-      # end
-        @not_started_orders = @search.result
-      if params[:q].present? && params[:q][:s].present? && params[:q][:s].include?('total_amount')
-        @not_started_orders = @not_started_orders.order(:total_amount)
-      else
-        @not_started_orders = @not_started_orders.order(:order_type, created_at: :desc)
-      end
-      @not_started_order_data = @not_started_orders.distinct.page(params[:not_started_page]).per(params[:limit] || 100)
+      @not_started_orders = @not_started_orders.order(:order_type, created_at: :desc)
     end
+    @not_started_order_data = @not_started_orders.distinct.page(params[:not_started_page]).per(params[:limit] || 100)
     return unless (params[:order_filter].eql? 'ready') && params[:export]
 
     @not_started_orders = @not_started_orders.where(selected: true) if params[:selected]
@@ -696,6 +692,14 @@ class OrderDispatchesController < ApplicationController
 
   def ready_to_print_orders
     @orders = @channel_orders.where(stage: 'ready_to_print').order(created_at: :desc)
+    return unless (params[:order_filter].eql? 'assignment') && params[:export]
+
+    @orders = @orders.where(selected: true) if params[:selected]
+    export_csv(@orders)
+    respond_to do |format|
+      format.html
+      format.csv
+    end
   end
 
   def customer_info

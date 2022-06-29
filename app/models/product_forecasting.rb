@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class ProductForecasting < ApplicationRecord
-  belongs_to :product
-  belongs_to :channel_forecasting
+  has_many :products
+  has_many :channel_forecastings
+
+  accepts_nested_attributes_for :channel_forecastings, allow_destroy: true
 end

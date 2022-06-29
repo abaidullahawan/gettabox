@@ -1,6 +1,6 @@
 <div class="form-group required">
   <%= f.label 'Warehouse Stock' %>
-  <%= f.number_field :total_stock, step: :any, class: 'form-control', placeholder: 'Enter Total Quantity' %>
+  <%= f.number_field :total_stock, step:1, class: 'form-control', placeholder: 'Enter Total Quantity' %>
 </div>
 <div class="form-row">
   <div class='form-group col-md-12' style='border-bottom: 1px solid;'>
@@ -33,7 +33,7 @@
       <%= link_to_add_association '+', f, :product_suppliers, partial: 'products/product_supplier_fields', class: 'nested_fields_btn btn btn-outline-primary rounded'%>
     </div>
     <%= f.fields_for :product_suppliers do |supplier|%>
-      <%#= render 'product_supplier_fields', f: supplier %>
+      <%= render 'products/product_supplier_fields', f: supplier  unless f.object.new_record? %>
     <% end %>
   </div>
 </div>

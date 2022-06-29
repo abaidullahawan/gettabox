@@ -33,6 +33,7 @@ class TrackingsController < ApplicationController
       csv = CSV.parse(csv_text, headers: true)
       count = 0
       amazon_order_ids = []
+      ebay_order_ids = []
       subset =  mapping_data.values.excluding(mapping_data[mapping_data.keys.last])
       if subset & csv.first.to_h.keys == subset
         csv.each do |row|
@@ -66,11 +67,11 @@ class TrackingsController < ApplicationController
           if order.channel_type_amazon?
             amazon_order_ids << order.id
           else
-            # job_data = EbayCompleteSaleJob.perform_later(order_ids: [order.id])
-            JobStatus.create(name: 'EbayCompleteSaleJob', status: 'inqueue', arguments: { order_ids: [order.id] }, perform_in: 300)
+            ebay_order_ids << order.id
           end
         end
         bulk_call_amazon_tracking_job(amazon_order_ids) unless amazon_order_ids.length.zero?
+        bulk_call_ebay_tracking_job(ebay_order_ids) unless ebay_order_ids.length.zero?
         flash[:notice] = "#{count} orders updated successfully"
       else
         flash[:alert] = 'File format no matched! Please change file'
@@ -189,7 +190,7 @@ class TrackingsController < ApplicationController
           product = multi.child
           # quantity = multi.quantity.to_f * (product.pack_quantity.nil? ? 1 : product.pack_quantity.to_f)
           # products << { sku: product.sku, product: product, quantity: quantity * multiple_product.ordered }
-          products << { sku: product.sku, product: product, quantity: multi.quantity.to_f * multiple_product.ordered }
+          products << { sku: product.sku, product: product, quantity: multi.quantity.to_i * multiple_product.ordered }
         end
       end
 
@@ -236,7 +237,7 @@ class TrackingsController < ApplicationController
     batch.update(update_session)
     order_ids.each do |id|
       order = ChannelOrder.find_by(id: id)
-      order.update(stage: stage, order_batch_id: batch.id, change_log: "Order Exported, #{order.id}, #{order.order_id}, #{current_user.personal_detail.full_name}")
+      order.update(stage: stage, order_batch_id: batch.id, change_log: "Order Exported, #{order.id}, #{order.order_id}, #{current_user&.personal_detail&.full_name}")
       order.update(change_log: "Channel Updated, #{order.id}, #{order.order_id}, #{current_user.personal_detail&.full_name}") if batch.update_channels
     end
     call_amazon_tracking_job(order_ids, '') if batch.update_channels
@@ -323,5 +324,14 @@ class TrackingsController < ApplicationController
       tracking_order_ids << job_status.id
     end
     WaitingTimeJob.perform_later(tracking_order_ids: tracking_order_ids)
+  end
+
+  def bulk_call_ebay_tracking_job(order_ids)
+    job_status_ids = []
+    order_ids.each.with_index(1) do |id, index|
+      job_status = JobStatus.create(name: 'EbayCompleteSaleJob', status: 'inqueue', arguments: { order_ids: id }, perform_in: (10 * index).seconds)
+      job_status_ids << job_status.id
+    end
+    WaitingTimeJob.perform_later(tracking_order_ids: job_status_ids)
   end
 end

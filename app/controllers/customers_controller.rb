@@ -14,7 +14,7 @@ class CustomersController < ApplicationController
   def index
     if params[:q].present?
       params[:q][:name_or_email_or_phone_number_or_sales_channel_or_addresses_address_or_addresses_postcode_or_channel_orders_id_or_channel_orders_order_id_or_channel_orders_order_status_i_cont_any] =
-        params[:q][:name_or_email_or_phone_number_or_sales_channel_or_addresses_address_or_addresses_postcode_or_channel_orders_id_or_channel_orders_order_id_or_channel_orders_order_status_i_cont_any].split("\r\n")
+        params[:q][:name_or_email_or_phone_number_or_sales_channel_or_addresses_address_or_addresses_postcode_or_channel_orders_id_or_channel_orders_order_id_or_channel_orders_order_status_i_cont_any]&.split("\r\n")
     end
     @q = SystemUser.customers.ransack(params[:q])
     @customers = @q.result(distinct: true).order(flagging_date: :asc).page(params[:page]).per(params[:limit])
@@ -106,8 +106,8 @@ class CustomersController < ApplicationController
     @csv = CSV.generate(headers: true) do |csv|
       csv << attributes + order_item + tracking
       customers.each do |system_user|
-        sys_user_data = attributes.map { |attr| system_user.send(attr) }
-        order_item_data = order_item.map { |attr| system_user.channel_orders.last.channel_order_items.last.send(attr) }
+        sys_user_data = attributes.map { |attr| system_user&.send(attr) }
+        order_item_data = order_item.map { |attr| system_user&.channel_orders&.last&.channel_order_items&.last&.send(attr) }
         # tracking_data = tracking.map { |attr| system_user.channel_orders.last.trackings.last.send(attr) } if system_user.channel_orders.last.trackings.present?
         csv << sys_user_data + order_item_data
       end

@@ -2,6 +2,6 @@
 
 # system user's defined setting
 class GeneralSetting < ApplicationRecord
-  has_one :address, as: :addressable
-  accepts_nested_attributes_for :address
+  has_many :addresses, as: :addressable
+  accepts_nested_attributes_for :addresses, allow_destroy: true
 end

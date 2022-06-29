@@ -9,7 +9,7 @@
       <a href="<%= purchase_deliveries_path %>">Purchase Deliveries</a>
     </li>
     <li class="breadcrumb-item active">
-      <span class="active">Show</span>
+      <span class="active">View</span>
     </li>
   </ol>
 </div>
@@ -19,7 +19,7 @@
     <div class="card mb-30">
       <div class="card-body">
         <div class="card-header">
-          <h5 class="card-title">Show</h5>
+          <h5 class="card-title">View</h5>
         </div>
         <%= form_for @purchase_delivery, url: purchase_delivery_path(@purchase_delivery)  do |pd| %>
           <div class='row'>
@@ -59,7 +59,7 @@
                           </td>
                           <td colspan='3'>
                             <h5><%= f.object.product.title %></h5><br>
-                            <strong>Description: </strong><%= f.object.product.description %><br>
+                            <strong>Description: </strong><%= f.object.product.description&.truncate(100, omission: '... (continued)') %><br>
                             <strong>Product SKU: </strong><%= f.object.product.sku %><br>
                             <strong>Supplier SKU: </strong><%= f.object.product.product_suppliers.find_by(system_user_id: @supplier).product_sku %>
                           </td>
@@ -69,7 +69,7 @@
                             <%= f.number_field :cost_price, step: :any, class: 'form-control order_item_price', placeholder: 'Price' %>
                           </td>
                           <td>
-                            <%= f.number_field :quantity, step: :any, class: 'form-control order_item_quantity', placeholder: 'Quantity' %>
+                            <%= f.number_field :quantity, step:1, class: 'form-control order_item_quantity', placeholder: 'Quantity' %>
                             <%= f.number_field :product_id, value: f.object.product.id, class: 'form-control d-none' %>
                           </td>
                           <td>

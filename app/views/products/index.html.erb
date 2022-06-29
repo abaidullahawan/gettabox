@@ -51,8 +51,8 @@
               Export
             </button>
             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-              <%= link_to 'Export All', products_path(all: true, format: :csv, export_csv: true), class: 'dropdown-item' %>
-              <%= link_to 'Export Selected', products_path(selected: true, format: :csv, export_csv: true), class: 'dropdown-item' %>
+              <a class="cursor-pointer dropdown-item export-all" data-no-turbolink='true' >Export All</a>
+              <a class="cursor-pointer dropdown-item export-selected" data-no-turbolink='true' >Export Selected</a>
               <% @product_exports.each do |export| %>
                 <%= link_to "#{export.sub_type}", products_path(export_mapping: export.id, format: :csv, export_csv: true), class: 'dropdown-item' %>
               <% end %>
@@ -82,8 +82,7 @@
               </div>
             </div>
             <div class="col-md-3"><br>
-              <%= f.select :product_type_eq, Product.product_types.map { |key, value| [key.humanize, value] }, {include_blank: 'Select an option'}, class:"form-control product-type-field", title: 'Select Product Type' %>
-            </div>
+              <%= f.select :product_type_eq, Product.product_types.map { |key, value| [key.humanize, value] }, {include_blank: 'Select an option'}, class:"form-control product-type-field", title: 'Select Product Type' %>            </div>
             <div class=' col-md-1'>
               <button type='submit' class='product_type_submit btn btn-primary mt-4 d-none'>Search</button>
             </div>
@@ -96,20 +95,14 @@
             </div>
           </div><br>
         <% end %>
-          <%= form_with url: bulk_method_products_path, method: :post do |f| %>
+          <%= form_with url: bulk_method_products_path, method: :post, local: true do |f| %>
             <div class="table-responsive">
               <table class="table m-0 table-hover">
                 <tr>
                   <th>
                     <div class='row'>
-                      <div class='col-6 p-0  mt-1'>
-                        <input type="checkbox" id="" name="" value="" class='col-6 select-all-checkbox'>
-                      </div>
-                      <div class='col-6 p-0'>
-                        <div class="custom-control custom-switch">
-                          <input type="checkbox" class="custom-control-input" id="selectSwitchAll" onclick="bulk_update_selected('/bulk_update_selected', '<%= @products&.first&.class&.name %>', event)">
-                          <label class="custom-control-label" for="selectSwitchAll"></label>
-                        </div>
+                      <div class='col-12 p-0 mt-1'>
+                        <input type="checkbox" id="" name="" value="" class='col-12 select-all-checkbox form-control' style= 'width:25px; height:25px;'>
                       </div>
                     </div>
                   </th>
@@ -126,14 +119,8 @@
                   <tr class='<%= (product.minimum.to_i > product.total_stock.to_i ) ? 'table-danger' : '' %>'>
                     <td>
                       <div class='row'>
-                        <div class='col-6 p-0 mt-1'>
-                          <%= f.check_box 'object_ids[]', {}, product.id %>
-                        </div>
-                        <div class='col-6 p-0'>
-                          <div class="custom-control custom-switch">
-                            <input type="checkbox" class="custom-control-input selectSwitch" name="select-switch" id="<%=product.id%>" <%= product.selected? ? 'checked': ''%> onclick="update_selected('/update_selected', '<%= product.class.name %>', event)">
-                            <label class="custom-control-label" for="<%=product.id%>"></label>
-                          </div>
+                        <div class='col-12 p-0 mt-1'>
+                          <%= f.check_box 'object_ids[]', { class: 'form-control', style:'width:25px; height:25px;' }, product.id %>
                         </div>
                       </div>
                     </td>
@@ -148,11 +135,11 @@
                     <td class="text-center"><%= product.product_type %></td>
                     <td class="text-center">
                       <div class="dropdown dropleft">
-                        <button class="btn btn-primary" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Actions">
-                          <i data-feather='bell' class='icon wh-15 mt-minus-3'></i>
+                        <button class="btn btn-primary rotate" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Actions">
+                          <i class='lni lni-more-alt'></i>
                         </button>
                         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                          <a class="dropdown-item" href="<%= product_path(product)%>">Show</a>
+                          <a class="dropdown-item" href="<%= product_path(product)%>">View</a>
                           <%= link_to 'Logs', version_products_path(id: product.id), class: 'dropdown-item' if product.product_type != 'multiple' %>
                           <%= link_to 'Archive', product_path(product), method: 'delete', data: {confirm: "Are you sure you want to archive"}, class: "dropdown-item"%>
                         </div>
@@ -160,7 +147,9 @@
                     </td>
                   </tr>
                 <% end %>
-                <%= f.submit '', class: 'bulk-method-delete-objects d-none'%>
+                <%= f.submit 'delete', class: 'bulk-method-delete-objects d-none'%>
+                <%= f.submit 'export_all', class: 'bulk-method-export-all-objects d-none'%>
+                <%= f.submit 'export_selected', class: 'bulk-method-export-selected-objects d-none'%>
               </table>
             </div>
           <% end %>

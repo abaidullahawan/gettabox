@@ -40,7 +40,16 @@ Rails.application.routes.draw do
   require 'sidekiq/web'
   mount Sidekiq::Web => '/sidekiq'
   resources :email_templates
-  resources :general_settings
+  resources :general_settings do
+  collection do
+    post 'import', to: 'general_settings#import'
+    get 'version', to: 'general_settings#version'
+    post 'bulk_method', to: 'general_settings#bulk_method'
+    get 'archive', to: 'general_settings#archive'
+    post 'restore', to: 'general_settings#restore'
+    post 'permanent_delete', to: 'general_settings#permanent_delete'
+  end
+end
   resources :mail_service_rules do
     collection do
       post 'import', to: 'mail_service_rules#import'
@@ -108,6 +117,10 @@ Rails.application.routes.draw do
       get 'archive', to: 'purchase_orders#archive'
       post 'restore', to: 'purchase_orders#restore'
       post 'send_email', to: 'purchase_orders#send_mail_to_supplier'
+      post 'add_product', to: 'purchase_orders#add_product'
+    end
+    member do
+      get 'quick_edit', to: 'purchase_orders#quick_edit'
     end
   end
 

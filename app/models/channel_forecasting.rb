@@ -2,8 +2,7 @@
 
 # rules assigned to channel order items
 class ChannelForecasting < ApplicationRecord
-  has_many :product_forecastings
-  has_many :products, through: :product_forecastings
+  belongs_to :product_forecasting
 
   enum filter_name: {
     supplier: 0,
@@ -19,15 +18,8 @@ class ChannelForecasting < ApplicationRecord
 
   enum units: {
     product_units: 0,
-    listing_units: 1,
+    order_units: 1,
     last_day_product_units_sold: 2
-  }, _prefix: true
-
-  enum filter_by_sku: {
-    contains: 'contains',
-    does_not_contain: 'does not contain',
-    start_with: 'start with',
-    end_with: 'end_with'
   }, _prefix: true
 
 end

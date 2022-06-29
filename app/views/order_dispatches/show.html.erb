@@ -9,7 +9,7 @@
       <a href="<%= order_dispatches_path %>">Order Dispatch</a>
     </li>
     <li class="breadcrumb-item active">
-      <span class="active">Show</span>
+      <span class="active">View</span>
     </li>
     <li class="ml-auto">
       <%= link_to 'Logs', version_order_dispatches_path(id: @order.id), class: 'btn btn-primary text-white' %>
@@ -23,7 +23,7 @@
       <div class="card-body">
         <div class="card-header">
           <h5 class="card-title">
-            Show
+            View
           </h5>
         </div>
           <table class="table table-hover text-vertical-middle mb-0">
@@ -60,7 +60,7 @@
     Replacement Order
   </button>
   <%= link_to 'Download Invoice', invoice_order_dispatches_path(id: @order.id), class: 'btn btn-primary float-right mr-2' if @order.system_user.present? %>
-  <%= link_to 'Cancel Order', cancel_order_order_dispatches_path(id: @order.id), class: "btn btn-danger float-right mr-2 #{@order.stage == 'canceled' ? 'disabled' : nil}" %>
+  <%= link_to 'Cancel Order', cancel_order_order_dispatches_path(id: @order.id), class: "btn btn-danger float-right mr-2 #{@order.stage == 'canceled' ? 'disabled' : nil}", data: { confirm: 'Are you sure you want to cancel this order. This order cannot be reverted' } %>
 </div>
 
 <div class="row">
@@ -90,7 +90,7 @@
                   <td scope="col"><%= local_product&.title %></td>
                   <td scope="col"><%= local_product&.sku %> </td>
                   <td scope="col"><%= product.channel_product&.item_price %> </td>
-                  <td scope="col"><%= product.ordered %></td>
+                  <td scope="col"><%= product.ordered.to_i %></td>
                   <td scope="col"><%= @order.total_amount %></td>
                   <td scope="col"><%= percent  =  Product.vats[local_product&.vat].to_i%>%</td>
                   <% totalvalue = @order.total_amount.to_f %>

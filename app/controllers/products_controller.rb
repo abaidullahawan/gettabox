@@ -64,10 +64,8 @@ class ProductsController < ApplicationController
     elsif @product.update(product_params)
       update_log(stock) if product_params[:total_stock].present?
       flash[:notice] = 'Updated successfully.'
-      if product_params[:product_forecastings_attributes].present?
-        buffer_rule(@product)
-      end
-      redirect_to product_path(@product)
+      buffer_rule(@product) unless product_params[:product_forecasting_id].nil?
+      redirect_to request.referrer
     else
       load_show
       render 'show'
@@ -75,41 +73,22 @@ class ProductsController < ApplicationController
   end
 
   def buffer_rule(product)
-    channel_forecastings = product.channel_forecastings
-    sigle_listings = ChannelProduct.joins(product_mapping: :product).where('product_mappings.product_id': product.id)
+    product_forecasting = product.product_forecasting
+    single_listings = ChannelProduct.joins(product_mapping: :product).where('product_mappings.product_id': product.id)
     multi_listings = ChannelProduct.joins(product_mapping: [product: [multipack_products: :child]]).where('child.id': product.id)
-    sigle_listings.update_all(buffer_quantity: nil)
-    multi_listings.update_all(buffer_quantity: nil)
-    listings = sigle_listings + multi_listings
-    channel_forecastings.each do |channel_forecasting|
-      listings.each do |listing|
-        if listing.channel_type == channel_forecasting.filter_by
-          if channel_forecasting.action == 'safe_stock_by'
-            channel_quantity = listing.item_quantity.to_i - channel_forecasting.type_number.to_i
-            channel_quantity = 0 if channel_quantity.negative?
-            listing.update(buffer_quantity: -channel_forecasting.type_number, item_quantity: channel_quantity, item_quantity_changed: true)
-          else
-            if listing.channel_type_ebay?
-              channel_quantity = listing.item_quantity.to_i + channel_forecasting.type_number.to_i
-              selling_quantity = Selling&.last&.quantity.to_i
-              channel_quantity = selling_quantity if channel_quantity > selling_quantity
-              listing.update(buffer_quantity: channel_forecasting.type_number, item_quantity: channel_quantity, item_quantity_changed: true)
-            else
-              listing.update(buffer_quantity: channel_forecasting.type_number, item_quantity: listing.item_quantity.to_i + channel_forecasting.type_number.to_i, item_quantity_changed: true)
-            end
-          end
-          # next unless Rails.env.production?
+    selling_quantity = Selling&.last&.quantity.to_i
+    listings = single_listings + multi_listings
+    listings.each do |listing|
+      listing.update(buffer_quantity: 0, fake_buffer: false)
+      next if product_forecasting.nil?
 
-          # if listing.channel_type_ebay? && (listing.listing_type.eql? 'variation')
-          #   job_data = UpdateEbayVariationProductJob.perform_later(listing_id: listing.listing_id, sku: listing.item_sku, quantity: listing.item_quantity)
-          #   JobStatus.create(job_id: job_data.job_id, name: 'UpdateEbayVariationProductJob', status: 'Queued',
-          #                    arguments: { listing_id: listing.listing_id, sku: listing.item_sku, quantity: listing.item_quantity })
-          # elsif listing.channel_type_ebay? && (listing.listing_type.eql? 'single')
-          #   job_data = UpdateEbaySingleProductJob.perform_later(listing_id: listing.listing_id, quantity: listing.item_quantity)
-          #   JobStatus.create(job_id: job_data.job_id, name: 'UpdateEbaySingleProductJob', status: 'Queued',
-          #                    arguments: { listing_id: listing.listing_id, quantity: listing.item_quantity })
-          # end
-        end
+      product_forecasting.channel_forecastings.each do |forecasting|
+        next unless listing.channel_type == forecasting.filter_by
+
+        buffer_quantity = forecasting.action_safe_stock_by? ? forecasting.type_number.to_i * -1 : forecasting.type_number.to_i
+        fake_buffer = forecasting.action_anticipate_fake_stock_only_by? ? true : false
+
+        listing.update(buffer_quantity: buffer_quantity, item_quantity_changed: true, fake_buffer: fake_buffer)
       end
     end
   end
@@ -126,12 +105,12 @@ class ProductsController < ApplicationController
             version.created_at&.strftime('%m/%d/%Y'),
             version.created_at&.strftime('%I:%M %p'),
             version.changeset.try(:[], 'change_log')&.at(1).try(:split, ',')&.at(3),
-            (version.changeset.try(:[], 'change_log')&.at(1).include? 'Purchase Order Recieved') ? 'PO%.4d' % version.changeset.try(:[], 'change_log')&.at(1).try(:split, ',')&.at(1).to_i : version.changeset.try(:[], 'change_log')&.at(1).try(:split, ',')&.at(1),
-            version.changeset.try(:[],'change_log')&.at(1).try(:split, ',')&.at(2),
-            version.changeset.try(:[],'change_log')&.at(1).try(:split, ',')&.at(4),
-            (version.changeset&.include? 'unshipped') ? version.changeset.try(:[],'unshipped')&.at(0).to_i - version.changeset.try(:[],'unshipped')&.at(1).to_i : (version.changeset.try(:[],'change_log')&.at(1)&.include? 'Product Mapped') ? 0 : (version.changeset.try(:[],'change_log')&.at(1).split(',')&.include? 'Manual Edit') ? version.changeset.try(:[],'manual_edit_stock')&.at(1).to_i - version.changeset.try(:[],'manual_edit_stock')&.at(0).to_i : (version.changeset.try(:[],'change_log')&.at(1).split(',')&.include? 'Purchase Order') ? version.changeset.try(:[],'change_log')&.at(1).try(:split, ",")&.at(-1).to_i : version.changeset.try(:[],'change_log')&.at(1).try(:split, ",")&.at(2),
-            (version.changeset&.include? 'inventory_balance') ? version.changeset.try(:[],'inventory_balance')&.at(1).to_i : version.changeset.try(:[],'change_log')&.at(1).try(:split, ",")&.at(5).to_i,
-            version.whodunnit.present? ? User.find_by(id: version.whodunnit)&.personal_detail&.full_name : 'Developer'
+            (version.changeset.try(:[], 'change_log')&.at(1).include? 'Purchase Order Recieved') ? "PO%.4d" % version.changeset.try(:[],'change_log')&.at(1).try(:split, ",")&.at(1).to_i : version.changeset.try(:[],'change_log')&.at(1).try(:split, ",")&.at(1),
+            version.changeset.try(:[], 'change_log')&.at(1).try(:split, ',')&.at(2),
+            version.changeset.try(:[], 'change_log')&.at(1).try(:split, ',')&.at(4),
+            (version.changeset&.include? 'unshipped') ? version.changeset.try(:[],'unshipped')&.at(0).to_i - version.changeset.try(:[],'unshipped')&.at(1).to_i : (version.changeset.try(:[],'change_log')&.at(1)&.include? 'Product Mapped') ? 0 : (version.changeset.try(:[],'change_log')&.at(1).split(',')&.include? 'Manual Edit') ? version.changeset.try(:[],'manual_edit_stock')&.at(1).to_i - version.changeset.try(:[],'manual_edit_stock')&.at(0).to_i : (version.changeset.try(:[],'change_log')&.at(1).split(',')&.include? 'Purchase Order') ? version.changeset.try(:[],'change_log')&.at(1).try(:split, ",")&.at(6).to_i : (version.changeset.try(:[],'change_log')&.at(1)&.include? 'Product UnMapped') ? 0 : version.changeset.try(:[],'change_log')&.at(1).try(:split, ",")&.at(2),
+            (version.changeset&.include? 'inventory_balance') ? version.changeset.try(:[],'inventory_balance')&.at(1).to_i : version.changeset.try(:[],'change_log')&.at(1).try(:split, ",")&.at(-2).to_i,
+            version.changeset.try(:[],'change_log')&.at(1).try(:split, ",")&.at(-1)&.lstrip&.titleize
           ]
         end
       end
@@ -139,10 +118,7 @@ class ProductsController < ApplicationController
     send_data csv_data, filename: "product-logs-#{Date.today}.csv", disposition: :attachment
   end
 
-  def show
-    @forecasting = ChannelForecasting.all
-    @product.product_forecastings
-  end
+  def show; end
 
   def destroy
     if @product.product_mappings.present?
@@ -172,7 +148,7 @@ class ProductsController < ApplicationController
     else
       request.format = 'csv'
       respond_to do |format|
-        format.csv { send_data products.to_csv, filename: "products-#{Date.today}.csv" }
+        format.csv { send_data products.to_csv, disposition: 'attachment', filename: "products-#{Date.today}.csv" }
       end
     end
   end
@@ -189,7 +165,13 @@ class ProductsController < ApplicationController
   end
 
   def bulk_method
-    redirect_to products_path
+    if params[:commit].eql? 'export_selected'
+      products = Product.where(id: params[:object_ids])
+    else
+      products = Product.all
+    end
+    export_csv(products)
+    redirect_to products_path if params[:commit].eql? 'delete'
   end
 
   def archive
@@ -311,11 +293,9 @@ class ProductsController < ApplicationController
 
   def product_params
     params.require(:product)
-          .permit(:sku, :title, :photo, :total_stock, :fake_stock, :pending_orders, :allocated,
-                  :available_stock, :length, :width, :height, :weight, :pack_quantity, :cost_price, :gst, :vat, :courier_type,
-                  :minimum, :maximum, :optimal, :category_id, :product_type, :season_id, :description, :product_location_id,
-                  product_forecastings_attributes:
-                  %i[id product_id channel_forecasting_id _destroy],
+          .permit(:sku, :title, :photo, :total_stock, :fake_stock, :pending_orders, :allocated, :available_stock, :length,
+                  :width, :height, :weight, :pack_quantity, :cost_price, :gst, :vat, :courier_type, :minimum, :maximum,
+                  :optimal, :category_id, :product_type, :season_id, :description, :product_location_id, :product_forecasting_id,
                   barcodes_attributes:
                   %i[id title _destroy],
                   product_suppliers_attributes:
@@ -358,7 +338,7 @@ class ProductsController < ApplicationController
           difference = hash['total_stock'].to_i - product.total_stock.to_i
           stock = product.manual_edit_stock.to_i
           stock += difference
-          product.update(manual_edit_stock: stock, change_log: "Manual Edit, Spreadsheet, #{stock}, Manual Edit, , #{(hash['total_stock'].to_i - product.unshipped.to_i)}")
+          product.update(manual_edit_stock: stock, change_log: "Manual Edit, Spreadsheet, #{stock}, Manual Edit, , #{(hash['total_stock'].to_i - product.unshipped.to_i)}, #{current_user&.personal_detail&.full_name}")
         end
         product.update!(hash)
         Barcode.find_or_create_by(product_id: product.id, title: hash['barcode'])  if hash['barcode'].present?
@@ -369,14 +349,14 @@ class ProductsController < ApplicationController
   end
 
   def update_log(stock)
-    @product.update(manual_edit_stock: stock, inventory_balance: (@product.total_stock.to_i - @product.unshipped.to_i), change_log: "Manual Edit, #{params[:reason]}, #{stock}, Manual Edit, #{params[:description]}, #{(@product.total_stock.to_i - @product.unshipped.to_i)}")
+    @product.update(manual_edit_stock: stock, inventory_balance: (@product.total_stock.to_i - @product.unshipped.to_i), change_log: "Manual Edit, #{params[:reason]}, #{stock}, Manual Edit, #{params[:description]}, #{(@product.total_stock.to_i - @product.unshipped.to_i)}, #{current_user&.personal_detail&.full_name}")
     product = @product.product_mappings.last.channel_product if @product.product_mappings.present?
   end
 
   def load_show
     @product.build_extra_field_value if @product.extra_field_value.nil?
     @product_location = ProductLocation.all
-    @forecasting = ChannelForecasting.all
+    @forecasting = ProductForecasting.all
     @channel_listings = ChannelProduct.joins(product_mapping: [product: [multipack_products: :child]]).where('child.id': @product.id)
   end
 
@@ -392,7 +372,7 @@ class ProductsController < ApplicationController
         found_error = true
         error_message = "Sku is blank at row number #{index}."
         break
-      elsif row['product_type'] == 'single' && row['total_stock'].nil?
+      elsif row['product_type'] == 'single' && row['total_stock'].to_i.negative?
         found_error = true
         error_message = "Stock is null at row number #{index}."
         break

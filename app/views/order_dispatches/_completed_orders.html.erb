@@ -1,6 +1,6 @@
 <div class="d-flex mb-3 pb-3 d-flex align-items-center" style="border-bottom: 1px solid #dee2e6">
   <div style="width: 3%;">
-    <input type="checkbox" id="customSwitchAll" style="width: 20px; height: 20px;" name="" value="" class='select-all-checkbox ml-2'>
+    <input type="checkbox" id="customSwitchAllForReady" style="width: 20px; height: 20px;" name="" value="" class='select-all-checkbox ml-2'>
   </div>
   <div class="header-font-size col-1 text-center d-flex align-items-center">Channel</div>
   <div class="header-font-size text-center d-flex align-items-center" style="width: 9%">Order Information</div>
@@ -19,7 +19,7 @@
     <div class="d-flex mb-3 pb-3 d-flex align-items-center" style="border-bottom: 1px solid #dee2e6">
       <div class="font-sm d-flex align-items-center" style="width: 3%;">
         <div id="<%=order.id%>" class= 'orders-switch' name="orders-switch">
-          <input id="object_ids[]" class="ml-2 form_field_questions" style="width: 20px; height: 20px;" type="checkbox" data-allocate = '<%= (order.channel_order_items.pluck(:allocated) - [true]).present? %>' data-courier="<%= order.assign_rule&.mail_service_rule&.courier&.name %>" data-export="<%= order.assign_rule&.mail_service_rule&.export_mapping_id %>" data-item="<%= order.channel_order_items.count %>" value="<%=order.id%>" name="object_ids[]">
+          <input id="object_ids[]" name="object_ids[]" class="ml-2 form_field_questions update-selected-export" style="width: 20px; height: 20px;" type="checkbox" data-allocate = '<%= (order.channel_order_items.pluck(:allocated) - [true]).present? %>' data-courier="<%= order.assign_rule&.mail_service_rule&.courier&.name %>" data-export="<%= order.assign_rule&.mail_service_rule&.export_mapping_id %>" data-item="<%= order.channel_order_items.count %>" value="<%=order.id%>" >
           <%# f.check_box 'object_ids[]', {'data-item': order.channel_order_items.count}, order.id %>
         </div>
       </div>
@@ -77,7 +77,7 @@
                   </p>
                   <p style="color: white;">
                     <!--b>QTY:</b> <span><%= record.quantity * product.ordered.to_i * (record.child.pack_quantity.nil? ? 1 : record.child.pack_quantity).to_i %></span-->
-                    <b>QTY:</b> <span><%= record.quantity * product.ordered.to_i %></span>
+                    <b>QTY:</b> <span><%= record.quantity.to_i * product.ordered.to_i %></span>
                   </p>
                   <div class="d-flex">
                     <div class="col-4 col-padding">
@@ -132,13 +132,13 @@
         <% if product.channel_product&.product_mapping.present? %>
           <% if product.channel_product.product_mapping.product&.product_type_multiple? %>
             <% product.channel_product.product_mapping.product&.multipack_products&.each do |record| %>
-              <% weight += record&.child&.weight.to_f * record.quantity.to_f * product&.ordered%>
+              <% weight += record&.child&.weight.to_f * record.quantity.to_i * product&.ordered%>
             <% end %>
             <div class="font-sm d-flex" style="width: 10%">
               <%= weight.round(2) %>
             </div>
           <% else %>
-            <% weight += product.channel_product.product_mapping&.product&.weight.to_f * product.ordered.to_f %>
+            <% weight += product.channel_product.product_mapping&.product&.weight.to_f * product.ordered.to_i %>
             <div class="font-sm d-flex" style="width: 10%">
               <%= weight.round(2) %>
             </div>

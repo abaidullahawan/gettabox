@@ -67,7 +67,7 @@
                       <td class="text-center"><%= order.created_at.strftime("%m/%d/%Y") %></td>
                       <td class="text-center"><%= record&.child&.title %></td>
                       <td class="text-center"><%= record&.child&.sku%></td>
-                      <td class="text-center"><%= record.quantity * product.ordered.to_i  %></td>
+                      <td class="text-center"><%= record.quantity.to_i * product.ordered.to_i  %></td>
                       <td class="text-center"><%= order.total_weight.to_i %></td>
                       <td class="text-center">
                         <% cost_price = record.child&.cost_price.to_f * record.quantity * product.ordered.to_i %>

@@ -1,25 +1,21 @@
 <%
-  t = time = Time.zone.now.dst? ? (Time.zone.now - 1.hour) : Time.zone.now
+  t = Time.zone.now
   seconds = (t.min - ( t.min % 30).minutes).seconds
   diff = 1800 + seconds
   time = t + diff.seconds
 %>
 <% @products_inqueue.each do |product| %>
   <tr class="cursor-pointer header">
-    <td class="text-center"><%= product.item_sku %></td>
+    <td class="text-center">
+      <strong><%= product.item_sku %></strong> (<%= product.channel_type%>) <br>
+      <strong><%= product.listing_id%></strong>
+    </td>
     <td class="text-center"><%= product.updated_at.strftime("%m/%d/%Y %H:%M") %></td>
     <!--td class="text-center"><%= JobStatus.sec_to_hours( Time.now - product.updated_at )%></td-->
     <td class="text-center"><%= time.strftime("%m/%d/%Y %H:%M") %></td>
     <td class="text-center"><%=product.item_quantity  %></td>
-    <td class="text-center">inqueue</td>
+    <td class="text-center">waiting</td>
   </tr>
 <% end %>
 </table>
-</div>
-
-<div class='float-right'>
-  <%= page_entries_info @products_inqueue %>
-</div><br>
-<div class="pagination justify-content-center mt-3">
-  <%= paginate @products_inqueue,theme: "twitter-bootstrap-4",pagination_class: "pagination-sm",nav_class: "d-inline-b" %>
 </div>

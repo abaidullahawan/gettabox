@@ -1,31 +1,162 @@
-<p id="notice"><%= notice %></p>
+<!-- Main Content Header -->
+<div class="main-content-header">
+  <h1>General Settings</h1>
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item">
+      <a href="<%= home_path %>">Dashboard</a>
+    </li>
+    <li class="breadcrumb-item">
+      <a href="<%= settings_path %>">Settings</a>
+    </li>
+    <li class="breadcrumb-item active">
+      <span class="active">General Settings</span>
+    </li>
+  </ol>
+</div>
+<!-- End Main Content Header -->
+<div class="alert alert-dismissible fade show text-white jquery-selected-alert d-none " style="position: fixed; width:93%; z-index:99999;" role="alert"></div>
+<div class="row">
+  <div class="col-xl-12">
+    <div class="card mb-30">
+      <div class="card-body">
+        <div class="card-header">
+          <button type="button" class="btn btn-primary float-right" data-toggle="modal" data-target="#general_settings-create-modal">
+              Create
+          </button>
+          <div class="mr-1 float-right dropdown">
+            <button class="btn btn-outline-primary" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Export
+            </button>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+              <%= link_to 'Export All', general_settings_path(all: true, format: :csv, export_csv: true), class: 'dropdown-item' %>
+              <%= link_to 'Export Selected', general_settings_path(selected: true, format: :csv, export_csv: true), class: 'dropdown-item' %>
+            </div>
+          </div>
+          <div class='mr-1 float-right'>
+            <%#= link_to 'Archives', archive_general_settings_path, class: 'btn btn-outline-info' %>
+          </div>
+          <h5 class="card-title"> Data</h5>
+        </div>
+        <%= search_form_for @q, url: general_settings_path, method: :get do |f| %>
+          <div class='row'>
+            <div class="col-md-1"><br>
+              <button class="btn btn-outline-info" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="height: 42px;">
+                Bulk
+              </button>
+              <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                <a class="dropdown-item" href="#" data-toggle="modal" data-target='#archive-modal'>Archive</a>
+              </div>
+            </div>
+            <div class="col-md-3"><br>
+              <div class="dropdown form-group">
+                <%= f.search_field :name_cont, class: 'form-control dropdown-toggle', placeholder:"Search in name" %>
+              </div>
+            </div>
+            <div class='col-1 offset-7'>
+              <label for="inputState">Per Page</label>
+              <%= select_tag :limit, options_for_select([10, 50, 100, 500, 1000], selected: params[:limit] || 10), id: 'change_per_page', class: 'form-control' %>
+              <button type="submit" id="per_page_submit" hidden="hidden"></button>
+            </div>
+          </div>
+        <% end %>
+        <br>
+        <%= form_with url: bulk_method_general_settings_path , method: :post do |f| %>
+          <div class="table-responsive">
+            <table class="table m-0 table-hover">
+              <tr>
+                <th>
+                  <div class='row' style='max-width: 65px'>
+                    <div class='col-6 p-0  mt-1'>
+                      <input type="checkbox" id="" name="" value="" class='col-6 select-all-checkbox'>
+                    </div>
+                  </div>
+                </th>
+                <th class="text-center">Name</th>
+                <th class="text-center">Vat Reg. No.</th>
+                <th class="text-center">Company Reg. No.</th>
+                <th colspan="3" class="text-center">Actions</th>
+              </tr>
+              <% @general_settings&.each&.with_index(1) do |general_settings, index| %>
+                <tr class=''>
+                  <td>
+                    <div class='row' style='max-width: 65px'>
+                      <div class='col-6 p-0 mt-1'>
+                        <%= f.check_box 'object_ids[]', {}, general_settings.id %>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="text-center"><%= general_settings.name %></td>
+                  <td class="text-center"><%= general_settings.vat_reg_no %></td>
+                  <td class="text-center"><%= general_settings.company_reg_no %></td>
 
-<h1>General Settings</h1>
+                  <td class="text-center">
+                    <div class="dropdown dropleft">
+                      <button class="btn btn-primary rotate" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Actions">
+                        <i class='lni lni-more-alt'></i>
+                      </button>
+                      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <a class="dropdown-item" href="<%= general_setting_path(general_settings)%>">Edit</a>
+                        <%= link_to 'Archive', general_setting_path(general_settings), method: 'delete', data: {confirm: 'Are you sure?', verify: 'Foo', verify_text: 'Type "Foo" to confirm'}, class: "dropdown-item"%>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              <% end %>
+              <%= f.submit '', class: 'bulk-method-delete-objects d-none'%>
+            </table>
+          </div>
+        <% end %>
+        <br>
+        <div class='float-right'>
+          <%= page_entries_info @general_settings %>
+        </div><br>
+        <div class="pagination justify-content-center mt-3">
+          <%= paginate @general_settings,theme: "twitter-bootstrap-4",pagination_class: "pagination-sm",nav_class: "d-inline-b" %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<%= form_for @general_setting, url: general_settings_path, method: :post do |f| %>
+<%#= form_for @general_setting, method: :post do |f| %>
 
-<table>
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th>Display name</th>
-      <th>Phone</th>
-      <th colspan="3"></th>
-    </tr>
-  </thead>
+  <div class="modal fade" id="general_settings-create-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Create general_settings</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <%= render 'form', f: f %>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+          <%= f.submit 'Create', class: 'btn btn-info'%>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>
 
-  <tbody>
-    <% @general_settings.each do |general_setting| %>
-      <tr>
-        <td><%= general_setting.name %></td>
-        <td><%= general_setting.display_name %></td>
-        <td><%= general_setting.phone %></td>
-        <td><%= link_to 'Show', general_setting %></td>
-        <td><%= link_to 'Edit', edit_general_setting_path(general_setting) %></td>
-        <td><%= link_to 'Destroy', general_setting, method: :delete, data: { confirm: 'Are you sure?' } %></td>
-      </tr>
-    <% end %>
-  </tbody>
-</table>
-
-<br>
-
-<%= link_to 'New General Setting', new_general_setting_path %>
+<div class="modal" id="archive-modal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Are you sure?</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want archive selected General Settings?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-danger bulk-delete-objects">Confirm</button>
+      </div>
+    </div>
+  </div>
+</div>

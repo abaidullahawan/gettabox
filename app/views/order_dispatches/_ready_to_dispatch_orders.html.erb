@@ -26,7 +26,7 @@
             <button type="button" class="btn btn-outline-primary w-100" data-toggle="modal" data-target=".LargeModal" style="height:42px;">Filters</button>
           </div>
           <div class='float-right mr-2'>
-            <%= search_field_tag :assign_rule_name, params[:assign_rule_name], class: 'form-control', placeholder: 'Search rule name' %>
+            <%# <%= search_field_tag :assign_rule_name, params[:assign_rule_name], class: 'form-control', placeholder: 'Search rule name' %>
           </div>
           <div class='float-right mr-2'>
             <%#= select_tag(:assign_filter, options_for_select([["Unassigned Courier", 0],["Assigned Courrier", 1]], params[:assign_filter] ), class:"form-control select", onchange: 'this.form.submit()') %>
@@ -222,6 +222,16 @@
               <div class="col-md-6 mx-auto form-group">
                 <%= f.label 'Select Allocation' %>
                 <%= f.select :channel_order_items_allocated_eq, options_for_select([["Unallocated", false],["Allocated", true]], f.object.channel_order_items_allocated_eq), {include_blank: "Select Allocation", hide_label:true, required: true }, class:"bg-white form-control", title: 'Select Unallocated or Allocated' %>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6 mx-auto form-group">
+                <%= f.label 'Select Channel Type' %>
+                <%= f.select :channel_type_eq, options_for_select(@channel_types.map { |key, value| [key.humanize, value] }, f.object.channel_type_eq), {include_blank: "Select Channel Type", hide_label:true, required: true }, class:"bg-white form-control", title: 'Select Channel Type', prompt: "Please select channel type" %>
+              </div>
+              <div class="col-md-6 mx-auto form-group">
+                <%= f.label 'Enter Rule Name' %>
+                <%= f.search_field :assign_rule_mail_service_rule_rule_name_cont, class: 'bg-white form-control', placeholder: 'Search rule name', title: 'Search rule name', value: f.object.assign_rule_mail_service_rule_rule_name_cont %>
               </div>
             </div>
           </div>

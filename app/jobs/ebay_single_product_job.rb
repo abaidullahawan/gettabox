@@ -81,7 +81,7 @@ class EbaySingleProductJob < ApplicationJob
       JobStatus.create(name: self.class.to_s, status: 'retry',
                        arguments: { listing_id: listing_id, quantity: quantity, error: response['Errors']['ShortMessage'] }, perform_in: 600)
     elsif response['Ack'].eql? 'Success'
-      ChannelProduct.find_by(listing_id: listing_id, item_sku: sku).update(listing_type: 'single', item_quantity_changed: false)
+      ChannelProduct.find_by(listing_id: listing_id).update(listing_type: 'single', item_quantity_changed: false)
     end
   end
 end

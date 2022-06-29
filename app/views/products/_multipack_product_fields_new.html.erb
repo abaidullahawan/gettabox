@@ -15,7 +15,7 @@
     </div>
     <div class="col-3">
       <%= f.label 'Quantity' %>
-      <%= f.number_field :quantity, step: :any, class: 'form-control', placeholder: 'Enter Quantity' %>
+      <%= f.number_field :quantity, step: 1, min: 1,  class: 'form-control', placeholder: 'Enter Quantity' %>
     </div>
     <div class='col-1 pt-1'>
       <br>

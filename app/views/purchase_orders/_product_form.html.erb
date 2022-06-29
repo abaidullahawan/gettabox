@@ -1,0 +1,32 @@
+<div class='form-row'>
+  <div class="form-group col-6">
+    <%= f.label :sku %>
+    <%= f.text_field :sku, autofocus: true, placeholder: 'Please enter product sku', class: 'form-control', required: true %>
+  </div>
+  <div class="form-group col-12">
+    <%= f.label :title %>
+    <%= f.text_field :title, required: true, placeholder: 'Please enter product title', class: 'form-control' %>
+  </div>
+</div>
+<div class="form-row">
+  <div class='form-group col-md-12' style='border-bottom: 1px solid;'>
+    <h5 class='fs-14'>Supplier</h5>
+  </div>
+  <div class="form-group col-md-12">
+    <div class='links text-right'>
+      <%#= link_to_add_association '+', f, :product_suppliers, partial: 'products/product_supplier_fields', class: 'nested_fields_btn btn btn-outline-primary rounded'%>
+    </div>
+    <%= f.fields_for :product_suppliers do |supplier|%>
+      <%= render 'products/product_supplier_fields', f: supplier %>
+    <% end %>
+  </div>
+</div>
+<div class='form-row'>
+  <div class="form-group">
+    <%= label_tag :order_quantity %>
+    <%= number_field_tag :order_quantity, {}, class: 'form-control', placeholder: 'Please enter quantity' %>
+  </div>
+  <div class="form-group">
+    <%= hidden_field_tag :purchase_order, @purchase_order.id, class: 'form-control', placeholder: 'Please enter quantity' %>
+  </div>
+</div>

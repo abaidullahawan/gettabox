@@ -23,6 +23,9 @@ class PurchaseDeliveriesController < ApplicationController
     if @purchase_order.order_status == 'completed'
       flash[:notice] = 'Order Delivery is already completed.'
       redirect_to purchase_order_path(@purchase_order)
+    elsif @purchase_order.purchase_order_details.map {|p| p.quantity.nil? ? '' : p.product.product_type}.any? nil
+      flash[:notice] = 'Please create temporary products first.'
+      redirect_to purchase_order_path(@purchase_order)
     else
       @purchase_order_details = @purchase_order.purchase_order_details
       @purchase_delivery = PurchaseDelivery.new
@@ -122,9 +125,9 @@ class PurchaseDeliveriesController < ApplicationController
       return unless detail.restore
 
       @product = Product.find(detail.product.id)
-      @stock = @product.total_stock.to_f + detail.quantity.to_f
-      @available_stock = @product.available_stock.to_f + detail.quantity.to_f
-      inventory_balance = @stock - @product.unshipped.to_f
+      @stock = @product.total_stock.to_i + detail.quantity.to_i
+      @available_stock = @product.available_stock.to_i + detail.quantity.to_i
+      inventory_balance = @stock - @product.unshipped.to_i
       @product.update(total_stock: @stock, available_stock: @available_stock, change_log: "Purchase Order, #{detail.id}, #{detail.purchase_order.system_user.name}, Purchase Order Recieved, #{(detail.purchase_order.purchase_order_details.last.cost_price.to_f * detail.quantity.to_i)}, #{inventory_balance}, #{detail.quantity.to_i}")
     end
   end

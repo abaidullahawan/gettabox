@@ -1,144 +1,229 @@
+<style>
+  .row{
+    display: flex;
+    display: -webkit-box;
+  }
+  .col-6 {
+    -webkit-box-flex: 0;
+    flex: 0 0 50%;
+    max-width: 50%;
+  }
+  .col-8 {
+    -webkit-box-flex: 0;
+    flex: 0 0 66.666667%;
+    max-width: 66.666667%;
+  }
+  .col-4 {
+    -webkit-box-flex: 0;
+    flex: 0 0 33.333333%;
+    max-width: 33.333333%;
+  }
+  .col-3 {
+    -webkit-box-flex: 0;
+    flex: 0 0 25%;
+    max-width: 25%;
+  }
+  .table {
+    width: 100%;
+    margin-bottom: 1rem;
+    color: #212529;
+  }
+  table {
+      border-collapse: collapse;
+  }
+
+  *, *::before, *::after {
+      box-sizing: border-box;
+  }
+  table {
+      display: table;
+      border-collapse: separate;
+      box-sizing: border-box;
+      text-indent: initial;
+      border-spacing: 2px;
+      border-color: grey;
+  }
+  tbody {
+      display: table-row-group;
+      vertical-align: middle;
+      border-color: inherit;
+  }
+  tr {
+      display: table-row;
+      vertical-align: inherit;
+      border-color: inherit;
+  }
+  .table th, .table td {
+      border-bottom: 1px solid #f6f6f7;
+      border-top: 1px solid #f6f6f7;
+      padding: 15px;
+  }
+
+  .table th {
+      font-size: 14px;
+  }
+  .table th, .table td {
+      padding: 0.75rem;
+      vertical-align: top;
+      border-top: 1px solid #dee2e6;
+  }
+  .text-center{
+    text-align: center !important;
+  }
+  p{
+    color: black !important;
+  }
+  .addresses p{
+    margin: 0px !important;
+  }
+  .text-primary, h1, h2, h4 {
+    color: #2962ff !important;
+  }
+  .text-right {
+    text-align: right!important;
+  }
+</style>
+
 <%= wicked_pdf_stylesheet_link_tag ("pdf") -%>
-<div class="main-content-header">
-
-  <h1>Purchase Order</h1>
-  <ol class="breadcrumb">
-  </ol>
-</div>
-<!-- End Main Content Header -->
-<div class="row">
-  <div class="col-xl-12">
-    <div class="card mb-30">
-      <div class="card-body">
-        <%= form_for @purchase_order, url: purchase_order_path(@purchase_order)  do |pd| %>
-
-          <div class='row'>
-            <div class='col-6'>
-              <div class='row'>
-                <h5 class="fs-14 mb-1 col-4">Supplier Name</h5>
-                <p class="col-8"><%= @purchase_order&.system_user&.name %></p>
-                <h5 class="fs-14 mb-1 col-4">Estimated Delivery Date</h5>
-                <p class="col-8"><%= @purchase_order&.system_user&.days_for_completion_to_delivery %> Day/Days</p>
-                <h5 class="fs-14 mb-1 col-4">Payment Method</h5>
-                <p class="col-8"><%= @purchase_order&.system_user&.payment_method %></p>
-                <h5 class="fs-14 mb-1 col-4">Order Status</h5>
-                <p class="col-8"><%=  %></p>
-              </div>
-            </div>
-            <div class='col-6'>
-              <div class='row'>
-
-                <h5 class="fs-14 mb-1 col-4 pdf_style">Order Date</h5>
-                <p class="col-8"><%= @purchase_order.created_at.strftime('%d-%m-%y') %></p>
-                <h5 class="fs-14 mb-1 col-4">Delivery Method</h5>
-                <p class="col-8"><%= @purchase_order&.system_user&.delivery_method.present? ? @purchase_order.system_user.delivery_method : 'Not Specified' %></p>
-                <h5 class="fs-14 mb-1 col-4">Order Deliverd?</h5>
-                <p class="col-8"><%=  %>Yes/No</p>
-                <h5 class="fs-14 mb-1 col-4">Order Completed?</h5>
-                <p class="col-8"><%=  %>Yes/No</p>
-              </div>
-            </div>
-          </div>
-          <!--div class='row'>
-            <div class='col-3 offset-6'>
-              <h5 class='float-right pt-2'>Total Price</h5>
-            </div>
-            <div class='col-3'>
-              <%= pd.number_field :total_bill, class: 'form-control order_total', placeholder: 'Total' %>
-              <%= pd.number_field :supplier_id, value: @supplier, class: 'form-control d-none' %>
-            </div>
-          </div--><br>
-          <div class="row">
-            <div class="col-lg-12">
-              <div class="faq-accordion mb-30">
-                <div class="table-responsive accordion-content">
-                  <table class="table table-hover text-vertical-middle mb-0">
-                    <thead class="bort-none borpt-0">
-                      <tr>
-                        <th scope="col"><strong>SKU</strong></th>
-                        <th scope="col"><strong>Supplier SKU</strong></th>
-                        <th scope="col"><strong>Category-Product</strong></th>
-                        <th scope="col"><strong>Deliverd</strong></th>
-                        <th scope="col"><strong>Ordered</strong></th>
-                        <th scope="col"><strong>Damaged</strong></th>
-                        <th scope="col"><strong>Missing</strong></th>
-                        <th scope="col"><strong>Price[FOB]</strong></th>
-                        <th scope="col"><strong>Total</strong></th>
-                        <th scope="col"><strong>Ex Fact</strong></th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <%= pd.fields_for :purchase_order_details do |f| %>
-                        <tr>
-                          <td>
-                            <%= f.object.product.sku%>
-                          </td>
-                          <td>
-                            <%= f.object.purchase_order&.system_user&.product_suppliers&.first&.product_sku %>
-                          </td>
-                          <td>
-                            <%= f.object.product.title %>
-                          </td>
-                          <td>
-                            <%= f.object.quantity %>
-                          </td>
-                          <td>
-                            <%= f.object.purchase_order.purchase_order_details.where(product_id: f.object.product.id).first.quantity %>
-                          </td>
-                          <td>
-                            <%= @demaged[f.object.product_id] %>
-                          </td>
-                          <td>
-                            <%= @missing[f.object.product_id] %>
-                          </td>
-                          <td>
-                            £ <%= f.object.cost_price %>
-                          </td>
-                          <td>
-                            £ <%= f.object.quantity * f.object.cost_price if f.object.cost_price.present? && f.object.quantity.present? %>
-                          </td>
-                          <td>
-                            <%= f.object.purchase_order.created_at.strftime("%d/ %m/ %Y") %>
-                          </td>
-                        </tr>
-                      <% end %>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-              <!-- End Faq accordion -->
-            </div>
-          </div>
-        <% end %>
-        <!-- Delivery Data -->
-    <h2>Delivery Details</h2>
-    <div class="row">
-        <div class="col-lg-12">
-          <div class="faq-accordion mb-30">
-            <div class="table-responsive accordion-content">
-              <table class="table table-hover text-vertical-middle mb-0">
-                <thead class="bort-none borpt-0">
-                  <tr>
-                    <th scope="col"><strong>Purchase Delivery Id</strong></th>
-                    <th scope="col"><strong>Purchase Order Id</strong></th>
-                    <th scope="col"><strong>Total Bill</strong></th>
-                    <th scope="col"><strong>Created At</strong></th>
-                  </tr>
-                </thead>
-                <tbody>
-                    <% @deliveries.each do |delivery|%>
-                      <tr>
-                      <td><%= delivery.id%></td>
-                      <td><%= delivery.purchase_order_id%></td>
-                      <td><%= delivery.total_bill%></td>
-                      <td><%= delivery.created_at.strftime("%d/ %m/ %Y")%>
-                      </tr>
-                    <% end %>
-                </tbody>
-              </table>
-            </div>
-            <!-- End Deliveries -->
-      </div>
-    </div>
+<div class="row" style="margin: 10px 18px 0 0">
+  <%= wicked_pdf_image_tag asset_url('gettabox-logo.jpeg'), height: '60px', width: '70px' %>
+  <div style="margin-left: 1100px;">
+    <p><strong class='text-primary'>Vat Reg No:</strong><%= @general_setting&.vat_reg_no %></p>
+    <p><strong class='text-primary'>Company Reg No:</strong><%= @general_setting&.company_reg_no %></p>
   </div>
 </div>
+<div class="row addresses">
+  <% @general_setting&.addresses&.each do |address|%>
+    <div class="col-3">
+      <strong class='text-primary'><%= address.address_title&.titleize %>:</strong>
+      <p><%= address.company %></p>
+      <p><%= address.address %></p>
+      <p><%= address.city %></p>
+      <p><%= address.region %></p>
+      <p><%= address.postcode %></p>
+      <p><%= address.country %></p>
+    </div>
+  <% end %>
+</div>
+<div class="">
+  <h1 class='text-right'>Purchase Order</h1>
+</div>
+<!-- End Main Content Header -->
+<div class="col-12">
+  <!--div class='row'>
+    <div class='col-6'>
+      <div class='row'>
+        <h4 class="col-4">Supplier Name</h4>
+        <p class="col-8"><%= @purchase_order&.system_user&.name %></p>
+      </div>
+      <div class="row">
+        <h4 class="col-4">Estimated Delivery Date</h4>
+        <p class="col-8"><%= @purchase_order&.system_user&.days_for_completion_to_delivery %> Day/Days</p>
+      </div>
+      <div class="row">
+        <h4 class="col-4">Payment Method</h4>
+        <p class="col-8"><%= @purchase_order&.system_user&.payment_method %></p>
+      </div>
+      <div class="row">
+        <h4 class="col-4">Order Status</h4>
+        <p class="col-8"><%= @purchase_order.order_status %></p>
+      </div>
+      <div class="row">
+        <h4 class="col-4">Invoice Number</h4>
+        <p class="col-8"><%= @purchase_order.invoice_number %></p>
+      </div>
+    </div>
+    <div class='col-6'>
+      <div class='row'>
+        <h4 class="col-4">Order Date</h4>
+        <p class="col-8"><%= @purchase_order.created_at.strftime('%d-%m-%y') %></p>
+      </div>
+      <div class="row">
+        <h4 class="col-4">Delivery Method</h4>
+        <p class="col-8"><%= @purchase_order&.system_user&.delivery_method.present? ? @purchase_order.system_user.delivery_method : 'Not Specified' %></p>
+      </div>
+      <div class="row">
+        <h4 class="col-4">Order Deliverd?</h4>
+        <p class="col-8"><%=  %>Yes/No</p>
+      </div>
+      <div class="row">
+        <h4 class="col-4">Order Completed?</h4>
+        <p class="col-8"><%=  %>Yes/No</p>
+      </div>
+    </div>
+  </div-->
+  <div class="row">
+    <div class="col-lg-12">
+      <div class="faq-accordion mb-30">
+        <div class="table-responsive accordion-content">
+          <table class="table">
+            <thead class="bort-none borpt-0">
+              <tr>
+                <th class='text-center'><strong>SKU</strong></th>
+                <th class='text-center'><strong>Supplier SKU</strong></th>
+                <th class='text-center'><strong>Category-Product</strong></th>
+                <th class='text-center'><strong>Ordered</strong></th>
+                <th class='text-center'><strong>Price[FOB]</strong></th>
+                <th class='text-center'><strong>Total</strong></th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @purchase_order.purchase_order_details.each do |f|%>
+                <% next if f.quantity.nil? %>
+
+                <tr>
+                  <td class='text-center' >
+                    <%= f.product.sku%>
+                  </td>
+                  <td class='text-center' >
+                    <%= f.purchase_order&.system_user&.product_suppliers&.first&.product_sku %>
+                  </td>
+                  <td class='text-center' >
+                    <%= f.product.title %>
+                  </td>
+                  <td class='text-center' >
+                    <%= f.quantity %>
+                  </td>
+                  <td class='text-center' >
+                    <%= image_tag image_url('pound.svg'), class: 'mr-1 mb-1', height: '11px', width: '10px' %><%= f.cost_price %>
+                  </td>
+                  <td class='text-center' >
+                    <%= image_tag image_url('pound.svg'), class: 'mr-1 mb-1', height: '11px', width: '10px' %><%= f.quantity * f.cost_price if f.cost_price.present? && f.quantity.present? %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <!-- End Faq accordion -->
+    </div>
+  </div>
+  <!--h2 class='text-right'>Delivery Details</h2>
+  <div class="row">
+      <div class="col-lg-12">
+        <div class="table-responsive accordion-content">
+          <table class="table table-hover text-vertical-middle mb-0">
+            <thead class="bort-none borpt-0">
+              <tr>
+                <th class='text-center'><strong>Purchase Delivery Id</strong></th>
+                <th class='text-center'><strong>Purchase Order Id</strong></th>
+                <th class='text-center'><strong>Total Bill</strong></th>
+                <th class='text-center'><strong>Created At</strong></th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @deliveries.each do |delivery|%>
+                <tr>
+                  <td class='text-center' ><%= delivery.id%></td>
+                  <td class='text-center' ><%= delivery.purchase_order_id%></td>
+                  <td class='text-center' ><%= delivery.total_bill%></td>
+                  <td class='text-center' ><%= delivery.created_at.strftime("%d/ %m/ %Y")%>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+  </div>
+</div-->

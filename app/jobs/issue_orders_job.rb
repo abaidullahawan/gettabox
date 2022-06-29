@@ -36,7 +36,7 @@ class IssueOrdersJob < ApplicationJob
       if product.present?
         next multipack_product(item, product) unless product.product_type.eql? 'single'
 
-        inventory_balance = product.inventory_balance.to_f - item.ordered
+        inventory_balance = product.inventory_balance.to_i - item.ordered
         update_available_stock(item, product, inventory_balance, item.ordered)
       end
     end
@@ -56,16 +56,17 @@ class IssueOrdersJob < ApplicationJob
       quantity = multipack.quantity
       child = multipack.child
 
-      available_stock = child.available_stock.to_f - (item.ordered * quantity)
-      update_available_stock(item, child, available_stock, (item.ordered * quantity))
+      inventory_balance = child.inventory_balance.to_i - (item.ordered * quantity)
+      update_available_stock(item, child, inventory_balance, (item.ordered * quantity))
     end
   end
 
   def update_available_stock(item, product, inventory_balance, ordered)
     unshipped = product.unshipped + ordered if product.unshipped.present?
+    channel_type = item.channel_order.channe_type
     product.update(change_log: "API, #{item.channel_product.item_sku}, #{item.channel_order.order_id}, Order Paid,
-        #{item.channel_product.listing_id}, #{unshipped}, #{product.inventory_balance} ", unshipped: unshipped, unshipped_orders: product.unshipped_orders.to_i + 1,
-        inventory_balance: inventory_balance)
+        #{item.channel_product.listing_id}, #{unshipped}, #{inventory_balance}, #{channel_type} ", unshipped: unshipped,
+        unshipped_orders: product.unshipped_orders.to_i + 1)
     if product.inventory_balance >= ordered
       product.update(allocated: product.allocated.to_i + ordered, allocated_orders: product.allocated_orders.to_i + 1)
       item.update(allocated: true)

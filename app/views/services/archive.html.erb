@@ -65,9 +65,8 @@
 
                   <td class="text-center">
                     <div class="dropdown dropleft">
-                      <button class="btn btn-primary" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <i data-feather='bell' class='icon wh-15 mt-minus-3'></i>
-                        Actions
+                      <button class="btn btn-primary rotate" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class='lni lni-more-alt'></i>
                       </button>
                       <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                         <%= link_to 'Restore', restore_services_path(object_id: service), method: :post, data: {confirm: "Are you sure you want to restore"}, class: "dropdown-item"%>

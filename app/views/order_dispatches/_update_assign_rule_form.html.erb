@@ -13,8 +13,8 @@
           </div>
         <%= hidden_field_tag :status, f.object.status %>
           <div class="dropdown dropleft mt-4 col-2">
-            <button class="btn btn-primary" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Actions">
-              <i data-feather='bell' class='icon wh-15'></i>
+            <button class="btn btn-primary rotate" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Actions">
+              <i class='lni lni-more-alt'></i>
             </button>
             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
               <%= link_to "Edit Rule", mail_service_rule_path(f.object.mail_service_rule_id), class: "dropdown-item" %>

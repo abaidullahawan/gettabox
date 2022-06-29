@@ -55,6 +55,8 @@
                     <tbody>
                       <% @purchase_order_details.each do |p_order| %>
                         <%= pd.fields_for :purchase_delivery_details do |f| %>
+                          <% next if p_order.quantity.nil? %>
+
                           <tr>
                             <td>
                               <% if p_order.product.photo.attached? %>
@@ -65,7 +67,7 @@
                             </td>
                             <td colspan='3'>
                               <h5><%= p_order.product.title %></h5><br>
-                              <strong>Description: </strong><%= p_order.product.description %><br>
+                              <strong>Description: </strong><%= p_order.product.description&.truncate(100, omission: '... (continued)') %><br>
                               <strong>Product SKU: </strong><%= p_order.product.sku %><br>
                               <strong>Supplier SKU: </strong><%= p_order.product.product_suppliers.find_by(system_user_id: @purchase_order.supplier_id).product_sku %>
                             </td>

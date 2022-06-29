@@ -20,10 +20,10 @@ class AssignRulesController < ApplicationController
       else
         channel_order.update(assign_rule_id: @assign_rule.id)
       end
-      redirect_to order_dispatches_path(order_filter: 'ready')
+      redirect_to request.referrer
       flash[:notice] = 'Mail Service Rule Assigned!'
     else
-      redirect_to order_dispatches_path(order_filter: 'ready')
+      redirect_to request.referrer
       flash[:alert] = @assign_rule.errors.full_messages
     end
   end

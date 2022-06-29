@@ -74,13 +74,10 @@
               <tr>
                 <th>
                   <div class='row' style='max-width: 65px'>
-                    <div class='col-6 p-0  mt-1'>
-                      <input type="checkbox" id="" name="" value="" class='col-6 select-all-checkbox'>
-                    </div>
                     <div class='col-6 p-0'>
                       <div class="custom-control custom-switch">
-                        <input type="checkbox" class="custom-control-input" id="selectSwitchAll" onclick="bulk_update_selected('/bulk_update_selected', '<%= @categories&.first&.class&.name %>', event)">
-                        <label class="custom-control-label" for="selectSwitchAll"></label>
+                        <input type="checkbox" class="selectSwitchAll" id="selectSwitchAll" style= 'width:25px; height:25px;' onclick="bulk_update_selected('/bulk_update_selected', '<%= @categories&.first&.class&.name %>', event)">
+                        <label for="selectSwitchAll"></label>
                       </div>
                     </div>
                   </div>
@@ -93,13 +90,10 @@
                 <tr class=''>
                   <td>
                     <div class='row' style='max-width: 65px'>
-                      <div class='col-6 p-0 mt-1'>
-                        <%= f.check_box 'object_ids[]', {}, category.id %>
-                      </div>
                       <div class='col-6 p-0'>
                         <div class="custom-control custom-switch">
-                          <input type="checkbox" class="custom-control-input selectSwitch" name="select-switch" id="<%=category.id%>" <%= category.selected? ? 'checked': ''%> onclick="update_selected('/update_selected', '<%= category.class.name %>', event)">
-                          <label class="custom-control-label" for="<%=category.id%>"></label>
+                          <input type="checkbox" class="selectSwitch" name="select-switch" style= 'width:25px; height:25px;' id="<%=category.id%>" <%= category.selected? ? 'checked': ''%> onclick="update_selected('/update_selected', '<%= category.class.name %>', event)">
+                          <label for="<%=category.id%>"></label>
                         </div>
                       </div>
                     </div>
@@ -108,12 +102,12 @@
                   <td class="text-center"><%= category.description %></td>
                   <td class="text-center">
                     <div class="dropdown dropleft">
-                        <button class="btn btn-primary" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title='Actions'>
-                          <i data-feather='bell' class='icon wh-15 mt-minus-3'></i>
+                        <button class="btn btn-primary rotate" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title='Actions'>
+                          <i class='lni lni-more-alt'></i>
                         </button>
                         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                           <%= link_to 'Logs',  version_categories_path(id: category.id), class: 'dropdown-item' %>
-                          <a class="dropdown-item" href="<%= category_path(category)%>">Show</a>
+                          <a class="dropdown-item" href="<%= category_path(category)%>">View</a>
                           <%= link_to 'Archive', category_path(category), method: 'delete', data: {confirm: "Are you sure you want to archive"}, class: "dropdown-item"%>
                         </div>
                       </div>
