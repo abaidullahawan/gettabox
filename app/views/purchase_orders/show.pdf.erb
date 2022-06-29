@@ -162,7 +162,8 @@
                 <th class='text-center'><strong>SKU</strong></th>
                 <th class='text-center'><strong>Supplier SKU</strong></th>
                 <th class='text-center'><strong>Category-Product</strong></th>
-                <th class='text-center'><strong>Ordered</strong></th>
+                <th class='text-center'><strong>Pack</strong></th>
+                <th class='text-center'><strong>Singles</strong></th>
                 <th class='text-center'><strong>Price[FOB]</strong></th>
                 <th class='text-center'><strong>Total</strong></th>
               </tr>
@@ -171,26 +172,42 @@
               <% @purchase_order.purchase_order_details.each do |f|%>
                 <% next if f.quantity.nil? %>
 
-                <tr>
-                  <td class='text-center' >
-                    <%= f.product.sku%>
-                  </td>
-                  <td class='text-center' >
-                    <%= f.purchase_order&.system_user&.product_suppliers&.first&.product_sku %>
-                  </td>
-                  <td class='text-center' >
-                    <%= f.product.title %>
-                  </td>
-                  <td class='text-center' >
-                    <%= f.quantity %>
-                  </td>
-                  <td class='text-center' >
-                    <%= image_tag image_url('pound.svg'), class: 'mr-1 mb-1', height: '11px', width: '10px' %><%= f.cost_price %>
-                  </td>
-                  <td class='text-center' >
-                    <%= image_tag image_url('pound.svg'), class: 'mr-1 mb-1', height: '11px', width: '10px' %><%= f.quantity * f.cost_price if f.cost_price.present? && f.quantity.present? %>
-                  </td>
-                </tr>
+                <% if product_singles(f.product_id, f.quantity, f.quantity_type) %>
+                  <% purchase_order_details_dup(f.product_id, f.quantity, f.quantity_type).times.each.with_index(1) do |t, index|%>
+                    <tr>
+                      <td class='text-center'><%= f.product&.sku%></td>
+                      <td class='text-center'><%= f.product&.product_suppliers&.first&.product_sku %></td>
+                      <td class='text-center'><%= f.product&.title %></td>
+                      <!--td ><%= f&.quantity %> (<%= f.quantity_type%>)</td-->
+                      <td class='text-center'><%= pack_quantity(f.product_id, f.quantity, f.quantity_type, index) %></td>
+                      <td class='text-center'><%= single_quantity(f.product_id, f.quantity, f.quantity_type, index) %></td>
+                      <td class='text-center'>
+                        <%= image_tag image_url('pound.svg'), class: 'mr-1 mb-1', height: '11px', width: '10px' %>
+                        <%= f.cost_price %>
+                      </td>
+                      <td class='text-center'>
+                        <%= image_tag image_url('pound.svg'), class: 'mr-1 mb-1', height: '11px', width: '10px' %>
+                        <%= single_quantity(f.product_id, f.quantity, f.quantity_type, index) * f.cost_price %>
+                      </td>
+                    </tr>
+                  <% end %>
+                <% else %>
+                  <tr>
+                    <td class='text-center'><%= f.product&.sku%></td>
+                    <td class='text-center'><%= f.product&.product_suppliers&.first&.product_sku %></td>
+                    <td class='text-center'><%= f.product&.title %></td>
+                    <td class='text-center'><%= pack_quantity(f.product_id, f.quantity, f.quantity_type, 1) %></td>
+                    <td class='text-center'><%= single_quantity(f.product_id, f.quantity, f.quantity_type, 1) %></td>
+                    <td class='text-center'>
+                      <%= image_tag image_url('pound.svg'), class: 'mr-1 mb-1', height: '11px', width: '10px' %>
+                      <%= f.cost_price %>
+                    </td>
+                    <td class='text-center'>
+                      <%= image_tag image_url('pound.svg'), class: 'mr-1 mb-1', height: '11px', width: '10px' %>
+                      <%= f.total|| f.quantity * f.cost_price %>
+                    </td>
+                  </tr>
+                <% end %>
               <% end %>
             </tbody>
           </table>
