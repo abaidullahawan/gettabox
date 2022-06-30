@@ -16,7 +16,7 @@ class Product < ApplicationRecord
   attribute :allocated, :integer, default: 0
   attribute :pack_quantity, minimum: 1
   attribute :pallet_quantity, minimum: 1
-  validates :total_stock, numericality: { greater_than_or_equal_to: :allocated }, if: -> { product_type_single? }
+  validates :unshipped, numericality: { greater_than_or_equal_to: 0 }, if: -> { product_type_single? }
   has_many :barcodes, dependent: :destroy
   has_many :product_suppliers, dependent: :destroy
   has_many :system_users, through: :product_suppliers

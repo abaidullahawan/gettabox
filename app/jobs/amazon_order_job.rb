@@ -159,51 +159,75 @@ class AmazonOrderJob < ApplicationJob
         order.update(stage: 'unmapped_product_sku')
       else
         order.update(stage: 'ready_to_dispatch')
-        allocate_or_unallocate(order.channel_order_items)
+        allocate_or_unallocate(order.channel_order_items, order)
         assign_rule(order)
       end
     end
   end
 
-  def allocate_or_unallocate(channel_items)
+  def allocate_or_unallocate(channel_items, order)
     channel_items.each do |item|
       product = item.channel_product.product_mapping.product
       if product.present?
-        next multipack_product(item, product) unless product.product_type.eql? 'single'
+        next multipack_product(item, product, order) unless product.product_type.eql? 'single'
 
         inventory_balance = product.inventory_balance.to_i - item.ordered
-        update_available_stock(item, product, inventory_balance, item.ordered)
+        update_available_stock(item, product, inventory_balance, item.ordered, order)
       end
     end
   end
 
-  def multipack_product(item, product)
+  def multipack_product(item, product, order)
     available = product.multipack_products.map { |m| m.child.available_stock.to_i }
     required = product.multipack_products.map { |m| m.quantity.to_i * item.ordered }
     check = available.zip(required).all? { |a, b| a >= b }
-    return unless check
 
-    multipack_allocation(item, product)
+    channel_type = order.channel_type
+    check_forcasting_present = product.multipack_products.map { |m| m.child.forecasting.present? }
+
+    if check_forcasting_present.all?(true) && item.allocated == false
+      check_safe_stock = product.multipack_products.map { |m| m.child.forecasting[channel_type].first.last.negative? }
+      check_anticipate = product.multipack_products.map { |m| m.child.forecasting[channel_type].first.last.positive? }
+
+      concern_channel_forecasting_for_safe_stock(item, product, order) if check_safe_stock.all?(true)
+
+      return if @allocation_check
+
+      return concern_channel_forecasting_for_products(item, product, order) unless check && check_anticipate.any?(false)
+
+    else
+      return unless check
+
+    end
+    multipack_allocation(item, product, order)
   end
 
-  def multipack_allocation(item, product)
+  def multipack_allocation(item, product, order)
     product.multipack_products.each do |multipack|
       quantity = multipack.quantity
       child = multipack.child
 
       inventory_balance = child.inventory_balance.to_i - (item.ordered * quantity)
-      update_available_stock(item, child, inventory_balance, (item.ordered * quantity))
+      update_available_stock(item, child, inventory_balance, (item.ordered * quantity), order)
     end
   end
 
-  def update_available_stock(item, product, inventory_balance, ordered)
+  def update_available_stock(item, product, inventory_balance, ordered, order)
     product = Product.find(product.id)
     unshipped = product.unshipped.to_i + ordered
     channel_type = item.channel_order.channel_type
     product.update(change_log: "API, #{item.channel_product.item_sku}, #{item.channel_order.order_id}, Order Paid,
         #{item.channel_product.listing_id}, #{unshipped}, #{inventory_balance}, #{channel_type} ", unshipped: unshipped,
          unshipped_orders: product.unshipped_orders.to_i + 1)
-    if product.inventory_balance >= ordered
+
+    product_forecasting = product.forecasting
+    if product_forecasting.present? && item.allocated == false
+      type_number = product_forecasting[channel_type].first.last
+      concern_channel_forecasting_for_safe_stock(item, product, order) if type_number.negative?
+      return if @allocation_check
+
+      return concern_channel_forecasting_for_products(order_item, product, order) unless product.inventory_balance.to_i < ordered
+    elsif product.inventory_balance >= ordered
       product.update(allocated: product.allocated.to_i + ordered, allocated_orders: product.allocated_orders.to_i + 1)
       item.update(allocated: true)
     else

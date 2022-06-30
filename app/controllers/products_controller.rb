@@ -73,7 +73,10 @@ class ProductsController < ApplicationController
   end
 
   def buffer_rule(product)
+    forecastings = {}
     product_forecasting = product.product_forecasting
+    product_forecasting.channel_forecastings.each { |f| forecastings[f.filter_by] = { f.units => f.type_number * (f.action_anticipate_by? ? 1 : -1) } }
+    product.update(forecasting: forecastings)
     single_listings = ChannelProduct.joins(product_mapping: :product).where('product_mappings.product_id': product.id)
     multi_listings = ChannelProduct.joins(product_mapping: [product: [multipack_products: :child]]).where('child.id': product.id)
     selling_quantity = Selling&.last&.quantity.to_i
@@ -236,8 +239,8 @@ class ProductsController < ApplicationController
   end
 
   def search_multipack
-    @searched_products = Product.ransack('sku_or_title_cont': params[:search_value].downcase.to_s)
-                                .result.where(product_type: 'single').limit(20).pluck(:id, :sku, :title)
+    @searched_products = Product.ransack('sku_or_title_cont': params[:search_value].downcase.to_s, 'product_type_eq': 0)
+                                .result.limit(20).pluck(:id, :sku, :title)
     respond_to do |format|
       format.json { render json: @searched_products }
     end
