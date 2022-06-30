@@ -75,13 +75,14 @@ class ChannelForecastingsController < ApplicationController
   end
 
   def update
-      if @channel_forecasting.update(forecasting_params)
-        flash[:notice] = 'Channel Forecasting Rule was successfully updated.'
-        redirect_to channel_forecastings_path
-      else
-        flash.now[:alert] = @channel_forecasting.errors.full_messages
-        render :show
-      end
+    if @channel_forecasting.update(forecasting_params)
+      update_channel_forecasting_for_product
+      flash[:notice] = 'Channel Forecasting Rule was successfully updated.'
+      redirect_to channel_forecastings_path
+    else
+      flash.now[:alert] = @channel_forecasting.errors.full_messages
+      render :show
+    end
   end
 
   def destroy
@@ -107,5 +108,13 @@ class ChannelForecastingsController < ApplicationController
           .permit(:name, channel_forecastings_attributes:
             %i[id filter_name filter_by action type_number units _destroy]
           )
+  end
+
+  def update_channel_forecasting_for_product
+    forecastings = {}
+    channel_forecastings = @channel_forecasting.channel_forecastings
+    channel_forecastings.each { |f| forecastings[f.filter_by] = { f.units => f.type_number * (f.action_anticipate_by? ? 1 : -1) } }
+    products = @channel_forecasting.products
+    products.update_all(forecasting: forecastings)
   end
 end
