@@ -121,7 +121,7 @@ class ProductsController < ApplicationController
   def show; end
 
   def destroy
-    if @product.product_mappings.present? || @product.multipack_products.present? || @product.purchase_order_details.present?
+    if @product.product_mappings.present? || @product.multipack_products.present? || !(@product.purchase_order_details&.map{|d| d.purchase_order.order_status}.all? 'completed')
       flash[:alert] = 'Cannot archive mapped product'
     else
       @product.destroy
