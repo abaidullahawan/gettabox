@@ -60,6 +60,7 @@
                               <th scope="col"><strong>Stock</strong></th>
                               <th scope="col"><strong>Vat</strong></th>
                               <th scope="col"><strong>Cost Price</strong></th>
+                              <th scope="col"><strong>Quantity Type</strong></th>
                               <th scope="col"><strong>Quantity</strong></th>
                             </tr>
                           </thead>
@@ -78,7 +79,7 @@
                                     <h5><span class="productSkuSearch"><%= f.object.product.title %></span></h5><br>
                                     <strong>Description: </strong><%= f.object.product.description&.truncate(100, omission: '... (continued)') %><br>
                                     <strong>Product SKU: </strong><span class="productSkuSearch"><%= f.object.product.sku %></span><br>
-                                    <strong>Supplier SKU: </strong><%= f.object.product.product_suppliers.find_by(system_user_id: @supplier).product_sku %>
+                                    <strong>Supplier SKU: </strong><%= f.object.product.product_suppliers.find_by(system_user_id: @supplier)&.product_sku %>
                                   </td>
                                   <td><%= f.object.product.total_stock %></td>
                                   <td class='d-none'>
@@ -91,10 +92,14 @@
                                     <%= f.number_field :cost_price, step: :any, value: f.object.cost_price, class: 'form-control order_item_price', placeholder: 'Price' %>
                                   </td>
                                   <td>
+                                    <%= f.select :quantity_type, options_for_select(product_quantities(f.object.product_id).map { |key, value| [key.humanize, key] }, f.object.quantity_type), {include_blank: 'Please select quantity type'}, class: 'form-control quantity_type' %>
+                                    <%= select_tag :quantity_type_hidden, options_for_select(product_quantities(f.object.product_id).map { |key, value| [key.humanize, value] }), class: 'form-control quantity_type_hidden d-none' %>
+                                  </td>
+                                  <td>
                                     <%= f.number_field :quantity, step:1, class: 'form-control order_item_quantity', placeholder: 'Quantity' %>
                                   </td>
                                   <td>
-                                    <input class="form-control order_item_total" value= "<%=f.object.cost_price.to_f * f.object.quantity.to_i %>" readonly="true" type="text" placeholder="Total" style="width: 70px;">
+                                    <%= f.number_field :total, class: 'form-control order_item_total', placeholder: 'Total', readonly: true %>
                                   </td>
                                 </tr>
                               <% end %>
