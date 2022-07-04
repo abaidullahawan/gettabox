@@ -71,6 +71,10 @@ class ChannelOrder < ApplicationRecord
     Arel.sql("to_char(\"#{table_name}\".\"id\", '9999999999999')")
   end
 
+  ransacker :updated_at, type: :date do
+    Arel.sql('updated_at::date')   # filter only the date from updated_at attribute
+  end
+
   # ransacker :assign_rule_id do
   #   Arel.sql('COALESCE(assign_rule_id, 0)')
   # end

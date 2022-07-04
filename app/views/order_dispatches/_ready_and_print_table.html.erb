@@ -38,7 +38,8 @@
         <div class="w-full">
           <% order.channel_order_items&.each do |product|%>
             <%= link_to product_mappings_path(q:{item_sku_or_listing_id_cont: product.sku}), class:'w-full' do %>
-              <div class="card-style px-1 mt-1 relative">
+              <% card_color = ((order.order_status.eql? 'REPLACEMENT') || order.postage.to_i.positive?) ? 'bg-secondary' : '' %>
+              <div class="card-style px-1 mt-1 relative <%= card_color %>">
                 <div>
                   <span class="order-listing order-quantity"><%= product.ordered %></span>
                   <div class="d-flex">

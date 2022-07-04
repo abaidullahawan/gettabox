@@ -532,7 +532,7 @@ class OrderDispatchesController < ApplicationController
                   :concession_amount, :total_amount, :payment_status, :buyer_name, :channel_order_id,
                   :assign_rule_id, :system_user_id, :order_batch_id, :stage, :order_type,
                   channel_order_items_attributes:
-                  %i[sku ordered product_id _destroy])
+                  %i[sku ordered product_id line_item_id ordered _destroy])
   end
 
   def csv_create_records(csv)
@@ -669,9 +669,10 @@ class OrderDispatchesController < ApplicationController
     if params[:q].present? && params[:q][:s].present? && params[:q][:s].include?('total_amount')
       @not_started_orders = @not_started_orders.order(:total_amount)
     else
-      @not_started_orders = @not_started_orders.order(:order_type, created_at: :desc)
+      # @not_started_orders = @not_started_orders.order(:order_type, created_at: :desc)
+      @not_started_orders = @not_started_orders.order(Arel.sql("channel_type = 4 DESC, postage DESC, created_at desc"))
     end
-    @not_started_order_data = @not_started_orders.distinct.page(params[:not_started_page]).per(params[:limit] || 100)
+    @not_started_order_data = @not_started_orders.page(params[:not_started_page]).per(params[:limit] || 100)
     return unless (params[:order_filter].eql? 'ready') && params[:export]
 
     @not_started_orders = @not_started_orders.where(selected: true) if params[:selected]
@@ -737,7 +738,7 @@ class OrderDispatchesController < ApplicationController
                                               .where.not(channel_type: 'amazon', system_user_id: nil).distinct.count
     @issue_orders_count = @channel_orders.where(stage: 'issue').count
     @unpaid_orders_count = @channel_orders.where(stage: %w[unpaid pending]).count
-    @completed_count = @channel_orders.where(stage: 'completed').distinct.count
+    @completed_count = @channel_orders.where(stage: 'completed').count
     @un_matched_orders_count = @channel_orders.where(stage: 'unmapped_product_sku').count
     @unmatched_sku_count = @channel_orders.where(stage: 'unable_to_find_sku').count
     @miss_customer_count = @channel_orders.where(channel_type: 'amazon', stage: 'ready_to_dispatch', system_user_id: nil)
