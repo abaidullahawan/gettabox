@@ -83,8 +83,8 @@ class Product < ApplicationRecord
       quantity = (inventory_balance.to_i + fake_stock.to_i) / deduction_unit.to_i
       channel_type = product.channel_type_ebay?
       unallocated_orders = channel_type ? 'ebay_unallocated_orders' : 'amazon_unallocated_orders'
-      type_number = mapping.product.product_forecasting.channel_forecastings.where(filter_by: product.channel_type).first.type_number
-      buffer_quantity = type_number - send(unallocated_orders)
+      type_number = mapping&.product&.product_forecasting&.channel_forecastings&.where(filter_by: product.channel_type)&.first&.type_number
+      buffer_quantity = type_number.to_i - send(unallocated_orders)
       buffer_quantity = [buffer_quantity, 0].max
       product.update(item_quantity: quantity, buffer_quantity: buffer_quantity, item_quantity_changed: true, buffer_quantity: buffer_quantity) unless (product.item_quantity.to_i.eql? quantity.to_i) && (product.buffer_quantity.to_i.eql? buffer_quantity)
     end
@@ -100,7 +100,7 @@ class Product < ApplicationRecord
       unallocated_orders = channel_type ? 'ebay_unallocated_orders' : 'amazon_unallocated_orders'
 
       buffer_quantity = multi_mapping.product_mapping.product.multipack_products
-                                     .map { |multi| multi.child.product_forecasting.channel_forecastings.where(filter_by: multi_mapping.channel_type).first.type_number - multi.child.send(unallocated_orders) }.min
+                                     .map { |multi| multi.child&.product_forecasting&.channel_forecastings&.where(filter_by: multi_mapping.channel_type)&.first&.type_number.to_i - multi&.child&.send(unallocated_orders) }.min
       buffer_quantity = [buffer_quantity, 0].max
       item_quantity = deduction_quantity.to_i
       multi_mapping.update(item_quantity: item_quantity, buffer_quantity: buffer_quantity, item_quantity_changed: true) unless (multi_mapping.item_quantity.to_i.eql? item_quantity.to_i) && (multi_mapping.buffer_quantity.to_i.eql? buffer_quantity)
