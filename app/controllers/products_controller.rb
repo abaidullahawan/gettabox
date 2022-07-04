@@ -75,8 +75,17 @@ class ProductsController < ApplicationController
   def buffer_rule(product)
     forecastings = {}
     product_forecasting = product.product_forecasting
-    product_forecasting.channel_forecastings.each { |f| forecastings[f.filter_by] = { f.units => f.type_number * (f.action_anticipate_by? ? 1 : -1) } }
-    product.update(forecasting: forecastings)
+    if product_forecasting.present?
+      ebay_unallocated_orders = product.ebay_unallocated_orders
+      amazon_unallocated_orders = product.amazon_unallocated_orders
+      product_forecasting.channel_forecastings.each do |f|
+        unallocated_orders = f.filter_by.eql?('ebay') ? ebay_unallocated_orders : amazon_unallocated_orders
+        type_number = f.type_number - unallocated_orders
+        type_number = type_number.positive? ? type_number : 0
+        forecastings[f.filter_by] = { f.units => type_number * (f.action_anticipate_by? ? 1 : -1) }
+      end
+      product.update(forecasting: forecastings)
+    end
     single_listings = ChannelProduct.joins(product_mapping: :product).where('product_mappings.product_id': product.id)
     multi_listings = ChannelProduct.joins(product_mapping: [product: [multipack_products: :child]]).where('child.id': product.id)
     selling_quantity = Selling&.last&.quantity.to_i

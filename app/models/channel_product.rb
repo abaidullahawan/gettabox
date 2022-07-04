@@ -28,17 +28,17 @@ class ChannelProduct < ApplicationRecord
     selling_unit = Selling&.last&.quantity.to_i
     if product.product_type_single?
       quantity = if channel_type_ebay?
-                     selling_unit < stock ? selling_unit : [stock, 0].max
-                   else
-                     stock
-                   end
+                  stock > selling_unit ? selling_unit : stock
+                 else
+                  stock
+                 end
     else
       multipack_products = product.multipack_products
       deduction_quantity = multi_products_check(multipack_products)
       quantity = if channel_type_ebay?
-                   selling_unit < deduction_quantity.to_i ? selling_unit : [deduction_quantity.to_i, 0].max
+                   deduction_quantity.to_i > selling_unit ? selling_unit : deduction_quantity.to_i
                  else
-                   [deduction_quantity.to_i, 0].max
+                   deduction_quantity.to_i
                  end
     end
     update_columns(item_quantity: quantity, channel_quantity: quantity + buffer_quantity.to_i, item_quantity_changed: true) unless item_quantity.to_i.eql? quantity.to_i
@@ -58,10 +58,22 @@ class ChannelProduct < ApplicationRecord
     return unless saved_change_to_attribute?(:item_quantity) || saved_change_to_attribute?(:channel_quantity) || saved_change_to_attribute?(:buffer_quantity)
 
     selling_unit = Selling&.last&.quantity.to_i
-    quantity = channel_type_ebay? ? (selling_unit < item_quantity) ? selling_unit : item_quantity : item_quantity
-    quantity = [quantity, 0].max
-    buffered_quantity = quantity + buffer_quantity.to_i
-    buffered_quantity = channel_type_ebay? ? (selling_unit < buffered_quantity) ? selling_unit : buffered_quantity : buffered_quantity
+    product = product_mapping.product
+    product = Product.find_by(id: product.id)
+    unallocated_orders = channel_type_ebay? ? 'ebay_unallocated_orders' : 'amazon_unallocated_orders'
+    if product.product_type_single?
+      quantity = product.inventory_balance
+    else
+      quantity = product.multipack_products.map { |mp| mp.child.inventory_balance.to_i / mp.quantity.to_i }.min
+    end
+    quantity = channel_type_ebay? ? (quantity > selling_unit) ? selling_unit : quantity : quantity
+    if product.product_type_single? || product.multipack_products.count == 1
+      buffered_quantity = quantity + buffer_quantity.to_i
+    end
+
+    buffered_quantity = channel_type_ebay? ? (buffered_quantity > selling_unit) ? selling_unit : buffered_quantity : buffered_quantity
+    buffered_quantity = [buffered_quantity.to_i, 0].max
+
     update_columns(item_quantity: quantity, channel_quantity: buffered_quantity)
   end
 end

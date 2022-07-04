@@ -113,8 +113,18 @@ class ChannelForecastingsController < ApplicationController
   def update_channel_forecasting_for_product
     forecastings = {}
     channel_forecastings = @channel_forecasting.channel_forecastings
-    channel_forecastings.each { |f| forecastings[f.filter_by] = { f.units => f.type_number * (f.action_anticipate_by? ? 1 : -1) } }
     products = @channel_forecasting.products
-    products.update_all(forecasting: forecastings)
+    products.each do |product|
+      ebay_unallocated_orders = product.ebay_unallocated_orders
+      amazon_unallocated_orders = product.amazon_unallocated_orders
+      channel_forecastings.each do |f|
+        unallocated_orders = f.filter_by.eql?('ebay') ? ebay_unallocated_orders : amazon_unallocated_orders
+        type_number = f.type_number - unallocated_orders
+        type_number = type_number.positive? ? type_number : 0
+        forecastings[f.filter_by] = { f.units => type_number * (f.action_anticipate_by? ? 1 : -1) }
+      end
+      product.update(forecasting: forecastings)
+    end
+
   end
 end

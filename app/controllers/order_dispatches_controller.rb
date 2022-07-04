@@ -4,6 +4,8 @@
 class OrderDispatchesController < ApplicationController
   include NewProduct
   include AutoAssignRule
+  include ChannelForecastingForProducts
+
   before_action :authenticate_user!
   # before_action :refresh_token, :refresh_token_amazon, only: %i[index all_order_data]
   before_action :check_status, only: %i[index fetch_response_orders]
@@ -331,10 +333,11 @@ class OrderDispatchesController < ApplicationController
   end
 
   def allocations
-    order_items = ChannelOrder.find_by(id: params[:listing_id]).channel_order_items
+    order = ChannelOrder.find_by(id: params[:listing_id])
+    order_items = order.channel_order_items
     if params[:allocate].eql? 'true'
       order_items.each do |item|
-        allocate_item(item)
+        allocate_item(item, order)
       end
     else
       order_items.each do |item|
@@ -348,6 +351,8 @@ class OrderDispatchesController < ApplicationController
     product = order_item.channel_product.product_mapping.product
     return multipack_unallocation(order_item, product) if product.product_type.eql? 'multiple'
 
+    ordered = order_item.ordered
+    update_buffer_during_unallocation(order_item, product, ordered)
     product.update(available_stock: product.available_stock.to_i + order_item.ordered,
                    allocated: product.allocated.to_i - order_item.ordered, allocated_orders: product.allocated_orders.to_i - 1)
     #  change_log: "#{order_item.channel_order.channel_type} API, #{order_item.channel_order.id}, #{order_item.channel_order.order_id}, UnAllocate, #{order_item.channel_product.listing_id}")
@@ -355,15 +360,21 @@ class OrderDispatchesController < ApplicationController
     flash[:notice] = 'Unallocation successful!'
   end
 
-  def allocate_item(order_item)
+  def allocate_item(order_item, order)
     product = order_item.channel_product.product_mapping.product
-    return multipack_allocation(order_item, product) if product&.product_type.eql? 'multiple'
+    return multipack_allocation(order_item, product, order) if product&.product_type.eql? 'multiple'
+
+    channel_type = order.channel_type
+    product_forecasting = product.forecasting
+    type_number = product_forecasting[channel_type].first.last if product_forecasting.present?
 
     if product&.available_stock.to_i >= order_item.ordered
       product.update(available_stock: product.available_stock.to_i - order_item.ordered,
                      allocated: product.allocated.to_i + order_item.ordered, allocated_orders: product.allocated_orders.to_i + 1)
       # change_log: "#{order_item.channel_order.channel_type} API, #{order_item.channel_order.id}, #{order_item.channel_order.order_id}, Allocated, #{order_item.channel_product.listing_id}")
       order_item.update(allocated: true)
+    elsif product_forecasting.present? && order_item.allocated == false && type_number.positive?
+      concern_channel_forecasting_for_products(order_item, product, order)
     else
       @not_allocated.instance_of?(Array) ? (@not_allocated << order_item.channel_order&.order_id) : flash[:alert] = 'Available stock is not enough!'
     end
@@ -374,6 +385,7 @@ class OrderDispatchesController < ApplicationController
       child = multipack.child
       quantity = multipack.quantity
       ordered = (order_item.ordered * quantity)
+      update_buffer_during_unallocation(order_item, child, ordered)
       child.update(available_stock: child.available_stock.to_i + ordered,
                    allocated: child.allocated.to_i - ordered, allocated_orders: child.allocated_orders.to_i - 1)
       # ,change_log: "#{order_item.channel_order.channel_type} API, #{order_item.channel_order.id}, #{order_item.channel_order.order_id}, UnAllocate, #{order_item.channel_product.listing_id}"
@@ -382,10 +394,17 @@ class OrderDispatchesController < ApplicationController
     flash[:notice] = 'Unallocation successful!'
   end
 
-  def multipack_allocation(order_item, product)
+  def multipack_allocation(order_item, product, order)
     available = product.multipack_products.map { |m| m.child.available_stock.to_i }
     required = product.multipack_products.map { |m| m.quantity.to_i * order_item.ordered }
     check = available.zip(required).all? { |a, b| a >= b }
+
+    channel_type = order.channel_type
+    check_forcasting_present = product.multipack_products.map { |m| m.child.forecasting.present? }
+    if check_forcasting_present.all?(true)
+      check_anticipate = product.multipack_products.map { |m| m.child.forecasting[channel_type].first.last.positive? }
+    end
+
     if check
       product.multipack_products.each do |multipack|
         child = multipack.child
@@ -396,6 +415,8 @@ class OrderDispatchesController < ApplicationController
         # change_log: "#{order_item.channel_order.channel_type} API, #{order_item.channel_order.id}, #{order_item.channel_order.order_id}, Allocated, #{order_item.channel_product.listing_id}")
       end
       order_item.update(allocated: true)
+    elsif check_forcasting_present.all?(true) && order_item.allocated == false && check_anticipate.all?(true)
+      concern_channel_forecasting_for_products(order_item, product, order)
     else
       @not_allocated.instance_of?(Array) ? (@not_allocated << order_item.channel_order&.order_id) : flash[:alert] = 'Available stock is not enough!'
     end
@@ -791,5 +812,52 @@ class OrderDispatchesController < ApplicationController
       end
     end
     [found_e, row_number]
+  end
+
+  def update_buffer_during_unallocation(order_item, product, ordered)
+
+    channel_type = order_item.channel_order.channel_type
+    product_forecasting = product.forecasting
+
+    return unless product_forecasting.present?
+
+    ebay_unallocated_orders = product.ebay_unallocated_orders
+    amazon_unallocated_orders = product.amazon_unallocated_orders
+    type_number = product_forecasting[channel_type].first.last
+
+    type_number_channel = product.product_forecasting&.channel_forecastings&.find_by(filter_by: channel_type, action: 'anticipate_by').type_number
+
+    return unless type_number < type_number_channel
+
+    forecastings = {}
+    channel_forecastings = product.product_forecasting&.channel_forecastings
+    channel_forecastings.each do |f|
+
+      if f.filter_by.eql?(channel_type) && f.action_anticipate_by?
+        case f.filter_by
+        when 'ebay'
+          ebay_unallocated_orders -= type_number
+        when 'amazon'
+          amazon_unallocated_orders -= type_number
+        end
+
+        case f.units
+        when 'product_units'
+          type_number += ordered
+        when 'order_units'
+          type_number += 1
+        end
+        forecastings[f.filter_by] = { f.units => type_number * (f.action_anticipate_by? ? 1 : -1) }
+      else
+        type_numbers = product_forecasting[f.filter_by].first.last
+        forecastings[f.filter_by] = { f.units => type_numbers * (f.action_anticipate_by? ? 1 : -1) }
+      end
+
+    end
+
+    product.update(
+      forecasting: forecastings, ebay_unallocated_orders: ebay_unallocated_orders,
+      amazon_unallocated_orders: amazon_unallocated_orders
+    )
   end
 end
