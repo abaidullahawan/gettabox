@@ -430,6 +430,7 @@ class ProductMappingsController < ApplicationController
                       .where('channel_order_items.channel_product_id': channel_product.id).pluck(:id)
     orders = ChannelOrder.where(id: ids, stage: %w[unmapped_product_sku unable_to_find_sku])
     concern_recalculate_rule(orders)
+    buffer_rule(product, channel_product)
     orders.each do |order|
       next if order.channel_order_items.map { |i| i.channel_product.status }.any?('unmapped')
 
@@ -439,7 +440,6 @@ class ProductMappingsController < ApplicationController
       unshipped = product.unshipped + order.channel_order_items.pluck(:ordered).sum if product.unshipped.present?
       inventory_balance = product.total_stock.to_i - unshipped.to_i
       product.update(change_log: " Order Paid, #{channel_product.item_sku}, #{order.order_id}, Order Paid, #{channel_product.listing_id}, #{unshipped}, #{inventory_balance}, #{channel_type} ", unshipped: unshipped, inventory_balance: inventory_balance, unshipped_orders: product.unshipped_orders.to_i + 1)
-      buffer_rule(product, channel_product)
       allocations(order.channel_order_items, order)
     end
   end
@@ -448,7 +448,9 @@ class ProductMappingsController < ApplicationController
     orders = ChannelOrder.joins(:channel_order_items).includes(:channel_order_items)
                          .where('channel_order_items.channel_product_id': channel_product.id, stage: %w[unmapped_product_sku unable_to_find_sku])
     product.multipack_products.each do |multi_pack_log|
-      multi_pack_log.child.update(change_log: "Product Mapped, #{multi_pack_log.child.sku}, #{channel_product.item_sku}, Mapped, #{channel_product.listing_id}, #{multi_pack_log.child.inventory_balance}, #{current_user&.personal_detail&.full_name}")
+      child = Product.find(multi_pack_log.child.id)
+      buffer_rule(child, channel_product)
+      child.update(change_log: "Product Mapped, #{multi_pack_log.child.sku}, #{channel_product.item_sku}, Mapped, #{channel_product.listing_id}, #{multi_pack_log.child.inventory_balance}, #{current_user&.personal_detail&.full_name}")
     end
     concern_recalculate_rule(orders)
     orders.each do |order|
@@ -462,7 +464,6 @@ class ProductMappingsController < ApplicationController
         unshipped = child.unshipped.to_i + unshipped_log.to_i
         inventory_balance = child.total_stock.to_i - unshipped.to_i
         child.update(change_log: " Order Paid, #{channel_product.item_sku}, #{order.order_id}, Order Paid, #{channel_product.listing_id}, #{unshipped}, #{inventory_balance}, #{channel_type} ", unshipped: unshipped, inventory_balance: inventory_balance, unshipped_orders: child.unshipped_orders.to_i + 1)
-        buffer_rule(child, channel_product)
       end
       allocations(order.channel_order_items, order)
     end
@@ -506,14 +507,13 @@ class ProductMappingsController < ApplicationController
     channel_type = order.channel_type
     check_forcasting_present = product.multipack_products.map { |m| m.child.forecasting.present? }
     if check_forcasting_present.all?(true) && order_item.allocated == false
-      check_safe_stock = product.multipack_products.map { |m| m.child.forecasting[channel_type].first.last.negative? }
-      check_anticipate = product.multipack_products.map { |m| m.child.forecasting[channel_type].first.last.positive? }
 
+      check_safe_stock = product.multipack_products.map { |m| m.child.forecasting[channel_type].first.last.negative? }
       concern_channel_forecasting_for_safe_stock(order_item, product, order) if check_safe_stock.all?(true)
 
       return if @allocation_check
 
-      return concern_channel_forecasting_for_products(order_item, product, order) unless check && check_anticipate.any?(false)
+      return concern_channel_forecasting_for_products(order_item, product, order) unless check
 
     else
       return unless check
@@ -575,6 +575,7 @@ class ProductMappingsController < ApplicationController
       product.update(unallocated: product.unallocated.to_i - ordered)
     end
     item.update(allocated: false)
+    update_buffer_during_unallocation(item, product, ordered)
   end
 
   def buffer_rule(product, channel_product)
@@ -591,5 +592,50 @@ class ProductMappingsController < ApplicationController
 
       channel_product.update(buffer_quantity: buffer_quantity, item_quantity_changed: true, fake_buffer: fake_buffer)
     end
+  end
+
+  def update_buffer_during_unallocation(order_item, product, ordered)
+
+    channel_type = order_item.channel_order.channel_type
+    product_forecasting = product.forecasting
+
+    return unless product_forecasting.present?
+
+    ebay_unallocated_orders = product.ebay_unallocated_orders
+    amazon_unallocated_orders = product.amazon_unallocated_orders
+    type_number = product_forecasting[channel_type].first.last
+
+    type_number_channel = product.product_forecasting&.channel_forecastings&.find_by(filter_by: channel_type).type_number
+
+    return unless type_number < type_number_channel
+
+    forecastings = {}
+    channel_forecastings = product.product_forecasting&.channel_forecastings
+    channel_forecastings.each do |f|
+
+      if f.filter_by.eql?(channel_type)
+        case f.filter_by
+        when 'ebay'
+          ebay_unallocated_orders -= type_number
+        when 'amazon'
+          amazon_unallocated_orders -= type_number
+        end
+        case f.units
+        when 'product_units'
+          type_number += ordered
+        when 'order_units'
+          type_number += 1
+        end
+        forecastings[f.filter_by] = { f.units => type_number * (f.action_anticipate_by? ? 1 : -1) }
+      else
+        type_numbers = product_forecasting[f.filter_by].first.last
+        forecastings[f.filter_by] = { f.units => type_numbers * (f.action_anticipate_by? ? 1 : -1) }
+      end
+
+    end
+    product.update(
+      forecasting: forecastings, ebay_unallocated_orders: ebay_unallocated_orders,
+      amazon_unallocated_orders: amazon_unallocated_orders
+    )
   end
 end

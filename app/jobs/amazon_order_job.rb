@@ -226,7 +226,7 @@ class AmazonOrderJob < ApplicationJob
       concern_channel_forecasting_for_safe_stock(item, product, order) if type_number.negative?
       return if @allocation_check
 
-      return concern_channel_forecasting_for_products(order_item, product, order) unless product.inventory_balance.to_i < ordered
+      return concern_channel_forecasting_for_products(order_item, product, order) unless product.inventory_balance >= ordered
     elsif product.inventory_balance >= ordered
       product.update(allocated: product.allocated.to_i + ordered, allocated_orders: product.allocated_orders.to_i + 1)
       item.update(allocated: true)

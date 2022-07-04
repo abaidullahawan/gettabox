@@ -37,9 +37,11 @@ module ChannelForecastingForProducts
     return unless type_number.positive? && type_number >= order_item.ordered
 
     product_forecasting[channel_type]['product_units'] = type_number - order_item.ordered
+    unallocated_orders = channel_type.eql?('ebay') ? 'ebay_unallocated_orders' : 'amazon_unallocated_orders'
     product.update(
       allocated: product.allocated.to_i + order_item.ordered,
-      allocated_orders: product.allocated_orders.to_i + 1, forecasting: product_forecasting
+      allocated_orders: product.allocated_orders.to_i + 1, forecasting: product_forecasting,
+      "#{unallocated_orders}": product.send("#{unallocated_orders}") + 1
     )
     order_item.update(allocated: true)
   end
@@ -57,15 +59,17 @@ module ChannelForecastingForProducts
         type_number = product_forecasting[channel_type]['order_units']
         if type_number.positive?
           product_forecasting[channel_type]['order_units'] = type_number - 1
+          unallocated_orders = channel_type.eql?('ebay') ? 'ebay_unallocated_orders' : 'amazon_unallocated_orders'
           product.update(
             allocated: product.allocated.to_i + item.ordered,
-            allocated_orders: product.allocated_orders.to_i + 1, forecasting: product_forecasting
+            allocated_orders: product.allocated_orders.to_i + 1, forecasting: product_forecasting,
+            "#{unallocated_orders}": product.send("#{unallocated_orders}") + 1
           )
           item.update(allocated: true)
         end
       else
         check = product.multipack_products.map { |m| m.child.forecasting[channel_type]['order_units'].positive? }
-        next unless check.any?(false)
+        next if check.any?(false)
 
         product.multipack_products.each do |multipack|
           child = multipack.child
@@ -75,9 +79,11 @@ module ChannelForecastingForProducts
           product_forecasting = child.forecasting
           type_number = product_forecasting[channel_type]['order_units']
           product_forecasting[channel_type]['order_units'] = type_number - 1
+          unallocated_orders = channel_type.eql?('ebay') ? 'ebay_unallocated_orders' : 'amazon_unallocated_orders'
           child.update(
             allocated: child.allocated.to_i + ordered,
-            allocated_orders: child.allocated_orders.to_i + 1, forecasting: product_forecasting
+            allocated_orders: child.allocated_orders.to_i + 1, forecasting: product_forecasting,
+            "#{unallocated_orders}": child.send("#{unallocated_orders}") + 1
           )
           item.update(allocated: true)
         end

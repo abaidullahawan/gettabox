@@ -16,6 +16,7 @@ class Product < ApplicationRecord
   attribute :allocated, :integer, default: 0
   attribute :pack_quantity, minimum: 1
   attribute :pallet_quantity, minimum: 1
+  attribute :unshipped, :integer, default: 0
   validates :unshipped, numericality: { greater_than_or_equal_to: 0 }, if: -> { product_type_single? }
   has_many :barcodes, dependent: :destroy
   has_many :product_suppliers, dependent: :destroy
@@ -76,22 +77,33 @@ class Product < ApplicationRecord
 
   def update_channel_quantity
     product_mappings&.each do |mapping|
-      product = mapping.channel_product
+      cp_id = mapping.channel_product&.id
+      product = ChannelProduct.find_by_id(cp_id)
       deduction_unit = 1
       quantity = (inventory_balance.to_i + fake_stock.to_i) / deduction_unit.to_i
-      product.update(item_quantity: quantity, item_quantity_changed: true) unless product.item_quantity.to_i.eql? quantity.to_i
+      channel_type = product.channel_type_ebay?
+      unallocated_orders = channel_type ? 'ebay_unallocated_orders' : 'amazon_unallocated_orders'
+      type_number = mapping.product.product_forecasting.channel_forecastings.where(filter_by: product.channel_type).first.type_number
+      buffer_quantity = type_number - send(unallocated_orders)
+      buffer_quantity = [buffer_quantity, 0].max
+      product.update(item_quantity: quantity, buffer_quantity: buffer_quantity, item_quantity_changed: true, buffer_quantity: buffer_quantity) unless (product.item_quantity.to_i.eql? quantity.to_i) && (product.buffer_quantity.to_i.eql? buffer_quantity)
     end
     @channel_listings = ChannelProduct.joins(product_mapping: [product: [multipack_products: :child]]).where('child.id': id)
     @channel_listings&.each do |multi_mapping|
       deduction_unit = multi_mapping.product_mapping&.product&.multipack_products&.find_by(child_id: id)&.quantity.to_i
       quantity = (inventory_balance.to_i + fake_stock.to_i) / deduction_unit.to_i
-      deduction_quantity = [quantity.floor, 0].max unless deduction_unit.zero?
+      deduction_quantity = quantity.floor
       multipack_products = multi_mapping.product_mapping&.product&.multipack_products
-      if multipack_products&.count.to_i > 1
-        deduction_quantity = multi_products_check(multipack_products)
-      end
-      item_quantity = [deduction_quantity.to_i, 0].max
-      multi_mapping.update(item_quantity: item_quantity, item_quantity_changed: true) unless multi_mapping.item_quantity.to_i.eql? item_quantity.to_i
+      deduction_quantity = multi_products_check(multipack_products) if multipack_products&.count.to_i > 1
+
+      channel_type = multi_mapping.channel_type_ebay?
+      unallocated_orders = channel_type ? 'ebay_unallocated_orders' : 'amazon_unallocated_orders'
+
+      buffer_quantity = multi_mapping.product_mapping.product.multipack_products
+                                     .map { |multi| multi.child.product_forecasting.channel_forecastings.where(filter_by: multi_mapping.channel_type).first.type_number - multi.child.send(unallocated_orders) }.min
+      buffer_quantity = [buffer_quantity, 0].max
+      item_quantity = deduction_quantity.to_i
+      multi_mapping.update(item_quantity: item_quantity, buffer_quantity: buffer_quantity, item_quantity_changed: true) unless (multi_mapping.item_quantity.to_i.eql? item_quantity.to_i) && (multi_mapping.buffer_quantity.to_i.eql? buffer_quantity)
     end
   end
 

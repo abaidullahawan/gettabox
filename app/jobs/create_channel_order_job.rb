@@ -120,13 +120,12 @@ class CreateChannelOrderJob < ApplicationJob
 
     if check_forcasting_present.all?(true) && item.allocated == false
       check_safe_stock = product.multipack_products.map { |m| m.child.forecasting[channel_type].first.last.negative? }
-      check_anticipate = product.multipack_products.map { |m| m.child.forecasting[channel_type].first.last.positive? }
 
       concern_channel_forecasting_for_safe_stock(item, product, order) if check_safe_stock.all?(true)
 
       return if @allocation_check
 
-      return concern_channel_forecasting_for_products(item, product, order) unless check && check_anticipate.any?(false)
+      return concern_channel_forecasting_for_products(item, product, order) unless check
 
     else
       return unless check
@@ -159,7 +158,7 @@ class CreateChannelOrderJob < ApplicationJob
       concern_channel_forecasting_for_safe_stock(item, product, order) if type_number.negative?
       return if @allocation_check
 
-      return concern_channel_forecasting_for_products(order_item, product, order) unless product.inventory_balance.to_i < ordered
+      return concern_channel_forecasting_for_products(order_item, product, order) unless product.inventory_balance >= ordered
     elsif product.inventory_balance >= ordered
       product.update(allocated: product.allocated.to_i + ordered, allocated_orders: product.allocated_orders.to_i + 1)
       item.update(allocated: true)
