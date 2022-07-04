@@ -22,4 +22,9 @@ $(document).on('turbolinks:load', function () {
     $('.without_tracking_btn').removeClass('d-none')
   })
 
+  $('#q_updated_at_gteq, #q_updated_at_lteq').on('change', function () {
+    $('.cover-spin, .loading').removeClass('d-none')
+    $('#channel_order_search').trigger('submit')
+  })
+
 })

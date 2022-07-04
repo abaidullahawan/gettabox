@@ -179,3 +179,10 @@
       </div>
     </div>
 <% end %>
+
+<div class='float-right'>
+  <%= page_entries_info @completed_orders %>
+</div><br>
+<div class="pagination justify-content-center mt-1">
+  <%= paginate @completed_orders, :param_name => :completed_page, theme: "twitter-bootstrap-4",pagination_class: "pagination-sm",nav_class: "d-inline-b" %>
+</div>

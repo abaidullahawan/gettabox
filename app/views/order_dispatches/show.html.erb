@@ -35,6 +35,7 @@
                 <th scope="col">Order Date</th>
                 <th scope="col">Delivery Date</th>
                 <th scope="col">Order Status</th>
+                <th scope="col">Order Stage</th>
                 <th scope="col">Sales Channel</th>
               </tr>
             </thead>
@@ -46,6 +47,7 @@
                 <td scope="col"><%= @order.created_at&.strftime('%m/%d/%Y') %></td>
                 <td scope="col"></td>
                 <td scope="col"><%= @order.order_status %></td>
+                <td scope="col"><%= @order.stage.humanize %></td>
                 <td scope="col"><%= @order.system_user&.sales_channel %></td>
               </tr>
             </tbody>
@@ -175,6 +177,7 @@
           </button>
         </div>
         <div class="modal-body">
+          <%= f.hidden_field :order_status, value: 'REPLACEMENT' %>
           <%= f.hidden_field :buyer_name, value: @order.system_user&.name %>
           <%= f.hidden_field :system_user_id, value: @order.system_user&.id %>
           <%= f.hidden_field :order_id, value: @order.order_id %>

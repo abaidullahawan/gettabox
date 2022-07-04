@@ -16,9 +16,15 @@
   <div class='row ml-0'>
     <div class='col-6'>
       <div class='row'>
-        <div class="col-md-8 form-group">
+        <div class="col-md-6 form-group">
           <%= hidden_field_tag "assign_filter", params[:assign_filter] %>
           <%= f.search_field :id_or_order_id_or_order_status_or_buyer_name_or_channel_order_items_sku_cont, class:"form-control bg-white text-black", title: 'Search Buyer Name or Order Id or Status', placeholder: 'Search Buyer Name or Order Id or Status', value: params.dig(:q, :id_or_order_id_or_order_status_or_buyer_name_or_channel_order_items_sku_cont) %>
+        </div>
+        <div class="col-md-3 form-group">
+          <%= f.date_field :updated_at_gteq, class:"form-control bg-white", title: "Select starting date" if params[:order_filter].eql? 'completed' %>
+        </div>
+        <div class="col-md-3 form-group">
+          <%= f.date_field :updated_at_lteq, class:"form-control bg-white", title: "Select ending date" if params[:order_filter].eql? 'completed' %>
         </div>
       </div>
     </div>
@@ -119,7 +125,7 @@
             <a class="nav-link <%= 'active' if params[:order_filter].eql? 'issue' %>" href=<%= order_dispatches_path(order_filter: 'issue', q: { id_or_order_id_or_order_status_or_buyer_name_or_channel_order_items_sku_cont: params[:q].try(:[], :id_or_order_id_or_order_status_or_buyer_name_or_channel_order_items_sku_cont)})%>><%= "Issue Orders (#{@issue_orders_count.to_i})"%></a>
           </li>
           <li class="nav-item font-sm">
-            <a class="nav-link <%= 'active' if params[:order_filter].eql? 'completed' %>" href=<%= order_dispatches_path(order_filter: 'completed', q: { id_or_order_id_or_order_status_or_buyer_name_or_channel_order_items_sku_cont: params[:q].try(:[], :id_or_order_id_or_order_status_or_buyer_name_or_channel_order_items_sku_cont)})%>><%= "Completed Orders (#{@completed_count.to_i})"%></a>
+            <a class="nav-link <%= 'active' if params[:order_filter].eql? 'completed' %>" href=<%= order_dispatches_path(order_filter: 'completed', q: { id_or_order_id_or_order_status_or_buyer_name_or_channel_order_items_sku_cont: params[:q].try(:[], :id_or_order_id_or_order_status_or_buyer_name_or_channel_order_items_sku_cont), updated_at_gteq: Date.today, updated_at_lteq: Date.today})%>><%= "Completed Orders (#{@completed_count.to_i})"%></a>
           </li>
           <li class="nav-item font-sm">
             <a class="nav-link <%= 'active' if params[:order_filter].eql? 'unpaid' %>" href=<%= order_dispatches_path(order_filter: 'unpaid', q: { id_or_order_id_or_order_status_or_buyer_name_or_channel_order_items_sku_cont: params[:q].try(:[], :id_or_order_id_or_order_status_or_buyer_name_or_channel_order_items_sku_cont)})%>><%= "Unpaid Orders (#{@unpaid_orders_count.to_i})"%></a>
