@@ -67,9 +67,7 @@ class ChannelProduct < ApplicationRecord
       quantity = product.multipack_products.map { |mp| mp.child.inventory_balance.to_i / mp.quantity.to_i }.min
     end
     quantity = channel_type_ebay? ? (quantity > selling_unit) ? selling_unit : quantity : quantity
-    if product.product_type_single? || product.multipack_products.count == 1
-      buffered_quantity = quantity + buffer_quantity.to_i
-    end
+    buffered_quantity = quantity + buffer_quantity.to_i
 
     buffered_quantity = channel_type_ebay? ? (buffered_quantity > selling_unit) ? selling_unit : buffered_quantity : buffered_quantity
     buffered_quantity = [buffered_quantity.to_i, 0].max
