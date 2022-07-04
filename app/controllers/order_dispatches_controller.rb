@@ -42,13 +42,18 @@ class OrderDispatchesController < ApplicationController
     @order = ChannelOrder.create(order_dispatches_params)
     if @order.save
       @order.channel_order_items.each do |item|
-        if item.product.present?
-          item.update(sku: item.product.sku)
-          item.product.update(unshipped: item.product.unshipped.to_i - item.ordered&.to_i,
-                              change_log: "Manual Order, #{@order.id}, #{@order.order_id}, Manual Order, #{params[:channel_order][:buyer_name]}")
-        end
         current_order = ChannelOrder.find_by(id: params[:channel_order]['id'])
         replacement_id = "R#{current_order.order_replacements.count + 1}-#{current_order.id}"
+        if item.product.present?
+          item.update(sku: item.product.sku)
+          unshipped = item.product.unshipped.to_i + item.ordered&.to_i
+          inventory_balance = item.product.total_stock.to_i - unshipped.to_i
+          item.product.update(
+            unshipped: unshipped, change_log: "Manual Order, #{replacement_id}, #{@order.order_id}, Manual Order,
+            #{params[:channel_order][:buyer_name]}, #{unshipped}, #{inventory_balance},
+            #{current_user&.personal_detail&.full_name}"
+          )
+        end
         @order.update(replacement_id: replacement_id, change_log: "Order Paid, #{@order.id}, #{@order.order_id}, #{current_user&.personal_detail&.full_name}", stage: 'ready_to_dispatch')
         OrderReplacement.create(channel_order_id: current_order.id, order_replacement_id: @order.id, order_id: replacement_id)
         current_order.update(change_log: "Replacement, #{replacement_id}, #{current_order.order_id}, #{current_user&.personal_detail&.full_name}")
