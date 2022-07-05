@@ -63,12 +63,12 @@ class SystemUsersController < ApplicationController
   end
 
   def destroy
-    if @system_user.destroy
+    if (@system_user.purchase_orders.map(&:order_status).all? 'completed') && @system_user.destroy
       flash[:notice] = 'Supplier archive successfully.'
       redirect_to system_users_path
     else
-      flash.now[:notice] = 'Supplier not archived.'
-      render system_users_path
+      flash[:alert] = 'Supplier not archived. Incomplete purchase orders found'
+      redirect_to system_users_path
     end
   end
 
