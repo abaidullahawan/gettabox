@@ -4,7 +4,6 @@
 class ProductMappingsController < ApplicationController
   include NewProduct
   include AutoAssignRule
-  include CalculateUnallocatedOrders
 
   before_action :authenticate_user!
   before_action :set_product_mapping, only: %i[show update destroy]

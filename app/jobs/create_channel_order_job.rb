@@ -3,7 +3,6 @@
 # getting orders response from api
 class CreateChannelOrderJob < ApplicationJob
   queue_as :default
-  include CalculateUnallocatedOrders
 
   def perform(*_args)
     @response_orders = ChannelResponseData.where(api_call: 'getOrders', status: 'pending', channel: 'ebay')

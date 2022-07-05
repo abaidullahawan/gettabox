@@ -3,7 +3,6 @@
 # orders for amazon
 class AmazonOrderJob < ApplicationJob
   queue_as :default
-  include CalculateUnallocatedOrders
 
   def perform(*_args)
     @refresh_token_amazon = RefreshToken.where(channel: 'amazon').last
