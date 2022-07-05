@@ -4,7 +4,6 @@
 class OrderDispatchesController < ApplicationController
   include NewProduct
   include AutoAssignRule
-  include CalculateUnallocatedOrders
 
   before_action :authenticate_user!
   # before_action :refresh_token, :refresh_token_amazon, only: %i[index all_order_data]
