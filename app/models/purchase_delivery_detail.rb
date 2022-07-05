@@ -12,7 +12,7 @@ class PurchaseDeliveryDetail < ApplicationRecord
   after_destroy :product_update_delete
 
   def product_update
-    @product = Product.find(product.id)
+    @product = Product.find(product_id)
     @stock = @product.total_stock.to_i + quantity.to_i
     @available_stock = @product.available_stock.to_i + quantity.to_i
     inventory_balance = @stock - @product.unshipped.to_i
@@ -22,7 +22,7 @@ class PurchaseDeliveryDetail < ApplicationRecord
   def product_update_stock
     return unless valid?
 
-    @product = Product.find(product.id)
+    @product = Product.find(product_id)
     @stock = @product.total_stock.to_i - (quantity_was.to_i - quantity.to_i)
     @available_stock = @product.available_stock.to_i  - (quantity_was.to_i - quantity.to_i)
     inventory_balance = @stock - @product.unshipped.to_i
@@ -30,7 +30,7 @@ class PurchaseDeliveryDetail < ApplicationRecord
   end
 
   def product_update_delete
-    @product = Product.find(product.id)
+    @product = Product.find(product_id)
     @stock = @product.total_stock.to_i - quantity.to_i
     @available_stock = @product.available_stock.to_i - quantity.to_i
     inventory_balance = @stock - @product.unshipped.to_i
