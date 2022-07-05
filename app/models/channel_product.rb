@@ -60,18 +60,26 @@ class ChannelProduct < ApplicationRecord
     selling_unit = Selling&.last&.quantity.to_i
     product = product_mapping.product
     product = Product.find_by(id: product.id)
-    unallocated_orders = channel_type_ebay? ? 'ebay_unallocated_orders' : 'amazon_unallocated_orders'
-    if product.product_type_single?
-      quantity = product.inventory_balance
-    else
-      quantity = product.multipack_products.map { |mp| mp.child.inventory_balance.to_i / mp.quantity.to_i }.min
-    end
-    quantity = channel_type_ebay? ? (quantity > selling_unit) ? selling_unit : quantity : quantity
+    quantity = if product.product_type_single?
+                 product.inventory_balance
+               else
+                 product.multipack_products.map { |mp| mp.child.inventory_balance.to_i / mp.quantity.to_i }.min
+               end
+    quantity = nested_ternary(quantity, selling_unit, channel_type_ebay?)
+    quantity = [quantity, 0].max
     buffered_quantity = quantity + buffer_quantity.to_i
 
-    buffered_quantity = channel_type_ebay? ? (buffered_quantity > selling_unit) ? selling_unit : buffered_quantity : buffered_quantity
+    buffered_quantity = nested_ternary(buffered_quantity, selling_unit, channel_type_ebay?)
     buffered_quantity = [buffered_quantity.to_i, 0].max
 
     update_columns(item_quantity: quantity, channel_quantity: buffered_quantity)
+  end
+
+  def nested_ternary(quantity, selling_unit, ebay_check)
+    if ebay_check
+      quantity > selling_unit ? selling_unit : quantity
+    else
+      quantity
+    end
   end
 end
