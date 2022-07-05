@@ -4,8 +4,7 @@
 class ProductMappingsController < ApplicationController
   include NewProduct
   include AutoAssignRule
-  include ChannelForecastingForProducts
-  include ChannelForecastingForSafeStock
+  include CalculateUnallocatedOrders
 
   before_action :authenticate_user!
   before_action :set_product_mapping, only: %i[show update destroy]
@@ -108,10 +107,24 @@ class ProductMappingsController < ApplicationController
       end
     end
     orders = unmapped_orders(channel_product_id)
+    unallocated_orders_for_amazon_and_ebay = orders.count
     orders&.each do |order|
+      # unallocated_orders_for_amazon_and_ebay += 1 if order.channel_order_items.pluck(:allocated).all?(false)
       unallocation(order.channel_order_items)
     end
     if @product_mapping&.destroy && @channel_product.status_unmapped!
+      channel_type = @channel_product.channel_type_ebay?
+      unallocated_orders = channel_type ? 'ebay_unallocated_orders' : 'amazon_unallocated_orders'
+      if @product.product_type_single?
+        count = [@product.send(unallocated_orders) - unallocated_orders_for_amazon_and_ebay , 0].max
+        @product.update("#{unallocated_orders}": count)
+      else
+        @product.multipack_products.each do |multipack|
+          product = Product.find(multipack.child.id)
+          count = [product.send(unallocated_orders) - unallocated_orders_for_amazon_and_ebay, 0].max
+          product.update("#{unallocated_orders}": count)
+        end
+      end
       channel_order_ids = orders&.pluck(:id)
       ChannelOrder.where(id: channel_order_ids).update_all(stage: 'unmapped_product_sku')
       flash[:notice] = 'Product Un-mapped successfully'
@@ -440,7 +453,7 @@ class ProductMappingsController < ApplicationController
       unshipped = product.unshipped + order.channel_order_items.pluck(:ordered).sum if product.unshipped.present?
       inventory_balance = product.total_stock.to_i - unshipped.to_i
       product.update(change_log: " Order Paid, #{channel_product.item_sku}, #{order.order_id}, Order Paid, #{channel_product.listing_id}, #{unshipped}, #{inventory_balance}, #{channel_type} ", unshipped: unshipped, inventory_balance: inventory_balance, unshipped_orders: product.unshipped_orders.to_i + 1)
-      allocations(order.channel_order_items, order)
+      allocations(order.channel_order_items)
     end
   end
 
@@ -465,61 +478,43 @@ class ProductMappingsController < ApplicationController
         inventory_balance = child.total_stock.to_i - unshipped.to_i
         child.update(change_log: " Order Paid, #{channel_product.item_sku}, #{order.order_id}, Order Paid, #{channel_product.listing_id}, #{unshipped}, #{inventory_balance}, #{channel_type} ", unshipped: unshipped, inventory_balance: inventory_balance, unshipped_orders: child.unshipped_orders.to_i + 1)
       end
-      allocations(order.channel_order_items, order)
+      allocations(order.channel_order_items)
     end
   end
 
-  def allocations(order_items, order)
+  def allocations(order_items)
     return unless order_items.present?
 
     order_items.each do |item|
-      allocate_item(item, order)
+      allocate_item(item)
     end
   end
 
-  def allocate_item(order_item, order)
+  def allocate_item(order_item)
     product = order_item.channel_product.product_mapping.product
-    return multipack_allocation(order_item, product, order) if product&.product_type.eql? 'multiple'
-
-    channel_type = order.channel_type
     product = Product.find(product.id)
-    product_forecasting = product.forecasting
-    if product_forecasting.present? && order_item.allocated == false
-      type_number = product_forecasting[channel_type].first.last
-      concern_channel_forecasting_for_safe_stock(order_item, product, order) if type_number.negative?
-      return if @allocation_check
+    # channel_type_ebay = order_item.channel_order.channel_type_ebay?
 
-      return concern_channel_forecasting_for_products(order_item, product, order) unless product&.available_stock.to_i >= order_item.ordered
-    else
-      return unless product&.available_stock.to_i >= order_item.ordered
-    end
+    return multipack_allocation(order_item, product) if product&.product_type.eql? 'multiple'
+
+    # return calculate_ebay_amazon_orders(product, channel_type_ebay) unless product&.available_stock.to_i >= order_item.ordered
+    return unless product&.available_stock.to_i >= order_item.ordered
+
+    order_item.update(allocated: true)
     product.update(allocated: product.allocated.to_i + order_item.ordered, allocated_orders: product.allocated_orders.to_i + 1)
     # change_log: "#{order_item.channel_order.channel_type} API, #{order_item.channel_order.id}, #{order_item.channel_order.order_id}, Allocated, #{order_item.channel_product.listing_id}")
-    order_item.update(allocated: true)
   end
 
-  def multipack_allocation(order_item, product, order)
+  def multipack_allocation(order_item, product)
     product = Product.find(product.id)
     available = product.multipack_products.map { |m| m.child.available_stock.to_i }
     required = product.multipack_products.map { |m| m.quantity.to_i * order_item.ordered }
     check = available.zip(required).all? { |a, b| a >= b }
 
-    channel_type = order.channel_type
-    check_forcasting_present = product.multipack_products.map { |m| m.child.forecasting.present? }
-    if check_forcasting_present.all?(true) && order_item.allocated == false
+    # return calculate_ebay_amazon_orders(product, channel_type_ebay) unless check
+    return unless check
 
-      check_safe_stock = product.multipack_products.map { |m| m.child.forecasting[channel_type].first.last.negative? }
-      concern_channel_forecasting_for_safe_stock(order_item, product, order) if check_safe_stock.all?(true)
-
-      return if @allocation_check
-
-      return concern_channel_forecasting_for_products(order_item, product, order) unless check
-
-    else
-      return unless check
-
-    end
-
+    order_item.update(allocated: true)
     product.multipack_products.each do |multipack|
       child = multipack.child
       child = Product.find(child.id)
@@ -529,7 +524,6 @@ class ProductMappingsController < ApplicationController
       child.update(allocated: child.allocated.to_i + ordered, allocated_orders: child.allocated_orders.to_i + 1)
       # change_log: "#{order_item.channel_order.channel_type} API, #{order_item.channel_order.id}, #{order_item.channel_order.order_id}, Allocated, #{order_item.channel_product.listing_id}")
     end
-    order_item.update(allocated: true)
   end
 
   def unmapped_orders(channel_product_id)
@@ -563,6 +557,8 @@ class ProductMappingsController < ApplicationController
 
   def update_available_stock(item, product, inventory_balance, ordered)
     product = Product.find(product.id)
+    # channel_type_ebay = item.channel_order.channel_type_ebay?
+    # unallocated_orders = channel_type_ebay ? 'ebay_unallocated_orders' : 'amazon_unallocated_orders'
     unshipped = product.unshipped.to_i - ordered
     product.update(
       change_log: "Product Unmapped, #{item.channel_product.item_sku}, #{item.channel_order.order_id}, Unmapped,
@@ -575,7 +571,7 @@ class ProductMappingsController < ApplicationController
       product.update(unallocated: product.unallocated.to_i - ordered)
     end
     item.update(allocated: false)
-    update_buffer_during_unallocation(item, product, ordered)
+    # update_buffer_during_unallocation(item, product, ordered)
   end
 
   def buffer_rule(product, channel_product)
