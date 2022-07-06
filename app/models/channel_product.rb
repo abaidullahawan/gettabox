@@ -41,7 +41,9 @@ class ChannelProduct < ApplicationRecord
                    deduction_quantity.to_i
                  end
     end
-    update_columns(item_quantity: quantity, channel_quantity: quantity + buffer_quantity.to_i, item_quantity_changed: true) unless item_quantity.to_i.eql? quantity.to_i
+    buffered_quantity = [quantity + buffer_quantity.to_i, 0].max
+    buffered_quantity = nested_ternary(buffered_quantity, selling_unit, channel_type_ebay?)
+    update_columns(item_quantity: quantity, channel_quantity: buffered_quantity, item_quantity_changed: true) unless item_quantity.to_i.eql? quantity.to_i
   end
 
   def multi_products_check(multipack_products)
