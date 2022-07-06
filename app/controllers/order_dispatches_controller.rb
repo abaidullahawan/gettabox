@@ -39,19 +39,21 @@ class OrderDispatchesController < ApplicationController
 
   def create
     @order = ChannelOrder.create(order_dispatches_params)
-    if @order.save
+    check_product_type_single = @order.channel_order_items.map { |item| item.product.product_type_single? }.all?(true)
+    if @order.save && check_product_type_single
       @order.channel_order_items.each do |item|
         current_order = ChannelOrder.find_by(id: params[:channel_order]['id'])
         replacement_id = "R#{current_order.order_replacements.count + 1}-#{current_order.id}"
         if item.product.present?
           item.update(sku: item.product.sku)
           unshipped = item.product.unshipped.to_i + item.ordered&.to_i
-          inventory_balance = item.product.total_stock.to_i - unshipped.to_i
+          inventory_balance = item.product.inventory_balance.to_i - item.ordered&.to_i
           item.product.update(
-            unshipped: unshipped, change_log: "Manual Order, #{replacement_id}, #{@order.order_id}, Manual Order,
+            unshipped: unshipped, unshipped_orders: item.product.unshipped_orders + 1, change_log: "Manual Order, #{replacement_id}, #{@order.order_id}, Manual Order,
             #{params[:channel_order][:buyer_name]}, #{unshipped}, #{inventory_balance},
             #{current_user&.personal_detail&.full_name}"
           )
+          allocate_item(item)
         end
         @order.update(replacement_id: replacement_id, change_log: "Order Paid, #{@order.id}, #{@order.order_id}, #{current_user&.personal_detail&.full_name}", stage: 'ready_to_dispatch')
         OrderReplacement.create(channel_order_id: current_order.id, order_replacement_id: @order.id, order_id: replacement_id)
@@ -59,7 +61,7 @@ class OrderDispatchesController < ApplicationController
       end
       flash[:notice] = 'Order Created!'
     else
-      flash[:alert] = @order.errors.full_messages
+      flash[:alert] = @order.errors.full_messages.blank? ? 'Please select single type product.' : @order.errors.full_messages
     end
     redirect_to request.referrer
   end
@@ -353,7 +355,6 @@ class OrderDispatchesController < ApplicationController
 
   def unallocate_item(order_item)
     product = order_item.channel_product.product_mapping.product
-    channel_type_ebay = order_item.channel_order.channel_type_ebay?
     product = Product.find(product.id)
     return multipack_unallocation(order_item, product) if product.product_type.eql? 'multiple'
 
@@ -367,7 +368,12 @@ class OrderDispatchesController < ApplicationController
   end
 
   def allocate_item(order_item)
-    product = order_item.channel_product.product_mapping.product
+    channel_type = order_item.channel_order.channel_type_manual_order?
+    product = if channel_type
+                order_item.product
+              else
+                order_item.channel_product.product_mapping.product
+              end
     product = Product.find(product.id)
     return multipack_allocation(order_item, product) if product&.product_type.eql? 'multiple'
 
@@ -377,12 +383,12 @@ class OrderDispatchesController < ApplicationController
                      allocated: product.allocated.to_i + order_item.ordered, allocated_orders: product.allocated_orders.to_i + 1)
       # change_log: "#{order_item.channel_order.channel_type} API, #{order_item.channel_order.id}, #{order_item.channel_order.order_id}, Allocated, #{order_item.channel_product.listing_id}")
     else
+      order_item.update(allocated: false)
       @not_allocated.instance_of?(Array) ? (@not_allocated << order_item.channel_order&.order_id) : flash[:alert] = 'Available stock is not enough!'
     end
   end
 
   def multipack_unallocation(order_item, product)
-    channel_type_ebay = order_item.channel_order.channel_type_ebay?
     order_item.update(allocated: false)
     product.multipack_products.each do |multipack|
       child = multipack.child
@@ -415,6 +421,7 @@ class OrderDispatchesController < ApplicationController
         # change_log: "#{order_item.channel_order.channel_type} API, #{order_item.channel_order.id}, #{order_item.channel_order.order_id}, Allocated, #{order_item.channel_product.listing_id}")
       end
     else
+      order_item.update(allocated: false)
       @not_allocated.instance_of?(Array) ? (@not_allocated << order_item.channel_order&.order_id) : flash[:alert] = 'Available stock is not enough!'
     end
   end
@@ -484,12 +491,13 @@ class OrderDispatchesController < ApplicationController
 
   def cancel_order
     order = ChannelOrder.find_by(id: params[:id])
+    channel_type = order.channel_type_manual_order?
     order_items = order.channel_order_items
-      order_items.each do |item|
-        cancel_unallocate_item(item)
-      end
-      order.update(stage: 'canceled')
-      redirect_to request.referrer
+    order_items.each do |item|
+      channel_type ? cancel_replacement_orders(item) : cancel_unallocate_item(item)
+    end
+    order.update(stage: 'canceled')
+    redirect_to request.referrer
   end
 
   def cancel_unallocate_item(order_item)
@@ -856,5 +864,28 @@ class OrderDispatchesController < ApplicationController
       forecasting: forecastings, ebay_unallocated_orders: ebay_unallocated_orders,
       amazon_unallocated_orders: amazon_unallocated_orders
     )
+  end
+
+  def cancel_replacement_orders(order_item)
+    product = order_item.product
+    product = Product.find(product.id)
+    inventory_balance = product.inventory_balance.to_i + order_item.ordered.to_i
+    replacement_id = order_item.channel_order.replacement_id
+    if order_item.allocated
+      product.update(
+        change_log: "Cancel Manual Order, #{replacement_id}, #{order_item.channel_order.order_id},
+        Cancel Manual Order, #{order_item.channel_order.buyer_name}, #{order_item.ordered.to_i}, #{inventory_balance},
+        #{current_user&.personal_detail&.full_name}", available_stock: product.available_stock.to_i + order_item.ordered.to_i,
+        unshipped: product.unshipped.to_i - order_item.ordered.to_i, unshipped_orders: product.unshipped_orders.to_i - 1,
+        allocated: product.allocated.to_i - order_item.ordered.to_i, allocated_orders: product.allocated_orders.to_i - 1
+      )
+    else
+      product.update(
+        change_log: "Cancel Order, #{replacement_id}, #{order_item.channel_order.order_id},
+        Cancel Order, #{order_item.channel_order.buyer_name}, #{order_item.ordered.to_i}, #{inventory_balance},
+        #{current_user&.personal_detail&.full_name}", available_stock: product.available_stock.to_i + order_item.ordered.to_i,
+        unshipped: product.unshipped.to_i - order_item.ordered.to_i, unshipped_orders: product.unshipped_orders.to_i - 1
+      )
+    end
   end
 end
