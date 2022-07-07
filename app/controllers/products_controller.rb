@@ -28,6 +28,7 @@ class ProductsController < ApplicationController
         render pdf: 'file.pdf', viewport_size: '1280x1024', template: 'products/index.pdf.erb'
       end
     end
+    import_images if params[:import_images].present?
     @q.result.update_all(fake_stock: 0) if params[:fake_stock].present?
   end
 
@@ -391,5 +392,17 @@ class ProductsController < ApplicationController
       end
     end
     [found_error, error_message]
+  end
+
+  def import_images
+    channel_products = ChannelProduct.where.not(status: 'unmapped').where.not( item_image: nil)
+
+    channel_products.each do |channel_product|
+      product = channel_product.product_mapping.product
+      downloaded_image = URI.parse(channel_product.item_image).open
+      product.photo.attach(io: downloaded_image  , filename: channel_product.item_image.split('/').last)
+    end
+    flash[:notice] = "Mappped product's images imported"
+    redirect_to products_path
   end
 end

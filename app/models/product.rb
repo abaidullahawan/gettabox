@@ -151,7 +151,7 @@ class Product < ApplicationRecord
                            else
                              'change_log'
                            end
-      buffer_quantity = type_number - send(unallocated_orders)
+      buffer_quantity = type_number - send(unallocated_orders).to_i
       buffer_quantity = [buffer_quantity, 0].max
       channel_product.update(buffer_quantity: buffer_quantity) unless channel_product.buffer_quantity.to_i.eql? buffer_quantity
     end
@@ -166,7 +166,7 @@ class Product < ApplicationRecord
                              'change_log'
                            end
       buffer_quantity = multi_mapping.product_mapping.product.multipack_products
-                                     .map { |multi| multi.child&.product_forecasting&.channel_forecastings&.where(filter_by: multi_mapping.channel_type)&.first&.type_number.to_i - send(unallocated_orders) }.min
+                                     .map { |multi| multi.child&.product_forecasting&.channel_forecastings&.where(filter_by: multi_mapping.channel_type)&.first&.type_number.to_i - send(unallocated_orders).to_i }.min
       buffer_quantity = [buffer_quantity.to_i, 0].max
       multi_mapping.update(buffer_quantity: buffer_quantity) unless multi_mapping.buffer_quantity.to_i.eql? buffer_quantity
     end
