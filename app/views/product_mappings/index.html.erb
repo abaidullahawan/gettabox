@@ -182,10 +182,10 @@
                             <i class='lni lni-more-alt'></i>
                           </button>
                           <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                            <%= f.submit 'Un-map', class: "dropdown-item", onclick: 'return confirm("Are you sure you want to unmapped? \nAny incompleted order will go back in unprocessed orders.")' if item.status_mapped? %>
+                            <%= f.submit 'Un-map', class: "dropdown-item", onclick: 'alert_box_unmapped()'if item.status_mapped? %>
                             <%= link_to 'Logs', version_product_mappings_path(id: item.id), class: 'dropdown-item' %>
                             <% if item.status_unmapped? %>
-                              <%= f.submit 'Map', class: "dropdown-item map-submit-button" , data_disable_with: false %>
+                              <%= f.submit 'Map', class: "dropdown-item map-submit-button showLoader" , data_disable_with: false %>
                               <a type="button" class="dropdown-item create-single-product" data-id="<%= item.id %>" data-item = '<%= item.to_json.html_safe %>' >Create Single Pack</a>
                               <a type="button" class="dropdown-item create-multi-product" data-id="<%= item.id %>" data-item = '<%= item.to_json.html_safe %>' >Create Multi Pack</a>
                             <% end %>
@@ -279,3 +279,12 @@
     </div>
   </div>
 <% end %>
+
+<script>
+  function alert_box_unmapped() {
+    message = "Are you sure you want to unmapped? \nAny incompleted order will go back in unprocessed orders."
+    if (confirm(message)) {
+      $('.cover-spin, .loading').removeClass('d-none')
+    }
+  }
+</script>
