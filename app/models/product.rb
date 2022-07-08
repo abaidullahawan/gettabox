@@ -76,6 +76,8 @@ class Product < ApplicationRecord
   end
 
   def update_channel_quantity
+    ebay_unallocated_count = []
+    amazon_unallocated_count = []
     product_mappings&.each do |mapping|
       cp_id = mapping.channel_product&.id
       product = ChannelProduct.find_by_id(cp_id)
@@ -83,13 +85,13 @@ class Product < ApplicationRecord
       unallocated_count = ChannelOrderItem.joins(:channel_order, channel_product: [product_mapping: :product])
                                           .where('product.id': id, 'channel_order_items.allocated': false, 'channel_product.channel_type': product.channel_type, 'channel_order.stage': 'ready_to_dispatch')
                                           .where.not('channel_order.channel_type': 'manual_order').count
-      unallocated_orders = case product.channel_type
-                           when 'ebay'
-                             'ebay_unallocated_orders'
-                           when 'amazon'
-                             'amazon_unallocated_orders'
-                           end
-      update_columns("#{unallocated_orders}": unallocated_count) unless unallocated_orders.nil?
+      case product.channel_type
+      when 'ebay'
+        ebay_unallocated_count << unallocated_count
+      when 'amazon'
+        amazon_unallocated_count << unallocated_count
+      end
+      # update_columns("#{unallocated_orders}": unallocated_count) unless unallocated_orders.nil?
       quantity = [quantity, 0].max
       product.update(item_quantity: quantity, item_quantity_changed: true) unless product.item_quantity.to_i.eql? quantity.to_i
     end
@@ -104,19 +106,20 @@ class Product < ApplicationRecord
       deduction_quantity = quantity.floor
       multipack_products = multi_mapping.product_mapping&.product&.multipack_products
       deduction_quantity = multi_products_check(multipack_products) if multipack_products&.count.to_i > 1
-      unallocated_count = ChannelOrderItem.joins(:channel_order, channel_product: [product_mapping: [product: [multipack_products: :child]]])
+      multi_unallocated_count = ChannelOrderItem.joins(:channel_order, channel_product: [product_mapping: [product: [multipack_products: :child]]])
                                           .where('child.id': id, 'channel_order_items.allocated': false, 'channel_product.channel_type': multi_mapping.channel_type, 'channel_order.stage': 'ready_to_dispatch')
                                           .where.not('channel_order.channel_type': 'manual_order').count
-      unallocated_orders = case multi_mapping.channel_type
-                           when 'ebay'
-                             'ebay_unallocated_orders'
-                           when 'amazon'
-                             'amazon_unallocated_orders'
-                           end
-      update_columns("#{unallocated_orders}": unallocated_count) unless unallocated_orders.nil?
+      case multi_mapping.channel_type
+      when 'ebay'
+        ebay_unallocated_count << unallocated_count
+      when 'amazon'
+        amazon_unallocated_count << unallocated_count
+      end
+      # update_columns("#{unallocated_orders}": unallocated_count) unless unallocated_orders.nil?
       item_quantity = [deduction_quantity.to_i, 0].max
       multi_mapping.update(item_quantity: item_quantity, item_quantity_changed: true) unless (multi_mapping.item_quantity.to_i.eql? item_quantity.to_i)
     end
+    update_columns(ebay_unallocated_orders: ebay_unallocated_count.compact.sum, amazon_unallocated_orders: amazon_unallocated_count.compact.sum)
     update_buffer_quantity
   end
 
