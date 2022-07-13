@@ -76,7 +76,6 @@ class AmazonOrderJob < ApplicationJob
           add_product(channel_order.order_id, access_token, channel_order.id)
           next channel_order.destroy if channel_order.channel_order_items.blank?
 
-          byebug
           criteria = channel_order.channel_order_items.map { |h| [h[:sku], h[:ordered]] }
           assign_rules = AssignRule.where('criteria = ?', criteria.to_json)&.last
           channel_order.update(assign_rule_id: assign_rules.id) if assign_rules.present?
@@ -99,7 +98,6 @@ class AmazonOrderJob < ApplicationJob
 
   def update_channel_order(result, channel_order_id)
     result[:body]['payload']['OrderItems'].each do |item|
-      byebug
       next if item['SellerSKU'].include? 'FBA'
 
       channel_item = ChannelOrderItem.find_or_initialize_by(
