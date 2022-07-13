@@ -111,9 +111,9 @@ class Product < ApplicationRecord
                                           .where.not('channel_order.channel_type': 'manual_order').count
       case multi_mapping.channel_type
       when 'ebay'
-        ebay_unallocated_count << unallocated_count
+        ebay_unallocated_count << multi_unallocated_count
       when 'amazon'
-        amazon_unallocated_count << unallocated_count
+        amazon_unallocated_count << multi_unallocated_count
       end
       # update_columns("#{unallocated_orders}": unallocated_count) unless unallocated_orders.nil?
       item_quantity = [deduction_quantity.to_i, 0].max
