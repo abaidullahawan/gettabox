@@ -444,7 +444,8 @@ class ProductMappingsController < ApplicationController
     orders.each do |order|
       next if order.channel_order_items.map { |i| i.channel_product.status }.any?('unmapped')
 
-      order.update(stage: 'ready_to_dispatch')
+      order_stage = order.trackings.blank? ? 'ready_to_dispatch' : 'ready_to_print'
+      order.update(stage: order_stage)
       channel_type = order.channel_type
       product = Product.find(product.id)
       unshipped = product.unshipped.to_i + order.channel_order_items.pluck(:ordered).sum
