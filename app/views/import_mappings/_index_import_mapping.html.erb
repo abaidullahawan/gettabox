@@ -1,4 +1,4 @@
-<!-- Product Accordion -->
+<!-- Product Mapping Start-->
 <div class="faq-accordion mb-30">
   <ul class="accordion">
     <li class="accordion-item">
@@ -7,103 +7,38 @@
         Product Mapping
       </a>
       <div class="accordion-content">
-        <h4 class='mb-3'>New Mapping</h4>
-        <div class= "mb-4 border">
-          <%= form_for @product, url: product_file_path, method: :post do |f| %>
-            <%= f.file_field :file, style:"width:240px;", class: 'btn', accept: ".csv",required: true %>
-            <%= f.submit 'Create Mapping', class:"btn btn-primary"%>
-          <% end %>
-        </div>
-        <h4 class='mb-3'>Mappings</h4>
-        <% @product_mappings.each do |import_mapping| %>
-          <div class="faq-accordion mb-30">
-            <ul class="accordion">
-              <li class="accordion-item">
-                <a class="accordion-title d-flex" href="javascript:void(0)">
-                  <i class="lni-plus bg-secondary"></i>
-                  <%= import_mapping.sub_type %>
-                  <span class='text-white'>X</span>
-                </a>
-                <% @blank, @full = import_mapping&.mapping_data&.partition { |_, v| v.blank? }&.map { |alist| Hash[alist] }%>
-                <div class="accordion-content">
-                  <div class= 'd-flex'>
-                    <%= link_to 'Destroy', import_mapping, method: :delete, data: { confirm: 'Are you sure?' }, class: "btn btn-danger" %>
-                    <%= link_to 'Edit', edit_import_mapping_path(import_mapping), class: "btn btn-info ml-3 mr-3" %>
+          <div class= "mb-4">
+            <a class="btn btn-primary float-right" data-toggle="modal" data-target='#product-mapping-modal'>Create</a>
+          </div>
+          <table class="table m-0 table-hover">
+            <% @product_mappings.each do |import_mapping| %>
+              <div class= 'd-flex'>
+                <tr>
+                  <td class="text-center font-weight-bold mr-4 font-lg"><%= import_mapping.sub_type %></td>
+                  <% @blank, @full = import_mapping&.mapping_data&.partition { |_, v| v.blank? }&.map { |alist| Hash[alist] }%>
+                  <td>
                     <%= form_tag import_products_path, multipart: true, method: :post do %>
                       <%= text_field_tag :mapping_type, import_mapping.sub_type, class: 'd-none form-control'%>
                       <%= file_field_tag :file, :required => true %>
                       <%= submit_tag("Import", id: "button", class: "btn btn-primary", name: "submit") %>
                     <% end %>
-                  </div>
-                  <div class="row justify-content-center">
-                    <div class="col-lg-12">
-                      <div class="card text-center mb-30">
-                        <div class="header card-header">Mapped</div>
-                        <table class="table m-0 table-hover">
-                          <thead>
-                            <tr>
-                              <th>Table Field</th>
-                              <th class='border-right'>Header Field</th>
-                              <th>Table Field</th>
-                              <th class='border-right'>Header Field</th>
-                              <th>Table Field</th>
-                              <th class='border-right'>Header Field</th>
-                              <th>Table Field</th>
-                              <th class='border-right'>Header Field</th>
-                            </tr>
-                          </thead>
-                            <tbody>
-                              <%@full.each_slice(4) do |map|%>
-                              <tr>
-                                <%map.each do |maps|%>
-                                  <td><%= maps[0] %></td>
-                                  <td class='border-right'><%= maps[1] %></td>
-                                <% end %>
-                              </tr>
-                              <% end %>
-                            </tbody>
-                        </table>
-                      </div>
+                  </td>
+                  <td>
+                    <div class="dropdown dropleft">
+                      <%= link_to 'Edit', edit_import_mapping_path(import_mapping), class: "btn btn-info ml-3 mr-3 text-white" %>
                     </div>
-
-                    <div class="col-lg-12">
-                      <div class="card text-center mb-30">
-                        <div class="header card-header">Unmapped</div>
-                        <table class="table m-0 table-hover">
-                          <thead>
-                            <tr>
-                              <th class='border-right'>Header Field</th>
-                              <th class='border-right'>Header Field</th>
-                              <th class='border-right'>Header Field</th>
-                              <th class='border-right'>Header Field</th>
-                              <th class='border-right'>Header Field</th>
-                            </tr>
-                          </thead>
-                            <tbody>
-                              <%@blank.each_slice(5) do |map|%>
-                              <tr>
-                                <%map.each do |maps|%>
-                                  <td class='border-right'><%= maps[0] %></td>
-                                <% end %>
-                              </tr>
-                              <% end %>
-                            </tbody>
-                        </table>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </li>
-            </ul>
-          </div>
-        <% end %>
+                  </td>
+                </tr>
+              </div>
+            <% end %>
+          </table>
       </div>
     </li>
   </ul>
 </div>
-<!-- Product Accordion End -->
+<!-- Product Mapping End -->
 
-<!-- Order Accordion -->
+<!-- Order Mapping Start-->
 <div class="faq-accordion mb-30">
   <ul class="accordion">
     <li class="accordion-item">
@@ -112,105 +47,38 @@
         Order Mapping
       </a>
       <div class="accordion-content">
-        <h4 class='mb-3'>New Mapping</h4>
-        <div class= "mb-4 border">
-          <%= form_for @order, url: order_file_path, method: :post do |f| %>
-            <%= f.file_field :file, style:"width:240px;", class: 'btn', accept: ".csv",required: true %>
-            <%= f.submit 'Create Mapping', class:"btn btn-primary"%>
-          <% end %>
-        </div>
-        <h4 class='mb-3'>Mappings</h4>
-        <% @order_mappings.each do |import_mapping| %>
-          <div class="faq-accordion mb-30">
-            <ul class="accordion">
-              <li class="accordion-item">
-                <a class="accordion-title" href="javascript:void(0)">
-                  <i class="lni-plus bg-secondary"></i>
-                  <%= import_mapping.sub_type %>
-                  <span class='text-white'>X</span>
-                </a>
-                <div class="accordion-content">
-                  <div class='col-12 mb-2 float-right'>
-                    <div class= 'd-flex'>
-                      <%= link_to 'Destroy', import_mapping, method: :delete, data: { confirm: 'Are you sure?' }, class: "btn btn-danger" %>
-                      <%= link_to 'Edit', edit_import_mapping_path(import_mapping), class: "btn btn-info ml-3 mr-3" %>
-                      <%= form_tag import_order_dispatches_path, multipart: true, method: :post do %>
-                        <%= text_field_tag :mapping_type, import_mapping.sub_type, class: 'd-none form-control'%>
-                        <%= file_field_tag :file, :required => true %>
-                        <%= submit_tag("Import", id: "button", class: "btn btn-primary", name: "submit") %>
-                      <% end %>
-                    </div>
-                    <% @blank, @full = import_mapping&.mapping_data&.partition { |_, v| v.blank? }&.map { |alist| Hash[alist] }%>
-                  </div>
-                  <div class="row justify-content-center">
-                    <div class="col-lg-12">
-                      <div class="card text-center mb-30">
-                        <div class="header card-header">Mapped</div>
-                        <table class="table m-0 table-hover">
-                          <thead>
-                            <tr>
-                              <th>Table Field</th>
-                              <th class='border-right'>Header Field</th>
-                              <th>Table Field</th>
-                              <th class='border-right'>Header Field</th>
-                              <th>Table Field</th>
-                              <th class='border-right'>Header Field</th>
-                              <th>Table Field</th>
-                              <th class='border-right'>Header Field</th>
-                            </tr>
-                          </thead>
-                            <tbody>
-                              <%@full.each_slice(4) do |map|%>
-                              <tr>
-                                <%map.each do |maps|%>
-                                  <td><%= maps[0] %></td>
-                                  <td class='border-right'><%= maps[1] %></td>
-                                <% end %>
-                              </tr>
-                              <% end %>
-                            </tbody>
-                        </table>
-                      </div>
-                    </div>
-
-                    <div class="col-lg-12">
-                      <div class="card text-center mb-30">
-                        <div class="header card-header">Unmapped</div>
-                        <table class="table m-0 table-hover">
-                          <thead>
-                            <tr>
-                              <th class='border-right'>Header Field</th>
-                              <th class='border-right'>Header Field</th>
-                              <th class='border-right'>Header Field</th>
-                              <th class='border-right'>Header Field</th>
-                              <th class='border-right'>Header Field</th>
-                            </tr>
-                          </thead>
-                            <tbody>
-                              <%@blank.each_slice(5) do |map|%>
-                              <tr>
-                                <%map.each do |maps|%>
-                                  <td class='border-right'><%= maps[0] %></td>
-                                <% end %>
-                              </tr>
-                              <% end %>
-                            </tbody>
-                        </table>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </li>
-            </ul>
+          <div class= "mb-4">
+            <a class="btn btn-primary float-right" data-toggle="modal" data-target='#order-mapping-modal'>Create</a>
           </div>
-        <% end %>
+          <table class="table m-0 table-hover">
+            <% @order_mappings.each do |import_mapping| %>
+              <div class= 'd-flex'>
+                <tr>
+                  <td class="text-center font-weight-bold mr-4 font-lg"><%= import_mapping.sub_type %></td>
+                  <% @blank, @full = import_mapping&.mapping_data&.partition { |_, v| v.blank? }&.map { |alist| Hash[alist] }%>
+                  <td>
+                    <%= form_tag import_order_dispatches_path, multipart: true, method: :post do %>
+                      <%= text_field_tag :mapping_type, import_mapping.sub_type, class: 'd-none form-control'%>
+                      <%= file_field_tag :file, :required => true %>
+                      <%= submit_tag("Import", id: "button", class: "btn btn-primary", name: "submit") %>
+                    <% end %>
+                  </td>
+                  <td>
+                    <div class="dropdown dropleft">
+                      <%= link_to 'Edit', edit_import_mapping_path(import_mapping), class: "btn btn-info ml-3 mr-3 text-white" %>
+                    </div>
+                  </td>
+                </tr>
+              </div>
+            <% end %>
+          </table>
       </div>
     </li>
   </ul>
 </div>
-<!-- Order Accordion End -->
+<!-- Order Mapping End -->
 
-<!-- Channel Product Accordion -->
+<!-- Channel Product Mapping Start-->
 <div class="faq-accordion mb-30">
   <ul class="accordion">
     <li class="accordion-item">
@@ -219,208 +87,77 @@
         Channel Product Mapping
       </a>
       <div class="accordion-content">
-        <h4 class='mb-3'>New Mapping</h4>
-        <div class= "mb-4 border">
-          <%= form_for @channel_product, url: channel_product_file_path, method: :post do |f| %>
-            <%= f.file_field :file, style:"width:240px;", class: 'btn', accept: ".csv",required: true %>
-            <%= f.submit 'Create Mapping', class:"btn btn-primary"%>
-          <% end %>
+        <div class= "mb-4">
+          <a class="btn btn-primary float-right" data-toggle="modal" data-target='#channel-product-mapping-modal'>Create</a>
         </div>
-        <h4 class='mb-3'>Mappings</h4>
-        <% @channel_product_mappings.each do |import_mapping| %>
-          <div class="faq-accordion mb-30">
-            <ul class="accordion">
-              <li class="accordion-item">
-                <a class="accordion-title" href="javascript:void(0)">
-                  <i class="lni-plus bg-secondary"></i>
-                  <%= import_mapping.sub_type %><span class='text-white'>X</span>
-                </a>
-                <div class="accordion-content">
-                  <div class='col-12 mb-2 float-right'>
-                    <div class= 'd-flex'>
-                      <%= link_to 'Destroy', import_mapping, method: :delete, data: { confirm: 'Are you sure?' }, class: "btn btn-danger" %>
-                      <%= link_to 'Edit', edit_import_mapping_path(import_mapping), class: "btn btn-info ml-3 mr-3" %>
-                      <%= form_tag import_product_mappings_path, multipart: true, method: :post do %>
-                        <%= text_field_tag :mapping_type, import_mapping.sub_type, class: 'd-none form-control'%>
-                        <%= file_field_tag :file, :required => true %>
-                        <%= submit_tag("Import", id: "button", class: "btn btn-primary", name: "submit") %>
-                      <% end %>
-                    </div>
-                    <% @blank, @full = import_mapping&.mapping_data&.partition { |_, v| v.blank? }&.map { |alist| Hash[alist] }%>
+        <table class="table m-0 table-hover">
+          <% @channel_product_mappings.each do |import_mapping| %>
+            <div class= 'd-flex'>
+              <tr>
+                <td class="text-center font-weight-bold mr-4 font-lg"><%= import_mapping.sub_type %></td>
+                <% @blank, @full = import_mapping&.mapping_data&.partition { |_, v| v.blank? }&.map { |alist| Hash[alist] }%>
+                <td>
+                  <%= form_tag import_product_mappings_path, multipart: true, method: :post do %>
+                    <%= text_field_tag :mapping_type, import_mapping.sub_type, class: 'd-none form-control'%>
+                    <%= file_field_tag :file, :required => true %>
+                    <%= submit_tag("Import", id: "button", class: "btn btn-primary", name: "submit") %>
+                  <% end %>
+                </td>
+                <td>
+                  <div class="dropdown dropleft">
+                    <%= link_to 'Edit', edit_import_mapping_path(import_mapping), class: "btn btn-info ml-3 mr-3 text-white" %>
                   </div>
-                  <div class="row justify-content-center">
-                    <div class="col-lg-12">
-                      <div class="card text-center mb-30">
-                        <div class="header card-header">Mapped</div>
-                        <table class="table m-0 table-hover">
-                          <thead>
-                            <tr>
-                              <th>Table Field</th>
-                              <th class='border-right'>Header Field</th>
-                              <th>Table Field</th>
-                              <th class='border-right'>Header Field</th>
-                              <th>Table Field</th>
-                              <th class='border-right'>Header Field</th>
-                              <th>Table Field</th>
-                              <th class='border-right'>Header Field</th>
-                            </tr>
-                          </thead>
-                            <tbody>
-                              <%@full.each_slice(4) do |map|%>
-                              <tr>
-                                <%map.each do |maps|%>
-                                  <td><%= maps[0] %></td>
-                                  <td class='border-right'><%= maps[1] %></td>
-                                <% end %>
-                              </tr>
-                              <% end %>
-                            </tbody>
-                        </table>
-                      </div>
-                    </div>
-
-                    <div class="col-lg-12">
-                      <div class="card text-center mb-30">
-                        <div class="header card-header">Unmapped</div>
-                        <table class="table m-0 table-hover">
-                          <thead>
-                            <tr>
-                              <th class='border-right'>Header Field</th>
-                              <th class='border-right'>Header Field</th>
-                              <th class='border-right'>Header Field</th>
-                              <th class='border-right'>Header Field</th>
-                              <th class='border-right'>Header Field</th>
-                            </tr>
-                          </thead>
-                            <tbody>
-                              <%@blank.each_slice(5) do |map|%>
-                              <tr>
-                                <%map.each do |maps|%>
-                                  <td class='border-right'><%= maps[0] %></td>
-                                <% end %>
-                              </tr>
-                              <% end %>
-                            </tbody>
-                        </table>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </li>
-            </ul>
-          </div>
-        <% end %>
+                </td>
+              </tr>
+            </div>
+          <% end %>
+        </table>
       </div>
     </li>
   </ul>
 </div>
-<!-- Channel Product Accordion End -->
+<!-- Channel Product Mapping End -->
 
-<!-- Tracking Accordion -->
+<!-- Tracking Start-->
 <div class="faq-accordion mb-30">
   <ul class="accordion">
     <li class="accordion-item">
       <a class="accordion-title" href="javascript:void(0)">
         <i class="lni-plus"></i>
-        Add Tracking Mapping
+          Add Tracking Mapping
       </a>
       <div class="accordion-content">
-        <h4 class='mb-3'>New Mapping</h4>
-        <div class= "mb-4 border">
-          <%= form_for @tracking, url: tracking_file_path, method: :post do |f| %>
-            <%= f.file_field :file, style:"width:240px;", class: 'btn', accept: ".csv",required: true %>
-            <%= f.submit 'Create Mapping', class:"btn btn-primary"%>
-          <% end %>
+        <div class= "mb-4">
+          <a class="btn btn-primary float-right" data-toggle="modal" data-target='#tracking-modal'>Create</a>
         </div>
-        <h4 class='mb-3'>Mappings</h4>
-        <% @tracking_mappings.each do |import_mapping| %>
-          <div class="faq-accordion mb-30">
-            <ul class="accordion">
-              <li class="accordion-item">
-                <a class="accordion-title" href="javascript:void(0)">
-                  <i class="lni-plus bg-secondary"></i>
-                  <%= import_mapping.sub_type %><span class='text-white'>X</span>
-                </a>
-                <div class="accordion-content">
-                  <div class='col-12 mb-2 float-right'>
-                    <div class= 'd-flex'>
-                      <%= link_to 'Destroy', import_mapping, method: :delete, data: { confirm: 'Are you sure?' }, class: "btn btn-danger" %>
-                      <%= link_to 'Edit', edit_import_mapping_path(import_mapping), class: "btn btn-info ml-3 mr-3" %>
-                      <%= form_tag import_trackings_path, multipart: true, method: :post do %>
-                        <%= text_field_tag :mapping_type, import_mapping.sub_type, class: 'd-none form-control'%>
-                        <%= file_field_tag :file, :required => true %>
-                        <%= submit_tag("Import", id: "button", class: "btn btn-primary", name: "submit") %>
-                      <% end %>
-                    </div>
-                    <% @blank, @full = import_mapping&.mapping_data&.partition { |_, v| v.blank? }&.map { |alist| Hash[alist] }%>
+        <table class="table m-0 table-hover">
+          <% @tracking_mappings.each do |import_mapping| %>
+            <div class= 'd-flex'>
+              <tr>
+                <td class="text-center font-weight-bold mr-4 font-lg"><%= import_mapping.sub_type %></td>
+                  <% @blank, @full = import_mapping&.mapping_data&.partition { |_, v| v.blank? }&.map { |alist| Hash[alist] }%>
+                <td>
+                  <%= form_tag import_trackings_path, multipart: true, method: :post do %>
+                    <%= text_field_tag :mapping_type, import_mapping.sub_type, class: 'd-none form-control'%>
+                    <%= file_field_tag :file, :required => true %>
+                    <%= submit_tag("Import", id: "button", class: "btn btn-primary", name: "submit") %>
+                  <% end %>
+                </td>
+                <td>
+                  <div class="dropdown dropleft">
+                    <%= link_to 'Edit', edit_import_mapping_path(import_mapping), class: "btn btn-info ml-3 mr-3 text-white" %>
                   </div>
-                  <div class="row justify-content-center">
-                    <div class="col-lg-12">
-                      <div class="card text-center mb-30">
-                        <div class="header card-header">Mapped</div>
-                        <table class="table m-0 table-hover">
-                          <thead>
-                            <tr>
-                              <th>Table Field</th>
-                              <th class='border-right'>Header Field</th>
-                              <th>Table Field</th>
-                              <th class='border-right'>Header Field</th>
-                              <th>Table Field</th>
-                              <th class='border-right'>Header Field</th>
-                              <th>Table Field</th>
-                              <th class='border-right'>Header Field</th>
-                            </tr>
-                          </thead>
-                            <tbody>
-                              <%@full.each_slice(4) do |map|%>
-                              <tr>
-                                <%map.each do |maps|%>
-                                  <td><%= maps[0] %></td>
-                                  <td class='border-right'><%= maps[1] %></td>
-                                <% end %>
-                              </tr>
-                              <% end %>
-                            </tbody>
-                        </table>
-                      </div>
-                    </div>
-
-                    <div class="col-lg-12">
-                      <div class="card text-center mb-30">
-                        <div class="header card-header">Unmapped</div>
-                        <table class="table m-0 table-hover">
-                          <thead>
-                            <tr>
-                              <th class='border-right'>Header Field</th>
-                              <th class='border-right'>Header Field</th>
-                              <th class='border-right'>Header Field</th>
-                              <th class='border-right'>Header Field</th>
-                              <th class='border-right'>Header Field</th>
-                            </tr>
-                          </thead>
-                            <tbody>
-                              <%@blank.each_slice(5) do |map|%>
-                              <tr>
-                                <%map.each do |maps|%>
-                                  <td class='border-right'><%= maps[0] %></td>
-                                <% end %>
-                              </tr>
-                              <% end %>
-                            </tbody>
-                        </table>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </li>
-            </ul>
-          </div>
-        <% end %>
+                </td>
+              </tr>
+            </div>
+          <% end %>
+        </table>
       </div>
     </li>
   </ul>
 </div>
-<!-- Tracking Accordion End -->
+<!-- Tracking End -->
+
 
 <!-- Product Accordion -->
 <div class="faq-accordion mb-30">
@@ -431,13 +168,10 @@
         Manual Dispatch CSV Template
       </a>
       <div class="accordion-content">
+        <div class= "mb-4">
+          <a class="btn btn-primary float-right" data-toggle="modal" data-target='#manual-dispatch-modal'>Create</a>
+        </div>
         <h4 class='mb-3'>New Mapping</h4>
-          <div class= "mb-4 border">
-            <%= form_for @courier_csv_export, url: courier_csv_export_path, method: :post do |f| %>
-              <%= f.file_field :file, style:"width:240px;", class: 'btn', accept: ".csv",required: true %>
-              <%= f.submit 'Create Mapping', class:"btn btn-primary"%>
-            <% end %>
-          </div>
           <div class="faq-accordion mb-30">
             <ul class="accordion">
               <li class="accordion-item">
@@ -520,6 +254,7 @@
 </div>
 <!-- Competitive Price End -->
 
+<!-- Competitive Price Modal Start -->
 <div class="modal" id="competitive-price-modal" tabindex="-1" role="dialog">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
@@ -542,6 +277,7 @@
     </div>
   </div>
 </div>
+<!-- Competitive Price Modal End -->
 
 <!-- Auto Dispatch -->
 <div class="faq-accordion mb-30">
@@ -605,3 +341,128 @@
   </div>
 </div>
 <!--Auto-dispatch Model End-->
+
+<!-- Product Mapping Modal Start -->
+<div class="modal" id="product-mapping-modal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">New Product Mapping</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <%= form_for @product, url: product_file_path, method: :post do |f| %>
+        <div class="modal-body">
+          <%= label_tag 'Please select a file:' %>
+          <%= f.file_field :file, style:"width:240px;", class: 'btn', accept: ".csv", required: true %>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          <%= f.submit 'Create Mapping', class:"btn btn-primary"%>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
+<!-- Product Mapping Modal End -->
+
+<!-- Order Mapping Modal Start -->
+<div class="modal" id="order-mapping-modal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">New Order Mapping</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <%= form_for @order, url: order_file_path, method: :post do |f| %>
+        <div class="modal-body">
+          <%= label_tag 'Please select a file:' %>
+          <%= f.file_field :file, style:"width:240px;", class: 'btn', accept: ".csv",required: true %>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          <%= f.submit 'Create Mapping', class:"btn btn-primary"%>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
+<!-- Order Mapping Modal End -->
+
+<!-- Channel Product Mapping Modal Start -->
+<div class="modal" id="channel-product-mapping-modal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">New Channel Product Mapping</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <%= form_tag import_product_mappings_path, multipart: true, method: :post do %>
+        <div class="modal-body">
+          <%= label_tag 'Please select a file:' %>
+          <%= file_field_tag :file, :required => true %>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          <%= submit_tag("Import", id: "button", class: "btn btn-primary", name: "submit") %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
+<!-- Order Mapping Modal End -->
+
+<!-- Tracking Modal Start -->
+<div class="modal" id="tracking-modal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Tracking</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <%= form_for @tracking, url: tracking_file_path, method: :post do |f| %>
+        <div class="modal-body">
+          <%= label_tag 'Please select a file:' %>
+          <%= f.file_field :file, style:"width:240px;", class: 'btn', accept: ".csv",required: true %>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          <%= f.submit 'Create Mapping', class:"btn btn-primary"%>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
+<!-- Order Mapping Modal End -->
+
+<!-- Manual Dispatch Modal Start -->
+<div class="modal" id="manual-dispatch-modal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Manual Dispatch Template</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <%= form_for @courier_csv_export, url: courier_csv_export_path, method: :post do |f| %>
+        <div class="modal-body">
+          <%= label_tag 'Please select a file:' %>
+          <%= f.file_field :file, style:"width:240px;", class: 'btn', accept: ".csv",required: true %>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          <%= f.submit 'Create Mapping', class:"btn btn-primary"%>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
+<!-- Manual Dispatch Modal End -->
