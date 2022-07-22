@@ -11,8 +11,12 @@ class CreateChannelProductJob < ApplicationJob
 
       next unless response_item.response['GetMyeBaySellingResponse']['ActiveList'].present?
 
-      response_item.response['GetMyeBaySellingResponse']['ActiveList']['ItemArray']['Item'].each do |item|
-        create_or_update_product(item)
+      if response_item.response['GetMyeBaySellingResponse']['ActiveList']['ItemArray']['Item'].class.eql? Array
+        response_item.response['GetMyeBaySellingResponse']['ActiveList']['ItemArray']['Item'].each do |item|
+          create_or_update_product(item)
+        end
+      else
+        create_or_update_product(response_item.response['GetMyeBaySellingResponse']['ActiveList']['ItemArray']['Item'])
       end
       response_item.update(status: 'executed')
     end

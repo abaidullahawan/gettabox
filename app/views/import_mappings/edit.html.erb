@@ -31,7 +31,7 @@
             <div class="row">
               <% map.each do |header| %>
                 <div class="col-2 form-group ml-4">
-                <% if @import_mapping.data_to_print.include? header %>
+                <% if @import_mapping.data_to_print&.include? header %>
                   <%= check_box_tag "headers_1[]", header, value: "true" %>
                   <%= label_tag :"#{header}" %>
                 <% else %>
@@ -47,7 +47,7 @@
             <div class="row">
               <% map.each do |header| %>
               <div class="col-2 form-group ml-4">
-                <% if @import_mapping.data_to_print.include? header %>
+                <% if @import_mapping.data_to_print&.include? header %>
                   <%= check_box_tag "headers_1[]", header, value: "true" %>
                   <%= label_tag :"#{header}" %>
                 <% else %>
