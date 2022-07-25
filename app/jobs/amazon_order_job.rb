@@ -8,7 +8,7 @@ class AmazonOrderJob < ApplicationJob
     @refresh_token_amazon = RefreshToken.where(channel: 'amazon').last
     data = {
       'MarketplaceIds' => 'A1F83G8C2ARO7P',
-      'CreatedAfter' => (Time.zone.now - 84.hours).strftime('%Y-%m-%dT%H:%M:%S')
+      'CreatedAfter' => (Time.zone.now - 87.hours).strftime('%Y-%m-%dT%H:%M:%S')
     }
     url = "https://sellingpartnerapi-eu.amazon.com/orders/v0/orders?" + URI.encode_www_form(data)
     remainaing_time = @refresh_token_amazon.access_token_expiry.localtime > DateTime.now
