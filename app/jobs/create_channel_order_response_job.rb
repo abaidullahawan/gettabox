@@ -14,7 +14,7 @@ class CreateChannelOrderResponseJob < ApplicationJob
 
     channel_response_data = ChannelResponseData.where(channel: 'ebay', api_call: 'getOrders')
     date_format = (Date.today - 2.months).strftime('%FT%T%:z').split('+').first
-    date_format = (Date.today - 87.hours).strftime('%FT%T%:z').split('+').first if channel_response_data.present?
+    date_format = (Date.today - 4.days).strftime('%FT%T%:z').split('+').first if channel_response_data.present?
     url = "https://api.ebay.com/sell/fulfillment/v1/order?filter=creationdate:%5B#{date_format}.000Z..%5D&limit=200&offset=0"
 
     @headers = { 'authorization' => "Bearer <#{@refresh_token.access_token}>",
