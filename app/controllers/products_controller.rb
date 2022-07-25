@@ -167,12 +167,16 @@ class ProductsController < ApplicationController
   end
 
   def import
-    if @csv.present?
-      @csv.delete('id')
-      @csv.delete('created_at')
-      @csv.delete('updated_at')
-      csv_create_records(@csv)
-      flash[:notice] = 'File Upload Successful!'
+    file = params[:file]
+    current_user = current_user&.personal_detail&.full_name
+    found_error, error_message = verify_csv_format(@csv)
+    if found_error == false
+      filename = save_files_in_tmp(file)
+      JobStatus.create(name: 'ProductImportJob', status: 'inqueue', arguments: { filename: filename, mapping_type: params[:mapping_type], current_user: current_user }, perform_in: 0.seconds)
+      # ProductImportJob.perform_now(filename: filename, mapping_type: params[:mapping_type], current_user: current_user)
+      flash[:notice] = 'Job added successfully!'
+    else
+      flash[:alert] = error_message
     end
     redirect_to products_path
   end
@@ -332,35 +336,6 @@ class ProductsController < ApplicationController
     end
   end
 
-  def csv_create_records(csv)
-    found_error, error_message = verify_csv_format(csv)
-    if found_error == false
-      csv.each.with_index(1) do |row, index|
-        hash = row.to_hash
-        hash.delete(nil)
-        hash['product_type'] = hash['product_type']&.downcase
-        hash['vat'] = hash['vat'].to_i
-        hash['total_stock'] = hash['total_stock'].to_i
-        product = Product.with_deleted.find_or_initialize_by(sku: hash['sku'])
-        next product.update(hash) if hash['category_id'].to_i.positive?
-
-        hash['category_id'] = Category.where('title ILIKE ?', hash['category_id'])
-                                      .first_or_create(title: hash['category_id']).id
-        hash['product_location_id'] = ProductLocation.find_or_create_by(location: hash['product_location_id']).id
-        if hash['total_stock'].present? && product.total_stock.present?
-          difference = hash['total_stock'].to_i - product.total_stock.to_i
-          stock = product.manual_edit_stock.to_i
-          stock += difference
-          product.update(manual_edit_stock: stock, change_log: "Manual Edit, Spreadsheet, #{stock}, Manual Edit, , #{(hash['total_stock'].to_i - product.unshipped.to_i)}, #{current_user&.personal_detail&.full_name}")
-        end
-        product.update!(hash)
-        Barcode.find_or_create_by(product_id: product.id, title: hash['barcode'])  if hash['barcode'].present?
-      end
-    else
-      flash[:alert] = error_message
-    end
-  end
-
   def update_log(stock)
     @product.update(manual_edit_stock: stock, inventory_balance: (@product.total_stock.to_i - @product.unshipped.to_i), change_log: "Manual Edit, #{params[:reason]}, #{stock}, Manual Edit, #{params[:description]}, #{(@product.total_stock.to_i - @product.unshipped.to_i)}, #{current_user&.personal_detail&.full_name}")
     product = @product.product_mappings.last.channel_product if @product.product_mappings.present?
@@ -404,5 +379,13 @@ class ProductsController < ApplicationController
     end
     flash[:notice] = "Mappped product's images imported"
     redirect_to products_path
+  end
+
+  def save_files_in_tmp(uploaded_file)
+    name = File.basename(uploaded_file.original_filename, File.extname(uploaded_file.original_filename)) + '---' + Time.zone.now.strftime('%d-%m-%Y @ %H:%M:%S') + '.csv'
+    File.open(Rails.root.join('tmp', name), 'wb') do |file|
+      file.write(uploaded_file.read)
+    end
+    name
   end
 end

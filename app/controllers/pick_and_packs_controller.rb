@@ -58,7 +58,7 @@ class PickAndPacksController < ApplicationController
     pick_and_packs = OrderBatch.batches_only.ransack(params[:q]).result(distinct: true)
     orders = pick_and_packs.last&.channel_orders
     tracking_order = orders.joins(:trackings).find_by('trackings.tracking_no': params[:tracking_no])
-    local_products(tracking_order)
+    local_products(tracking_order) if tracking_order.present?
 
     product_skus = @products_group.map(&:first)
     product = Product.where(sku: product_skus).joins(:barcodes).find_by('barcodes.title': params[:barcode])
@@ -128,7 +128,7 @@ class PickAndPacksController < ApplicationController
     pick_and_packs = OrderBatch.batches_only.ransack(params[:q]).result(distinct: true)
     orders = pick_and_packs.last&.channel_orders
     tracking_order = orders.joins(:trackings).find_by('trackings.tracking_no': params[:tracking_no])
-    local_products(tracking_order)
+    local_products(tracking_order) if tracking_order.present?
     product_scan = @products_group.map{|g| {"#{g.last.first[:product].id}"=> g.last.pluck(:quantity).sum.to_i}}.reduce(:merge)
     tracking_order.update(product_scan: product_scan, stage: 'completed', order_batch_id: nil, change_log: "Order Completed, #{tracking_order.id}, #{tracking_order.order_id}, #{current_user&.personal_detail&.full_name}")
     update_all_products(tracking_order)

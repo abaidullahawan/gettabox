@@ -99,39 +99,27 @@ class CreateChannelOrderJob < ApplicationJob
     channel_items.each do |item|
       product = item.channel_product.product_mapping.product
       product = Product.find(product.id)
-      channel_type_ebay = item.channel_order.channel_type_ebay?
       next unless product.present?
 
-      next multipack_product(item, product, channel_type_ebay) unless product.product_type.eql? 'single'
+      next multipack_allocation(item, product) unless product.product_type.eql? 'single'
 
       inventory_balance = product.inventory_balance.to_i - item.ordered
-      update_available_stock(item, product, inventory_balance, item.ordered, channel_type_ebay)
+      update_available_stock(item, product, inventory_balance, item.ordered)
     end
   end
 
-  def multipack_product(item, product, channel_type_ebay)
-    available = product.multipack_products.map { |m| m.child.available_stock.to_i }
-    required = product.multipack_products.map { |m| m.quantity.to_i * item.ordered.to_i }
-    check = available.zip(required).all? { |a, b| a >= b }
-
-    # return calculate_ebay_amazon_orders(product, channel_type_ebay) unless check
-    return unless check
-
-    multipack_allocation(item, product, channel_type_ebay)
-  end
-
-  def multipack_allocation(item, product, channel_type_ebay)
+  def multipack_allocation(item, product)
     product.multipack_products.each do |multipack|
       quantity = multipack.quantity
       child = multipack.child
       child = Product.find(child.id)
 
       inventory_balance = child.inventory_balance.to_i - (item.ordered * quantity)
-      update_available_stock(item, child, inventory_balance, (item.ordered * quantity), channel_type_ebay)
+      update_available_stock(item, child, inventory_balance, (item.ordered * quantity))
     end
   end
 
-  def update_available_stock(item, product, inventory_balance, ordered, channel_type_ebay)
+  def update_available_stock(item, product, inventory_balance, ordered)
     product = Product.find(product.id)
     unshipped = product.unshipped.to_i + ordered
     channel_type = item.channel_order.channel_type
@@ -143,7 +131,6 @@ class CreateChannelOrderJob < ApplicationJob
       product.update(allocated: product.allocated.to_i + ordered, allocated_orders: product.allocated_orders.to_i + 1)
       item.update(allocated: true)
     else
-      # calculate_ebay_amazon_orders(product, channel_type_ebay)
       item.update(allocated: false)
     end
   end
