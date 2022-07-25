@@ -117,17 +117,18 @@ class SystemUsersController < ApplicationController
         product = Product.find_by(sku: hash['VAR_SKU'])
         next unless product.present?
 
-        hash.select {|k,_| k.include? 'Supplier_Name'}.each do |k, v|
+        hash.select { |k,_| k.include? 'Supplier_Name' }.each do |k, v|
           num = k.split('_').first
-          supplier_record = hash.select {|k,_| k.include? num}
+          supplier_record = hash.select { |k,_| k.include? num }
           supplier = SystemUser.find_or_initialize_by(user_type: 'supplier', name: v)
           next if product.product_suppliers.find_by(system_user_id: supplier.id).present?
 
           product.product_suppliers
                  .build(
                    system_user_id: supplier.id,
-                   product_cost: supplier_record.select {|k,_| k.include? 'Price' }.first.last,
-                   product_sku: supplier_record.select {|k,_| k.include? 'Sku' }&.first&.last,
+                   product_cost: supplier_record.select { |k,_| k.include? 'Price' }.first.last,
+                   product_sku: supplier_record.select { |k,_| k.include? 'Sku' }&.first&.last,
+                   supplier_location: supplier_record.select { |k,_| k.include? 'Supplier_Location' }&.first&.last,
                    product_vat: 5
                  ).save if supplier.save
         end

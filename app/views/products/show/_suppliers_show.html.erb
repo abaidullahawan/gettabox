@@ -11,19 +11,20 @@
             <div class='col-12'>
               <div class='row'>
                 <h5 class="fs-14 mb-1 col-2 offset-1">Name</h5>
-                <h5 class="fs-14 mb-1 col-3">Product Cost</h5>
-                <h5 class="fs-14 mb-1 col-3">Product SKU</h5>
-                <h5 class="fs-14 mb-1 col-3">Product Vat</h5>
+                <h5 class="fs-14 mb-1 col-2">Product Cost</h5>
+                <h5 class="fs-14 mb-1 col-2">Product SKU</h5>
+                <h5 class="fs-14 mb-1 col-2">Product Vat</h5>
+                <h5 class="fs-14 mb-1 col-3">Supplier Location</h5>
               </div><hr>
               <% @product.product_suppliers.each.with_index(1) do |supplier, index| %>
                 <a href="<%= system_user_path(supplier.system_user) %>" class='link_tag' style="text-decoration: none;">
                   <div class='row'>
                     <p class="mb-1 fs-14 col-1"><strong><%= index %></strong></p>
                     <p class="mb-1 fs-14 col-2"><%= supplier.system_user.name %></p>
-                    <p class="mb-1 fs-14 col-3"><%= supplier.product_cost %></p>
-                    <p class="mb-1 fs-14 col-3"><%= supplier.product_sku %></p>
-                    <p class="mb-1 fs-14 col-3"><%= supplier.read_attribute_before_type_cast(:product_vat) %></p>
-
+                    <p class="mb-1 fs-14 col-2"><%= supplier.product_cost %></p>
+                    <p class="mb-1 fs-14 col-2"><%= supplier.product_sku %></p>
+                    <p class="mb-1 fs-14 col-2"><%= supplier.read_attribute_before_type_cast(:product_vat) %></p>
+                    <p class="mb-1 fs-14 col-3"><%= supplier&.supplier_location %></p>
                   </div><hr>
                 </a>
               <% end %>
@@ -37,7 +38,7 @@
 <%= form_for(@product, url: product_path) do |f| %>
   <!-- Supplier Modal -->
   <div class="modal fade" id="product-supplier-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-scrollable" role="document">
+    <div class="modal-dialog modal-dialog-scrollable" style="max-width: 610px!important;" role="document">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">Supplier</h5>
