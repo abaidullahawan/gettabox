@@ -22,31 +22,31 @@ production:
 staging:
   :concurrency: 15
 
-# :schedule:
-#   get_eBay_orders_from_API:
-#     cron: '0 0 * * * *' # Runs every hour
-#     class: CreateChannelOrderResponseJob
+:schedule:
+  get_eBay_orders_from_API:
+    cron: '0 0 * * * *' # Runs every hour
+    class: CreateChannelOrderResponseJob
 
-#   get_eBay_products_from_API:
-#     cron: '0 0 1 * * *' # Runs after every day
-#     class: CreateChannelProductResponseJob
+  get_eBay_products_from_API:
+    cron: '0 0 1 * * *' # Runs after every day
+    class: CreateChannelProductResponseJob
 
-#   get_Amazon_products_from_API:
-#     cron: '0 0 1 * * *' # Runs after every day
-#     class: AmazonProductJob
+  get_Amazon_products_from_API:
+    cron: '0 0 1 * * *' # Runs after every day
+    class: AmazonProductJob
 
-#   get_Amazon_orders_from_API:
-#     cron: '0 0 * * * *' # Runs every hour
-#     class: AmazonOrderJob
+  get_Amazon_orders_from_API:
+    cron: '0 0 * * * *' # Runs every hour
+    class: AmazonOrderJob
 
-#   update_amazon_products:
-#     cron: '*/30 * * * *' # Runs 30 minutes
-#     class: UpdateChannelQuantity
+  update_amazon_products:
+    cron: '*/30 * * * *' # Runs 30 minutes
+    class: UpdateChannelQuantity
 
-#   issue_orders_re_match:
-#     cron: '*/30 * * * *' # Runs 30 minutes
-#     class: IssueOrdersJob
+  issue_orders_re_match:
+    cron: '*/30 * * * *' # Runs 30 minutes
+    class: IssueOrdersJob
 
-#   amazon_orders_issue:
-#     cron: '*/30 * * * *' # Runs 30 minutes
-#     class: AmazonOrderItemJob
+  amazon_orders_issue:
+    cron: '*/30 * * * *' # Runs 30 minutes
+    class: AmazonOrderItemJob
