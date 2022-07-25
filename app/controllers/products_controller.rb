@@ -312,7 +312,7 @@ class ProductsController < ApplicationController
                   barcodes_attributes:
                   %i[id title _destroy],
                   product_suppliers_attributes:
-                  %i[id system_user_id product_cost product_sku product_vat _destroy],
+                  %i[id system_user_id product_cost product_sku product_vat supplier_location _destroy],
                   multipack_products_attributes: %i[id product_id child_id quantity _destroy],
                   extra_field_value_attributes: %i[id field_value])
   end
