@@ -21,8 +21,7 @@ $(document).on('turbolinks:load', function () {
     // $('#single-product-create-modal .modal-body #product_photo').attr("src", imageUrl)
     // $('#single-product-create-modal .modal-body #product_photo').attr("filename", imageName)
     $('#single-product-create-modal .modal-body #product_total_stock').val(quantity)
-    if(imageName  !== '' )
-    {
+    if (imageName !== '') {
       $('#single-product-create-modal .modal-body #photo-label').text(`Photo ${imageName} Attached`)
     }
     $('#single-product-create-modal').modal('show')
@@ -32,8 +31,8 @@ $(document).on('turbolinks:load', function () {
     var json = this.dataset.item
     var cd_id = this.dataset.id
     var data = JSON.parse(json)
-    var sku = data[0].sku
-    var title = data[0].title
+    var sku = data[0]
+    var title = data[1]
     // var description = data.product_data.description
     // var imageUrl = data[0].item_data.product_data.PictureDetails.GalleryURL
     // var urlSplit = imageUrl.split('/')
@@ -75,7 +74,7 @@ $(document).on('turbolinks:load', function () {
   $('.update-rule-modal').on('click', function () {
     var index = this.dataset.index
     $('#update_channel_order_id').val(this.dataset.id)
-    $('#mail-service-roles-update-modal-'+index).modal('show')
+    $('#mail-service-roles-update-modal-' + index).modal('show')
   })
 
   $('.bulk-assign-rule').on('click', function () {
@@ -115,8 +114,8 @@ $(document).on('turbolinks:load', function () {
     var json = this.dataset.item
     var cd_id = this.dataset.id
     var data = JSON.parse(json)
-    var sku = data[0].sku
-    var title = data[0].title
+    var sku = data[0]
+    var title = data[1]
     // var description = data.product_data.description
 
     $('#multi-product-create-modal .modal-body #channel_product_id').val(cd_id)
@@ -129,7 +128,7 @@ $(document).on('turbolinks:load', function () {
   $('.productSearchBtn').on('click', function () {
     $(this).closest('td').find('.productSearchContainer').toggleClass('d-none', 3000);
     $(this).closest('td').find('.productSearch').toggleClass('d-none', 3000);
-    $(this).closest('td').find('.productSearch').trigger( "focus" )
+    $(this).closest('td').find('.productSearch').trigger("focus")
   })
 
   // $('.productSearch').on('focusout', function () {
