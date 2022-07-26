@@ -283,22 +283,30 @@ class TrackingsController < ApplicationController
       next unless product.present?
 
       item_quantity = order_item.ordered.to_i
-      next update_product_quantity(product, item_quantity) if product.product_type.eql? 'single'
+      alloacted = order_item.allocated
+      next update_product_quantity(product, item_quantity, alloacted) if product.product_type.eql? 'single'
 
       product.multipack_products.each do |multi|
         item_quantity = multi.quantity.to_i * order_item.ordered
         product = multi.child
-        update_product_quantity(product, item_quantity)
+        update_product_quantity(product, item_quantity, alloacted)
       end
     end
   end
 
-  def update_product_quantity(product, item_quantity)
-    product.update(total_stock: product.total_stock.to_i - item_quantity.to_i,
-                   unshipped: product.unshipped.to_i - item_quantity.to_i,
-                   unshipped_orders: product.unshipped_orders.to_i - 1,
-                   allocated_orders: product.allocated_orders.to_i - 1,
-                   allocated: product.allocated.to_i - item_quantity.to_i)
+  def update_product_quantity(product, item_quantity, alloacted)
+    if alloacted
+      product.update(total_stock: product.total_stock.to_i - item_quantity.to_i,
+                     unshipped: product.unshipped.to_i - item_quantity.to_i,
+                     unshipped_orders: product.unshipped_orders.to_i - 1,
+                     allocated_orders: product.allocated_orders.to_i - 1,
+                     allocated: product.allocated.to_i - item_quantity.to_i)
+    else
+      product.update(total_stock: product.total_stock.to_i - item_quantity.to_i,
+                     unshipped: product.unshipped.to_i - item_quantity.to_i,
+                     unshipped_orders: product.unshipped_orders.to_i - 1,
+                     unallocated: product.unallocated.to_i - item_quantity.to_i)
+    end
   end
 
   def call_amazon_tracking_job(order_id, channel_order_id)
