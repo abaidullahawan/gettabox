@@ -153,6 +153,7 @@ class TrackingsController < ApplicationController
         shipping_service = find_shipping_service(row['shipping_service'].downcase)
         tracking.carrier = shipping_service.try(:[], :carrier)
         tracking.service = shipping_service.try(:[], :service)
+        tracking.shipping_service = row['shipping_service'].downcase
         note = tracking.save ? tracking.tracking_no : tracking.errors.full_messages
         message << note
       end
