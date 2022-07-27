@@ -40,8 +40,8 @@ class ScurriApiJob < ApplicationJob
         },
         "order_number" => order.order_id,
         "options" => {
-          "package_type" => "Bag",
-          "signed" => "yes"
+          "package_type" => "Standard parcel",
+          "signed" => "no"
         },
         "packages" =>
           order.assign_rule.mail_service_labels.each.map do |label|
