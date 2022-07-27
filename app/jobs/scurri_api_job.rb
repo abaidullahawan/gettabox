@@ -52,9 +52,9 @@ class ScurriApiJob < ApplicationJob
                 "value" => order.total_amount,
                 "fabric_content" => "Household",
                 "country_of_origin" => "GB",
-                "sku" => "CB05 - 5010743032058 Big K Charcoal Briquettes 5KG heavy x 3",
-                "quantity" => 1,
-                "name" => "Real Charcoal Briquettes Char coal For BBQ Barbecue Restaurant Charcoal 5kg-20kg"
+                "sku" => order.channel_order_items.first.sku,
+                "quantity" => order.channel_order_items.first.ordered,
+                "name" => order.channel_order_items.first.title
               }
             ],
             "length" => label.length,
