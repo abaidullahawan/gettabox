@@ -75,7 +75,7 @@ class ScurriApiJob < ApplicationJob
     consignments.each_with_index do |consignment, index|
 
       document_response = consignment_document(consignment, auth)
-      return 'Document not found' unless document_response[:status]
+      next 'Document not found' unless document_response[:status]
 
       document = document_response[:body]['labels']
       channel_order_id = channel_order_ids.at(index)
