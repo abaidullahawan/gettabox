@@ -28,14 +28,34 @@
     </div>
   </div>
   <% order.channel_order_items.each do |item| %>
-    <div class="flex" style="border-bottom: 3px solid black;">
-      <div class="col-8">
-        <p> <%= item.title %></p>
-        <p><strong><%= item.sku %></strong></p>
+    <% product = item.channel_product.product_mapping.product %>
+    <% if product.product_type_single? %>
+      <div class="flex" style="border-bottom: 3px solid black;">
+        <div class="col-8">
+          <p> <%= product.title %></p>
+          <p><strong><%= product.sku %></strong></p>
+          <p><%= product.barcodes&.first&.title %></p>
+        </div>
+        <div class="col-4">
+          <div style="padding: 10px; border: 1px solid black;"><%= item.ordered %></div>
+        </div>
       </div>
-      <div class="col-4">
-        <div style="padding: 10px; border: 1px solid black;"><%= item.ordered %></div>
-      </div>
-    </div>
+    <% else %>
+      <% product.multipack_products.each do |multipack| %>
+        <% child = multipack.child %>
+        <% quantity = multipack.quantity %>
+        <% ordered = (item.ordered.to_i * quantity.to_i)%>
+        <div class="flex" style="border-bottom: 3px solid black;">
+          <div class="col-8">
+            <p> <%= child.title %></p>
+            <p><strong><%= child.sku %></strong></p>
+            <p><%= child.barcodes&.first&.title %></p>
+          </div>
+          <div class="col-4">
+            <div style="padding: 10px; border: 1px solid black;"><%= ordered %></div>
+          </div>
+        </div>
+      <% end %>
+    <% end %>
   <% end %>
 </div>
