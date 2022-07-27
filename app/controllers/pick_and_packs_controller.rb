@@ -54,6 +54,31 @@ class PickAndPacksController < ApplicationController
     end
   end
 
+  def download_pdf
+    @files = Dir[Rails.root.join('public/uploads/*').to_s]
+    case params[:download]
+    when 'true'
+      send_file(
+        params[:url],
+        filename: params[:url]&.split('/')&.last,
+        type: 'pdf'
+      )
+    when 'false'
+      File.delete(params[:url]) if params[:url]
+      flash[:notice] = 'File deleted!'
+      redirect_to download_pdf_pick_and_packs_path
+    end
+  end
+
+  def consignement
+    respond_to do |format|
+      format.html
+      format.pdf do
+        render pdf: 'file', viewport_size: '1280x1024', save_to_file: Rails.root.join('public/uploads', "packing_slip.pdf"), template: 'pick_and_packs/consignement.pdf.erb'
+      end
+    end
+  end
+
   def scan_barcode
     pick_and_packs = OrderBatch.batches_only.ransack(params[:q]).result(distinct: true)
     orders = pick_and_packs.last&.channel_orders

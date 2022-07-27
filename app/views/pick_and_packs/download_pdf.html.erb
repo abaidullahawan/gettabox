@@ -1,0 +1,40 @@
+<!-- Main Content Header -->
+<div class="main-content-header">
+  <h1>Start Packing</h1>
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item">
+      <a href="<%= home_path %>">Dashboard</a>
+    </li>
+    <li class="breadcrumb-item active">
+      <span class="active">Download File</span>
+    </li>
+  </ol>
+</div>
+<!-- End Main Content Header -->
+
+<div class="col-lg-12">
+  <div class="card text-center mb-30">
+    <table class="table m-0 table-hover">
+      <thead>
+        <tr>
+          <th class='border-right'>File Name</th>
+          <th class='border-right'>Download</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @files.each do |file| %>
+          <tr>
+            <% if file.include?('consignment')%>
+              <% filename = file&.split('/')&.last %>
+              <td><%= filename %></td>
+              <td class='border-right'>
+                <%= link_to "Download", download_pdf_pick_and_packs_path(download: true, url: file), download: '', class: "btn btn-primary text-white" %>
+                <%= link_to "Delete", download_pdf_pick_and_packs_path(download: false, url: file), class: "btn btn-danger text-white", data: {confirm: "Are you sure?"} %>
+              </td>
+            <% end %>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

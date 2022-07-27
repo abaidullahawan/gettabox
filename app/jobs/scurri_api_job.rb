@@ -3,14 +3,16 @@
 # Scurri API Calls Job
 class ScurriApiJob < ApplicationJob
   queue_as :default
+  require 'combine_pdf'
 
   def perform(*_args)
     order_id = _args.first[:order_id] || _args.first['order_id']
+    packing_slip = _args.first[:packing_slip] || _args.first['packing_slip']
     channel_orders = ChannelOrder.where(id: order_id)
 
     return unless channel_orders.present?
 
-    url= 'https://api.scurri.co.uk/v1/company/itd-global-gettabox-ltd/consignments/'
+    url = 'https://api.scurri.co.uk/v1/company/itd-global-gettabox-ltd/consignments/'
 
     auth = 'Basic S1VCUkFAR0VUVEFCT1guQ09NOkdldHRhYm94LjEyMw=='
 
@@ -38,8 +40,8 @@ class ScurriApiJob < ApplicationJob
         },
         "order_number" => order.order_id,
         "options" => {
-          "package_type" => "Parcel",
-          "signed" => "no"
+          "package_type" => "Bag",
+          "signed" => "yes"
         },
         "packages" =>
           order.assign_rule.mail_service_labels.each.map do |label|
@@ -67,20 +69,34 @@ class ScurriApiJob < ApplicationJob
     response = ScurriApiService.create_shipment(url, data, auth)
     return unless response[:status]
 
-    consignment_id = document_response[:body]['success']
+    consignment_id = response[:body]['success'].first
     document_response = consignment_document(consignment_id, auth)
     return 'Document not found' unless document_response[:status]
 
     document = document_response[:body]['labels']
-    File.open(consignment_id, 'wb') do |f|
+    order_id = ChannelOrder.find(order_id.first).order_id
+    name = "consignment-#{order_id}"
+    path = Rails.root.join('public/uploads', name.to_s)
+    File.open(path.to_s, 'wb') do |f|
       f.write(Base64.decode64(document))
     end
+    return unless packing_slip.positive?
+
+    pdf_name = "packing_slip-#{order_id}"
+    generate_packing_slip(order_id, pdf_name)
+
+    pdf_name = "#{pdf_name}.pdf"
+    path_for_packing_slip = Rails.root.join('public/uploads', pdf_name.to_s)
+
+    generate_combine_pdf(path, path_for_packing_slip)
+    File.delete(path_for_packing_slip)
+
   end
 
   def carrier_shipping_service(shipping_service)
     shipping_services = {
       'yodel direct xpress mini' => 'Yodel|XPRESS MINI 48 NON POD 2CMN',
-      'yodel direct xpress 48 pod'=> 'Yodel|XPRESS 48 POD 2CP',
+      'yodel direct xpress 48 pod' => 'Yodel|XPRESS 48 POD 2CP',
       'yodel direct xpress 48 non pod' => 'Yodel|XPRESS 48 POD 2CP',
       'yodel direct xpress 24 pod' => 'Yodel|XPRESS 24 POD 1CP',
       'yodel direct xpress 24 non pod' => 'Yodel|XPRESS 24 POD 1CP',
@@ -103,5 +119,36 @@ class ScurriApiJob < ApplicationJob
   def consignment_document(id, auth)
     url = "https://api.scurri.co.uk/v1/company/itd-global-gettabox-ltd/consignment/#{id}/documents"
     ScurriApiService.consignment_document(url, auth)
+  end
+
+  def generate_packing_slip(order_id, pdf_name)
+    order = ChannelOrder.joins(:channel_order_items, system_user: :addresses)
+                        .includes(:channel_order_items, system_user: :addresses)
+                        .find_by('channel_orders.order_id': order_id)
+    html = PickAndPacksController.new.render_to_string(
+      template: 'pick_and_packs/consignement.pdf.erb',
+      locals: { order: order }
+    )
+    pdf = WickedPdf.new.pdf_from_string(
+      html,
+      pdf: pdf_name,
+      layout: 'print',
+      page_size: 'A6',
+      encoding: 'utf-8'
+    )
+    pdf_name = "#{pdf_name}.pdf"
+    pdf_path = Rails.root.join('public/uploads', pdf_name)
+    # create a new file
+    File.open(pdf_path, 'wb') do |file|
+      file.binmode
+      file << pdf.force_encoding('UTF-8')
+    end
+  end
+
+  def generate_combine_pdf(path, path_for_packing_slip)
+    pdf = CombinePDF.new
+    pdf << CombinePDF.load(path)
+    pdf << CombinePDF.load(path_for_packing_slip)
+    pdf.save path
   end
 end
