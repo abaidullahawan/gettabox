@@ -52,9 +52,9 @@ class ScurriApiJob < ApplicationJob
                 "value" => order.total_amount,
                 "fabric_content" => "Household",
                 "country_of_origin" => "GB",
-                "sku" => order.channel_order_items.first.sku,
-                "quantity" => order.channel_order_items.first.ordered,
-                "name" => order.channel_order_items.first.title
+                "sku" => order.channel_order_items.first&.sku,
+                "quantity" => order.channel_order_items.first&.ordered,
+                "name" => order.channel_order_items.first&.title
               }
             ],
             "length" => label.length,
