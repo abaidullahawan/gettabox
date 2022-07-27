@@ -23,10 +23,10 @@ class UpdateChannelQuantity < ApplicationJob
     job = Sidekiq::ScheduledSet.new.find_job(job_status.job_id) if job_status.present?
     credential = Credential.find_by(grant_type: 'wait_time')
     wait_time = credential.created_at
-    wait_time = DateTime.now > wait_time ? DateTime.now + 120.seconds : wait_time + 120.seconds
+    wait_time = Time.zone.now.no_dst > wait_time ? Time.zone.now.no_dst + 120.seconds : wait_time + 120.seconds
     credential.update(redirect_uri: nil, authorization: nil, created_at: wait_time)
-    elapsed_seconds = wait_time - DateTime.now
-    job.reschedule(DateTime.now + elapsed_seconds.seconds) if job.present?
+    elapsed_seconds = wait_time - Time.zone.now.no_dst
+    job.reschedule(Time.zone.now.no_dst + elapsed_seconds.seconds) if job.present?
     perform_in = job_status.present? ? job_status.perform_in : elapsed_seconds
     # job_data = self.class.set(wait: elapsed_seconds.seconds).perform_later(products: products, error: error)
     JobStatus.create(name: 'UpdateAmazonProduct', status: 'inqueue', arguments: { products: products, message: message }, perform_in: perform_in)
