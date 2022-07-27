@@ -6,9 +6,9 @@ class ScurriApiJob < ApplicationJob
   require 'combine_pdf'
 
   def perform(*_args)
-    order_id = _args.first[:order_id] || _args.first['order_id']
+    order_ids = _args.first[:order_ids] || _args.first['order_ids']
     packing_slip = _args.first[:packing_slip] || _args.first['packing_slip']
-    channel_orders = ChannelOrder.where(id: order_id)
+    channel_orders = ChannelOrder.where(id: order_ids)
 
     return unless channel_orders.present?
 
@@ -74,23 +74,22 @@ class ScurriApiJob < ApplicationJob
     return 'Document not found' unless document_response[:status]
 
     document = document_response[:body]['labels']
-    order_id = ChannelOrder.find(order_id.first).order_id
-    name = "consignment-#{order_id}"
+    channel_order_id = ChannelOrder.find(order_ids.first).order_id
+    name = "consignment-#{channel_order_id}"
     path = Rails.root.join('public/uploads', name.to_s)
     File.open(path.to_s, 'wb') do |f|
       f.write(Base64.decode64(document))
     end
     return unless packing_slip.positive?
 
-    pdf_name = "packing_slip-#{order_id}"
-    generate_packing_slip(order_id, pdf_name)
+    pdf_name = "packing_slip-#{channel_order_id}"
+    generate_packing_slip(channel_order_id, pdf_name)
 
     pdf_name = "#{pdf_name}.pdf"
     path_for_packing_slip = Rails.root.join('public/uploads', pdf_name.to_s)
 
     generate_combine_pdf(path, path_for_packing_slip)
     File.delete(path_for_packing_slip)
-
   end
 
   def carrier_shipping_service(shipping_service)
@@ -121,10 +120,10 @@ class ScurriApiJob < ApplicationJob
     ScurriApiService.consignment_document(url, auth)
   end
 
-  def generate_packing_slip(order_id, pdf_name)
+  def generate_packing_slip(channel_order_id, pdf_name)
     order = ChannelOrder.joins(:channel_order_items, system_user: :addresses)
                         .includes(:channel_order_items, system_user: :addresses)
-                        .find_by('channel_orders.order_id': order_id)
+                        .find_by('channel_orders.order_id': channel_order_id)
     html = PickAndPacksController.new.render_to_string(
       template: 'pick_and_packs/consignement.pdf.erb',
       locals: { order: order }

@@ -8,11 +8,11 @@ class OrderBatchesController < ApplicationController
 
   def create
     # @order_batch = OrderBatch.find_or_initialize_by(batch_name: params[:order_batch][:batch_name])
-    orders = ChannelOrder.joins(:channel_order_items).where(id: params[:order_ids].split(',')).order(sku: :asc)
+    order_ids = params[:order_ids].split(',')
+    orders = ChannelOrder.joins(:channel_order_items).where(id: order_ids).order(sku: :asc)
     stage = order_batch_params[:mark_order_as_dispatched].to_i.positive? ? 'completed' : 'ready_to_print'
     packing_slip = order_batch_params[:packing_slip].to_i
-    order_id = params[:order_ids].split(',')
-    ScurriApiJob.perform_now(packing_slip: packing_slip, order_id: order_id)
+    ScurriApiJob.perform_later(packing_slip: packing_slip, order_ids: order_ids)
     if params['commit'].eql? 'save'
       @order_batch = OrderBatch.create(order_batch_params)
       @order_batch.update(pick_preset: params['name_of_template'], preset_type: 'pick_preset')

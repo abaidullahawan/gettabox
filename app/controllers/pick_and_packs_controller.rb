@@ -70,15 +70,6 @@ class PickAndPacksController < ApplicationController
     end
   end
 
-  def consignement
-    respond_to do |format|
-      format.html
-      format.pdf do
-        render pdf: 'file', viewport_size: '1280x1024', save_to_file: Rails.root.join('public/uploads', "packing_slip.pdf"), template: 'pick_and_packs/consignement.pdf.erb'
-      end
-    end
-  end
-
   def scan_barcode
     pick_and_packs = OrderBatch.batches_only.ransack(params[:q]).result(distinct: true)
     orders = pick_and_packs.last&.channel_orders
@@ -158,7 +149,7 @@ class PickAndPacksController < ApplicationController
     tracking_order.update(product_scan: product_scan, stage: 'completed', order_batch_id: nil, change_log: "Order Completed, #{tracking_order.id}, #{tracking_order.order_id}, #{current_user&.personal_detail&.full_name}")
     update_all_products(tracking_order)
     call_amazon_tracking_job(tracking_order.id) unless tracking_order.update_channel
-    ScurriApiJob.perform_later(order_id: tracking_order.id)
+    ScurriApiJob.perform_later(order_ids: tracking_order.id)
     # job_data = EbayCompleteSaleJob.perform_later(order_ids: [tracking_order.id]) unless tracking_order.update_channel
     JobStatus.create(name: 'EbayCompleteSaleJob', status: 'inqueue', arguments: { order_ids: [tracking_order.id] }, perform_in: 300) unless tracking_order.update_channel
     flash[:notice] = 'Order completed successfully'
