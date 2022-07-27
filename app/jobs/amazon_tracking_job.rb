@@ -110,9 +110,9 @@ class AmazonTrackingJob < ApplicationJob
   def perform_later_queue(ids, error)
     credential = Credential.find_by(grant_type: 'wait_time')
     wait_time = credential.created_at
-    wait_time = DateTime.now > wait_time ? DateTime.now : wait_time + 10.seconds
+    wait_time = Time.zone.now.no_dst > wait_time ? Time.zone.now.no_dst : wait_time + 10.seconds
     credential.update(redirect_uri: 'AmazonTrackingJob', authorization: ids, created_at: wait_time)
-    elapsed_seconds = wait_time - DateTime.now
+    elapsed_seconds = wait_time - Time.zone.now.no_dst
     # job_data = self.class.set(wait: elapsed_seconds.seconds).perform_later(order_ids: ids, error: error)
     JobStatus.create(name: self.class.to_s, status: 'retry', arguments: { order_ids: ids, error: error }, perform_in: elapsed_seconds.seconds)
   end

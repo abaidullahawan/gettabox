@@ -204,9 +204,9 @@ class OrderBatchesController < ApplicationController
 
     credential = Credential.find_by(grant_type: 'wait_time')
     wait_time = credential.created_at
-    wait_time = DateTime.now > wait_time ? DateTime.now + 120.seconds : wait_time + 120.seconds
+    wait_time = Time.zone.now.no_dst > wait_time ? Time.zone.now.no_dst + 120.seconds : wait_time + 120.seconds
     credential.update(redirect_uri: 'AmazonTrackingJob', authorization: order_ids, created_at: wait_time)
-    elapsed_seconds = wait_time - DateTime.now
+    elapsed_seconds = wait_time - Time.zone.now.no_dst
 
     # AmazonTrackingJob.set(wait: elapsed_seconds.seconds).perform_later(order_ids: order_ids)
     JobStatus.create(name: 'AmazonTrackingJob', status: 'inqueue', arguments: { order_id: order_ids }, perform_in: elapsed_seconds.seconds)
