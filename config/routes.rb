@@ -203,6 +203,8 @@ end
       get 'pick_all_items', to: 'pick_and_packs#pick_all_items'
       get 'scan_barcode', to: 'pick_and_packs#scan_barcode'
       get 'print_packing_list', to: 'pick_and_packs#print_packing_list'
+      get 'download_pdf', to: 'pick_and_packs#download_pdf'
+      get 'consignement', to: 'pick_and_packs#consignement'
     end
   end
 

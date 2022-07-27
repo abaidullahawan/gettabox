@@ -32,7 +32,7 @@
           <br><%= order.order_id %>
           <%#= order.buyer_username %>
           <br><strong><b><%= order.buyer_name %></b></strong>
-          <br><span><%= order.system_user&.addresses&.find_by(address_title: 'delivery')&.postcode%></span>
+          <br><span><%= order.system_user&.addresses&.delivery_address&.postcode %></span>
         </div>
       </div>
       <div class="font-sm col-3 d-flex align-items-center px-1">

@@ -8,8 +8,11 @@ class OrderBatchesController < ApplicationController
 
   def create
     # @order_batch = OrderBatch.find_or_initialize_by(batch_name: params[:order_batch][:batch_name])
-    orders = ChannelOrder.joins(:channel_order_items).where(id: params[:order_ids].split(',')).order(sku: :asc)
+    order_ids = params[:order_ids].split(',')
+    orders = ChannelOrder.joins(:channel_order_items).where(id: order_ids).order(sku: :asc)
     stage = order_batch_params[:mark_order_as_dispatched].to_i.positive? ? 'completed' : 'ready_to_print'
+    packing_slip = order_batch_params[:packing_slip].to_i
+    ScurriApiJob.perform_later(packing_slip: packing_slip, order_ids: order_ids)
     if params['commit'].eql? 'save'
       @order_batch = OrderBatch.create(order_batch_params)
       @order_batch.update(pick_preset: params['name_of_template'], preset_type: 'pick_preset')
@@ -60,7 +63,7 @@ class OrderBatchesController < ApplicationController
     params.require(:order_batch).permit(
       :pick_preset, :print_packing_list, :print_packing_list_option, :mark_as_picked, :print_courier_labels,
       :print_invoice, :update_channels, :mark_order_as_dispatched, :batch_name, :shipping_rule_max_weight,
-      :overwrite_order_notes, :save_batch_name, :mark_as_batch_name
+      :overwrite_order_notes, :save_batch_name, :mark_as_batch_name, :packing_slip
     )
   end
 

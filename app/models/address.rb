@@ -9,4 +9,8 @@ class Address < ApplicationRecord
     billing: 'billing',
     delivery: 'delivery'
   }, _prefix: true
+
+  def self.delivery_address
+    find_by(address_title: 'delivery')
+  end
 end

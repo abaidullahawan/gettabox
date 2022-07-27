@@ -1,0 +1,41 @@
+<head>
+  <%= wicked_pdf_stylesheet_link_tag "application" -%>
+  <%= wicked_pdf_stylesheet_link_tag "bootstrap" %>
+
+  <style>
+    .flex{
+      display: flex;
+      display: -webkit-box;
+    }
+    p{
+      color: black;
+    }
+  </style>
+</head>
+
+<div>
+  <div class="flex">
+    <h3 class="col-6">Packing Slip</h3>
+    <!--div class="col-6">Barcode <p>DC-00349340329423942</p></div-->
+  </div>
+  <div class="flex mt-4 mb-3" style="border-bottom: 3px solid black;">
+    <div class="col-6">
+      <%= order.buyer_name %>
+      <p><%= order.system_user&.addresses&.delivery_address&.postcode %></p>
+    </div>
+    <div class="col-6">
+      <%= order.order_id%>
+    </div>
+  </div>
+  <% order.channel_order_items.each do |item| %>
+    <div class="flex" style="border-bottom: 3px solid black;">
+      <div class="col-8">
+        <p> <%= item.title %></p>
+        <p><strong><%= item.sku %></strong></p>
+      </div>
+      <div class="col-4">
+        <div style="padding: 10px; border: 1px solid black;"><%= item.ordered %></div>
+      </div>
+    </div>
+  <% end %>
+</div>
