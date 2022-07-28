@@ -26,9 +26,9 @@ class ScurriApiJob < ApplicationJob
         customer = order.system_user
         delivery_address = customer.addresses.where(address_title: 'delivery').first
         {
-          'carrier' => courier_name,
+          'carrier' => carrier_shipping_service(service_name).try(:[], :carrier),
           'warehouse_id' => 'itd-global-gettabox-ltd|ITD Global: GETTABOX LTD',
-          'service_id' => carrier_shipping_service(service_name),
+          'service_id' => carrier_shipping_service(service_name).try(:[], :service),
           'recipient' => {
             'address' => {
               'country' => delivery_address.country,
@@ -112,13 +112,13 @@ class ScurriApiJob < ApplicationJob
 
   def carrier_shipping_service(shipping_service)
     shipping_services = {
-      'UK Standard Delivery' => 'Hermes|UK Standard Delivery',
-      'UK Next Day Delivery' => 'Hermes|UK Next Day Delivery',
-      'XPECT 24 POD (1VP)' => 'Yodel|XPECT 24 POD 1VP',
-      'XPECT 48 POD (2VP)' => 'Yodel|XPECT 48 POD 2VP',
-      'XPRESS 24 POD (1CP)' => 'Yodel|XPRESS 24 POD 1CP',
-      'XPRESS 48 POD (2CP)' => 'Yodel|XPRESS 48 POD 2CP',
-      'XPRESS MINI 48 NON POD (2CMN)' => 'Yodel|XPRESS MINI 48 NON POD 2CMN'
+      'UK Standard Delivery' => { carrier: 'Hermes', service: 'Hermes|UK Standard Delivery' },
+      'UK Next Day Delivery' => { carrier: 'Hermes', service: 'Hermes|UK Next Day Delivery' },
+      'XPECT 24 POD (1VP)' => { carrier: 'Yodel', service: 'Yodel|XPECT 24 POD 1VP' },
+      'XPECT 48 POD (2VP)' => { carrier: 'Yodel', service: 'Yodel|XPECT 48 POD 2VP' },
+      'XPRESS 24 POD (1CP)' => { carrier: 'Yodel', service: 'Yodel|XPRESS 24 POD 1CP' },
+      'XPRESS 48 POD (2CP)' => { carrier: 'Yodel', service: 'Yodel|XPRESS 48 POD 2CP' },
+      'XPRESS MINI 48 NON POD (2CMN)' => { carrier: 'Yodel', service: 'Yodel|XPRESS MINI 48 NON POD 2CMN' }
     }
     shipping_services[shipping_service]
   end
