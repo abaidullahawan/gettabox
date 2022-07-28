@@ -39,7 +39,7 @@ class ScurriApiJob < ApplicationJob
             'contact_number' => customer.phone_number,
             'email_address' => customer.email,
             'company_name' => delivery_address.company,
-            'name' => order.buyer_name
+            'name' => delivery_address.name
           },
           'order_number' => order.order_id,
           'options' => {
