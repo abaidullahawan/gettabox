@@ -178,21 +178,20 @@
                 <% @weight += label.weight%>
               <% end %>
             <% else%>
-              <% order.channel_order_items.each do |product|%>
-                <% if product.channel_product&.product_mapping.present? %>
-                  <% if product.channel_product.product_mapping.product&.product_type_multiple? %>
-                    <% product.channel_product.product_mapping.product&.multipack_products&.each do |record| %>
-                      <% @length += record&.child&.length.to_f * record.quantity.to_i %>
-                      <% @weight += record&.child&.weight.to_f * record.quantity.to_i %>
-                      <% @height.push(record&.child&.height.to_f)%>
-                      <% @width.push(record&.child&.width.to_f)%>
-                    <% end %>
-                  <% else %>
-                    <% @length += product.channel_product.product_mapping&.product&.length.to_f %>
-                    <% @weight += product.channel_product.product_mapping&.product&.weight.to_f %>
-                    <% @height.push( product.channel_product.product_mapping&.product&.height.to_f)%>
-                    <% @width.push( product.channel_product.product_mapping&.product&.width.to_f)%>
+              <% order.channel_order_items.each do |item|%>
+                <% product = item.channel_product&.product_mapping.present? ? item.channel_product&.product_mapping.product : item.product %>
+                <% if product&.product_type_multiple? %>
+                  <% product&.multipack_products&.each do |record| %>
+                    <% @length += record&.child&.length.to_f * record.quantity.to_i %>
+                    <% @weight += record&.child&.weight.to_f * record.quantity.to_i %>
+                    <% @height.push(record&.child&.height.to_f)%>
+                    <% @width.push(record&.child&.width.to_f)%>
                   <% end %>
+                <% else %>
+                  <% @length += product&.length.to_f %>
+                  <% @weight += product&.weight.to_f %>
+                  <% @height.push( product&.height.to_f)%>
+                  <% @width.push( product&.width.to_f)%>
                 <% end %>
               <% end %>
             <% end %>
@@ -233,7 +232,9 @@
                 <% elsif !(order.channel_order_items.map{|i| i.allocated} & [false, nil]).blank? %>
                   <%= link_to 'Allocate', allocations_order_dispatches_path(allocate: true, listing_id: order.id, order_filter: params[:order_filter]), class: 'dropdown-item' %>
                 <% end %>
-                <%= link_to 'Logs', version_order_dispatches_path(id: order.id), class: 'dropdown-item' %>
+                <% replacement_order_id = order.replacement_id %>
+                <% order_number = replacement_order_id.present? ? replacement_order_id.split('-').last.to_i : order.id %>
+                <%= link_to 'Logs', version_order_dispatches_path(id: order_number), class: 'dropdown-item' %>
               </div>
             </div>
           </div>

@@ -19,8 +19,8 @@ class ScurriApiJob < ApplicationJob
     data =
       channel_orders.each.map do |order|
         mail_service_rule = order.assign_rule.mail_service_rule
-        courier_name = mail_service_rule.courier.name
-        service_name = mail_service_rule.service.name
+        courier_name = mail_service_rule.courier&.name
+        service_name = mail_service_rule.service&.name
         next unless courier_name.eql? 'ITD'
 
         customer = order.system_user
@@ -34,13 +34,12 @@ class ScurriApiJob < ApplicationJob
               'country' => delivery_address.country,
               'postcode' => delivery_address.postcode,
               'city' => delivery_address.city,
-              'address1' => delivery_address.address,
-              'state' => delivery_address.region
+              'address1' => delivery_address.address
             },
             'contact_number' => customer.phone_number,
             'email_address' => customer.email,
             'company_name' => delivery_address.company,
-            'name' => delivery_address.name
+            'name' => order.buyer_name
           },
           'order_number' => order.order_id,
           'options' => {
