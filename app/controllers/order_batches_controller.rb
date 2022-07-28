@@ -116,6 +116,7 @@ class OrderBatchesController < ApplicationController
           # order.update(stage: 'ready_to_print')
           order_csv = channel_order_data.map { |k, v| [k.to_s, order.send(v)] }.to_h
           item_csv = channel_order_item_data.map { |k, v| [k.to_s, order.channel_order_items.first.send(v)] }.to_h
+          item_csv['Quantity'] = 1 # Set Hardcode
           address_csv = address_data.map { |k, v| [k.to_s, order.system_user&.addresses&.find_by(address_title: 'delivery')&.send(v)] }.to_h
           system_user_csv = system_user_data.map { |k, v| [k.to_s, order.system_user&.send(v)] }.to_h
           label_csv = mail_service_label_data.map { |k, v| [k.to_s, order.assign_rule.mail_service_labels.first.send(v)] }.to_h

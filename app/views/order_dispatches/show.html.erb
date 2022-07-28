@@ -12,7 +12,9 @@
       <span class="active">View</span>
     </li>
     <li class="ml-auto">
-      <%= link_to 'Logs', version_order_dispatches_path(id: @order.id), class: 'btn btn-primary text-white' %>
+      <% replacement_order_id = @order.replacement_id %>
+      <% order_number = replacement_order_id.present? ? replacement_order_id.split('-').last.to_i : @order.id %>
+      <%= link_to 'Logs', version_order_dispatches_path(id: order_number), class: 'btn btn-primary text-white' %>
     </li>
   </ol>
 </div>
@@ -41,7 +43,8 @@
             </thead>
             <tbody>
               <tr>
-                <td scope="col"><%= @order.id %></td>
+                <% order_numbers = replacement_order_id.present? ? replacement_order_id : @order.id %>
+                <td scope="col"><%= order_numbers %></td>
                 <td scope="col" class="btn" data-link="<%= customer_path(@order.system_user.id)  if @order.system_user.present? %>" ><%= @order.system_user&.name %></td>
                 <td scope="col"><%= @order.order_id %></td>
                 <td scope="col"><%= @order.created_at&.strftime('%m/%d/%Y') %></td>
@@ -58,7 +61,7 @@
 </div>
 <div>
   <button type="button" class="btn btn-primary mb-4 float-right" data-toggle="modal" data-target="#refund-order-modal">Refund</button>
-  <button type="button" class="btn btn-primary float-right mr-2" data-toggle="modal" data-target="#create-replacement-order-modal">
+  <button type="button" class="btn btn-primary float-right mr-2 <%= 'd-none' if replacement_order_id.present? %>" data-toggle="modal" data-target="#create-replacement-order-modal">
     Replacement Order
   </button>
   <%= link_to 'Download Invoice', invoice_order_dispatches_path(id: @order.id), class: 'btn btn-primary float-right mr-2' if @order.system_user.present? %>

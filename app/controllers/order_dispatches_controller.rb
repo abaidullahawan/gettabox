@@ -38,30 +38,12 @@ class OrderDispatchesController < ApplicationController
   end
 
   def create
-    @order = ChannelOrder.create(order_dispatches_params)
-    check_product_type_single = @order.channel_order_items.map { |item| item.product.product_type_single? }.all?(true)
-    if @order.save && check_product_type_single
-      @order.channel_order_items.each do |item|
-        current_order = ChannelOrder.find_by(id: params[:channel_order]['id'])
-        replacement_id = "R#{current_order.order_replacements.count + 1}-#{current_order.id}"
-        if item.product.present?
-          item.update(sku: item.product.sku)
-          unshipped = item.product.unshipped.to_i + item.ordered&.to_i
-          inventory_balance = item.product.inventory_balance.to_i - item.ordered&.to_i
-          item.product.update(
-            unshipped: unshipped, unshipped_orders: item.product.unshipped_orders + 1, change_log: "Manual Order, #{replacement_id}, #{@order.order_id}, Manual Order,
-            #{params[:channel_order][:buyer_name]}, #{unshipped}, #{inventory_balance},
-            #{current_user&.personal_detail&.full_name}"
-          )
-          allocate_item(item)
-        end
-        @order.update(replacement_id: replacement_id, change_log: "Order Paid, #{@order.id}, #{@order.order_id}, #{current_user&.personal_detail&.full_name}", stage: 'ready_to_dispatch')
-        OrderReplacement.create(channel_order_id: current_order.id, order_replacement_id: @order.id, order_id: replacement_id)
-        current_order.update(change_log: "Replacement, #{replacement_id}, #{current_order.order_id}, #{current_user&.personal_detail&.full_name}")
-      end
-      flash[:notice] = 'Order Created!'
+    order_id = order_dispatches_params[:order_id]
+    channel_order_stage = ChannelOrder.where(order_id: order_id).map(&:stage_completed?).all?(true)
+    if channel_order_stage
+      create_replacement_order
     else
-      flash[:alert] = @order.errors.full_messages.blank? ? 'Please select single type product.' : @order.errors.full_messages
+      flash[:alert] = 'First, Please complete the order.'
     end
     redirect_to request.referrer
   end
@@ -886,6 +868,34 @@ class OrderDispatchesController < ApplicationController
         #{current_user&.personal_detail&.full_name}", available_stock: product.available_stock.to_i + order_item.ordered.to_i,
         unshipped: product.unshipped.to_i - order_item.ordered.to_i, unshipped_orders: product.unshipped_orders.to_i - 1
       )
+    end
+  end
+
+  def create_replacement_order
+    @order = ChannelOrder.create(order_dispatches_params)
+    check_product_type_single = @order.channel_order_items.map { |item| item.product.product_type_single? }.all?(true)
+    if @order.save && check_product_type_single
+      @order.channel_order_items.each do |item|
+        current_order = ChannelOrder.find_by(id: params[:channel_order]['id'])
+        replacement_id = "R#{current_order.order_replacements.count + 1}-#{current_order.id}"
+        if item.product.present?
+          item.update(sku: item.product.sku)
+          unshipped = item.product.unshipped.to_i + item.ordered&.to_i
+          inventory_balance = item.product.inventory_balance.to_i - item.ordered&.to_i
+          item.product.update(
+            unshipped: unshipped, unshipped_orders: item.product.unshipped_orders + 1, change_log: "Manual Order, #{replacement_id}, #{@order.order_id}, Manual Order,
+            #{params[:channel_order][:buyer_name]}, #{unshipped}, #{inventory_balance},
+            #{current_user&.personal_detail&.full_name}"
+          )
+          allocate_item(item)
+        end
+        @order.update(replacement_id: replacement_id, change_log: "Order Paid, #{@order.id}, #{@order.order_id}, #{current_user&.personal_detail&.full_name}", stage: 'ready_to_dispatch')
+        OrderReplacement.create(channel_order_id: current_order.id, order_replacement_id: @order.id, order_id: replacement_id)
+        current_order.update(change_log: "Replacement, #{replacement_id}, #{current_order.order_id}, #{current_user&.personal_detail&.full_name}")
+      end
+      flash[:notice] = 'Order Created!'
+    else
+      flash[:alert] = @order.errors.full_messages.blank? ? 'Please select single type product.' : @order.errors.full_messages
     end
   end
 end
