@@ -40,8 +40,8 @@ class ScurriApiJob < ApplicationJob
         },
         "order_number" => order.order_id,
         "options" => {
-          "package_type" => "Bag",
-          "signed" => "yes"
+          "package_type" => "Standard parcel",
+          "signed" => "no"
         },
         "packages" =>
           order.assign_rule.mail_service_labels.each.map do |label|
@@ -69,27 +69,41 @@ class ScurriApiJob < ApplicationJob
     response = ScurriApiService.create_shipment(url, data, auth)
     return unless response[:status]
 
-    consignment_id = response[:body]['success'].first
-    document_response = consignment_document(consignment_id, auth)
-    return 'Document not found' unless document_response[:status]
+    filenames = []
+    channel_order_ids = ChannelOrder.where(id: order_ids).pluck(:order_id)
+    consignments = response[:body]['success']
+    consignments.each_with_index do |consignment, index|
 
-    document = document_response[:body]['labels']
-    channel_order_id = ChannelOrder.find(order_ids.first).order_id
-    name = "consignment-#{channel_order_id}"
-    path = Rails.root.join('public/uploads', name.to_s)
-    File.open(path.to_s, 'wb') do |f|
-      f.write(Base64.decode64(document))
+      document_response = consignment_document(consignment, auth)
+      next 'Document not found' unless document_response[:status]
+
+      document = document_response[:body]['labels']
+      channel_order_id = channel_order_ids.at(index)
+      name = "consignment-label-#{DateTime.now}"
+      filenames << name if packing_slip.zero?
+      path = Rails.root.join('public/uploads', name.to_s)
+      File.open(path.to_s, 'wb') do |f|
+        f.write(Base64.decode64(document))
+      end
+      next unless packing_slip.positive?
+
+      pdf_name = "consignment-packing_slip-#{DateTime.now}"
+      generate_packing_slip(channel_order_id, pdf_name)
+
+      pdf_name = "#{pdf_name}.pdf"
+      path_for_packing_slip = Rails.root.join('public/uploads', pdf_name.to_s)
+
+      filenames << combine_label_and_packing_slip(path, path_for_packing_slip)
+      File.delete(path)
+      File.delete(path_for_packing_slip)
     end
-    return unless packing_slip.positive?
+    not_delete_file = combine_files(filenames, packing_slip)
+    filenames.each do |filename|
+      next if filename == not_delete_file
 
-    pdf_name = "packing_slip-#{channel_order_id}"
-    generate_packing_slip(channel_order_id, pdf_name)
-
-    pdf_name = "#{pdf_name}.pdf"
-    path_for_packing_slip = Rails.root.join('public/uploads', pdf_name.to_s)
-
-    generate_combine_pdf(path, path_for_packing_slip)
-    File.delete(path_for_packing_slip)
+      path = Rails.root.join('public/uploads', filename.to_s)
+      File.delete(path)
+    end
   end
 
   def carrier_shipping_service(shipping_service)
@@ -144,10 +158,25 @@ class ScurriApiJob < ApplicationJob
     end
   end
 
-  def generate_combine_pdf(path, path_for_packing_slip)
+  def combine_label_and_packing_slip(path, path_for_packing_slip)
+    name = "consignment-label-packing-slip-#{DateTime.now}"
+    save_path = Rails.root.join('public/uploads', name.to_s)
     pdf = CombinePDF.new
-    pdf << CombinePDF.load(path)
     pdf << CombinePDF.load(path_for_packing_slip)
-    pdf.save path
+    pdf << CombinePDF.load(path)
+    pdf.save save_path
+    name
+  end
+
+  def combine_files(filenames, packing_slip)
+    name = packing_slip.positive? ? "consignment-label-packing-slip-#{DateTime.now}" : "consignment-label-#{DateTime.now}"
+    save_path = Rails.root.join('public/uploads', name.to_s)
+    pdf = CombinePDF.new
+    filenames.each do |filename|
+      path = Rails.root.join('public/uploads', filename.to_s)
+      pdf << CombinePDF.load(path)
+    end
+    pdf.save save_path
+    name
   end
 end
