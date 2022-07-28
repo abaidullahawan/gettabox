@@ -12,9 +12,9 @@ class CreateChannelOrderResponseJob < ApplicationJob
     remainaing_time = @refresh_token.access_token_expiry.localtime > DateTime.now
     generate_refresh_token(credential) if credential.present? && remainaing_time == false
 
-    channel_response_data = ChannelResponseData.where(channel: 'ebay', api_call: 'getOrders')
+    channel_response_data = ChannelResponseData.where(channel: 'ebay', api_call: 'getOrders').count
     date_format = (Date.today - 2.months).strftime('%FT%T%:z').split('+').first
-    date_format = (Date.today - 4.days).strftime('%FT%T%:z').split('+').first if channel_response_data.present?
+    date_format = (Date.today - 48.hours).strftime('%FT%T%:z').split('+').first if channel_response_data.positive?
     url = "https://api.ebay.com/sell/fulfillment/v1/order?filter=creationdate:%5B#{date_format}.000Z..%5D&limit=200&offset=0"
 
     @headers = { 'authorization' => "Bearer <#{@refresh_token.access_token}>",
