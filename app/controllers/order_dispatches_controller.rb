@@ -851,8 +851,11 @@ class OrderDispatchesController < ApplicationController
   def cancel_replacement_orders(order_item)
     product = order_item.product
     product = Product.find(product.id)
+    order_id = order_item.channel_order.order_id
+    order = ChannelOrder.where(order_id: order_id, order_status: 'FULFILLED')
     inventory_balance = product.inventory_balance.to_i + order_item.ordered.to_i
     replacement_id = order_item.channel_order.replacement_id
+    order.update(change_log: "Cancel Replacement Order, #{replacement_id}, #{order_id}, #{current_user&.personal_detail&.full_name}")
     if order_item.allocated
       product.update(
         change_log: "Cancel Manual Order, #{replacement_id}, #{order_item.channel_order.order_id},
