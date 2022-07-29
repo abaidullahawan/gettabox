@@ -322,6 +322,7 @@ class ProductsController < ApplicationController
   end
 
   def ransack_products
+    params[:q] = {'product_type_eq' => 0} if params[:q].blank?
     @q = Product.ransack(params[:q])
     @products = @q.result(distinct: true).order(created_at: :desc).page(params[:page]).per(params[:limit])
     @product_exports = ExportMapping.where(table_name: 'Product')

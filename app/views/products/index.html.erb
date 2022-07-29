@@ -84,15 +84,19 @@
                 <%= f.search_field :title_or_sku_or_description_cont, class: 'form-control dropdown-toggle', placeholder:"Search in title or sku or description" %>
               </div>
             </div>
-            <div class="col-md-3"><br>
-              <%= f.select :product_type_eq, Product.product_types.map { |key, value| [key.humanize, value] }, {include_blank: 'Select an option'}, class:"form-control product-type-field", title: 'Select Product Type' %>            </div>
+            <div class="mt-2"><br>
+              <%= f.label :product_type_eq, 'Include Multipacks', class: 'text-muted' %>
+            </div>
+            <div class="col-md-1"><br>
+              <%= f.check_box :product_type_eq, { class:"mt-1 product-type-field", style: 'height: 30px; width: 30px;'} %>
+            </div>
             <div class=' col-md-1'>
               <button type='submit' class='product_type_submit btn btn-primary mt-4 d-none'>Search</button>
             </div>
-            <div class='col-md-1 offset-3'>
+            <div class='col-md-1 offset-4'>
               <div class='float-right'>
                 <label for="inputState">Per Page</label>
-                <%= select_tag :limit, options_for_select([5, 10, 15, 20], selected: params[:limit] || 10), id: 'change_per_page', class: 'form-control' %>
+                <%= select_tag :limit, options_for_select([25, 50, 75, 100], selected: params[:limit] || 10), id: 'change_per_page', class: 'form-control' %>
                 <button type="submit" id="per_page_submit" hidden="hidden"></button>
               </div>
             </div>
