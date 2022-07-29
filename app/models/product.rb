@@ -5,11 +5,8 @@ class Product < ApplicationRecord
   acts_as_paranoid
   has_one :extra_field_value, as: :fieldvalueable
   belongs_to :product_location, optional: true
-  after_create :re_modulate_dimensions
-  after_create :available_stock_change
-  after_update :re_modulate_dimensions
-  after_update :update_channel_quantity
-  after_update :pack_and_pallet_quantity
+  after_create :re_modulate_dimensions, :available_stock_change
+  after_update :re_modulate_dimensions, :update_channel_quantity, :pack_and_pallet_quantity
 
   validates :sku, presence: true, uniqueness: { case_sensitive: false }
   validates :title, presence: true
@@ -19,7 +16,7 @@ class Product < ApplicationRecord
   attribute :unshipped, :integer, default: 0
   validates :unshipped, numericality: { greater_than_or_equal_to: 0 }, if: -> { product_type_single? }
   has_many :barcodes, dependent: :destroy
-  has_many :product_suppliers, dependent: :destroy
+  has_many :product_suppliers, dependent: :destroy, after_add: :edit_purchase_order
   has_many :system_users, through: :product_suppliers
   has_many :multipack_products, dependent: :destroy
   has_many :products, through: :multipack_products
@@ -172,6 +169,16 @@ class Product < ApplicationRecord
                                      .map { |multi| multi.child&.product_forecasting&.channel_forecastings&.where(filter_by: multi_mapping.channel_type)&.first&.type_number.to_i - send(unallocated_orders).to_i }.min
       buffer_quantity = [buffer_quantity.to_i, 0].max
       multi_mapping.update(buffer_quantity: buffer_quantity) unless multi_mapping.buffer_quantity.to_i.eql? buffer_quantity
+    end
+  end
+
+  def edit_purchase_order(obj)
+    return unless obj.system_user.present? && id.present?
+
+    return unless obj.system_user.purchase_orders.order_status_created.any?
+
+    obj.system_user.purchase_orders.each do |purchase_order|
+      purchase_order.purchase_order_details.build(product_id: id).save
     end
   end
 end
