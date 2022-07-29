@@ -12,9 +12,12 @@ class EbayVariationProductJob < ApplicationJob
     remainaing_time = @refresh_token.access_token_expiry.localtime > DateTime.now
     generate_refresh_token(credential) if credential.present? && remainaing_time == false
 
-    quantity = _args.last[:quantity] || _args.last['quantity']
-    listing_id = _args.last[:listing_id] || _args.last['listing_id']
-    sku = _args.last[:sku] || _args.last['sku']
+    # quantity = _args.last[:quantity] || _args.last['quantity']
+    quantity = 1
+    # listing_id = _args.last[:listing_id] || _args.last['listing_id']
+    listing_id = "144512973136"
+    sku = "396523 Red Bull Apricot Strawberry x 1"
+    # sku = _args.last[:sku] || _args.last['sku']
 
     return 'Product not found' if quantity.nil? || listing_id.nil? || sku.nil?
 
@@ -77,12 +80,20 @@ class EbayVariationProductJob < ApplicationJob
   end
 
   def job_status(response, listing_id, quantity, sku)
-    if (response['Ack'].eql? 'Failure') && (response['Errors']['ShortMessage'].include? 'Invalid Multi-SKU')
+    ignore_errors =
+      [
+        'Item cannot be accessed.', 'Auction ended.', 'You are not allowed to revise ended listings.',
+        'This item cannot be accessed because the listing has been deleted or you are not the seller.'
+      ]
+    if ignore_errors.include? response['Errors']['LongMessage']
+      ChannelProduct.find_by(listing_id: listing_id, item_sku: sku).update(active_listing: false)
+    end
+    if (response['Ack'].eql? 'Failure') && (response['Errors']['ShortMessage'].include? 'Invalid Multi-SKU') && !(ignore_errors.include? response['Errors']['LongMessage'])
       # job_data = UpdateEbaySingleProductJob.perform_later(listing_id: listing_id, quantity: quantity, error: response['Errors']['LongMessage'])
       JobStatus.create(name: 'UpdateEbaySingleProductJob', status: 'retry',
                        arguments: { listing_id: listing_id, quantity: quantity,
                        error: response['Errors']['LongMessage'] }, perform_in: 600)
-    elsif response['Ack'].eql? 'Failure'
+    elsif (response['Ack'].eql? 'Failure') && !(ignore_errors.include? response['Errors']['LongMessage'])
       # job_data = self.class.perform_later(listing_id: listing_id, quantity: quantity, sku: sku, error: response['Errors']['LongMessage'])
       JobStatus.create(name: self.class.to_s, status: 'retry',
                        arguments: { listing_id: listing_id, quantity: quantity, sku: sku,

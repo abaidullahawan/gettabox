@@ -72,11 +72,19 @@ class EbaySingleProductJob < ApplicationJob
   end
 
   def job_status(response, listing_id, quantity)
-    if (response['Ack'].eql? 'Failure') && (response['Errors']['ShortMessage'].include? 'Item level quantity will be ignored')
+    ignore_errors =
+      [
+        'Item cannot be accessed.', 'Auction ended.', 'You are not allowed to revise ended listings.',
+        'This item cannot be accessed because the listing has been deleted or you are not the seller.'
+      ]
+    if ignore_errors.include? response['Errors']['ShortMessage']
+      ChannelProduct.find_by(listing_id: listing_id, item_sku: sku).update(active_listing: false)
+    end
+    if (response['Ack'].eql? 'Failure') && (response['Errors']['ShortMessage'].include? 'Item level quantity will be ignored') && !(ignore_errors.include? response['Errors']['ShortMessage'])
       # job_data = UpdateEbaySingleProductJob.perform_later(listing_id: listing_id , quantity: quantity)
       JobStatus.create(name: 'UpdateEbaySingleProductJob', status: 'retry',
                        arguments: { listing_id: listing_id, quantity: quantity, error: response['Errors']['ShortMessage'] }, perform_in: 600)
-    elsif response['Ack'].eql? 'Failure'
+    elsif (response['Ack'].eql? 'Failure') && !(ignore_errors.include? response['Errors']['ShortMessage'])
       # self.class.perform_later(listing_id: listing_id , quantity: quantity, error: response['Errors']['LongMessage'])
       JobStatus.create(name: self.class.to_s, status: 'retry',
                        arguments: { listing_id: listing_id, quantity: quantity, error: response['Errors']['ShortMessage'] }, perform_in: 600)
